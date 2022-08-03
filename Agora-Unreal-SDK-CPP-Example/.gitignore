@@ -74,4 +74,4 @@ Plugins/*/Intermediate/*
 DerivedDataCache/*
 
 # ThirdPlugin
-Plugins/AgoraPlugin/Source/ThirdParty/*
+Plugins/AgoraPlugin/*
