@@ -29,12 +29,11 @@ namespace agora
 			{
 				if (_mediaEngineProxy != nullptr)
 				{
-					 _mediaEngineProxy->registerVideoFrameObserver(observer);
+					_mediaEngineProxy->registerVideoFrameObserver(observer);
 				}
 			}
 
 			void RtcEngineProxy::release(bool sync) {
-
 				if (_rtcEngine != nullptr)
 				{
 					_mediaEngineProxy->registerVideoFrameObserver(nullptr);
@@ -42,9 +41,7 @@ namespace agora
 					_rtcEngine = nullptr;
 				}
 			}
-
-			int RtcEngineProxy::initialize(const RtcEngineContext& context)
-			{
+			int RtcEngineProxy::initialize(agora::rtc::RtcEngineContext const& context) {
 				int ret = _rtcEngine->initialize(context);
 
 				UE_LOG(LogTemp, Warning, TEXT("RtcEngineProxy initialize %d"), ret);
@@ -58,9 +55,8 @@ namespace agora
 				{
 					_mediaEngineProxy = std::make_unique<MediaEngineProxy>(_rtcEngine);
 				}
-				return 0;
+				return -ERROR_NULLPTR;
 			}
-
 			int RtcEngineProxy::queryInterface(agora::rtc::INTERFACE_ID_TYPE iid, void** inter) {
 				if (_rtcEngine != nullptr) {
 					return _rtcEngine->queryInterface(iid, inter);
@@ -72,14 +68,14 @@ namespace agora
 				if (_rtcEngine != nullptr) {
 					return _rtcEngine->getVersion(build);
 				}
-				return nullptr;
+				return NULL;
 			}
 
 			char const* RtcEngineProxy::getErrorDescription(int code) {
 				if (_rtcEngine != nullptr) {
 					return _rtcEngine->getErrorDescription(code);
 				}
-				return nullptr;
+				return NULL;
 			}
 
 			int RtcEngineProxy::joinChannel(char const* token, char const* channelId, char const* info, agora::rtc::uid_t uid) {
@@ -159,29 +155,11 @@ namespace agora
 				return -ERROR_NULLPTR;
 			}
 
-			int RtcEngineProxy::startEchoTest(const EchoTestConfiguration& config)
-			{
-				return 0;
-			}
-
-			int RtcEngineProxy::setLowlightEnhanceOptions(bool enabled, const LowlightEnhanceOptions& options, agora::media::MEDIA_SOURCE_TYPE type /*= agora::media::PRIMARY_CAMERA_SOURCE*/)
-			{
-				return 0;
-			}
-
-			int RtcEngineProxy::setVideoDenoiserOptions(bool enabled, const VideoDenoiserOptions& options, agora::media::MEDIA_SOURCE_TYPE type /*= agora::media::PRIMARY_CAMERA_SOURCE*/)
-			{
-				return 0;
-			}
-
-			int RtcEngineProxy::setColorEnhanceOptions(bool enabled, const ColorEnhanceOptions& options, agora::media::MEDIA_SOURCE_TYPE type /*= agora::media::PRIMARY_CAMERA_SOURCE*/)
-			{
-				return 0;
-			}
-
-			int RtcEngineProxy::enableVirtualBackground(bool enabled, VirtualBackgroundSource backgroundSource, SegmentationProperty segproperty, agora::media::MEDIA_SOURCE_TYPE type /*= agora::media::PRIMARY_CAMERA_SOURCE*/)
-			{
-				return 0;
+			int RtcEngineProxy::startEchoTest(agora::rtc::EchoTestConfiguration const& config) {
+				if (_rtcEngine != nullptr) {
+					return _rtcEngine->startEchoTest(config);
+				}
+				return -ERROR_NULLPTR;
 			}
 
 			int RtcEngineProxy::stopEchoTest() {
@@ -261,12 +239,33 @@ namespace agora
 				return -ERROR_NULLPTR;
 			}
 
-			/*int RtcEngineProxy::enableVirtualBackground(bool enabled, agora::rtc::VirtualBackgroundSource backgroundSource) {
+			int RtcEngineProxy::setLowlightEnhanceOptions(bool enabled, agora::rtc::LowlightEnhanceOptions const& options, agora::media::MEDIA_SOURCE_TYPE type) {
 				if (_rtcEngine != nullptr) {
-					return _rtcEngine->enableVirtualBackground(enabled, backgroundSource);
+					return _rtcEngine->setLowlightEnhanceOptions(enabled, options, type);
 				}
 				return -ERROR_NULLPTR;
-			}*/
+			}
+
+			int RtcEngineProxy::setVideoDenoiserOptions(bool enabled, agora::rtc::VideoDenoiserOptions const& options, agora::media::MEDIA_SOURCE_TYPE type) {
+				if (_rtcEngine != nullptr) {
+					return _rtcEngine->setVideoDenoiserOptions(enabled, options, type);
+				}
+				return -ERROR_NULLPTR;
+			}
+
+			int RtcEngineProxy::setColorEnhanceOptions(bool enabled, agora::rtc::ColorEnhanceOptions const& options, agora::media::MEDIA_SOURCE_TYPE type) {
+				if (_rtcEngine != nullptr) {
+					return _rtcEngine->setColorEnhanceOptions(enabled, options, type);
+				}
+				return -ERROR_NULLPTR;
+			}
+
+			int RtcEngineProxy::enableVirtualBackground(bool enabled, agora::rtc::VirtualBackgroundSource backgroundSource, agora::rtc::SegmentationProperty segproperty, agora::media::MEDIA_SOURCE_TYPE type) {
+				if (_rtcEngine != nullptr) {
+					return _rtcEngine->enableVirtualBackground(enabled, backgroundSource, segproperty, type);
+				}
+				return -ERROR_NULLPTR;
+			}
 
 			int RtcEngineProxy::enableRemoteSuperResolution(agora::rtc::uid_t userId, bool enable) {
 				if (_rtcEngine != nullptr) {
@@ -276,6 +275,8 @@ namespace agora
 			}
 
 			int RtcEngineProxy::setupRemoteVideo(agora::rtc::VideoCanvas const& canvas) {
+
+
 				if (_rtcEngine != nullptr) {
 					if (canvas.view != nullptr) {
 						_videoRenderMgr->setRenderImage((UImage*)canvas.view, canvas.uid, "", canvas.sourceType);
@@ -287,8 +288,9 @@ namespace agora
 				}
 				return -ERROR_NULLPTR;
 			}
-
 			int RtcEngineProxy::setupLocalVideo(agora::rtc::VideoCanvas const& canvas) {
+
+
 				if (_rtcEngine != nullptr) {
 					if (canvas.view != nullptr) {
 						_videoRenderMgr->setRenderImage((UImage*)canvas.view, canvas.uid, "", canvas.sourceType);
@@ -301,7 +303,6 @@ namespace agora
 				}
 				return -ERROR_NULLPTR;
 			}
-
 			int RtcEngineProxy::enableAudio() {
 				if (_rtcEngine != nullptr) {
 					return _rtcEngine->enableAudio();
@@ -330,10 +331,11 @@ namespace agora
 				return -ERROR_NULLPTR;
 			}
 
-
-			int RtcEngineProxy::setAudioScenario(AUDIO_SCENARIO_TYPE scenario)
-			{
-				return 0;
+			int RtcEngineProxy::setAudioScenario(agora::rtc::AUDIO_SCENARIO_TYPE scenario) {
+				if (_rtcEngine != nullptr) {
+					return _rtcEngine->setAudioScenario(scenario);
+				}
+				return -ERROR_NULLPTR;
 			}
 
 			int RtcEngineProxy::enableLocalAudio(bool enabled) {
@@ -363,8 +365,6 @@ namespace agora
 				}
 				return -ERROR_NULLPTR;
 			}
-
-
 
 			int RtcEngineProxy::muteRemoteAudioStream(agora::rtc::uid_t uid, bool mute) {
 				if (_rtcEngine != nullptr) {
@@ -401,112 +401,6 @@ namespace agora
 				return -ERROR_NULLPTR;
 			}
 
-
-			int RtcEngineProxy::setSubscribeAudioBlacklist(uid_t* uidList, int uidNumber)
-			{
-				return 0;
-			}
-
-			int RtcEngineProxy::setSubscribeAudioWhitelist(uid_t* uidList, int uidNumber)
-			{
-				return 0;
-			}
-
-			int RtcEngineProxy::setSubscribeVideoBlacklist(uid_t* uidList, int uidNumber)
-			{
-				return 0;
-			}
-
-			int RtcEngineProxy::setSubscribeVideoWhitelist(uid_t* uidList, int uidNumber)
-			{
-				return 0;
-			}
-
-			int RtcEngineProxy::startAudioMixing(const char* filePath, bool loopback, int cycle)
-			{
-				return 0;
-			}
-
-			int RtcEngineProxy::startAudioMixing(const char* filePath, bool loopback, int cycle, int startPos)
-			{
-				return 0;
-			}
-
-			int RtcEngineProxy::selectAudioTrack(int index)
-			{
-				return 0;
-			}
-
-			int RtcEngineProxy::getAudioTrackCount()
-			{
-				return 0;
-			}
-
-			int RtcEngineProxy::setAudioMixingDualMonoMode(media::AUDIO_MIXING_DUAL_MONO_MODE mode)
-			{
-				return 0;
-			}
-
-			int RtcEngineProxy::getEffectDuration(const char* filePath)
-			{
-				return 0;
-			}
-
-			int RtcEngineProxy::setEffectPosition(int soundId, int pos)
-			{
-				return 0;
-			}
-
-			int RtcEngineProxy::getEffectCurrentPosition(int soundId)
-			{
-				return 0;
-			}
-
-			int RtcEngineProxy::setDualStreamMode(SIMULCAST_STREAM_MODE mode)
-			{
-				return 0;
-			}
-
-			int RtcEngineProxy::setDualStreamMode(VIDEO_SOURCE_TYPE sourceType, SIMULCAST_STREAM_MODE mode)
-			{
-				return 0;
-			}
-
-			int RtcEngineProxy::setDualStreamMode(VIDEO_SOURCE_TYPE sourceType, SIMULCAST_STREAM_MODE mode, const SimulcastStreamConfig& streamConfig)
-			{
-				return 0;
-			}
-
-			int RtcEngineProxy::adjustLoopbackSignalVolume(int volume)
-			{
-				return 0;
-			}
-
-			agora::rtc::video_track_id_t RtcEngineProxy::createCustomVideoTrack()
-			{
-				return 0;
-			}
-
-			agora::rtc::video_track_id_t RtcEngineProxy::createCustomEncodedVideoTrack(const SenderOptions& sender_option)
-			{
-				return 0;
-			}
-
-			int RtcEngineProxy::destroyCustomVideoTrack(video_track_id_t video_track_id)
-			{
-				return 0;
-			}
-
-			int RtcEngineProxy::destroyCustomEncodedVideoTrack(video_track_id_t video_track_id)
-			{
-				return 0;
-			}
-
-			int RtcEngineProxy::enableWirelessAccelerate(bool enabled)
-			{
-				return 0;
-			}
-
 			int RtcEngineProxy::muteRemoteVideoStream(agora::rtc::uid_t uid, bool mute) {
 				if (_rtcEngine != nullptr) {
 					return _rtcEngine->muteRemoteVideoStream(uid, mute);
@@ -531,6 +425,34 @@ namespace agora
 			int RtcEngineProxy::setRemoteDefaultVideoStreamType(agora::rtc::VIDEO_STREAM_TYPE streamType) {
 				if (_rtcEngine != nullptr) {
 					return _rtcEngine->setRemoteDefaultVideoStreamType(streamType);
+				}
+				return -ERROR_NULLPTR;
+			}
+
+			int RtcEngineProxy::setSubscribeAudioBlacklist(agora::rtc::uid_t* uidList, int uidNumber) {
+				if (_rtcEngine != nullptr) {
+					return _rtcEngine->setSubscribeAudioBlacklist(uidList, uidNumber);
+				}
+				return -ERROR_NULLPTR;
+			}
+
+			int RtcEngineProxy::setSubscribeAudioWhitelist(agora::rtc::uid_t* uidList, int uidNumber) {
+				if (_rtcEngine != nullptr) {
+					return _rtcEngine->setSubscribeAudioWhitelist(uidList, uidNumber);
+				}
+				return -ERROR_NULLPTR;
+			}
+
+			int RtcEngineProxy::setSubscribeVideoBlacklist(agora::rtc::uid_t* uidList, int uidNumber) {
+				if (_rtcEngine != nullptr) {
+					return _rtcEngine->setSubscribeVideoBlacklist(uidList, uidNumber);
+				}
+				return -ERROR_NULLPTR;
+			}
+
+			int RtcEngineProxy::setSubscribeVideoWhitelist(agora::rtc::uid_t* uidList, int uidNumber) {
+				if (_rtcEngine != nullptr) {
+					return _rtcEngine->setSubscribeVideoWhitelist(uidList, uidNumber);
 				}
 				return -ERROR_NULLPTR;
 			}
@@ -581,7 +503,7 @@ namespace agora
 				if (_rtcEngine != nullptr) {
 					return _rtcEngine->createMediaPlayer();
 				}
-				return nullptr;
+				return NULL;
 			}
 
 			int RtcEngineProxy::destroyMediaPlayer(agora_refptr<agora::rtc::IMediaPlayer> media_player) {
@@ -591,19 +513,19 @@ namespace agora
 				return -ERROR_NULLPTR;
 			}
 
-			/*int RtcEngineProxy::startAudioMixing(char const* filePath, bool loopback, bool replace, int cycle) {
+			int RtcEngineProxy::startAudioMixing(char const* filePath, bool loopback, int cycle) {
 				if (_rtcEngine != nullptr) {
-					return _rtcEngine->startAudioMixing(filePath, loopback, replace, cycle);
+					return _rtcEngine->startAudioMixing(filePath, loopback, cycle);
 				}
 				return -ERROR_NULLPTR;
-			}*/
+			}
 
-			/*int RtcEngineProxy::startAudioMixing(char const* filePath, bool loopback, bool replace, int cycle, int startPos) {
+			int RtcEngineProxy::startAudioMixing(char const* filePath, bool loopback, int cycle, int startPos) {
 				if (_rtcEngine != nullptr) {
-					return _rtcEngine->startAudioMixing(filePath, loopback, replace, cycle, startPos);
+					return _rtcEngine->startAudioMixing(filePath, loopback, cycle, startPos);
 				}
 				return -ERROR_NULLPTR;
-			}*/
+			}
 
 			int RtcEngineProxy::stopAudioMixing() {
 				if (_rtcEngine != nullptr) {
@@ -622,6 +544,20 @@ namespace agora
 			int RtcEngineProxy::resumeAudioMixing() {
 				if (_rtcEngine != nullptr) {
 					return _rtcEngine->resumeAudioMixing();
+				}
+				return -ERROR_NULLPTR;
+			}
+
+			int RtcEngineProxy::selectAudioTrack(int index) {
+				if (_rtcEngine != nullptr) {
+					return _rtcEngine->selectAudioTrack(index);
+				}
+				return -ERROR_NULLPTR;
+			}
+
+			int RtcEngineProxy::getAudioTrackCount() {
+				if (_rtcEngine != nullptr) {
+					return _rtcEngine->getAudioTrackCount();
 				}
 				return -ERROR_NULLPTR;
 			}
@@ -678,6 +614,13 @@ namespace agora
 			int RtcEngineProxy::setAudioMixingPosition(int pos) {
 				if (_rtcEngine != nullptr) {
 					return _rtcEngine->setAudioMixingPosition(pos);
+				}
+				return -ERROR_NULLPTR;
+			}
+
+			int RtcEngineProxy::setAudioMixingDualMonoMode(media::AUDIO_MIXING_DUAL_MONO_MODE mode) {
+				if (_rtcEngine != nullptr) {
+					return _rtcEngine->setAudioMixingDualMonoMode(mode);
 				}
 				return -ERROR_NULLPTR;
 			}
@@ -790,6 +733,27 @@ namespace agora
 			int RtcEngineProxy::unloadAllEffects() {
 				if (_rtcEngine != nullptr) {
 					return _rtcEngine->unloadAllEffects();
+				}
+				return -ERROR_NULLPTR;
+			}
+
+			int RtcEngineProxy::getEffectDuration(char const* filePath) {
+				if (_rtcEngine != nullptr) {
+					return _rtcEngine->getEffectDuration(filePath);
+				}
+				return -ERROR_NULLPTR;
+			}
+
+			int RtcEngineProxy::setEffectPosition(int soundId, int pos) {
+				if (_rtcEngine != nullptr) {
+					return _rtcEngine->setEffectPosition(soundId, pos);
+				}
+				return -ERROR_NULLPTR;
+			}
+
+			int RtcEngineProxy::getEffectCurrentPosition(int soundId) {
+				if (_rtcEngine != nullptr) {
+					return _rtcEngine->getEffectCurrentPosition(soundId);
 				}
 				return -ERROR_NULLPTR;
 			}
@@ -969,6 +933,27 @@ namespace agora
 				return -ERROR_NULLPTR;
 			}
 
+			int RtcEngineProxy::setDualStreamMode(agora::rtc::SIMULCAST_STREAM_MODE mode) {
+				if (_rtcEngine != nullptr) {
+					return _rtcEngine->setDualStreamMode(mode);
+				}
+				return -ERROR_NULLPTR;
+			}
+
+			int RtcEngineProxy::setDualStreamMode(agora::rtc::VIDEO_SOURCE_TYPE sourceType, agora::rtc::SIMULCAST_STREAM_MODE mode) {
+				if (_rtcEngine != nullptr) {
+					return _rtcEngine->setDualStreamMode(sourceType, mode);
+				}
+				return -ERROR_NULLPTR;
+			}
+
+			int RtcEngineProxy::setDualStreamMode(agora::rtc::VIDEO_SOURCE_TYPE sourceType, agora::rtc::SIMULCAST_STREAM_MODE mode, agora::rtc::SimulcastStreamConfig const& streamConfig) {
+				if (_rtcEngine != nullptr) {
+					return _rtcEngine->setDualStreamMode(sourceType, mode, streamConfig);
+				}
+				return -ERROR_NULLPTR;
+			}
+
 			int RtcEngineProxy::enableEchoCancellationExternal(bool enabled, int audioSourceDelay) {
 				if (_rtcEngine != nullptr) {
 					return _rtcEngine->enableEchoCancellationExternal(enabled, audioSourceDelay);
@@ -1031,13 +1016,6 @@ namespace agora
 				}
 				return -ERROR_NULLPTR;
 			}
-
-		/*	int RtcEngineProxy::setEarMonitoringAudioFrameParameters(int sampleRate, int channel, agora::rtc::RAW_AUDIO_FRAME_OP_MODE_TYPE mode, int samplesPerCall) {
-				if (_rtcEngine != nullptr) {
-					return _rtcEngine->setEarMonitoringAudioFrameParameters(sampleRate, channel, mode, samplesPerCall);
-				}
-				return -ERROR_NULLPTR;
-			}*/
 
 			int RtcEngineProxy::setPlaybackAudioFrameBeforeMixingParameters(int sampleRate, int channel) {
 				if (_rtcEngine != nullptr) {
@@ -1123,12 +1101,12 @@ namespace agora
 				return -ERROR_NULLPTR;
 			}
 
-			/*int RtcEngineProxy::adjustLoopbackRecordingVolume(int volume) {
+			int RtcEngineProxy::adjustLoopbackSignalVolume(int volume) {
 				if (_rtcEngine != nullptr) {
-					return _rtcEngine->adjustLoopbackRecordingVolume(volume);
+					return _rtcEngine->adjustLoopbackSignalVolume(volume);
 				}
 				return -ERROR_NULLPTR;
-			}*/
+			}
 
 			int RtcEngineProxy::getLoopbackRecordingVolume() {
 				if (_rtcEngine != nullptr) {
@@ -1150,14 +1128,14 @@ namespace agora
 				}
 				return -ERROR_NULLPTR;
 			}
-#if defined (_WIN32) || defined(__linux__) || defined(__ANDROID__)
-			int RtcEngineProxy::loadExtensionProvider(const char* path, bool unload_after_use) {
+
+			int RtcEngineProxy::loadExtensionProvider(char const* path, bool unload_after_use) {
 				if (_rtcEngine != nullptr) {
 					return _rtcEngine->loadExtensionProvider(path, unload_after_use);
 				}
 				return -ERROR_NULLPTR;
 			}
-#endif
+
 			int RtcEngineProxy::setExtensionProviderProperty(char const* provider, char const* key, char const* value) {
 				if (_rtcEngine != nullptr) {
 					return _rtcEngine->setExtensionProviderProperty(provider, key, value);
@@ -1192,6 +1170,34 @@ namespace agora
 				}
 				return -ERROR_NULLPTR;
 			}
+
+			agora::rtc::video_track_id_t RtcEngineProxy::createCustomVideoTrack() {
+				if (_rtcEngine != nullptr) {
+					return _rtcEngine->createCustomVideoTrack();
+				}
+				return NULL;
+			}
+
+			agora::rtc::video_track_id_t RtcEngineProxy::createCustomEncodedVideoTrack(agora::rtc::SenderOptions const& sender_option) {
+				if (_rtcEngine != nullptr) {
+					return _rtcEngine->createCustomEncodedVideoTrack(sender_option);
+				}
+				return NULL;
+			}
+
+			int RtcEngineProxy::destroyCustomVideoTrack(agora::rtc::video_track_id_t video_track_id) {
+				if (_rtcEngine != nullptr) {
+					return _rtcEngine->destroyCustomVideoTrack(video_track_id);
+				}
+				return -ERROR_NULLPTR;
+			}
+
+			int RtcEngineProxy::destroyCustomEncodedVideoTrack(agora::rtc::video_track_id_t video_track_id) {
+				if (_rtcEngine != nullptr) {
+					return _rtcEngine->destroyCustomEncodedVideoTrack(video_track_id);
+				}
+				return -ERROR_NULLPTR;
+			}
 #if defined(__ANDROID__) || (defined(__APPLE__) && TARGET_OS_IOS)
 			int RtcEngineProxy::switchCamera() {
 				if (_rtcEngine != nullptr) {
@@ -1204,35 +1210,35 @@ namespace agora
 				if (_rtcEngine != nullptr) {
 					return _rtcEngine->isCameraZoomSupported();
 				}
-				return false;
+				return true;
 			}
 
 			bool RtcEngineProxy::isCameraFaceDetectSupported() {
 				if (_rtcEngine != nullptr) {
 					return _rtcEngine->isCameraFaceDetectSupported();
 				}
-				return false;
+				return true;
 			}
 
 			bool RtcEngineProxy::isCameraTorchSupported() {
 				if (_rtcEngine != nullptr) {
 					return _rtcEngine->isCameraTorchSupported();
 				}
-				return false;
+				return true;
 			}
 
 			bool RtcEngineProxy::isCameraFocusSupported() {
 				if (_rtcEngine != nullptr) {
 					return _rtcEngine->isCameraFocusSupported();
 				}
-				return false;
+				return true;
 			}
 
 			bool RtcEngineProxy::isCameraAutoFocusFaceModeSupported() {
 				if (_rtcEngine != nullptr) {
 					return _rtcEngine->isCameraAutoFocusFaceModeSupported();
 				}
-				return false;
+				return true;
 			}
 
 			int RtcEngineProxy::setCameraZoomFactor(float factor) {
@@ -1253,7 +1259,7 @@ namespace agora
 				if (_rtcEngine != nullptr) {
 					return _rtcEngine->getCameraMaxZoomFactor();
 				}
-				return -ERROR_NULLPTR;
+				return 0.0;
 			}
 
 			int RtcEngineProxy::setCameraFocusPositionInPreview(float positionX, float positionY) {
@@ -1281,7 +1287,7 @@ namespace agora
 				if (_rtcEngine != nullptr) {
 					return _rtcEngine->isCameraExposurePositionSupported();
 				}
-				return false;
+				return true;
 			}
 
 			int RtcEngineProxy::setCameraExposurePosition(float positionXinView, float positionYinView) {
@@ -1295,7 +1301,7 @@ namespace agora
 				if (_rtcEngine != nullptr) {
 					return _rtcEngine->isCameraAutoExposureFaceModeSupported();
 				}
-				return false;
+				return true;
 			}
 
 			int RtcEngineProxy::setCameraAutoExposureFaceModeEnabled(bool enabled) {
@@ -1323,7 +1329,7 @@ namespace agora
 				if (_rtcEngine != nullptr) {
 					return _rtcEngine->isSpeakerphoneEnabled();
 				}
-				return false;
+				return true;
 			}
 #endif
 #if defined(_WIN32) || (defined(__APPLE__) && TARGET_OS_MAC && !TARGET_OS_IPHONE)
@@ -1331,11 +1337,12 @@ namespace agora
 				if (_rtcEngine != nullptr) {
 					return _rtcEngine->getScreenCaptureSources(thumbSize, iconSize, includeScreen);
 				}
-				return nullptr;
+				return NULL;
 			}
 #endif
 #if (defined(__APPLE__) && TARGET_OS_IOS)
-			int RtcEngineProxy::setAudioSessionOperationRestriction(AUDIO_SESSION_OPERATION_RESTRICTION restriction) {
+			int RtcEngineProxy::setAudioSessionOperationRestriction(AUDIO_SESSION_OPERATION_RESTRICTION restriction)
+			{
 				if (_rtcEngine != nullptr) {
 					return _rtcEngine->setAudioSessionOperationRestriction(restriction);
 				}
@@ -1343,55 +1350,30 @@ namespace agora
 			}
 #endif
 #if defined(_WIN32) || (defined(__APPLE__) && !TARGET_OS_IPHONE && TARGET_OS_MAC)
-			int RtcEngineProxy::startScreenCaptureByDisplayId(uint32_t displayId, agora::rtc::Rectangle const& regionRect, agora::rtc::ScreenCaptureParameters const& captureParams) {
+			int RtcEngineProxy::startScreenCaptureByDisplayId(uint32_t displayId, Rectangle const& regionRect, ScreenCaptureParameters const& captureParams) {
 				if (_rtcEngine != nullptr) {
 					return _rtcEngine->startScreenCaptureByDisplayId(displayId, regionRect, captureParams);
 				}
 				return -ERROR_NULLPTR;
 			}
-#endif
 #if defined(_WIN32)
-			int RtcEngineProxy::startScreenCaptureByScreenRect(agora::rtc::Rectangle const& screenRect, agora::rtc::Rectangle const& regionRect, agora::rtc::ScreenCaptureParameters const& captureParams) {
+			int RtcEngineProxy::startScreenCaptureByScreenRect(const Rectangle& screenRect, const Rectangle& regionRect, const ScreenCaptureParameters& captureParams)
+			{
 				if (_rtcEngine != nullptr) {
 					return _rtcEngine->startScreenCaptureByScreenRect(screenRect, regionRect, captureParams);
 				}
 				return -ERROR_NULLPTR;
 			}
-
-
+#endif
 #endif
 #if defined(__ANDROID__)
-			//int RtcEngineProxy::startScreenCapture(void* mediaProjectionPermissionResultData, agora::rtc::ScreenCaptureParameters const& captureParams) {
-			//	if (_rtcEngine != nullptr) {
-			//		return _rtcEngine->startScreenCapture(mediaProjectionPermissionResultData, captureParams);
-			//	}
-			//	return -ERROR_NULLPTR;
-			//}
-
-			int RtcEngineProxy::startScreenCapture(const ScreenCaptureParameters2& captureParams)
-			{
-				if (_rtcEngine != nullptr) {
-					return _rtcEngine->startScreenCapture(captureParams);
-				}
-				return -ERROR_NULLPTR;
-			}
-
-			int RtcEngineProxy::updateScreenCapture(const ScreenCaptureParameters2& captureParams)
-			{
-				if (_rtcEngine != nullptr) {
-					return _rtcEngine->updateScreenCapture(captureParams);
-				}
-				return -ERROR_NULLPTR;
-			}
-
 			int RtcEngineProxy::getAudioDeviceInfo(agora::rtc::DeviceInfo& deviceInfo) {
 				if (_rtcEngine != nullptr) {
 					return _rtcEngine->getAudioDeviceInfo(deviceInfo);
 				}
 				return -ERROR_NULLPTR;
 			}
-#endif
-#if defined(_WIN32) || (defined(__APPLE__) && TARGET_OS_MAC && !TARGET_OS_IPHONE)
+#endif 
 			int RtcEngineProxy::startScreenCaptureByWindowId(agora::view_t windowId, agora::rtc::Rectangle const& regionRect, agora::rtc::ScreenCaptureParameters const& captureParams) {
 				if (_rtcEngine != nullptr) {
 					return _rtcEngine->startScreenCaptureByWindowId(windowId, regionRect, captureParams);
@@ -1419,21 +1401,36 @@ namespace agora
 				}
 				return -ERROR_NULLPTR;
 			}
+
 			int RtcEngineProxy::updateScreenCaptureParameters(agora::rtc::ScreenCaptureParameters const& captureParams) {
 				if (_rtcEngine != nullptr) {
 					return _rtcEngine->updateScreenCaptureParameters(captureParams);
 				}
 				return -ERROR_NULLPTR;
 			}
+#if defined(__ANDROID__)
+			int RtcEngineProxy::startScreenCapture(agora::rtc::ScreenCaptureParameters2 const& captureParams) {
+				if (_rtcEngine != nullptr) {
+					return _rtcEngine->startScreenCapture(captureParams);
+				}
+				return -ERROR_NULLPTR;
+			}
+
+			int RtcEngineProxy::updateScreenCapture(agora::rtc::ScreenCaptureParameters2 const& captureParams) {
+				if (_rtcEngine != nullptr) {
+					return _rtcEngine->updateScreenCapture(captureParams);
+				}
+				return -ERROR_NULLPTR;
+			}
 #endif
-#if defined(_WIN32) || (defined(__APPLE__) && TARGET_OS_MAC && !TARGET_OS_IPHONE)|| defined(__ANDROID__)
+#if defined(_WIN32) || (defined(__APPLE__) && TARGET_OS_MAC && !TARGET_OS_IPHONE) || defined(__ANDROID__)
 			int RtcEngineProxy::stopScreenCapture() {
 				if (_rtcEngine != nullptr) {
 					return _rtcEngine->stopScreenCapture();
 				}
 				return -ERROR_NULLPTR;
 			}
-#endif 
+#endif
 			int RtcEngineProxy::getCallId(agora::util::AString& callId) {
 				if (_rtcEngine != nullptr) {
 					return _rtcEngine->getCallId(callId);
@@ -1454,27 +1451,6 @@ namespace agora
 				}
 				return -ERROR_NULLPTR;
 			}
-
-		/*	int RtcEngineProxy::addPublishStreamUrl(char const* url, bool transcodingEnabled) {
-				if (_rtcEngine != nullptr) {
-					return _rtcEngine->addPublishStreamUrl(url, transcodingEnabled);
-				}
-				return -ERROR_NULLPTR;
-			}*/
-
-		/*	int RtcEngineProxy::removePublishStreamUrl(char const* url) {
-				if (_rtcEngine != nullptr) {
-					return _rtcEngine->removePublishStreamUrl(url);
-				}
-				return -ERROR_NULLPTR;
-			}*/
-
-		/*	int RtcEngineProxy::setLiveTranscoding(agora::rtc::LiveTranscoding const& transcoding) {
-				if (_rtcEngine != nullptr) {
-					return _rtcEngine->setLiveTranscoding(transcoding);
-				}
-				return -ERROR_NULLPTR;
-			}*/
 
 			int RtcEngineProxy::startRtmpStreamWithoutTranscoding(char const* url) {
 				if (_rtcEngine != nullptr) {
@@ -1606,14 +1582,14 @@ namespace agora
 				if (_rtcEngine != nullptr) {
 					return _rtcEngine->registerEventHandler(eventHandler);
 				}
-				return false;
+				return true;
 			}
 
 			bool RtcEngineProxy::unregisterEventHandler(agora::rtc::IRtcEngineEventHandler* eventHandler) {
 				if (_rtcEngine != nullptr) {
 					return _rtcEngine->unregisterEventHandler(eventHandler);
 				}
-				return false;
+				return true;
 			}
 
 			int RtcEngineProxy::setRemoteUserPriority(agora::rtc::uid_t uid, agora::rtc::PRIORITY_TYPE userPriority) {
@@ -1637,14 +1613,12 @@ namespace agora
 				return -ERROR_NULLPTR;
 			}
 
-
 			int RtcEngineProxy::setEncryptionSecret(char const* secret) {
 				if (_rtcEngine != nullptr) {
 					return _rtcEngine->setEncryptionSecret(secret);
 				}
 				return -ERROR_NULLPTR;
 			}
-
 
 			int RtcEngineProxy::enableEncryption(bool enabled, agora::rtc::EncryptionConfig const& config) {
 				if (_rtcEngine != nullptr) {
@@ -1723,7 +1697,6 @@ namespace agora
 				return -ERROR_NULLPTR;
 			}
 
-
 			int RtcEngineProxy::resumeAudio() {
 				if (_rtcEngine != nullptr) {
 					return _rtcEngine->resumeAudio();
@@ -1731,17 +1704,11 @@ namespace agora
 				return -ERROR_NULLPTR;
 			}
 
-
 			int RtcEngineProxy::enableWebSdkInteroperability(bool enabled) {
 				if (_rtcEngine != nullptr) {
 					return _rtcEngine->enableWebSdkInteroperability(enabled);
 				}
 				return -ERROR_NULLPTR;
-			}
-
-			int RtcEngineProxy::setAdvancedAudioOptions(AdvancedAudioOptions& options)
-			{
-				return 0;
 			}
 
 			int RtcEngineProxy::sendCustomReportMessage(char const* id, char const* category, char const* event, char const* label, int value) {
@@ -1891,20 +1858,6 @@ namespace agora
 				return -ERROR_NULLPTR;
 			}
 
-			/*int RtcEngineProxy::pushDirectCdnStreamingCustomVideoFrame(media::base::ExternalVideoFrame* frame) {
-				if (_rtcEngine != nullptr) {
-					return _rtcEngine->pushDirectCdnStreamingCustomVideoFrame(frame);
-				}
-				return -ERROR_NULLPTR;
-			}*/
-
-			/*int RtcEngineProxy::switchChannel(char const* token, char const* channel) {
-				if (_rtcEngine != nullptr) {
-					return _rtcEngine->switchChannel(token, channel);
-				}
-				return -ERROR_NULLPTR;
-			}*/
-
 			int RtcEngineProxy::startRhythmPlayer(char const* sound1, char const* sound2, agora::rtc::AgoraRhythmPlayerConfig const& config) {
 				if (_rtcEngine != nullptr) {
 					return _rtcEngine->startRhythmPlayer(sound1, sound2, config);
@@ -1968,19 +1921,12 @@ namespace agora
 				return -ERROR_NULLPTR;
 			}
 
-			/*int RtcEngineProxy::enableFishCorrection(bool enabled, agora::rtc::FishCorrectionParams const& params) {
-				if (_rtcEngine != nullptr) {
-					return _rtcEngine->enableFishCorrection(enabled, params);
-				}
-				return -ERROR_NULLPTR;
-			}*/
-
-		/*	int RtcEngineProxy::setAdvancedAudioOptions(media::base::AdvancedAudioOptions& options) {
+			int RtcEngineProxy::setAdvancedAudioOptions(agora::rtc::AdvancedAudioOptions& options) {
 				if (_rtcEngine != nullptr) {
 					return _rtcEngine->setAdvancedAudioOptions(options);
 				}
 				return -ERROR_NULLPTR;
-			}*/
+			}
 
 			int RtcEngineProxy::setAVSyncSource(char const* channelId, agora::rtc::uid_t uid) {
 				if (_rtcEngine != nullptr) {
@@ -1996,42 +1942,37 @@ namespace agora
 				return -ERROR_NULLPTR;
 			}
 
-			/*int64_t RtcEngineProxy::getCurrentMonotonicTimeInMs() {
-				if (_rtcEngine != nullptr) {
-					return _rtcEngine->getCurrentMonotonicTimeInMs();
-				}
-				return -ERROR_NULLPTR;
-			}*/
-
-			int RtcEngineProxy::joinChannelEx(const char* token, const RtcConnection& connection, const ChannelMediaOptions& options, IRtcEngineEventHandler* eventHandler) {
+			int RtcEngineProxy::joinChannelEx(char const* token, agora::rtc::RtcConnection const& connection, agora::rtc::ChannelMediaOptions const& options, agora::rtc::IRtcEngineEventHandler* eventHandler) {
 				if (_rtcEngine != nullptr) {
 					return ((IRtcEngineEx*)_rtcEngine)->joinChannelEx(token, connection, options, eventHandler);
 				}
 				return -ERROR_NULLPTR;
 			}
 
-			int RtcEngineProxy::leaveChannelEx(const RtcConnection& connection) {
+			int RtcEngineProxy::leaveChannelEx(agora::rtc::RtcConnection const& connection) {
 				if (_rtcEngine != nullptr) {
 					return ((IRtcEngineEx*)_rtcEngine)->leaveChannelEx(connection);
 				}
 				return -ERROR_NULLPTR;
 			}
 
-			int RtcEngineProxy::updateChannelMediaOptionsEx(const ChannelMediaOptions& options, const RtcConnection& connection) {
+			int RtcEngineProxy::updateChannelMediaOptionsEx(agora::rtc::ChannelMediaOptions const& options, agora::rtc::RtcConnection const& connection) {
 				if (_rtcEngine != nullptr) {
 					return ((IRtcEngineEx*)_rtcEngine)->updateChannelMediaOptionsEx(options, connection);
 				}
 				return -ERROR_NULLPTR;
 			}
 
-			int RtcEngineProxy::setVideoEncoderConfigurationEx(const VideoEncoderConfiguration& config, const RtcConnection& connection) {
+			int RtcEngineProxy::setVideoEncoderConfigurationEx(agora::rtc::VideoEncoderConfiguration const& config, agora::rtc::RtcConnection const& connection) {
 				if (_rtcEngine != nullptr) {
 					return ((IRtcEngineEx*)_rtcEngine)->setVideoEncoderConfigurationEx(config, connection);
 				}
 				return -ERROR_NULLPTR;
 			}
 
-			int RtcEngineProxy::setupRemoteVideoEx(const VideoCanvas& canvas, const RtcConnection& connection) {
+			int RtcEngineProxy::setupRemoteVideoEx(agora::rtc::VideoCanvas const& canvas, agora::rtc::RtcConnection const& connection) {
+
+
 				if (_rtcEngine != nullptr) {
 					if (canvas.view != nullptr) {
 						_videoRenderMgr->setRenderImage((UImage*)canvas.view, canvas.uid, connection.channelId, canvas.sourceType);
@@ -2043,134 +1984,161 @@ namespace agora
 				}
 				return -ERROR_NULLPTR;
 			}
-
-			int RtcEngineProxy::muteRemoteAudioStreamEx(uid_t uid, bool mute, const RtcConnection& connection) {
+			int RtcEngineProxy::muteRemoteAudioStreamEx(agora::rtc::uid_t uid, bool mute, agora::rtc::RtcConnection const& connection) {
 				if (_rtcEngine != nullptr) {
 					return ((IRtcEngineEx*)_rtcEngine)->muteRemoteAudioStreamEx(uid, mute, connection);
 				}
 				return -ERROR_NULLPTR;
 			}
 
-			int RtcEngineProxy::muteRemoteVideoStreamEx(uid_t uid, bool mute, const RtcConnection& connection) {
+			int RtcEngineProxy::muteRemoteVideoStreamEx(agora::rtc::uid_t uid, bool mute, agora::rtc::RtcConnection const& connection) {
 				if (_rtcEngine != nullptr) {
 					return ((IRtcEngineEx*)_rtcEngine)->muteRemoteVideoStreamEx(uid, mute, connection);
 				}
 				return -ERROR_NULLPTR;
 			}
 
-			int RtcEngineProxy::setRemoteVideoStreamTypeEx(uid_t uid, VIDEO_STREAM_TYPE streamType, const RtcConnection& connection) {
+			int RtcEngineProxy::setRemoteVideoStreamTypeEx(agora::rtc::uid_t uid, agora::rtc::VIDEO_STREAM_TYPE streamType, agora::rtc::RtcConnection const& connection) {
 				if (_rtcEngine != nullptr) {
 					return ((IRtcEngineEx*)_rtcEngine)->setRemoteVideoStreamTypeEx(uid, streamType, connection);
 				}
 				return -ERROR_NULLPTR;
 			}
 
-			int RtcEngineProxy::setRemoteVideoSubscriptionOptionsEx(uid_t uid, const VideoSubscriptionOptions& options, const RtcConnection& connection) {
+			int RtcEngineProxy::setSubscribeAudioBlacklistEx(agora::rtc::uid_t* uidList, int uidNumber, agora::rtc::RtcConnection const& connection) {
+				if (_rtcEngine != nullptr) {
+					return ((IRtcEngineEx*)_rtcEngine)->setSubscribeAudioBlacklistEx(uidList, uidNumber, connection);
+				}
+				return -ERROR_NULLPTR;
+			}
+
+			int RtcEngineProxy::setSubscribeAudioWhitelistEx(agora::rtc::uid_t* uidList, int uidNumber, agora::rtc::RtcConnection const& connection) {
+				if (_rtcEngine != nullptr) {
+					return ((IRtcEngineEx*)_rtcEngine)->setSubscribeAudioWhitelistEx(uidList, uidNumber, connection);
+				}
+				return -ERROR_NULLPTR;
+			}
+
+			int RtcEngineProxy::setSubscribeVideoBlacklistEx(agora::rtc::uid_t* uidList, int uidNumber, agora::rtc::RtcConnection const& connection) {
+				if (_rtcEngine != nullptr) {
+					return ((IRtcEngineEx*)_rtcEngine)->setSubscribeVideoBlacklistEx(uidList, uidNumber, connection);
+				}
+				return -ERROR_NULLPTR;
+			}
+
+			int RtcEngineProxy::setSubscribeVideoWhitelistEx(agora::rtc::uid_t* uidList, int uidNumber, agora::rtc::RtcConnection const& connection) {
+				if (_rtcEngine != nullptr) {
+					return ((IRtcEngineEx*)_rtcEngine)->setSubscribeVideoWhitelistEx(uidList, uidNumber, connection);
+				}
+				return -ERROR_NULLPTR;
+			}
+
+			int RtcEngineProxy::setRemoteVideoSubscriptionOptionsEx(agora::rtc::uid_t uid, agora::rtc::VideoSubscriptionOptions const& options, agora::rtc::RtcConnection const& connection) {
 				if (_rtcEngine != nullptr) {
 					return ((IRtcEngineEx*)_rtcEngine)->setRemoteVideoSubscriptionOptionsEx(uid, options, connection);
 				}
 				return -ERROR_NULLPTR;
 			}
 
-			int RtcEngineProxy::setRemoteVoicePositionEx(uid_t uid, double pan, double gain, const RtcConnection& connection) {
+			int RtcEngineProxy::setRemoteVoicePositionEx(agora::rtc::uid_t uid, double pan, double gain, agora::rtc::RtcConnection const& connection) {
 				if (_rtcEngine != nullptr) {
 					return ((IRtcEngineEx*)_rtcEngine)->setRemoteVoicePositionEx(uid, pan, gain, connection);
 				}
 				return -ERROR_NULLPTR;
 			}
 
-			int RtcEngineProxy::setRemoteUserSpatialAudioParamsEx(uid_t uid, const agora::SpatialAudioParams& params, const RtcConnection& connection) {
+			int RtcEngineProxy::setRemoteUserSpatialAudioParamsEx(agora::rtc::uid_t uid, agora::SpatialAudioParams const& params, agora::rtc::RtcConnection const& connection) {
 				if (_rtcEngine != nullptr) {
 					return ((IRtcEngineEx*)_rtcEngine)->setRemoteUserSpatialAudioParamsEx(uid, params, connection);
 				}
 				return -ERROR_NULLPTR;
 			}
 
-			int RtcEngineProxy::setRemoteRenderModeEx(uid_t uid, media::base::RENDER_MODE_TYPE renderMode, VIDEO_MIRROR_MODE_TYPE mirrorMode, const RtcConnection& connection) {
+			int RtcEngineProxy::setRemoteRenderModeEx(agora::rtc::uid_t uid, media::base::RENDER_MODE_TYPE renderMode, agora::rtc::VIDEO_MIRROR_MODE_TYPE mirrorMode, agora::rtc::RtcConnection const& connection) {
 				if (_rtcEngine != nullptr) {
 					return ((IRtcEngineEx*)_rtcEngine)->setRemoteRenderModeEx(uid, renderMode, mirrorMode, connection);
 				}
 				return -ERROR_NULLPTR;
 			}
 
-			int RtcEngineProxy::enableLoopbackRecordingEx(const RtcConnection& connection, bool enabled, const char* deviceName) {
+			int RtcEngineProxy::enableLoopbackRecordingEx(agora::rtc::RtcConnection const& connection, bool enabled, char const* deviceName) {
 				if (_rtcEngine != nullptr) {
 					return ((IRtcEngineEx*)_rtcEngine)->enableLoopbackRecordingEx(connection, enabled, deviceName);
 				}
 				return -ERROR_NULLPTR;
 			}
 
-			CONNECTION_STATE_TYPE RtcEngineProxy::getConnectionStateEx(const RtcConnection& connection) {
+			agora::rtc::CONNECTION_STATE_TYPE RtcEngineProxy::getConnectionStateEx(agora::rtc::RtcConnection const& connection) {
 				if (_rtcEngine != nullptr) {
 					return ((IRtcEngineEx*)_rtcEngine)->getConnectionStateEx(connection);
 				}
-				return CONNECTION_STATE_TYPE::CONNECTION_STATE_FAILED;
+				return agora::rtc::CONNECTION_STATE_TYPE::CONNECTION_STATE_FAILED;
 			}
 
-			int RtcEngineProxy::enableEncryptionEx(const RtcConnection& connection, bool enabled, const EncryptionConfig& config) {
+			int RtcEngineProxy::enableEncryptionEx(agora::rtc::RtcConnection const& connection, bool enabled, agora::rtc::EncryptionConfig const& config) {
 				if (_rtcEngine != nullptr) {
 					return ((IRtcEngineEx*)_rtcEngine)->enableEncryptionEx(connection, enabled, config);
 				}
 				return -ERROR_NULLPTR;
 			}
 
-			int RtcEngineProxy::createDataStreamEx(int* streamId, bool reliable, bool ordered, const RtcConnection& connection) {
+			int RtcEngineProxy::createDataStreamEx(int* streamId, bool reliable, bool ordered, agora::rtc::RtcConnection const& connection) {
 				if (_rtcEngine != nullptr) {
 					return ((IRtcEngineEx*)_rtcEngine)->createDataStreamEx(streamId, reliable, ordered, connection);
 				}
 				return -ERROR_NULLPTR;
 			}
 
-			int RtcEngineProxy::createDataStreamEx(int* streamId, DataStreamConfig& config, const RtcConnection& connection) {
+			int RtcEngineProxy::createDataStreamEx(int* streamId, agora::rtc::DataStreamConfig& config, agora::rtc::RtcConnection const& connection) {
 				if (_rtcEngine != nullptr) {
 					return ((IRtcEngineEx*)_rtcEngine)->createDataStreamEx(streamId, config, connection);
 				}
 				return -ERROR_NULLPTR;
 			}
 
-			int RtcEngineProxy::sendStreamMessageEx(int streamId, const char* data, size_t length, const RtcConnection& connection) {
+			int RtcEngineProxy::sendStreamMessageEx(int streamId, char const* data, size_t length, agora::rtc::RtcConnection const& connection) {
 				if (_rtcEngine != nullptr) {
 					return ((IRtcEngineEx*)_rtcEngine)->sendStreamMessageEx(streamId, data, length, connection);
 				}
 				return -ERROR_NULLPTR;
 			}
 
-			int RtcEngineProxy::addVideoWatermarkEx(const char* watermarkUrl, const WatermarkOptions& options, const RtcConnection& connection) {
+			int RtcEngineProxy::addVideoWatermarkEx(char const* watermarkUrl, agora::rtc::WatermarkOptions const& options, agora::rtc::RtcConnection const& connection) {
 				if (_rtcEngine != nullptr) {
 					return ((IRtcEngineEx*)_rtcEngine)->addVideoWatermarkEx(watermarkUrl, options, connection);
 				}
 				return -ERROR_NULLPTR;
 			}
 
-			int RtcEngineProxy::clearVideoWatermarkEx(const RtcConnection& connection) {
+			int RtcEngineProxy::clearVideoWatermarkEx(agora::rtc::RtcConnection const& connection) {
 				if (_rtcEngine != nullptr) {
 					return ((IRtcEngineEx*)_rtcEngine)->clearVideoWatermarkEx(connection);
 				}
 				return -ERROR_NULLPTR;
 			}
 
-			int RtcEngineProxy::sendCustomReportMessageEx(const char* id, const char* category, const char* event, const char* label, int value, const RtcConnection& connection) {
+			int RtcEngineProxy::sendCustomReportMessageEx(char const* id, char const* category, char const* event, char const* label, int value, agora::rtc::RtcConnection const& connection) {
 				if (_rtcEngine != nullptr) {
 					return ((IRtcEngineEx*)_rtcEngine)->sendCustomReportMessageEx(id, category, event, label, value, connection);
 				}
 				return -ERROR_NULLPTR;
 			}
 
-			int RtcEngineProxy::enableAudioVolumeIndicationEx(int interval, int smooth, bool reportVad, const RtcConnection& connection) {
+			int RtcEngineProxy::enableAudioVolumeIndicationEx(int interval, int smooth, bool reportVad, agora::rtc::RtcConnection const& connection) {
 				if (_rtcEngine != nullptr) {
 					return ((IRtcEngineEx*)_rtcEngine)->enableAudioVolumeIndicationEx(interval, smooth, reportVad, connection);
 				}
 				return -ERROR_NULLPTR;
 			}
 
-			int RtcEngineProxy::getUserInfoByUserAccountEx(const char* userAccount, rtc::UserInfo* userInfo, const RtcConnection& connection) {
+			int RtcEngineProxy::getUserInfoByUserAccountEx(char const* userAccount, rtc::UserInfo* userInfo, agora::rtc::RtcConnection const& connection) {
 				if (_rtcEngine != nullptr) {
 					return ((IRtcEngineEx*)_rtcEngine)->getUserInfoByUserAccountEx(userAccount, userInfo, connection);
 				}
 				return -ERROR_NULLPTR;
 			}
 
-			int RtcEngineProxy::getUserInfoByUidEx(uid_t uid, rtc::UserInfo* userInfo, const RtcConnection& connection) {
+			int RtcEngineProxy::getUserInfoByUidEx(agora::rtc::uid_t uid, rtc::UserInfo* userInfo, agora::rtc::RtcConnection const& connection) {
 				if (_rtcEngine != nullptr) {
 					return ((IRtcEngineEx*)_rtcEngine)->getUserInfoByUidEx(uid, userInfo, connection);
 				}
@@ -2184,49 +2152,33 @@ namespace agora
 				return -ERROR_NULLPTR;
 			}
 
-			int RtcEngineProxy::enableDualStreamModeEx(VIDEO_SOURCE_TYPE sourceType, bool enabled, const SimulcastStreamConfig& streamConfig, const RtcConnection& connection) {
+			int RtcEngineProxy::enableDualStreamModeEx(agora::rtc::VIDEO_SOURCE_TYPE sourceType, bool enabled, agora::rtc::SimulcastStreamConfig const& streamConfig, agora::rtc::RtcConnection const& connection) {
 				if (_rtcEngine != nullptr) {
 					return ((IRtcEngineEx*)_rtcEngine)->enableDualStreamModeEx(sourceType, enabled, streamConfig, connection);
 				}
 				return -ERROR_NULLPTR;
 			}
 
-			int RtcEngineProxy::setSubscribeAudioBlacklistEx(uid_t* uidList, int uidNumber, const RtcConnection& connection)
-			{
-				return 0;
-			}
-
-			int RtcEngineProxy::setSubscribeAudioWhitelistEx(uid_t* uidList, int uidNumber, const RtcConnection& connection)
-			{
-				return 0;
-			}
-
-			int RtcEngineProxy::setSubscribeVideoBlacklistEx(uid_t* uidList, int uidNumber, const RtcConnection& connection)
-			{
-				return 0;
-			}
-
-			int RtcEngineProxy::setSubscribeVideoWhitelistEx(uid_t* uidList, int uidNumber, const RtcConnection& connection)
-			{
-				return 0;
-			}
-
-			int RtcEngineProxy::setDualStreamModeEx(VIDEO_SOURCE_TYPE sourceType, SIMULCAST_STREAM_MODE mode, const SimulcastStreamConfig& streamConfig, const RtcConnection& connection)
-			{
-				return 0;
-			}
-
-			int RtcEngineProxy::takeSnapshotEx(const RtcConnection& connection, uid_t uid, const char* filePath)
-			{
-				return 0;
-			}
-
-			/*int RtcEngineProxy::addPublishStreamUrlEx(const char* url, bool transcodingEnabled, const RtcConnection& connection) {
+			int RtcEngineProxy::setDualStreamModeEx(agora::rtc::VIDEO_SOURCE_TYPE sourceType, agora::rtc::SIMULCAST_STREAM_MODE mode, agora::rtc::SimulcastStreamConfig const& streamConfig, agora::rtc::RtcConnection const& connection) {
 				if (_rtcEngine != nullptr) {
-					return ((IRtcEngineEx*)_rtcEngine)->addPublishStreamUrlEx(url, transcodingEnabled, connection);
+					return ((IRtcEngineEx*)_rtcEngine)->setDualStreamModeEx(sourceType, mode, streamConfig, connection);
 				}
 				return -ERROR_NULLPTR;
-			}*/
+			}
+
+			int RtcEngineProxy::enableWirelessAccelerate(bool enabled) {
+				if (_rtcEngine != nullptr) {
+					return ((IRtcEngineEx*)_rtcEngine)->enableWirelessAccelerate(enabled);
+				}
+				return -ERROR_NULLPTR;
+			}
+
+			int RtcEngineProxy::takeSnapshotEx(agora::rtc::RtcConnection const& connection, agora::rtc::uid_t uid, char const* filePath) {
+				if (_rtcEngine != nullptr) {
+					return ((IRtcEngineEx*)_rtcEngine)->takeSnapshotEx(connection, uid, filePath);
+				}
+				return -ERROR_NULLPTR;
+			}
 		}
 	}
 }
