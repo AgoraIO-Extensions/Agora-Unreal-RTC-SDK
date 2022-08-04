@@ -55,6 +55,6 @@ unzip -d "$CUR_DIR"/temp/win/ "$CUR_DIR"/temp/win/*.zip
 #--------------------------------------
 # Delete zip files
 #--------------------------------------
-rm "$CUR_DIR"/temp/ios/iris_*.zip "$CUR_DIR"/temp/android/iris_*.zip "$CUR_DIR"/temp/mac/iris_*.zip "$CUR_DIR"/temp/win/*.zip
+rm "$CUR_DIR"/temp/ios/*.zip "$CUR_DIR"/temp/android/*.zip "$CUR_DIR"/temp/mac/*.zip "$CUR_DIR"/temp/win/*.zip
 
 exit 0
