@@ -1175,14 +1175,14 @@ namespace agora
 				if (_rtcEngine != nullptr) {
 					return _rtcEngine->createCustomVideoTrack();
 				}
-				return NULL;
+				return 0;
 			}
 
 			agora::rtc::video_track_id_t RtcEngineProxy::createCustomEncodedVideoTrack(agora::rtc::SenderOptions const& sender_option) {
 				if (_rtcEngine != nullptr) {
 					return _rtcEngine->createCustomEncodedVideoTrack(sender_option);
 				}
-				return NULL;
+				return 0;
 			}
 
 			int RtcEngineProxy::destroyCustomVideoTrack(agora::rtc::video_track_id_t video_track_id) {
@@ -1374,6 +1374,7 @@ namespace agora
 				return -ERROR_NULLPTR;
 			}
 #endif 
+#if defined(_WIN32) || (defined(__APPLE__) && TARGET_OS_MAC && !TARGET_OS_IPHONE)
 			int RtcEngineProxy::startScreenCaptureByWindowId(agora::view_t windowId, agora::rtc::Rectangle const& regionRect, agora::rtc::ScreenCaptureParameters const& captureParams) {
 				if (_rtcEngine != nullptr) {
 					return _rtcEngine->startScreenCaptureByWindowId(windowId, regionRect, captureParams);
@@ -1408,6 +1409,7 @@ namespace agora
 				}
 				return -ERROR_NULLPTR;
 			}
+#endif 
 #if defined(__ANDROID__)
 			int RtcEngineProxy::startScreenCapture(agora::rtc::ScreenCaptureParameters2 const& captureParams) {
 				if (_rtcEngine != nullptr) {

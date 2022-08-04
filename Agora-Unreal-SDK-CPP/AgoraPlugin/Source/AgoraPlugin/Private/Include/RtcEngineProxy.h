@@ -213,7 +213,6 @@ namespace agora
 				virtual int setCameraExposurePosition(float positionXinView, float positionYinView) override;
 #if defined(__APPLE__)
 				virtual bool isCameraAutoExposureFaceModeSupported() override;
-
 				virtual int setCameraAutoExposureFaceModeEnabled(bool enabled) override;
 #endif
 				virtual int setDefaultAudioRouteToSpeakerphone(bool defaultToSpeaker) override;
@@ -229,22 +228,26 @@ namespace agora
 #if defined(_WIN32) || (defined(__APPLE__) && !TARGET_OS_IPHONE && TARGET_OS_MAC)
 				virtual int startScreenCaptureByDisplayId(uint32_t displayId, const Rectangle& regionRect, const ScreenCaptureParameters& captureParams) override;
 #endif
+#if defined(_WIN32)
 				virtual int startScreenCaptureByScreenRect(const Rectangle& screenRect, const Rectangle& regionRect, const ScreenCaptureParameters& captureParams) override;
+#endif
 #if defined(__ANDROID__)
 				virtual int getAudioDeviceInfo(DeviceInfo& deviceInfo) override;
 #endif
+#if defined(_WIN32) || (defined(__APPLE__) && TARGET_OS_MAC && !TARGET_OS_IPHONE)
 				virtual int startScreenCaptureByWindowId(view_t windowId, const Rectangle& regionRect, const ScreenCaptureParameters& captureParams) override;
 				virtual int setScreenCaptureContentHint(VIDEO_CONTENT_HINT contentHint) override;
 				virtual int setScreenCaptureScenario(SCREEN_SCENARIO_TYPE screenScenario) override;
 				virtual int updateScreenCaptureRegion(const Rectangle& regionRect) override;
 				virtual int updateScreenCaptureParameters(const ScreenCaptureParameters& captureParams) override;
+#endif
 #if defined(__ANDROID__)
 				virtual int startScreenCapture(const ScreenCaptureParameters2& captureParams) override;
 				virtual int updateScreenCapture(const ScreenCaptureParameters2& captureParams) override;
 #endif
 #if defined(_WIN32) || (defined(__APPLE__) && TARGET_OS_MAC && !TARGET_OS_IPHONE) || defined(__ANDROID__)
 				virtual int stopScreenCapture() override;
-#endif  // _WIN32 || (__APPLE__ && !TARGET_OS_IPHONE && TARGET_OS_MAC) || __ANDROID__
+#endif
 				virtual int getCallId(agora::util::AString& callId) override;
 				virtual int rate(const char* callId, int rating, const char* description) override;
 				virtual int complain(const char* callId, const char* description) override;
