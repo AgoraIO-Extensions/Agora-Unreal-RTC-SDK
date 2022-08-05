@@ -39,7 +39,7 @@ IOS_SRC_PATH=$CI_DIR/temp/ios/
 MAC_SRC_PATH="$CI_DIR"/temp/mac/
 WIN_SRC_PATH="$CI_DIR"/temp/win/
 cd temp || exit 1
-git clone -b "$DEMO_BRANCH" git@github.com:oneSitDown/agora-plugin.git
+#git clone -b "$DEMO_BRANCH" git@github.com:oneSitDown/agora-plugin.git
 cd "$CI_DIR" || exit 1
 echo "[Unreal CI] finish preparing resources"
 
