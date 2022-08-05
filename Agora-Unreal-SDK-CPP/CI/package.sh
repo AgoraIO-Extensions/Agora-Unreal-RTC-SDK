@@ -6,13 +6,13 @@
 #
 #  $2 The branch name of API-Example
 #
+#  $3 url_windows (optional)
+# 
 #  $4 url_mac (optional)
 #
-#  $3 url_windows (optional)
+#  $5 url_android (optional)
 #
 #  $6 url_ios (optional)
-#
-#  $5 url_android (optional)
 #
 #============================================================================== 
 
@@ -22,9 +22,9 @@ set -ex
 #--------------------------------------
 # Prepare all the required resources
 #--------------------------------------
-ROOT_DIR=$(pwd)/Agora-Unreal-RTC-SDK
-CI_DIR=$(pwd)/Agora-Unreal-RTC-SDK/CI
-Template_DIR=$(pwd)/Agora-Unreal-RTC-SDK/AgoraPlugin
+ROOT_DIR=$(pwd)/Agora-Unreal-SDK-CPP
+CI_DIR=$(pwd)/Agora-Unreal-SDK-CPP/CI
+Template_DIR=$(pwd)/Agora-Unreal-SDK-CPP/AgoraPlugin
 PLUGIN_NAME="AgoraPlugin"
 SDK_TYPE=$1
 DEMO_BRANCH=$2
