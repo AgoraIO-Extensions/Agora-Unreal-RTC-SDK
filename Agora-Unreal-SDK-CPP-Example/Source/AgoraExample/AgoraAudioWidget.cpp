@@ -6,6 +6,8 @@
 
 void UAgoraAudioWidget::InitAgoraWidget(FString APP_ID, FString TOKEN, FString CHANNEL_NAME)
 {
+	CheckAndroidPermission();
+
 	InitAgoraEngine(APP_ID, TOKEN, CHANNEL_NAME);
 
 	SetUpUIEvent();
@@ -52,12 +54,12 @@ void UAgoraAudioWidget::CheckAndroidPermission()
 void UAgoraAudioWidget::OnJoinButtonClick() {
 	UE_LOG(LogTemp, Warning, TEXT("UVideoWidget OnJoinButtonClick ======"));
 
-	CheckAndroidPermission();
-
 	SetButtonClickAble(false);
 
-	RtcEngineProxy->enableVideo();
+	RtcEngineProxy->enableAudio();
+	RtcEngineProxy->setClientRole(agora::rtc::CLIENT_ROLE_TYPE::CLIENT_ROLE_BROADCASTER);
 	RtcEngineProxy->joinChannel(TCHAR_TO_ANSI(*Token), TCHAR_TO_ANSI(*ChannelName), "", 0);
+
 }
 
 void UAgoraAudioWidget::OnLeaveButtonClick() {

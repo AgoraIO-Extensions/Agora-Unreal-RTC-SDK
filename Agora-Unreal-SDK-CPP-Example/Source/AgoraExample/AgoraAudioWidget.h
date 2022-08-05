@@ -28,7 +28,6 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget))
 	UButton* LeaveBtn = nullptr;
 
-	UFUNCTION(BlueprintCallable)
 	void CheckAndroidPermission();
 
 	UFUNCTION(BlueprintCallable)

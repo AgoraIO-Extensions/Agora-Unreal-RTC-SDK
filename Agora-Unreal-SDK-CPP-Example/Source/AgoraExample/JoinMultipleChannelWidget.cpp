@@ -10,8 +10,6 @@ void UJoinMultipleChannelWidget::InitAgoraWidget(FString APP_ID, FString TOKEN, 
 
 	InitAgoraEngine(APP_ID, TOKEN, CHANNEL_NAME);
 
-	JoinChannel();
-
 	PrepareScreenCapture();
 
 	SetUpUIEvent();
@@ -19,8 +17,12 @@ void UJoinMultipleChannelWidget::InitAgoraWidget(FString APP_ID, FString TOKEN, 
 
 void UJoinMultipleChannelWidget::SetUpUIEvent()
 {
+	StartScreenShrareBtn->SetVisibility(ESlateVisibility::Collapsed);
+#if PLATFORM_WINDOWS || PLATFORM_MAC
 	StartScreenShrareBtn->OnClicked.AddDynamic(this, &UJoinMultipleChannelWidget::StartScreenShrareClick);
 	StartScreenShrareBtn->SetVisibility(ESlateVisibility::Visible);
+#endif
+	JoinBtn->OnClicked.AddDynamic(this, &UJoinMultipleChannelWidget::JoinChannelClick);
 }
 
 void UJoinMultipleChannelWidget::CheckAndroidPermission()
@@ -126,9 +128,8 @@ void UJoinMultipleChannelWidget::PrepareScreenCapture()
 }
 
 
-void UJoinMultipleChannelWidget::JoinChannel()
+void UJoinMultipleChannelWidget::JoinChannelClick()
 {
-#if defined(_WIN32) || (defined(__APPLE__) && !TARGET_OS_IPHONE && TARGET_OS_MAC)
 	UE_LOG(LogTemp, Warning, TEXT("UVideoWidget OnJoinButtonClick ======"));
 
 	RtcEngineProxy->enableAudio();
@@ -138,15 +139,19 @@ void UJoinMultipleChannelWidget::JoinChannel()
 	rtcConnection.channelId = ChannelName.c_str();
 	rtcConnection.localUid = Uid1;
 	agora::rtc::ChannelMediaOptions options;
+
 	options.autoSubscribeAudio = true;
 	options.autoSubscribeVideo = true;
-	options.publishMicrophoneTrack = true;
 	options.publishCameraTrack = true;
+#if PLATFORM_WINDOWS || PLATFORM_MAC
 	options.publishScreenTrack = false;
+#elif PLATFORM_ANDROID
+	options.publishScreenCaptureAudio = false;
+	options.publishScreenCaptureVideo = false;
+#endif
 	options.enableAudioRecordingOrPlayout = true;
 	options.clientRoleType = agora::rtc::CLIENT_ROLE_TYPE::CLIENT_ROLE_BROADCASTER;
 	((agora::rtc::IRtcEngineEx*)RtcEngineProxy)->joinChannelEx(Token.c_str(), rtcConnection, options, nullptr);
-#endif
 }
 
 void UJoinMultipleChannelWidget::SelectValueCallBack(FString SelectedItem, ESelectInfo::Type SelectionType)

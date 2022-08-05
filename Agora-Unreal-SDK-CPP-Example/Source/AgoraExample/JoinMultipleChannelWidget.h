@@ -36,8 +36,14 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget))
 	UButton* StartScreenShrareBtn = nullptr;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget))
+	UButton* JoinBtn = nullptr;
+
 	UFUNCTION(BlueprintCallable)
 	void StartScreenShrareClick();
+
+	UFUNCTION(BlueprintCallable)
+	void JoinChannelClick();
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget))
 	UComboBoxString* ComboBoxDisplayId = nullptr;
@@ -82,8 +88,6 @@ private:
 	void InitAgoraEngine(FString APP_ID, FString TOKEN, FString CHANNEL_NAME);
 
 	void PrepareScreenCapture();
-
-	void JoinChannel();
 
 	void ScreenShareJoinChannel();
 

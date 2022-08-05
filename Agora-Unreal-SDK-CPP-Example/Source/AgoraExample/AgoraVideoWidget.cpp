@@ -45,9 +45,6 @@ void UAgoraVideoWidget::SetUpUIEvent() {
 void UAgoraVideoWidget::OnJoinButtonClick() {
 
 	UE_LOG(LogTemp, Warning, TEXT("UVideoWidget OnJoinButtonClick ======"));
-#if PLATFORM_ANDROID
-	
-#endif
 	RtcEngineProxy->enableAudio();
 	RtcEngineProxy->enableVideo();
 	RtcEngineProxy->joinChannel(Token.c_str(), ChannelName.c_str(), "", 0);

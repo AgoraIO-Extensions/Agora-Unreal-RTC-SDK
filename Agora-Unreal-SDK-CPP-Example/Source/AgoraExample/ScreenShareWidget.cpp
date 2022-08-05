@@ -54,10 +54,10 @@ void UScreenShareWidget::UpdateChannelMediaOptions()
 {
 #if PLATFORM_WINDOWS || PLATFORM_ANDROID || PLATFORM_MAC
 	agora::rtc::ChannelMediaOptions options;
-#if PLATFORM_WINDOWS || PLATFORM_MAC
 	options.autoSubscribeAudio = true;
 	options.autoSubscribeVideo = true;
 	options.publishCameraTrack = false;
+#if PLATFORM_WINDOWS || PLATFORM_MAC
 	options.publishScreenTrack = true;
 #elif PLATFORM_ANDROID
 	options.publishScreenCaptureAudio = true;
@@ -75,8 +75,6 @@ void UScreenShareWidget::JoinChannel() {
 	RtcEngineProxy->enableAudio();
 	RtcEngineProxy->enableVideo();
 	auto ret = RtcEngineProxy->joinChannel(TCHAR_TO_ANSI(*Token), TCHAR_TO_ANSI(*ChannelName),"",0);
-
-	UE_LOG(LogTemp, Warning, TEXT("UVideoWidget JoinChannel ====== %s"), ret);
 }
 
 void UScreenShareWidget::OnLeaveButtonClick() {
@@ -178,9 +176,10 @@ void UScreenShareWidget::SelectValueCallBack(FString SelectedItem, ESelectInfo::
 
 void UScreenShareWidget::onJoinChannelSuccess(const char* channel, agora::rtc::uid_t uid, int elapsed)
 {
-	UE_LOG(LogTemp, Warning, TEXT("JoinChannelSuccess"));
+
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
+		UE_LOG(LogTemp, Warning, TEXT("JoinChannelSuccess"));
 		agora::rtc::VideoCanvas videoCanvas;
 		videoCanvas.view = LocalVideo;
 		videoCanvas.uid = 0;
