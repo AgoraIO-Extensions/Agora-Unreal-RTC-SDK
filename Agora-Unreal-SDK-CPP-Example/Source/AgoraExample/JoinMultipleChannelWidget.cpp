@@ -143,6 +143,7 @@ void UJoinMultipleChannelWidget::JoinChannelClick()
 	options.autoSubscribeAudio = true;
 	options.autoSubscribeVideo = true;
 	options.publishCameraTrack = true;
+	options.publishMicrophoneTrack = true;
 #if PLATFORM_WINDOWS || PLATFORM_MAC
 	options.publishScreenTrack = false;
 #elif PLATFORM_ANDROID
@@ -167,16 +168,20 @@ void UJoinMultipleChannelWidget::SelectValueCallBack(FString SelectedItem, ESele
 void UJoinMultipleChannelWidget::ScreenShareJoinChannel()
 {
 	UE_LOG(LogTemp, Warning, TEXT("UVideoWidget JoinChannel ======"));
-#if defined(_WIN32) || (defined(__APPLE__) && !TARGET_OS_IPHONE && TARGET_OS_MAC)
 	RtcEngineProxy->enableAudio();
 	RtcEngineProxy->enableVideo();
 
 	agora::rtc::ChannelMediaOptions options;
-	options.autoSubscribeAudio = true;
-	options.autoSubscribeVideo = true;
-	options.publishMicrophoneTrack = true;
+	options.autoSubscribeAudio = false;
+	options.autoSubscribeVideo = false;
+	options.publishMicrophoneTrack = false;
 	options.publishCameraTrack = false;
+#if PLATFORM_WINDOWS || PLATFORM_MAC
 	options.publishScreenTrack = true;
+#elif PLATFORM_ANDROID
+	options.publishScreenCaptureAudio = true;
+	options.publishScreenCaptureVideo = true;
+#endif
 	options.clientRoleType = agora::rtc::CLIENT_ROLE_TYPE::CLIENT_ROLE_BROADCASTER;
 
 	RtcConnection rtcConnection;
@@ -184,7 +189,6 @@ void UJoinMultipleChannelWidget::ScreenShareJoinChannel()
 	rtcConnection.localUid = Uid2;
 
 	((agora::rtc::IRtcEngineEx*)RtcEngineProxy)->joinChannelEx(Token.c_str(), rtcConnection, options, nullptr);
-#endif
 }
 
 void UJoinMultipleChannelWidget::onJoinChannelSuccess(const RtcConnection& connection, int elapsed)
