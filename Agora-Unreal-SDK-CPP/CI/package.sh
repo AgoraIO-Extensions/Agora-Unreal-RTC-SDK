@@ -33,7 +33,7 @@ DEMO_BRANCH=$2
 #echo "[Unreal CI] start preparing resources"
 cd "$CI_DIR" || exit 1
 mkdir temp
-./download_plugin.sh "$SDK_TYPE" "$3" "$4" "$5" "$6"
+sh ./download_plugin.sh "$SDK_TYPE" "$3" "$4" "$5" "$6"
 ANDROID_SRC_PATH="$CI_DIR"/temp/android/
 IOS_SRC_PATH=$CI_DIR/temp/ios/
 MAC_SRC_PATH="$CI_DIR"/temp/mac/
