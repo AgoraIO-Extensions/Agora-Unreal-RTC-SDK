@@ -37,8 +37,8 @@ void UAgoraVideoWidget::SetUpUIEvent() {
 	LeaveBtn->OnClicked.AddDynamic(this, &UAgoraVideoWidget::OnLeaveButtonClick);
 	PreviousBtn->SetIsEnabled(false);
 	NextBtn->SetIsEnabled(false);
-	PreviousBtn->OnClicked.AddDynamic(this, &UAgoraVideoWidget::onPreviousButtonClick);
-	NextBtn->OnClicked.AddDynamic(this, &UAgoraVideoWidget::onNextButtonClick);
+	PreviousBtn->OnClicked.AddDynamic(this, &UAgoraVideoWidget::OnPreviousButtonClick);
+	NextBtn->OnClicked.AddDynamic(this, &UAgoraVideoWidget::OnNextButtonClick);
 }
 
 
@@ -52,7 +52,7 @@ void UAgoraVideoWidget::OnJoinButtonClick() {
 
 }
 
-void UAgoraVideoWidget::onPreviousButtonClick()
+void UAgoraVideoWidget::OnPreviousButtonClick()
 {
 	if (RemoteUserIdArray.Num() == 1 || CurrentRemoteUid == 0)
 	{
@@ -64,7 +64,7 @@ void UAgoraVideoWidget::onPreviousButtonClick()
 	NextBtn->SetIsEnabled(true);
 }
 
-void UAgoraVideoWidget::onNextButtonClick()
+void UAgoraVideoWidget::OnNextButtonClick()
 {
 	if (RemoteUserIdArray.Num() == 1 || CurrentRemoteUid == RemoteUserIdArray.Num() - 1)
 	{

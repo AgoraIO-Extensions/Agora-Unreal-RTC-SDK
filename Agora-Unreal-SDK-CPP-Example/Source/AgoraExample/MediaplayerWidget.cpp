@@ -137,6 +137,8 @@ void UMediaplayerWidget::OnOpenButtonClick()
 	}
 	else
 	{
+
+#if PLATFORM_WINDOWS
 		FString MPKFilepath("FileMediaSource'/Game/Movies/MPK.MPK'");
 
 		UFileMediaSource* FileMediaSource = LoadObject<UFileMediaSource>(NULL, *MPKFilepath);
@@ -144,6 +146,9 @@ void UMediaplayerWidget::OnOpenButtonClick()
 		path = TCHAR_TO_ANSI(*FileMediaSource->GetFullPath());
 
 		UE_LOG(LogTemp, Warning, TEXT("OnOpenButtonClick %s"), *FileMediaSource->GetFullPath());
+#elif
+		GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Black, FString::Printf(TEXT("Please add absolute path to path")));
+#endif
 	}
 	auto ret = MediaPlayer->open(path, 0);
 

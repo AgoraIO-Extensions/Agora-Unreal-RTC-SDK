@@ -50,10 +50,10 @@ public:
 	void OnJoinButtonClick();
 
 	UFUNCTION(BlueprintCallable)
-	void onPreviousButtonClick();
+	void OnPreviousButtonClick();
 
 	UFUNCTION(BlueprintCallable)
-	void onNextButtonClick();
+	void OnNextButtonClick();
 
 	void CheckAndroidPermission();
 
