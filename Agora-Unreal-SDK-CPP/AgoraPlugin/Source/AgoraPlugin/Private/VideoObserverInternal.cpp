@@ -17,7 +17,7 @@ VideoObserverInternal::~VideoObserverInternal()
 }
 
 bool VideoObserverInternal::onCaptureVideoFrame(VideoFrame& videoFrame)
-{ 
+{
     VideoFrameIdentity config{VIDEO_SOURCE_CAMERA_PRIMARY, 0, ""};
     setVideoFrame(&config, &videoFrame);
     if (UserObserver != nullptr) UserObserver->onCaptureVideoFrame(videoFrame);
@@ -102,7 +102,7 @@ agora::media::base::VIDEO_PIXEL_FORMAT VideoObserverInternal::getVideoFormatPref
 
 bool VideoObserverInternal::getRotationApplied()
 {
-    return false;
+    return true;
 }
 
 bool VideoObserverInternal::getMirrorApplied()
