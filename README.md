@@ -6,7 +6,7 @@ The Agora-Unreal-SDK contains two directory.
 
 ## Agora-Unreal-SDK-CPP-Example
 
-It contains demo project of Agora Unreal CPP SDK . You can run the demo project according to the README in Agora-Unreal-SDK-CPP-NG/Agora-Unreal-SDK-CPP-Example/README.md
+It contains demo project of Agora Unreal CPP SDK . You can run the demo project according to the README in Agora-Unreal-SDK-CPP-Example/README.md
 
 ## Agora-Unreal-SDK-CPP
 
