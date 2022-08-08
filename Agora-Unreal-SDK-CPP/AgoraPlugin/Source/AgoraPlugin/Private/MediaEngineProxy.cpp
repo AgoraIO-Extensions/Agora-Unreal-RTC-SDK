@@ -12,33 +12,33 @@ namespace rtc
 namespace ue
 {
 
-MediaEngineProxy::MediaEngineProxy(IRtcEngine* engine)
+MediaEngineProxy::MediaEngineProxy(IRtcEngine* Engine)
 {
-	if (!_agoraMediaEngine) {
-		engine->queryInterface(agora::rtc::AGORA_IID_MEDIA_ENGINE,
-			(void**)&_agoraMediaEngine);
+	if (!AgoraMediaEngine) {
+		Engine->queryInterface(agora::rtc::AGORA_IID_MEDIA_ENGINE,
+			(void**)&AgoraMediaEngine);
 	}
 
-	_videoObserver = new VideoObserverInternal(nullptr, DataManager::getInstance()->getCacheManager());
-	_agoraMediaEngine->registerVideoFrameObserver(_videoObserver);
+	VideoObserver = new VideoObserverInternal(nullptr, DataManager::getInstance()->getCacheManager());
+	AgoraMediaEngine->registerVideoFrameObserver(VideoObserver);
 }
 
 MediaEngineProxy::~MediaEngineProxy()
 {
-	if (_agoraMediaEngine)
+	if (AgoraMediaEngine)
 	{
-		_agoraMediaEngine->release();
-		_agoraMediaEngine = nullptr;
+		AgoraMediaEngine->release();
+		AgoraMediaEngine = nullptr;
 	}
 
-	if (_videoObserver) {
-		delete(_videoObserver);
+	if (VideoObserver) {
+		delete(VideoObserver);
 	}
 }
 
-void MediaEngineProxy::registerVideoFrameObserver(media::IVideoFrameObserver* observer)
+void MediaEngineProxy::registerVideoFrameObserver(media::IVideoFrameObserver* Observer)
 {
-	_videoObserver->registerVideoFrameObserver(observer);
+	VideoObserver->registerVideoFrameObserver(Observer);
 }
 
 }

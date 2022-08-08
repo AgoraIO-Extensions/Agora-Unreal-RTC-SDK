@@ -24,9 +24,9 @@ namespace agora {
 
                 ~VideoRenderManager();
 
-                void setRenderImage(UImage* renderImage, unsigned int uid, const char* channelId, VIDEO_SOURCE_TYPE type);
+                void setRenderImage(UImage* RenderImage, unsigned int Uid, const char* ChannelId, VIDEO_SOURCE_TYPE SourceType);
 
-                void releaseVideoRender(unsigned int uid, const char* channelId, VIDEO_SOURCE_TYPE type);
+                void releaseVideoRender(unsigned int Uid, const char* ChannelId, VIDEO_SOURCE_TYPE SourceType);
 
                 void releaseAllVideoRender();
 
@@ -44,11 +44,11 @@ namespace agora {
                 virtual TStatId GetStatId() const override;
 
             private:
-                std::mutex videoRenderMutex_;
+                std::mutex VideoRenderMutex;
 
-                std::map<VideoFrameIdentity, std::shared_ptr<VideoRender>> videoRenderMap_;
+                std::map<VideoFrameIdentity, std::shared_ptr<VideoRender>> VideoRenderMap;
 
-                std::map<VideoFrameIdentity, std::shared_ptr<VideoRender>>::iterator videoRenderIter;
+                std::map<VideoFrameIdentity, std::shared_ptr<VideoRender>>::iterator VideoRenderIter;
             };
 
         }

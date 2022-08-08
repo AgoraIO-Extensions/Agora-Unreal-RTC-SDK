@@ -16,16 +16,16 @@ using namespace agora::media;
 class MediaEngineProxy{
 
 public:
-	MediaEngineProxy(IRtcEngine* engine); 
+	MediaEngineProxy(IRtcEngine* Engine); 
 
 	~MediaEngineProxy();
 
 public:
-	void registerVideoFrameObserver(media::IVideoFrameObserver* observer);
+	void registerVideoFrameObserver(media::IVideoFrameObserver* Observer);
 
 private:
-	VideoObserverInternal* _videoObserver;
-	IMediaEngine* _agoraMediaEngine = nullptr;
+	VideoObserverInternal* VideoObserver;
+	IMediaEngine* AgoraMediaEngine = nullptr;
 };
 
 }

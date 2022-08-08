@@ -16,52 +16,52 @@ namespace agora {
 
             void VideoRenderManager::Tick(float DeltaTime)
             {
-                for (videoRenderIter = videoRenderMap_.begin(); videoRenderIter != videoRenderMap_.end(); videoRenderIter++)
+                for (VideoRenderIter = VideoRenderMap.begin(); VideoRenderIter != VideoRenderMap.end(); VideoRenderIter++)
                 {
-                    if (videoRenderIter->second!=nullptr)
+                    if (VideoRenderIter->second!=nullptr)
                     {
-                        videoRenderIter->second->onTick();
+                        VideoRenderIter->second->onTick();
                     }
                 }
             }
 
-            void VideoRenderManager::setRenderImage(UImage* renderImage, unsigned int uid, const char* channelId, VIDEO_SOURCE_TYPE type)
+            void VideoRenderManager::setRenderImage(UImage* RenderImage, unsigned int Uid, const char* ChannelId, VIDEO_SOURCE_TYPE SourceType)
             {
-                VideoFrameIdentity videoFrameId;
-                videoFrameId.channel = channelId;
-                videoFrameId.id = uid;
-                videoFrameId.type = type;
+                VideoFrameIdentity VideoFrameId;
+                VideoFrameId.Channel = ChannelId;
+                VideoFrameId.Id = Uid;
+                VideoFrameId.Type = SourceType;
 
-                std::lock_guard<std::mutex> lock(videoRenderMutex_);
-                auto it = videoRenderMap_.find(videoFrameId);
-                if (it == videoRenderMap_.end()) {
+                std::lock_guard<std::mutex> lock(VideoRenderMutex);
+                auto it = VideoRenderMap.find(VideoFrameId);
+                if (it == VideoRenderMap.end()) {
                     std::shared_ptr<VideoRender> videoRender = std::make_shared<VideoRender>(DataManager::getInstance()->getCacheManager());
-                    videoRenderMap_[videoFrameId] = videoRender;
-                    videoRender->enableVideoFrameIdentity(renderImage, videoFrameId);
+                    VideoRenderMap[VideoFrameId] = videoRender;
+                    videoRender->enableVideoFrameIdentity(RenderImage, VideoFrameId);
                 }
                 else {
-                    it->second->enableVideoFrameIdentity(renderImage, videoFrameId);
+                    it->second->enableVideoFrameIdentity(RenderImage, VideoFrameId);
                 }
             }
 
-            void VideoRenderManager::releaseVideoRender(unsigned int uid, const char* channelId, VIDEO_SOURCE_TYPE type)
+            void VideoRenderManager::releaseVideoRender(unsigned int Uid, const char* ChannelId, VIDEO_SOURCE_TYPE SourceType)
             {
-                VideoFrameIdentity videoFrameId;
-                videoFrameId.channel = channelId;
-                videoFrameId.id = uid;
-                videoFrameId.type = type;
-                std::lock_guard<std::mutex> lock(videoRenderMutex_);
-                auto it = videoRenderMap_.find(videoFrameId);
-                if (it != videoRenderMap_.end()) {
-                    videoRenderMap_[videoFrameId].reset();
-                    videoRenderMap_.erase(it);
+                VideoFrameIdentity VideoFrameId;
+                VideoFrameId.Channel = ChannelId;
+                VideoFrameId.Id = Uid;
+                VideoFrameId.Type = SourceType;
+                std::lock_guard<std::mutex> lock(VideoRenderMutex);
+                auto it = VideoRenderMap.find(VideoFrameId);
+                if (it != VideoRenderMap.end()) {
+                    VideoRenderMap[VideoFrameId].reset();
+                    VideoRenderMap.erase(it);
                 }
             }
 
             void VideoRenderManager::releaseAllVideoRender()
             {
-                std::lock_guard<std::mutex> lock(videoRenderMutex_);
-                videoRenderMap_.clear();
+                std::lock_guard<std::mutex> lock(VideoRenderMutex);
+                VideoRenderMap.clear();
             }
 
             TStatId VideoRenderManager::GetStatId() const

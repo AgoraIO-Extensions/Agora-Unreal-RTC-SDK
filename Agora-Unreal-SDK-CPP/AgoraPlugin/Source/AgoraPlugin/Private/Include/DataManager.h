@@ -13,7 +13,7 @@ public:
 	ICacheManager* getCacheManager();
 
 public:
-	ICacheManager* cache_;
+	ICacheManager* Cache;
 };
 
 }

@@ -13,34 +13,34 @@ namespace agora {
 namespace rtc {
 namespace ue {
 
-using namespace media;
-using VideoFrame = media::IVideoFrameObserver::VideoFrame;
+	using namespace media;
+	using VideoFrame = media::IVideoFrameObserver::VideoFrame;
 
-struct FramesInfo
-{
-	VideoFrame* swipFrame;
-	VideoFrame* currentFrame;
-	bool isFresh=false;
-};
+	struct FramesInfo
+	{
+		VideoFrame* SwipFrame;
+		VideoFrame* CurrentFrame;
+		bool bIsFresh = false;
+	};
 
-typedef std::map<VideoFrameIdentity, bool> MapStatus;
-typedef std::map<VideoFrameIdentity, FramesInfo* > VideoFrameMap;
+	typedef std::map<VideoFrameIdentity, bool> MapStatus;
+	typedef std::map<VideoFrameIdentity, FramesInfo* > VideoFrameMap;
 
-class CacheManagerImpl : public ICacheManager
-{
-public:
-	virtual void enableVideoFrameObserver(const VideoFrameIdentity *identity) override;
-	virtual void disableVideoFrameObserver(const VideoFrameIdentity *identity) override;
-	virtual int pushVideo(const VideoFrameIdentity *identity, VideoFrame* frame) override;
-	virtual int popVideo(const VideoFrameIdentity *identity, VideoFrame*& frame) override;
-	virtual void clear(const VideoFrameIdentity *identity) override;
-	virtual void clearAll() override;
-	void swap(VideoFrame*& swipFrame, VideoFrame*& currentFrame);
-private:
-	std::recursive_mutex mutex_;
-	MapStatus mapStatus_;
-	VideoFrameMap data_map_;
-};
+	class CacheManagerImpl : public ICacheManager
+	{
+	public:
+		virtual void enableVideoFrameObserver(const VideoFrameIdentity* Identity) override;
+		virtual void disableVideoFrameObserver(const VideoFrameIdentity* Identity) override;
+		virtual int pushVideo(const VideoFrameIdentity* Identity, VideoFrame* Frame) override;
+		virtual int popVideo(const VideoFrameIdentity* Identity, VideoFrame*& Frame) override;
+		virtual void clear(const VideoFrameIdentity* Identity) override;
+		virtual void clearAll() override;
+		void swap(VideoFrame*& SwipFrame, VideoFrame*& CurrentFrame);
+	private:
+		std::recursive_mutex Mutex;
+		MapStatus CacheMapStatus;
+		VideoFrameMap DataMap;
+	};
 
 }
 }

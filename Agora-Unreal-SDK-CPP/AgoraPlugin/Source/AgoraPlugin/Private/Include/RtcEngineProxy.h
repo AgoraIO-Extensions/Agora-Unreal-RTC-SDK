@@ -22,15 +22,15 @@ namespace agora
 			{
 			private:
 
-				IRtcEngine* _rtcEngine;
-				std::unique_ptr<MediaEngineProxy> _mediaEngineProxy;
-				std::unique_ptr<VideoRenderManager> _videoRenderMgr;
+				IRtcEngine* RtcEngine;
+				std::unique_ptr<MediaEngineProxy> MediaProxy;
+				std::unique_ptr<VideoRenderManager> VideoRenderMgr;
 
 			public:
 
 				RtcEngineProxy();
 
-				util::AutoPtr<agora::media::IMediaEngine> media_engine;
+				util::AutoPtr<agora::media::IMediaEngine> MediaEngine;
 
 				virtual int queryInterface(rtc::INTERFACE_ID_TYPE iid, void** inter) override;
 				virtual void release(bool sync = false) override;

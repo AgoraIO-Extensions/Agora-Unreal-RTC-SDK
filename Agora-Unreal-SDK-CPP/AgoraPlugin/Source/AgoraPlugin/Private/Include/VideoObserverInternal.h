@@ -65,8 +65,8 @@ private:
     void setVideoFrame(VideoFrameIdentity *identity, VideoFrame* frame);
 
 public:
-    ICacheManager* cacheManage;
-    media::IVideoFrameObserver* _user_observer;
+    ICacheManager* AacheManager;
+    media::IVideoFrameObserver* UserObserver;
 };
 
 }

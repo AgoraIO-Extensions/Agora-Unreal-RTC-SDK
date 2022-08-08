@@ -6,18 +6,18 @@ namespace ue {
 
 DataManager::DataManager()
 {
-	cache_ = createCacheManager();
+	Cache = createCacheManager();
 }
 
 DataManager* DataManager::getInstance()
 {
-	static DataManager inst;
-	return &inst;
+	static DataManager Inst;
+	return &Inst;
 }
 
 ICacheManager* DataManager::getCacheManager()
 {
-	return cache_;
+	return Cache;
 }
 
 }

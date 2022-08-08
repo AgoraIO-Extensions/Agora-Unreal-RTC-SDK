@@ -11,25 +11,25 @@ using VideoFrame = media::IVideoFrameObserver::VideoFrame;
 
 typedef struct VideoFrameIdentity {
 
-    VIDEO_SOURCE_TYPE type;
-    unsigned int id;
-    const char* channel;
+    VIDEO_SOURCE_TYPE Type;
+    unsigned int Id;
+    const char* Channel;
 
     bool operator <(const VideoFrameIdentity& other) const
     {
-        if (type < other.type)
+        if (Type < other.Type)
         {
             return true;
         }
-        else if (type == other.type)
+        else if (Type == other.Type)
         {
-            if (id < other.id)
+            if (Id < other.Id)
             {
                 return true;
             }
-            else if (id == other.id)
+            else if (Id == other.Id)
             {
-                if (strcmp(channel, other.channel) != 0)
+                if (strcmp(Channel, other.Channel) != 0)
                 {
                     return true;
                 }
@@ -44,11 +44,11 @@ class ICacheManager
 {
 public:
 	virtual ~ICacheManager() {}
-	virtual void enableVideoFrameObserver(const VideoFrameIdentity *identity) = 0;
-	virtual void disableVideoFrameObserver(const VideoFrameIdentity *identity) = 0;
-	virtual int pushVideo(const VideoFrameIdentity *identity, VideoFrame* frame) = 0;
-	virtual int popVideo(const VideoFrameIdentity *identity, VideoFrame*& frame) = 0;
-	virtual void clear(const VideoFrameIdentity *identity) = 0;
+	virtual void enableVideoFrameObserver(const VideoFrameIdentity *Identity) = 0;
+	virtual void disableVideoFrameObserver(const VideoFrameIdentity *Identity) = 0;
+	virtual int pushVideo(const VideoFrameIdentity *Identity, VideoFrame* Frame) = 0;
+	virtual int popVideo(const VideoFrameIdentity *Identity, VideoFrame*& Frame) = 0;
+	virtual void clear(const VideoFrameIdentity *Identity) = 0;
 	virtual void clearAll() = 0;
 };
 

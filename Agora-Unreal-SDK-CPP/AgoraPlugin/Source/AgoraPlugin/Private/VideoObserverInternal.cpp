@@ -6,8 +6,8 @@ namespace ue {
 
 VideoObserverInternal::VideoObserverInternal(media::IVideoFrameObserver* observer, ICacheManager* cache) 
 {
-    cacheManage = cache;
-    _user_observer = observer;
+    AacheManager = cache;
+    UserObserver = observer;
   
 }
 
@@ -20,7 +20,7 @@ bool VideoObserverInternal::onCaptureVideoFrame(VideoFrame& videoFrame)
 { 
     VideoFrameIdentity config{VIDEO_SOURCE_CAMERA_PRIMARY, 0, ""};
     setVideoFrame(&config, &videoFrame);
-    if (_user_observer != nullptr) _user_observer->onCaptureVideoFrame(videoFrame);
+    if (UserObserver != nullptr) UserObserver->onCaptureVideoFrame(videoFrame);
     return true; 
 }
 
@@ -28,7 +28,7 @@ bool VideoObserverInternal::onRenderVideoFrame(const char* channelId, rtc::uid_t
 {
     VideoFrameIdentity config{VIDEO_SOURCE_REMOTE, remoteUid, channelId };
     setVideoFrame(&config, &videoFrame);
-    if (_user_observer != nullptr) _user_observer->onRenderVideoFrame(channelId, remoteUid, videoFrame);
+    if (UserObserver != nullptr) UserObserver->onRenderVideoFrame(channelId, remoteUid, videoFrame);
     return true; 
 }
 
@@ -122,14 +122,14 @@ bool VideoObserverInternal::isExternal()
 
 void VideoObserverInternal::setVideoFrame(VideoFrameIdentity *identity, VideoFrame* frame)
 {
-    if (cacheManage) {
-        cacheManage->pushVideo(identity, frame);
+    if (AacheManager) {
+        AacheManager->pushVideo(identity, frame);
     }
 }
 
 void VideoObserverInternal::registerVideoFrameObserver(media::IVideoFrameObserver* observer)
 {
-    _user_observer = observer;
+    UserObserver = observer;
 }
 
 

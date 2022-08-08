@@ -6,74 +6,74 @@
 namespace agora {
 	namespace rtc {
 		namespace ue {
-			VideoRender::VideoRender(ICacheManager* cacheManager)
+			VideoRender::VideoRender(ICacheManager* CacheManager)
 			{
-				_texture = nullptr;
-				videoFrame_ = nullptr;
-				_videoCacheManager = cacheManager;
+				RenderTexture = nullptr;
+				RenderVideoFrame = nullptr;
+				VideoCacheManager = CacheManager;
+				bEnableUpdatePreview = false;
+				ArgbPixSize = 4;
 			}
 
 			VideoRender::~VideoRender()
 			{
 				UE_LOG(LogTemp, Warning, TEXT("~VideoRender"));
-				_videoCacheManager->clear(&id);
-				videoFrame_ = nullptr;
-				if (_texture != nullptr)
+				VideoCacheManager->clear(&RenderFrameId);
+				RenderVideoFrame = nullptr;
+				if (RenderTexture != nullptr)
 				{
-					_texture->ReleaseResource();
-					_texture = nullptr;
+					RenderTexture->ReleaseResource();
+					RenderTexture = nullptr;
 				}
 			}
 
 			void VideoRender::onTick()
 			{
-				if (uImage == nullptr || _needUpdateInfo) {
+				if (RenderImage == nullptr || bEnableUpdatePreview) {
 					return;
 				}
-				int re = getVideoFrame(&id, videoFrame_);
-				//UE_LOG(LogTemp, Warning, TEXT("isFresh is : %d"), _fresh);
+				int re = getVideoFrame(&RenderFrameId, RenderVideoFrame);
 				if (re != ERROR_OK) {
 					return;
 				}
-				if (!videoFrame_ /*|| !_fresh*/) {
+				if (!RenderVideoFrame) {
 					return;
 				}
-				if (_texture == nullptr || _texture->GetSizeX() != videoFrame_->width || _texture->GetSizeY() != videoFrame_->height) {
-					//_region.reset(new FUpdateTextureRegion2D(0, 0, 0, 0, (uint32)videoFrame_->width, (uint32)videoFrame_->height));
-					if (_texture != nullptr)
+				if (RenderTexture == nullptr || RenderTexture->GetSizeX() != RenderVideoFrame->width || RenderTexture->GetSizeY() != RenderVideoFrame->height) {
+					if (RenderTexture != nullptr)
 					{
-						_texture->ReleaseResource();
-						_texture = nullptr;
+						RenderTexture->ReleaseResource();
+						RenderTexture = nullptr;
 					}
-					_texture = UTexture2D::CreateTransient(videoFrame_->width, videoFrame_->height, PF_R8G8B8A8);
+					RenderTexture = UTexture2D::CreateTransient(RenderVideoFrame->width, RenderVideoFrame->height, PF_R8G8B8A8);
 				}
 				else
 				{
-					UTexture2D* tex = (UTexture2D*)_texture;
+					UTexture2D* tex = (UTexture2D*)RenderTexture;
 
 					uint8* raw = (uint8*)tex->PlatformData->Mips[0].BulkData.Lock(LOCK_READ_WRITE);
-					memcpy(raw, videoFrame_->yBuffer, videoFrame_->height * videoFrame_->width * 4);
+					memcpy(raw, RenderVideoFrame->yBuffer, RenderVideoFrame->height * RenderVideoFrame->width * 4);
 					tex->PlatformData->Mips[0].BulkData.Unlock();
 					tex->UpdateResource();
-					Brush.SetResourceObject(tex);
-					if (uImage != nullptr) {
-						uImage->SetBrush(Brush);
+					RenderBrush.SetResourceObject(tex);
+					if (RenderImage != nullptr) {
+						RenderImage->SetBrush(RenderBrush);
 					}
 				}
 				//_texture->UpdateTextureRegions(0, 1, _region.get(), videoFrame_->yStride, (uint32)argbPixSize, static_cast<uint8_t*>(videoFrame_->yBuffer));
 			}
 
-			void VideoRender::enableVideoFrameIdentity(UImage* renderImage, VideoFrameIdentity videoFrameId)
+			void VideoRender::enableVideoFrameIdentity(UImage* RenderImage, VideoFrameIdentity VideoFrameId)
 			{
-				this->uImage = renderImage;
-				id = videoFrameId;
-				_videoCacheManager->enableVideoFrameObserver(&id);
-				_needUpdateInfo = false;
+				this->RenderImage = RenderImage;
+				RenderFrameId = VideoFrameId;
+				VideoCacheManager->enableVideoFrameObserver(&RenderFrameId);
+				bEnableUpdatePreview = false;
 			}
 
-			int VideoRender::getVideoFrame(const VideoFrameIdentity* identity, VideoFrame*& frame)
+			int VideoRender::getVideoFrame(const VideoFrameIdentity* Identity, VideoFrame*& Frame)
 			{
-				int ret = _videoCacheManager->popVideo(identity, frame);
+				int ret = VideoCacheManager->popVideo(Identity, Frame);
 				if (ret != 0) {
 					return ret;
 				}

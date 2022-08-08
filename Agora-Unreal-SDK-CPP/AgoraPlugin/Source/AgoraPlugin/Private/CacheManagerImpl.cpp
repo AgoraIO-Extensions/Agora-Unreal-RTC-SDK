@@ -3,34 +3,34 @@ namespace agora {
 namespace rtc {
 namespace ue {
 
-void CacheManagerImpl::enableVideoFrameObserver(const VideoFrameIdentity *identity)
+void CacheManagerImpl::enableVideoFrameObserver(const VideoFrameIdentity *Identity)
 {
-	std::lock_guard<std::recursive_mutex> lock(mutex_);
-	auto it = mapStatus_.find(*identity);
-	if (it == mapStatus_.end()) {
-		mapStatus_[*identity] = true;
+	std::lock_guard<std::recursive_mutex> lock(Mutex);
+	auto it = CacheMapStatus.find(*Identity);
+	if (it == CacheMapStatus.end()) {
+		CacheMapStatus[*Identity] = true;
 	}
 	else {
 		it->second = true;
 	}
 
-	auto videoFrameIterator = data_map_.find(*identity);
-	if (videoFrameIterator == data_map_.end()) {
+	auto videoFrameIterator = DataMap.find(*Identity);
+	if (videoFrameIterator == DataMap.end()) {
 		auto frame = new FramesInfo();
-		frame->currentFrame = new VideoFrame();
-		frame->currentFrame->yBuffer = nullptr;
-		frame->swipFrame = new VideoFrame();
-		frame->swipFrame->yBuffer = nullptr;
+		frame->CurrentFrame = new VideoFrame();
+		frame->CurrentFrame->yBuffer = nullptr;
+		frame->SwipFrame = new VideoFrame();
+		frame->SwipFrame->yBuffer = nullptr;
 
-		data_map_[*identity] = frame;
+		DataMap[*Identity] = frame;
 	}
 }
 
-void CacheManagerImpl::disableVideoFrameObserver(const VideoFrameIdentity *identity)
+void CacheManagerImpl::disableVideoFrameObserver(const VideoFrameIdentity *Identity)
 {
-	std::lock_guard<std::recursive_mutex> lock(mutex_);
-	auto it = mapStatus_.find(*identity);
-	if (it == mapStatus_.end()) {
+	std::lock_guard<std::recursive_mutex> lock(Mutex);
+	auto it = CacheMapStatus.find(*Identity);
+	if (it == CacheMapStatus.end()) {
 		return;
 	}
 	else {
@@ -38,16 +38,16 @@ void CacheManagerImpl::disableVideoFrameObserver(const VideoFrameIdentity *ident
 	}
 }
 
-int CacheManagerImpl::pushVideo(const VideoFrameIdentity *identity, VideoFrame* frame)
+int CacheManagerImpl::pushVideo(const VideoFrameIdentity *Identity, VideoFrame* Frame)
 {
-	std::lock_guard<std::recursive_mutex> lock(mutex_);
-	if (frame == nullptr)
+	std::lock_guard<std::recursive_mutex> lock(Mutex);
+	if (Frame == nullptr)
 	{
 		return false;
 	}
 
-	auto it = mapStatus_.find(*identity);
-	if (it == mapStatus_.end()) {
+	auto it = CacheMapStatus.find(*Identity);
+	if (it == CacheMapStatus.end()) {
 		return CACHE_MANAGER_NOT_ENABLE;
 	}
 
@@ -55,53 +55,53 @@ int CacheManagerImpl::pushVideo(const VideoFrameIdentity *identity, VideoFrame* 
 		return CACHE_MANAGER_NOT_ENABLE;
 	}
 	
-	auto iterator = data_map_.find(*identity);
+	auto iterator = DataMap.find(*Identity);
 
-	if (iterator != data_map_.end()) {
+	if (iterator != DataMap.end()) {
 		auto local_frames = iterator->second;
 
-		if (!local_frames->currentFrame->yBuffer) {
-			local_frames->currentFrame->yBuffer = (uint8*)malloc(frame->width * frame->height * 4);
+		if (!local_frames->CurrentFrame->yBuffer) {
+			local_frames->CurrentFrame->yBuffer = (uint8*)malloc(Frame->width * Frame->height * 4);
 		}
 
-		if (local_frames->currentFrame->width != frame->width || local_frames->currentFrame->height != frame->height) {
-			local_frames->currentFrame->yBuffer = (uint8*)realloc(local_frames->currentFrame->yBuffer, frame->width * frame->height * 4);
+		if (local_frames->CurrentFrame->width != Frame->width || local_frames->CurrentFrame->height != Frame->height) {
+			local_frames->CurrentFrame->yBuffer = (uint8*)realloc(local_frames->CurrentFrame->yBuffer, Frame->width * Frame->height * 4);
 		}
 
-		memcpy(local_frames->currentFrame->yBuffer, frame->yBuffer, frame->width * frame->height * 4);
-		local_frames->currentFrame->width = frame->width;
-		local_frames->currentFrame->height = frame->height;
-		local_frames->currentFrame->yStride = frame->yStride;
+		memcpy(local_frames->CurrentFrame->yBuffer, Frame->yBuffer, Frame->width * Frame->height * 4);
+		local_frames->CurrentFrame->width = Frame->width;
+		local_frames->CurrentFrame->height = Frame->height;
+		local_frames->CurrentFrame->yStride = Frame->yStride;
 
-		local_frames->isFresh = true;
+		local_frames->bIsFresh = true;
 	}
 	return ERROR_OK;
 }
 
-int CacheManagerImpl::popVideo(const VideoFrameIdentity *identity, VideoFrame*& frame)
+int CacheManagerImpl::popVideo(const VideoFrameIdentity *Identity, VideoFrame*& Frame)
 {
-	std::lock_guard<std::recursive_mutex> lock(mutex_);
-	auto it = mapStatus_.find(*identity);
-	if (it == mapStatus_.end()) {
+	std::lock_guard<std::recursive_mutex> lock(Mutex);
+	auto It = CacheMapStatus.find(*Identity);
+	if (It == CacheMapStatus.end()) {
 		return CACHE_MANAGER_NOT_ENABLE;
 	}
 
-	if (it->second == false) {
+	if (It->second == false) {
 		return CACHE_MANAGER_NOT_ENABLE;
 	}
 
-	auto iterator = data_map_.find(*identity);
+	auto iterator = DataMap.find(*Identity);
 
-	if (iterator != data_map_.end()) {
-		auto local_frames = iterator->second;
+	if (iterator != DataMap.end()) {
+		auto Localframes = iterator->second;
 
-		if (local_frames->currentFrame->yBuffer&& local_frames->isFresh) {
+		if (Localframes->CurrentFrame->yBuffer&& Localframes->bIsFresh) {
 
-			swap(local_frames->swipFrame, local_frames->currentFrame);
+			swap(Localframes->SwipFrame, Localframes->CurrentFrame);
 
-			frame = local_frames->swipFrame;
+			Frame = Localframes->SwipFrame;
 
-			local_frames->isFresh = false;
+			Localframes->bIsFresh = false;
 		}
 		else {
 			return VIDEO_FRAME_BUFFER_EMPTY;
@@ -116,50 +116,50 @@ int CacheManagerImpl::popVideo(const VideoFrameIdentity *identity, VideoFrame*& 
 	return ERROR_OK;
 }
 
-void CacheManagerImpl::clear(const VideoFrameIdentity *identity)
+void CacheManagerImpl::clear(const VideoFrameIdentity *Identity)
 {
-	std::lock_guard<std::recursive_mutex> lock(mutex_);
-	auto it = data_map_.find(*identity);
-	if (it == data_map_.end()) {
-		mutex_.unlock();
+	std::lock_guard<std::recursive_mutex> lock(Mutex);
+	auto it = DataMap.find(*Identity);
+	if (it == DataMap.end()) {
+		Mutex.unlock();
 		return;
 	}
 	else {
 		FramesInfo* frames = it->second;
 		if (frames) {
-			if (frames->currentFrame->yBuffer) {
-				free(frames->currentFrame->yBuffer);
-				frames->currentFrame->yBuffer = nullptr;
-				delete(frames->currentFrame);
-				frames->currentFrame = nullptr;
+			if (frames->CurrentFrame->yBuffer) {
+				free(frames->CurrentFrame->yBuffer);
+				frames->CurrentFrame->yBuffer = nullptr;
+				delete(frames->CurrentFrame);
+				frames->CurrentFrame = nullptr;
 			}
-			if (frames->swipFrame->yBuffer) {
-				free(frames->swipFrame->yBuffer);
-				frames->swipFrame->yBuffer = nullptr;
-				delete(frames->swipFrame);
-				frames->swipFrame = nullptr;
+			if (frames->SwipFrame->yBuffer) {
+				free(frames->SwipFrame->yBuffer);
+				frames->SwipFrame->yBuffer = nullptr;
+				delete(frames->SwipFrame);
+				frames->SwipFrame = nullptr;
 			}
 			delete frames;
-			data_map_.erase(it);
+			DataMap.erase(it);
 		}
 	}
 }
 
 void CacheManagerImpl::clearAll()
 {
-	std::lock_guard<std::recursive_mutex> lock(mutex_);
-	auto it = data_map_.begin();
-	for (; it != data_map_.end(); it++) {
+	std::lock_guard<std::recursive_mutex> lock(Mutex);
+	auto it = DataMap.begin();
+	for (; it != DataMap.end(); it++) {
 		clear(&(it->first));
 	}
-	data_map_.clear();
+	DataMap.clear();
 }
 
-void CacheManagerImpl::swap(VideoFrame*& swipFrame, VideoFrame*& currentFrame)
+void CacheManagerImpl::swap(VideoFrame*& SwipFrame, VideoFrame*& CurrentFrame)
 {
-	VideoFrame* temp = swipFrame;
-	swipFrame = currentFrame;
-	currentFrame = temp;
+	VideoFrame* Temp = SwipFrame;
+	SwipFrame = CurrentFrame;
+	CurrentFrame = Temp;
 }
 
 ICacheManager* createCacheManager() {

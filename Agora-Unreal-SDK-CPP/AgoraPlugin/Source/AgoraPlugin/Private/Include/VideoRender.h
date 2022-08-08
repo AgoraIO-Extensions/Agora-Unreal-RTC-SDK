@@ -29,26 +29,24 @@ namespace agora {
             class VideoRender
             {
             public:
-                VideoRender(ICacheManager* cacheManager);
+                VideoRender(ICacheManager* CacheManager);
                 ~VideoRender();
 
                 void onTick();
-                void enableVideoFrameIdentity(UImage* renderImage, VideoFrameIdentity videoFrameId);
+                void enableVideoFrameIdentity(UImage* RenderImage, VideoFrameIdentity VideoFrameId);
 
             private:
-                int getVideoFrame(const VideoFrameIdentity* identity, VideoFrame*& frame);
+                int getVideoFrame(const VideoFrameIdentity* Identity, VideoFrame*& Frame);
 
             private:
-                ICacheManager* _videoCacheManager;
-                UTexture2D* _texture;
-                FSlateBrush Brush;
-                std::unique_ptr<FUpdateTextureRegion2D> _region;
-                UImage* uImage;
-                VideoFrame* videoFrame_;
-                VideoFrameIdentity id;
-                bool _needUpdateInfo = true;
-                bool _fresh;
-                const int argbPixSize = 4;
+                ICacheManager* VideoCacheManager;
+                UTexture2D* RenderTexture;
+                FSlateBrush RenderBrush;
+                UImage* RenderImage;
+                VideoFrame* RenderVideoFrame;
+                VideoFrameIdentity RenderFrameId;
+                bool bEnableUpdatePreview;
+                int ArgbPixSize;
             };
         }
     }
