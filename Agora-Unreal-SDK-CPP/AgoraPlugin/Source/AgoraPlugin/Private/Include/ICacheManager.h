@@ -15,21 +15,21 @@ typedef struct VideoFrameIdentity {
     unsigned int Id;
     const char* Channel;
 
-    bool operator <(const VideoFrameIdentity& other) const
+    bool operator <(const VideoFrameIdentity& Other) const
     {
-        if (Type < other.Type)
+        if (Type < Other.Type)
         {
             return true;
         }
-        else if (Type == other.Type)
+        else if (Type == Other.Type)
         {
-            if (Id < other.Id)
+            if (Id < Other.Id)
             {
                 return true;
             }
-            else if (Id == other.Id)
+            else if (Id == Other.Id)
             {
-                if (strcmp(Channel, other.Channel) != 0)
+                if (strcmp(Channel, Other.Channel) != 0)
                 {
                     return true;
                 }

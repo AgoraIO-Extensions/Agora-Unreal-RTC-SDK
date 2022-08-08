@@ -63,9 +63,9 @@ namespace agora {
 				//_texture->UpdateTextureRegions(0, 1, _region.get(), videoFrame_->yStride, (uint32)argbPixSize, static_cast<uint8_t*>(videoFrame_->yBuffer));
 			}
 
-			void VideoRender::enableVideoFrameIdentity(UImage* RenderImage, VideoFrameIdentity VideoFrameId)
+			void VideoRender::enableVideoFrameIdentity(UImage* Image, VideoFrameIdentity VideoFrameId)
 			{
-				this->RenderImage = RenderImage;
+				this->RenderImage = Image;
 				RenderFrameId = VideoFrameId;
 				VideoCacheManager->enableVideoFrameObserver(&RenderFrameId);
 				bEnableUpdatePreview = false;
