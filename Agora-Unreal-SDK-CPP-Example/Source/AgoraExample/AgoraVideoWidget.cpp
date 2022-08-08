@@ -10,6 +10,10 @@ void UAgoraVideoWidget::InitAgoraWidget(FString APP_ID, FString TOKEN, FString C
 	InitAgoraEngine(APP_ID,TOKEN,CHANNEL_NAME);
 
 	SetUpUIEvent();
+
+	//agora::rtc::VideoEncoderConfiguration config;
+	//config.orientationMode = agora::rtc::ORIENTATION_MODE_ADAPTIVE;
+	//RtcEngineProxy->setVideoEncoderConfiguration(config);
 }
 
 

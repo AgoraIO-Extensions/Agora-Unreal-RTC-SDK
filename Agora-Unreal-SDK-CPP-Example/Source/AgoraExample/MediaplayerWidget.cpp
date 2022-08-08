@@ -146,7 +146,7 @@ void UMediaplayerWidget::OnOpenButtonClick()
 		path = TCHAR_TO_ANSI(*FileMediaSource->GetFullPath());
 
 		UE_LOG(LogTemp, Warning, TEXT("OnOpenButtonClick %s"), *FileMediaSource->GetFullPath());
-#elif
+#else
 		GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Black, FString::Printf(TEXT("Please add absolute path to path")));
 #endif
 	}
