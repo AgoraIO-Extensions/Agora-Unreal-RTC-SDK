@@ -62,7 +62,8 @@ To build and run the sample application, first obtain an app ID:
 
 1. Download the SDK and its [source code](https://www.baidu.com). If you have any questions, create an issue [here](https://github.com/AgoraIO-Extensions/Agora-Unreal-SDK-CPP-NG/issues).
 2. unZip SourceCode, Create [Plugins] floder in your project root directory.Copy unZip file to [Plugins];
-3. run your project
+![unZip](../ReadmePicture/copy_path.jpg)
+4. run your project
 
 ### Compile and run demo. 
 
