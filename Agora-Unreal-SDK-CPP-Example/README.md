@@ -113,6 +113,7 @@ Privacy - Microphone Usage Description
 To add the above permissions to the info.plist, you can
 
 `<key>NSCameraUsageDescription</key><string>AgoraVideoCall</string> <key>NSMicrophoneUsageDescription</key><string>AgoraVideoCall</string>`
+
 **Edit-> Project Settings->Platforms: iOS**
 
 Add to additional plist data.
@@ -152,6 +153,6 @@ Make sure you have added the following audio/video permissions to `info.plist` o
 
 you shoud delete [Binaries] floder in your project
 
-### What should I do can not find screen in macOS ?
+### What should I do can not find screen in ScreenShare case in macOS ?
  
 Make sure you have add "Screen recording" in your Mac Security and Privacy
