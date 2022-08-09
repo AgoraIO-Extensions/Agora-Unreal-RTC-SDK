@@ -5,6 +5,9 @@
 
 void USpatialAudioWidget::InitAgoraWidget(FString APP_ID, FString TOKEN, FString CHANNEL_NAME)
 {
+	GEngine->AddOnScreenDebugMessage(-1, 60.f, FColor::Yellow, FString::Printf(TEXT("If you want to test this case ,please add another User join")));
+
+
 	CheckAndroidPermission();
 
 	InitAgoraEngine(APP_ID, TOKEN, CHANNEL_NAME);

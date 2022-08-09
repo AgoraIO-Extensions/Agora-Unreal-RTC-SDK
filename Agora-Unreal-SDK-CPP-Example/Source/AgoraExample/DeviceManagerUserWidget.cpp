@@ -28,8 +28,8 @@ void UDeviceManagerUserWidget::InitAgoraEngine(FString APP_ID, FString TOKEN, FS
 	RtcEngineProxy = agora::rtc::ue::createAgoraRtcEngine();
 	RtcEngineProxy->initialize(RtcEngineContext);
 
-	AudioDeviceManager.queryInterface(RtcEngineProxy, AGORA_IID_AUDIO_DEVICE_MANAGER);
-	VideoDeviceManager.queryInterface(RtcEngineProxy, AGORA_IID_VIDEO_DEVICE_MANAGER);
+	RtcEngineProxy->queryInterface(AGORA_IID_AUDIO_DEVICE_MANAGER, (void**)&AudioDeviceManager);
+	RtcEngineProxy->queryInterface(AGORA_IID_VIDEO_DEVICE_MANAGER, (void**)&VideoDeviceManager);
 }
 
 void UDeviceManagerUserWidget::SetUpUIEvent() {
