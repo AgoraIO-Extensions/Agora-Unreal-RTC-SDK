@@ -113,6 +113,7 @@ Privacy - Microphone Usage Description
 To add the above permissions to the info.plist, you can
 
 `<key>NSCameraUsageDescription</key><string>AgoraVideoCall</string> <key>NSMicrophoneUsageDescription</key><string>AgoraVideoCall</string>`
+
 **Edit-> Project Settings->Platforms: iOS**
 
 Add to additional plist data.
