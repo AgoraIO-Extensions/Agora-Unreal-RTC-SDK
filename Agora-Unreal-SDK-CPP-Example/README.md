@@ -15,7 +15,7 @@ This is a demo program to show how to call API of Agora Unreal SDK.
 
 #### case levels
 
-![levels](ReadmePicture/levels.jpg)
+![levels](../ReadmePicture/levels.jpg)
 
 Each level can run independently.
 You can switch the level to be run in Edit/Project Settings/Default maps of Unreal Editor.
