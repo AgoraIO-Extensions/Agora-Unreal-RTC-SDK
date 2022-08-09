@@ -68,7 +68,7 @@ To build and run the sample application, first obtain an app ID:
 
 1) Open any level, for example Basic/joinChannelAudio/BasicAudioCall/ You can find a blueprint named BP_Agoractor in the WorldOutliner, enter your appid and channelname in the position below.
   
-![appid](ReadmePicture/appid.jpg)
+![appid](../ReadmePicture/appid.jpg)
 
 2) Package project:
 
@@ -76,7 +76,7 @@ To build and run the sample application, first obtain an app ID:
 
 File->Package Project->Windows->Windows(64-bit)
 
-![Windowspackages](ReadmePicture/windowspackage.jpg)
+![Windowspackages](../ReadmePicture/windowspackage.jpg)
 
 #### Mac Packaging
 
@@ -86,7 +86,7 @@ File -> Package Project -> Mac
 
 1. Right click the compiled xxx.app File - select "Show Package Contents"
 
-![Alt text](ReadmePicture/Mac_package_add_permission.png?raw=true "PackageProject")
+![Alt text](../ReadmePicture/Mac_package_add_permission.png?raw=true "PackageProject")
 
 2. Enter "contents ->" Info.plist "
 
@@ -95,13 +95,13 @@ File -> Package Project -> Mac
 Privacy - Camera Usage Description
 Privacy - Microphone Usage Description
 
-![Alt text](ReadmePicture/Mac_package_add_permission2.png?raw=true "PackageProject")
+![Alt text](../ReadmePicture/Mac_package_add_permission2.png?raw=true "PackageProject")
 
 
 ##### Add the SDK framework to your compiled app
 
 copy **xxx.framework** from **Plugs/AgoraPlugin/Source/ ThirdParty/Agora/MAC/Release** to ***MacNoEditor/xxx/Contents/MacOS/***.
-![Alt text](ReadmePicture/Mac_package_add_framework.png?raw=true "PackageProject")
+![Alt text](../ReadmePicture/Mac_package_add_framework.png?raw=true "PackageProject")
 
 ##### IOS permissions
 The following permissions are also required on IOS:
@@ -117,7 +117,7 @@ To add the above permissions to the info.plist, you can
 
 Add to additional plist data.
 
-![Alt text](ReadmePicture/iOS_add_permission.png?raw=true "PackageProject")
+![Alt text](../ReadmePicture/iOS_add_permission.png?raw=true "PackageProject")
 
 Finally, you can package the project.
 
@@ -134,7 +134,7 @@ In Android, the following permissions need to be applied dynamically, which can 
 
 you can include "AndroidPermission/Classes/AndroidPermissionFunctionLibrary.h" and call this method to get permission.
 
-![Alt text](ReadmePicture/Androidperimission.jpg?raw=true "PackageProject")
+![Alt text](../ReadmePicture/Androidperimission.jpg?raw=true "PackageProject")
 
 ##FQAs
 
@@ -148,7 +148,7 @@ Make sure you have added the following audio/video permissions to `info.plist` o
 ```
 ### What should I do "failed to load because moudle 'AgoraPlugin' could not be loaded" ?
 
-![Alt text](ReadmePicture/import_error.jpg?raw=true "PackageProject")
+![Alt text](../ReadmePicture/import_error.jpg?raw=true "PackageProject")
 
 you shoud delete [Binaries] floder in your project
 
