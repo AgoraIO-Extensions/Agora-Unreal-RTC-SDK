@@ -74,7 +74,7 @@ private:
 
 	TArray<unsigned int> RemoteUserIdArray;
 
-	unsigned int CurrentRemoteUid = 0;
+	unsigned int CurrentRemoteIndex = 0;
 
 	FSlateBrush EmptyBrush;
 

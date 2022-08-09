@@ -54,25 +54,25 @@ void UAgoraVideoWidget::OnJoinButtonClick() {
 
 void UAgoraVideoWidget::OnPreviousButtonClick()
 {
-	if (RemoteUserIdArray.Num() == 1 || CurrentRemoteUid == 0)
+	if (RemoteUserIdArray.Num() == 1 || CurrentRemoteIndex == 0)
 	{
 		return;
 	}
-	SetRemoteView(nullptr, RemoteUserIdArray[CurrentRemoteUid]);
-	CurrentRemoteUid--;
-	SetRemoteView(remoteVideo, RemoteUserIdArray[CurrentRemoteUid]);
+	SetRemoteView(nullptr, RemoteUserIdArray[CurrentRemoteIndex]);
+	CurrentRemoteIndex--;
+	SetRemoteView(remoteVideo, RemoteUserIdArray[CurrentRemoteIndex]);
 	NextBtn->SetIsEnabled(true);
 }
 
 void UAgoraVideoWidget::OnNextButtonClick()
 {
-	if (RemoteUserIdArray.Num() == 1 || CurrentRemoteUid == RemoteUserIdArray.Num() - 1)
+	if (RemoteUserIdArray.Num() == 1 || CurrentRemoteIndex == RemoteUserIdArray.Num() - 1)
 	{
 		return;
 	}
-	SetRemoteView(nullptr, RemoteUserIdArray[CurrentRemoteUid]);
-	CurrentRemoteUid++;
-	SetRemoteView(remoteVideo, RemoteUserIdArray[CurrentRemoteUid]);
+	SetRemoteView(nullptr, RemoteUserIdArray[CurrentRemoteIndex]);
+	CurrentRemoteIndex++;
+	SetRemoteView(remoteVideo, RemoteUserIdArray[CurrentRemoteIndex]);
 	PreviousBtn->SetIsEnabled(true);
 }
 
@@ -137,9 +137,15 @@ void UAgoraVideoWidget::onUserJoined(agora::rtc::uid_t uid, int elapsed) {
 
 		agora::rtc::RtcConnection connection;
 		connection.channelId = ChannelName.c_str();
-		SetRemoteView(nullptr, CurrentRemoteUid);
+
+		if (RemoteUserIdArray.Num()>0)
+		{
+			SetRemoteView(nullptr, RemoteUserIdArray[CurrentRemoteIndex]);
+
+		}
 		RemoteUserIdArray.Add(uid);
 		SetRemoteView(remoteVideo, uid);
+		CurrentRemoteIndex = RemoteUserIdArray.Num() - 1;
 
 		NextBtn->SetIsEnabled(RemoteUserIdArray.Num() != 1);
 		PreviousBtn->SetIsEnabled(RemoteUserIdArray.Num() != 1);
@@ -168,9 +174,9 @@ void UAgoraVideoWidget::onUserOffline(agora::rtc::uid_t uid, agora::rtc::USER_OF
 
 		if (RemoteUserIdArray.Num() != 0)
 		{
-			SetRemoteView(nullptr, RemoteUserIdArray[CurrentRemoteUid]);
-			CurrentRemoteUid = 0;
-			SetRemoteView(remoteVideo, RemoteUserIdArray[CurrentRemoteUid]);
+			SetRemoteView(nullptr, RemoteUserIdArray[CurrentRemoteIndex]);
+			CurrentRemoteIndex = 0;
+			SetRemoteView(remoteVideo, RemoteUserIdArray[CurrentRemoteIndex]);
 		}
 
 		RemoteUserIdArray.Remove(uid);
