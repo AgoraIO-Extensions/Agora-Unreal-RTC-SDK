@@ -52,7 +52,7 @@ void UAgoraAudioWidget::CheckAndroidPermission()
 }
 
 void UAgoraAudioWidget::OnJoinButtonClick() {
-	UE_LOG(LogTemp, Warning, TEXT("UVideoWidget OnJoinButtonClick ======"));
+	UE_LOG(LogTemp, Warning, TEXT("UAgoraAudioWidget OnJoinButtonClick ======"));
 
 	SetButtonClickAble(false);
 
@@ -63,7 +63,7 @@ void UAgoraAudioWidget::OnJoinButtonClick() {
 }
 
 void UAgoraAudioWidget::OnLeaveButtonClick() {
-	UE_LOG(LogTemp, Warning, TEXT("UVideoWidget OnLeaveButtonClick ======"));
+	UE_LOG(LogTemp, Warning, TEXT("UAgoraAudioWidget OnLeaveButtonClick ======"));
 	SetButtonClickAble(true);
 	RtcEngineProxy->leaveChannel();
 }
@@ -71,17 +71,16 @@ void UAgoraAudioWidget::OnLeaveButtonClick() {
 #pragma region RtcEngineCallBack
 void UAgoraAudioWidget::onJoinChannelSuccess(const char* channel, agora::rtc::uid_t uid, int elapsed)
 {
-	UE_LOG(LogTemp, Warning, TEXT("JoinChannelSuccess"));
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
-		UE_LOG(LogTemp, Warning, TEXT("onJoinChannelSuccess is videoCanvas"));
+		GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Red, FString::Printf(TEXT("UAgoraAudioWidget::JoinChannelSuccess uid: %u"), uid));
 	});
 }
 
 void UAgoraAudioWidget::onUserJoined(agora::rtc::uid_t uid, int elapsed) {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
-		UE_LOG(LogTemp, Warning, TEXT("UVideoWidget::onUserJoined  uid: %u"), uid);
+		GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Red, FString::Printf(TEXT("UAgoraAudioWidget::onUserJoined uid: %u"), uid));
 	});
 
 }
