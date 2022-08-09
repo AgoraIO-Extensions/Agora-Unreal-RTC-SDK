@@ -9,6 +9,7 @@
 #include "Components/Image.h"
 #include "Components/Button.h"
 #include "Components/CheckBox.h"
+#include "Components/CanvasPanelSlot.h"
 #include <iostream>
 #include <string.h>
 #if PLATFORM_ANDROID
@@ -72,6 +73,9 @@ public:
 	agora_refptr<IMediaPlayer> MediaPlayer;
 
 	FSlateBrush EmptyBrush;
+
+
+	void onVideoSizeChanged(uid_t uid, int width, int height, int rotation) override;
 
 private:
 
