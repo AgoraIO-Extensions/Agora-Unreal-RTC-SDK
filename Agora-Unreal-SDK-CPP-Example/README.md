@@ -160,6 +160,10 @@ you shoud delete [Binaries] floder in your project
  
 Make sure you have add "Screen recording" in your Mac Security and Privacy
 
+### Why UImage in WidgetBlueprint Scale X is -1  ?
+
+This is our solution to the mirroring problem
+
 ## Connect With Us
 
 - You can find full API document at [Document Center](https://docs.agora.io/en/)
