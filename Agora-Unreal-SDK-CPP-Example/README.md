@@ -140,7 +140,7 @@ you can include "AndroidPermission/Classes/AndroidPermissionFunctionLibrary.h" a
 
 ![Alt text](../ReadmePicture/Androidperimission.jpg?raw=true "PackageProject")
 
-##FQAs
+## FQAs
 
 ### What should I do if UE4 Editor crashes on macOS?
 Make sure you have added the following audio/video permissions to `info.plist` of **UE4Editor.app**.
