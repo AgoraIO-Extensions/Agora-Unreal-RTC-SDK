@@ -101,7 +101,8 @@ namespace agora
 
 			int RtcEngineProxy::leaveChannel() {
 				if (RtcEngine != nullptr) {
-					return RtcEngine->leaveChannel();
+					int ret = RtcEngine->leaveChannel();
+					return ret;
 				}
 				return -ERROR_NULLPTR;
 			}
@@ -275,8 +276,6 @@ namespace agora
 			}
 
 			int RtcEngineProxy::setupRemoteVideo(agora::rtc::VideoCanvas const& canvas) {
-
-
 				if (RtcEngine != nullptr) {
 					if (canvas.view != nullptr) {
 						VideoRenderMgr->setRenderImage((UImage*)canvas.view, canvas.uid, "", canvas.sourceType);
