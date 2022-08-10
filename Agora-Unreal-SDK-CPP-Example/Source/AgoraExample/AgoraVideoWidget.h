@@ -15,7 +15,8 @@
 #include <iostream>
 #include <string.h>
 #include "AgoraVideoWidget.generated.h"
-
+using namespace agora::rtc;
+using namespace agora;
 /**
  * 
  */
@@ -58,13 +59,15 @@ public:
 	void CheckAndroidPermission();
 
 	void InitAgoraWidget(FString APP_ID, FString TOKEN, FString CHANNEL_NAME) override;
+
+	void SetResolution(int width, int height);
 protected:
 
 	void NativeDestruct() override;
 
 private:
 
-	agora::rtc::IRtcEngine* RtcEngineProxy;
+	IRtcEngine* RtcEngineProxy;
 
 	std::string AppID;
 

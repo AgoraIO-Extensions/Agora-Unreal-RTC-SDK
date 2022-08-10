@@ -61,7 +61,6 @@ void USpatialAudioWidget::onUserJoined(uid_t uid, int elapsed)
 
 void USpatialAudioWidget::OnJoinButtonClick()
 {
-
 	UE_LOG(LogTemp, Warning, TEXT("USpatialAudioWidget OnJoinButtonClick ======"));
 
 	RtcEngineProxy->joinChannel(TCHAR_TO_ANSI(*Token), TCHAR_TO_ANSI(*ChannelName), "", 0);

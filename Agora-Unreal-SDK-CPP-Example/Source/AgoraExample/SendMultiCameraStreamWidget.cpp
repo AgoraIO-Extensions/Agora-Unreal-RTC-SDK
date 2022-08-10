@@ -66,7 +66,7 @@ void USendMultiCameraStreamWidget::GetVideoDeviceManager()
 
 	if (VideoDeviceInfos != nullptr && VideoDeviceInfos->getCount() > 0)
 	{
-#if !(defined(__ANDROID__) || (defined(__APPLE__) && TARGET_OS_IOS))
+#if !(PLATFORM_ANDROID || PLATFORM_IOS)
 
 		char deviceName[MAX_DEVICE_ID_LENGTH];
 		char deviceId[MAX_DEVICE_ID_LENGTH];
@@ -80,7 +80,7 @@ void USendMultiCameraStreamWidget::GetVideoDeviceManager()
 
 	if (VideoDeviceInfos != nullptr && VideoDeviceInfos->getCount() > 1)
 	{
-#if !(defined(__ANDROID__) || (defined(__APPLE__) && TARGET_OS_IOS))
+#if !(PLATFORM_ANDROID || PLATFORM_IOS)
 		char deviceName[MAX_DEVICE_ID_LENGTH];
 		char deviceId[MAX_DEVICE_ID_LENGTH];
 
@@ -102,7 +102,7 @@ void USendMultiCameraStreamWidget::MainCameraJoinChannel()
 
 	auto ret = RtcEngineProxy->startPrimaryCameraCapture(ConfigPrimary);
 	agora::rtc::ChannelMediaOptions options;
-#if !(defined(__ANDROID__) || (defined(__APPLE__) && TARGET_OS_IOS))
+#if !(PLATFORM_ANDROID || PLATFORM_IOS)
 	options.autoSubscribeAudio = true;
 	options.autoSubscribeVideo = true;
 	options.publishCameraTrack = true;
@@ -123,15 +123,13 @@ void USendMultiCameraStreamWidget::MainCameraLeaveChannel()
 
 void USendMultiCameraStreamWidget::SecondCameraJoinChannel()
 {
-
-
 	auto ret = RtcEngineProxy->startSecondaryCameraCapture(ConfigSecond);
 
 	agora::rtc::RtcConnection connection;
 	connection.channelId = ChannelName.c_str();
 	connection.localUid = Uid2;
 	agora::rtc::ChannelMediaOptions options;
-#if !(defined(__ANDROID__) || (defined(__APPLE__) && TARGET_OS_IOS))
+#if !(PLATFORM_ANDROID || PLATFORM_IOS)
 	options.autoSubscribeAudio = false;
 	options.autoSubscribeVideo = false;
 	options.publishCustomAudioTrack = false;

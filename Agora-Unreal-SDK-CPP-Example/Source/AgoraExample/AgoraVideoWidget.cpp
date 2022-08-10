@@ -10,12 +10,29 @@ void UAgoraVideoWidget::InitAgoraWidget(FString APP_ID, FString TOKEN, FString C
 	InitAgoraEngine(APP_ID,TOKEN,CHANNEL_NAME);
 
 	SetUpUIEvent();
+
+	//SetResolution(640,480);
+}
+
+void UAgoraVideoWidget::SetResolution(int width ,int height)
+{
+	VideoEncoderConfiguration videoEncoderConfiguration;
+	VideoDimensions videoDimensions(width, height);
+	videoEncoderConfiguration.dimensions = videoDimensions;
+	videoEncoderConfiguration.codecType = VIDEO_CODEC_TYPE::VIDEO_CODEC_H264;
+	videoEncoderConfiguration.bitrate = 0;
+	videoEncoderConfiguration.minBitrate = 1;
+	videoEncoderConfiguration.orientationMode = ORIENTATION_MODE::ORIENTATION_MODE_ADAPTIVE;
+	videoEncoderConfiguration.degradationPreference = DEGRADATION_PREFERENCE::MAINTAIN_FRAMERATE;
+	videoEncoderConfiguration.mirrorMode = VIDEO_MIRROR_MODE_TYPE::VIDEO_MIRROR_MODE_AUTO;
+
+	RtcEngineProxy->setVideoEncoderConfiguration(videoEncoderConfiguration);
 }
 
 
 void UAgoraVideoWidget::InitAgoraEngine(FString APP_ID, FString TOKEN, FString CHANNEL_NAME) {
 
-	agora::rtc::RtcEngineContext RtcEngineContext;
+	RtcEngineContext RtcEngineContext;
 	std::string APP_IDStr(TCHAR_TO_ANSI(*APP_ID));
 	AppID = APP_IDStr;
 	std::string TOKENStr(TCHAR_TO_ANSI(*TOKEN));
@@ -25,7 +42,7 @@ void UAgoraVideoWidget::InitAgoraEngine(FString APP_ID, FString TOKEN, FString C
 
 	RtcEngineContext.appId = AppID.c_str();
 	RtcEngineContext.eventHandler = this;
-	RtcEngineContext.channelProfile = agora::CHANNEL_PROFILE_TYPE::CHANNEL_PROFILE_LIVE_BROADCASTING;
+	RtcEngineContext.channelProfile = CHANNEL_PROFILE_TYPE::CHANNEL_PROFILE_LIVE_BROADCASTING;
 
 	RtcEngineProxy = agora::rtc::ue::createAgoraRtcEngine();
 	RtcEngineProxy->initialize(RtcEngineContext);
@@ -97,14 +114,14 @@ void UAgoraVideoWidget::OnLeaveButtonClick() {
 
 	for (int i = 0; i < RemoteUserIdArray.Num(); i++)
 	{
-		agora::rtc::VideoCanvas videoCanvas;
+		VideoCanvas videoCanvas;
 		videoCanvas.view = nullptr;
 		videoCanvas.uid = RemoteUserIdArray[i];
 		videoCanvas.sourceType = agora::rtc::VIDEO_SOURCE_TYPE::VIDEO_SOURCE_REMOTE;
 
-		agora::rtc::RtcConnection connection;
+		RtcConnection connection;
 		connection.channelId = ChannelName.c_str();
-		((agora::rtc::IRtcEngineEx*)RtcEngineProxy)->setupRemoteVideoEx(videoCanvas, connection);
+		((IRtcEngineEx*)RtcEngineProxy)->setupRemoteVideoEx(videoCanvas, connection);
 	}
 	RemoteUserIdArray.Empty();
 
@@ -204,17 +221,17 @@ void UAgoraVideoWidget::onLeaveChannel(const agora::rtc::RtcStats& stats)
 #pragma endregion RtcEngineCallBack
 
 
-void UAgoraVideoWidget::SetRemoteView(UImage* remoteview, agora::rtc::uid_t uid)
+void UAgoraVideoWidget::SetRemoteView(UImage* remoteview, uid_t uid)
 {
-	agora::rtc::VideoCanvas videoCanvas;
+	VideoCanvas videoCanvas;
 	videoCanvas.view = remoteview;
 	videoCanvas.uid = uid;
 	videoCanvas.sourceType = agora::rtc::VIDEO_SOURCE_TYPE::VIDEO_SOURCE_REMOTE;
 
-	agora::rtc::RtcConnection connection;
+	RtcConnection connection;
 	connection.channelId = ChannelName.c_str();
 
-	((agora::rtc::IRtcEngineEx*)RtcEngineProxy)->setupRemoteVideoEx(videoCanvas, connection);
+	((IRtcEngineEx*)RtcEngineProxy)->setupRemoteVideoEx(videoCanvas, connection);
 }
 
 

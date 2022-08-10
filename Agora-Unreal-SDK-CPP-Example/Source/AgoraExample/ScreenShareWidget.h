@@ -73,7 +73,7 @@ private:
 	void SetUpUIEvent();
 
 	FSlateBrush EmptyBrush;
-#if defined(_WIN32) || (defined(__APPLE__) && !TARGET_OS_IPHONE && TARGET_OS_MAC)
+#if PLATFORM_WINDOWS || PLATFORM_MAC
 	agora::rtc::IScreenCaptureSourceList* infos;
 #endif
 protected:
