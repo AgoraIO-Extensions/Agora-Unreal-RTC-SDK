@@ -39,7 +39,10 @@ namespace agora
 			void RtcEngineProxy::release(bool sync) {
 				if (RtcEngine != nullptr)
 				{
-					MediaProxy->registerVideoFrameObserver(nullptr);
+					if (MediaProxy != nullptr)
+					{
+						MediaProxy->registerVideoFrameObserver(nullptr);
+					}
 					RtcEngine->release(sync);
 					RtcEngine = nullptr;
 				}
@@ -48,19 +51,18 @@ namespace agora
 				int ret = RtcEngine->initialize(context);
 
 				UE_LOG(LogTemp, Warning, TEXT("RtcEngineProxy initialize %d"), ret);
-				AppType appType = kAppTypeUnreal;
-				char parametersType[512] = "";
-				sprintf(parametersType, "{\"rtc.set_app_type\": %d}", appType);
-				agora::base::AParameter apm(RtcEngine);
-				apm->setParameters(parametersType);
-#if PLATFORM_ANDROID
-				char parametersDataOutput[512] = "";
-				sprintf(parametersDataOutput, "{\"che.video.android_camera_output_type\":0}");
-				apm->setParameters(parametersDataOutput);
-#endif
 				if (RtcEngine != nullptr && ret == 0)
 				{
-
+					AppType appType = kAppTypeUnreal;
+					char parametersType[512] = "";
+					sprintf(parametersType, "{\"rtc.set_app_type\": %d}", appType);
+					agora::base::AParameter apm(RtcEngine);
+					apm->setParameters(parametersType);
+#if PLATFORM_ANDROID
+					char parametersDataOutput[512] = "";
+					sprintf(parametersDataOutput, "{\"che.video.android_camera_output_type\":0}");
+					apm->setParameters(parametersDataOutput);
+#endif
 					MediaProxy = std::make_unique<MediaEngineProxy>(RtcEngine);
 				}
 				return -ERROR_NULLPTR;
@@ -1135,14 +1137,14 @@ namespace agora
 				}
 				return -ERROR_NULLPTR;
 			}
-
+#if defined (_WIN32) || defined(__linux__) || defined(__ANDROID__)
 			int RtcEngineProxy::loadExtensionProvider(char const* path, bool unload_after_use) {
 				if (RtcEngine != nullptr) {
 					return RtcEngine->loadExtensionProvider(path, unload_after_use);
 				}
 				return -ERROR_NULLPTR;
 			}
-
+#endif
 			int RtcEngineProxy::setExtensionProviderProperty(char const* provider, char const* key, char const* value) {
 				if (RtcEngine != nullptr) {
 					return RtcEngine->setExtensionProviderProperty(provider, key, value);

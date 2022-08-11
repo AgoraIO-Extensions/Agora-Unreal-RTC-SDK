@@ -69,18 +69,18 @@ namespace agora
 				virtual int setupLocalVideo(const VideoCanvas& canvas) override;
 				virtual int enableAudio() override;
 				virtual int disableAudio() override;
-				virtual int setAudioProfile(AUDIO_PROFILE_TYPE profile, AUDIO_SCENARIO_TYPE scenario) __deprecated override;
+				virtual int setAudioProfile(AUDIO_PROFILE_TYPE profile, AUDIO_SCENARIO_TYPE scenario) override;
 				virtual int setAudioProfile(AUDIO_PROFILE_TYPE profile) override;
 				virtual int setAudioScenario(AUDIO_SCENARIO_TYPE scenario) override;
 				virtual int enableLocalAudio(bool enabled) override;
 				virtual int muteLocalAudioStream(bool mute) override;
 				virtual int muteAllRemoteAudioStreams(bool mute) override;
-				virtual int setDefaultMuteAllRemoteAudioStreams(bool mute) __deprecated override;
+				virtual int setDefaultMuteAllRemoteAudioStreams(bool mute) override;
 				virtual int muteRemoteAudioStream(uid_t uid, bool mute) override;
 				virtual int muteLocalVideoStream(bool mute) override;
 				virtual int enableLocalVideo(bool enabled) override;
 				virtual int muteAllRemoteVideoStreams(bool mute) override;
-				virtual int setDefaultMuteAllRemoteVideoStreams(bool mute) __deprecated override;
+				virtual int setDefaultMuteAllRemoteVideoStreams(bool mute) override;
 				virtual int muteRemoteVideoStream(uid_t uid, bool mute) override;
 				virtual int setRemoteVideoStreamType(uid_t uid, VIDEO_STREAM_TYPE streamType) override;
 				virtual int setRemoteVideoSubscriptionOptions(uid_t uid, const VideoSubscriptionOptions& options) override;
@@ -185,7 +185,9 @@ namespace agora
 				virtual int getLoopbackRecordingVolume() override;
 				virtual int enableInEarMonitoring(bool enabled, int includeAudioFilters) override;
 				virtual int setInEarMonitoringVolume(int volume) override;
+#if defined (_WIN32) || defined(__linux__) || defined(__ANDROID__)
 				virtual int loadExtensionProvider(const char* path, bool unload_after_use = false) override;
+#endif
 				virtual int setExtensionProviderProperty(const char* provider, const char* key, const char* value) override;
 				virtual int enableExtension(const char* provider, const char* extension, bool enable = true, agora::media::MEDIA_SOURCE_TYPE type = agora::media::UNKNOWN_MEDIA_SOURCE) override;
 				virtual int setExtensionProperty(const char* provider, const char* extension, const char* key, const char* value, agora::media::MEDIA_SOURCE_TYPE type = agora::media::UNKNOWN_MEDIA_SOURCE) override;
@@ -273,8 +275,8 @@ namespace agora
 				virtual bool unregisterEventHandler(IRtcEngineEventHandler* eventHandler) override;
 				virtual int setRemoteUserPriority(uid_t uid, PRIORITY_TYPE userPriority) override;
 				virtual int registerPacketObserver(IPacketObserver* observer) override;
-				virtual int setEncryptionMode(const char* encryptionMode) __deprecated override;
-				virtual int setEncryptionSecret(const char* secret) __deprecated override;
+				virtual int setEncryptionMode(const char* encryptionMode) override;
+				virtual int setEncryptionSecret(const char* secret) override;
 				virtual int enableEncryption(bool enabled, const EncryptionConfig& config) override;
 				virtual int createDataStream(int* streamId, bool reliable, bool ordered) override;
 				virtual int createDataStream(int* streamId, DataStreamConfig& config) override;
@@ -285,9 +287,9 @@ namespace agora
 				virtual int clearVideoWatermarks() override;
 				virtual int addInjectStreamUrl(const char* url, const InjectStreamConfig& config) override;
 				virtual int removeInjectStreamUrl(const char* url) override;
-				virtual int pauseAudio() __deprecated override;
-				virtual int resumeAudio() __deprecated override;
-				virtual int enableWebSdkInteroperability(bool enabled) __deprecated override;
+				virtual int pauseAudio()  override;
+				virtual int resumeAudio() override;
+				virtual int enableWebSdkInteroperability(bool enabled) override;
 				virtual int sendCustomReportMessage(const char* id, const char* category, const char* event, const char* label, int value) override;
 				virtual int registerMediaMetadataObserver(IMetadataObserver* observer, IMetadataObserver::METADATA_TYPE type) override;
 				virtual int unregisterMediaMetadataObserver(IMetadataObserver* observer, IMetadataObserver::METADATA_TYPE type) override;

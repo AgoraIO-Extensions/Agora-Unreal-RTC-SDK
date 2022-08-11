@@ -31,11 +31,12 @@
 				public void LoadLibrary()
 				{
 					boolean init = RtcEngineImpl.initializeNativeLibs();
-					System.out.println("Call Result is " + init);
+					System.out.println("Call LoadLibrary Result is " + init);
 				}
+				
 				public void LoadAndroidScreenCaptureSo()
 				{
-					int init = CommonUtility.safeLoadLibrary("agora_screen_capture_extension");
+					boolean init = CommonUtility.safeLoadLibrary("agora_screen_capture_extension");
 					System.out.println("Call LoadScreenCaptureSo Result is " + init);
 				}
 			]]>

@@ -38,7 +38,11 @@ MediaEngineProxy::~MediaEngineProxy()
 
 void MediaEngineProxy::registerVideoFrameObserver(media::IVideoFrameObserver* Observer)
 {
-	VideoObserver->registerVideoFrameObserver(Observer);
+	if (VideoObserver != nullptr)
+	{
+		VideoObserver->registerVideoFrameObserver(Observer);
+	}
+
 }
 
 }
