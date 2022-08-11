@@ -79,13 +79,13 @@ rm -f MAC_DST_PATH/*
 cp -PRf $MAC_SRC_PATH/Agora_*/libs/*.xcframework/macos-arm64_x86_64/*framework "$MAC_DST_PATH"
 
 echo "[Unreal CI] copying Win x86 ..."
-WINx86_DST_PATH="$PLUGIN_PATH/Win/Release/x86"
+WINx86_DST_PATH="$PLUGIN_PATH/Win/Release/"
 mkdir -p $WINx86_DST_PATH
 rm -f WINx86_DST_PATH/*
 cp -PRf $WIN_SRC_PATH/Agora_*/sdk/x86 "$WINx86_DST_PATH"
 
 echo "[Unreal CI] copying Win x86_64 ..."
-WINx86_64_DST_PATH="$PLUGIN_PATH/Win/Release/x86_64"
+WINx86_64_DST_PATH="$PLUGIN_PATH/Win/Release/"
 mkdir -p $WINx86_64_DST_PATH
 rm -f WINx86_64_DST_PATH/*
 cp -PRf $WIN_SRC_PATH/Agora_*/sdk/x86_64 "$WINx86_64_DST_PATH"
