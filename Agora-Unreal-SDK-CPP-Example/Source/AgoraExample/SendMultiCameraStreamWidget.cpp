@@ -218,6 +218,7 @@ void USendMultiCameraStreamWidget::onLeaveChannel(const RtcConnection& connectio
 		videoCanvas.uid = Uid1;
 		videoCanvas.sourceType = agora::rtc::VIDEO_SOURCE_TYPE::VIDEO_SOURCE_CAMERA;
 		RtcEngineProxy->setupLocalVideo(videoCanvas);
+		PrimaryVideo->Brush = EmptyBrush;
 	}
 
 	if (connection.localUid == Uid2)
@@ -227,6 +228,7 @@ void USendMultiCameraStreamWidget::onLeaveChannel(const RtcConnection& connectio
 		videoCanvas.uid = Uid2;
 		videoCanvas.sourceType = agora::rtc::VIDEO_SOURCE_TYPE::VIDEO_SOURCE_CAMERA;
 		RtcEngineProxy->setupLocalVideo(videoCanvas);
+		SecondVideo->Brush = EmptyBrush;
 	}
 }
 

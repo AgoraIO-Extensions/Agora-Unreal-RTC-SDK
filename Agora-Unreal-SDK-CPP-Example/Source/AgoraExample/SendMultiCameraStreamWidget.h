@@ -107,4 +107,6 @@ private:
 	CameraCapturerConfiguration ConfigSecond;
 
 	bool bIsChannelJoined = false;
+
+	FSlateBrush EmptyBrush;
 };
