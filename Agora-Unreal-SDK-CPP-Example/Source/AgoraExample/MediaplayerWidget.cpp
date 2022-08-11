@@ -60,6 +60,7 @@ void UMediaplayerWidget::SetUpUIEvent()
 	ResumeButton->OnClicked.AddDynamic(this, &UMediaplayerWidget::OnResumeButtonClick);
 	OpenButton->OnClicked.AddDynamic(this, &UMediaplayerWidget::OnOpenButtonClick);
 	CheckBoxUrl->OnCheckStateChanged.AddDynamic(this, &UMediaplayerWidget::CheckBoxValueChange);
+	BackHomeBtn->OnClicked.AddDynamic(this, &UMediaplayerWidget::BackHomeClick);
 }
 
 void UMediaplayerWidget::InitMediaPlayer()
@@ -119,6 +120,19 @@ void UMediaplayerWidget::CheckBoxValueChange(bool isOn)
 	bURLOpen = isOn;
 
 	UE_LOG(LogTemp, Warning, TEXT("TCheckBoxValueChange is %s"), (bURLOpen ? TEXT("true") : TEXT("false")));
+}
+
+void UMediaplayerWidget::BackHomeClick()
+{
+	UClass* AgoraWidgetClass = LoadClass<UBaseAgoraUserWidget>(NULL, TEXT("WidgetBlueprint'/Game/API-Example/Advance/MainWidgetManager.MainWidgetManager_C'"));
+
+	UBaseAgoraUserWidget* AgoraWidget = CreateWidget<UBaseAgoraUserWidget>(GetWorld(), AgoraWidgetClass);
+
+	AgoraWidget->AddToViewport();
+
+	AgoraWidget->InitAgoraWidget(FString(AppID.c_str()), FString(Token.c_str()), FString(ChannelName.c_str()));
+
+	this->RemoveFromViewport();
 }
 
 void UMediaplayerWidget::OnPlayButtonClick()

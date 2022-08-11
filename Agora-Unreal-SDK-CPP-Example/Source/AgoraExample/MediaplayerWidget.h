@@ -48,6 +48,12 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget))
 	UCheckBox* CheckBoxUrl;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	UButton* BackHomeBtn = nullptr;
+
+	UFUNCTION(BlueprintCallable)
+	void BackHomeClick();
+
 	UFUNCTION(BlueprintCallable)
 	void OnPlayButtonClick();
 

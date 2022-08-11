@@ -15,6 +15,19 @@ void USendMultiCameraStreamWidget::InitAgoraWidget(FString APP_ID, FString TOKEN
 	SetUpUIEvent();
 }
 
+void USendMultiCameraStreamWidget::BackHomeClick()
+{
+	UClass* AgoraWidgetClass = LoadClass<UBaseAgoraUserWidget>(NULL, TEXT("WidgetBlueprint'/Game/API-Example/Advance/MainWidgetManager.MainWidgetManager_C'"));
+
+	UBaseAgoraUserWidget* AgoraWidget = CreateWidget<UBaseAgoraUserWidget>(GetWorld(), AgoraWidgetClass);
+
+	AgoraWidget->AddToViewport();
+
+	AgoraWidget->InitAgoraWidget(FString(AppID.c_str()), FString(Token.c_str()), FString(ChannelName.c_str()));
+
+	this->RemoveFromViewport();
+}
+
 void USendMultiCameraStreamWidget::InitAgoraEngine(FString APP_ID, FString TOKEN, FString CHANNEL_NAME)
 {
 	agora::rtc::RtcEngineContext RtcEngineContext;
@@ -42,6 +55,7 @@ void USendMultiCameraStreamWidget::SetUpUIEvent()
 	MainCameraLeave->OnClicked.AddDynamic(this, &USendMultiCameraStreamWidget::MainCameraLeaveChannel);
 	SecondCameraJoin->OnClicked.AddDynamic(this, &USendMultiCameraStreamWidget::SecondCameraJoinChannel);
 	SecondCameraLeave->OnClicked.AddDynamic(this, &USendMultiCameraStreamWidget::SecondCameraLeaveChannel);
+	BackHomeBtn->OnClicked.AddDynamic(this, &USendMultiCameraStreamWidget::BackHomeClick);
 }
 
 void USendMultiCameraStreamWidget::CheckAndroidPermission()

@@ -37,6 +37,12 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
 	UButton* RightMoveBtn = nullptr;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	UButton* BackHomeBtn = nullptr;
+
+	UFUNCTION(BlueprintCallable)
+	void BackHomeClick();
+
 	UFUNCTION(BlueprintCallable)
 	void OnJoinButtonClick();
 
@@ -50,6 +56,8 @@ public:
 protected:
 
 	agora::rtc::IRtcEngine* RtcEngineProxy;
+
+	FString Appid;
 
 	FString Token;
 

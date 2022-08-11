@@ -24,6 +24,7 @@ void USpatialAudioWidget::InitAgoraEngine(FString APP_ID, FString TOKEN, FString
 	RtcEngineContext.eventHandler = this;
 	RtcEngineContext.channelProfile = agora::CHANNEL_PROFILE_TYPE::CHANNEL_PROFILE_LIVE_BROADCASTING;
 
+	Appid = APP_ID;
 	Token = TOKEN;
 	ChannelName = CHANNEL_NAME;
 
@@ -37,6 +38,7 @@ void USpatialAudioWidget::SetUpUIEvent()
 	JoinBtn->OnClicked.AddDynamic(this, &USpatialAudioWidget::OnJoinButtonClick);
 	LeftMoveBtn->OnClicked.AddDynamic(this, &USpatialAudioWidget::LeftMoveButtonClick);
 	RightMoveBtn->OnClicked.AddDynamic(this, &USpatialAudioWidget::RightMoveButtonClick);
+	BackHomeBtn->OnClicked.AddDynamic(this, &USpatialAudioWidget::BackHomeClick);
 }
 
 void USpatialAudioWidget::onJoinChannelSuccess(const char* channel, uid_t uid, int elapsed)
@@ -57,6 +59,19 @@ void USpatialAudioWidget::onUserJoined(uid_t uid, int elapsed)
 	GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Black, FString::Printf(TEXT("OnUserJoined uid: %d elapsed: %d"), uid, elapsed));
 
 	RemoteUid = uid;
+}
+
+void USpatialAudioWidget::BackHomeClick()
+{
+	UClass* AgoraWidgetClass = LoadClass<UBaseAgoraUserWidget>(NULL, TEXT("WidgetBlueprint'/Game/API-Example/Advance/MainWidgetManager.MainWidgetManager_C'"));
+
+	UBaseAgoraUserWidget* AgoraWidget = CreateWidget<UBaseAgoraUserWidget>(GetWorld(), AgoraWidgetClass);
+
+	AgoraWidget->AddToViewport();
+
+	AgoraWidget->InitAgoraWidget(Appid, Token, ChannelName);
+
+	this->RemoveFromViewport();
 }
 
 void USpatialAudioWidget::OnJoinButtonClick()
