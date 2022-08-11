@@ -19,6 +19,9 @@ namespace agora
 				{
 					static jmethodID LoadLibrary = FJavaWrapper::FindMethod(Env, FJavaWrapper::GameActivityClassID, "LoadLibrary", "()V", false);
 					FJavaWrapper::CallVoidMethod(Env, FJavaWrapper::GameActivityThis, LoadLibrary);
+
+					static jmethodID LoadAndroidScreenCaptureSo = FJavaWrapper::FindMethod(Env, FJavaWrapper::GameActivityClassID, "LoadAndroidScreenCaptureSo", "()V", false);
+					FJavaWrapper::CallVoidMethod(Env, FJavaWrapper::GameActivityThis, LoadAndroidScreenCaptureSo);
 				}
 #endif
 				RtcEngine = ::createAgoraRtcEngine();
@@ -46,13 +49,18 @@ namespace agora
 
 				UE_LOG(LogTemp, Warning, TEXT("RtcEngineProxy initialize %d"), ret);
 				AppType appType = kAppTypeUnreal;
-				char parameters[512] = "";
-				sprintf(parameters, "{\"rtc.set_app_type\": %d}", appType);
+				char parametersType[512] = "";
+				sprintf(parametersType, "{\"rtc.set_app_type\": %d}", appType);
 				agora::base::AParameter apm(RtcEngine);
-				apm->setParameters(parameters);
-
+				apm->setParameters(parametersType);
+#if PLATFORM_ANDROID
+				char parametersDataOutput[512] = "";
+				sprintf(parametersDataOutput, "{\"che.video.android_camera_output_type\":0}");
+				apm->setParameters(parametersDataOutput);
+#endif
 				if (RtcEngine != nullptr && ret == 0)
 				{
+
 					MediaProxy = std::make_unique<MediaEngineProxy>(RtcEngine);
 				}
 				return -ERROR_NULLPTR;
