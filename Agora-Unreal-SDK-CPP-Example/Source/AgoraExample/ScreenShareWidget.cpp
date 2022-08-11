@@ -6,6 +6,11 @@
 
 void UScreenShareWidget::InitAgoraWidget(FString APP_ID, FString TOKEN, FString CHANNEL_NAME)
 {
+#if PLATFORM_IOS
+	GEngine->AddOnScreenDebugMessage(-1, 60.f, FColor::White, FString::Printf(TEXT("Not Support in this platform!")));
+	return;
+#endif
+
 #if PLATFORM_ANDROID
 	CheckAndroidPermission();
 	ComboBoxDisplayId->SetVisibility(ESlateVisibility::Collapsed);
@@ -33,10 +38,6 @@ void UScreenShareWidget::SetUpUIEvent()
 
 void UScreenShareWidget::InitAgoraEngine(FString APP_ID, FString TOKEN, FString CHANNEL_NAME)
 {
-#if PLATFORM_IOS
-	GEngine->AddOnScreenDebugMessage(-1, 60.f, FColor::White, FString::Printf(TEXT("Not Support in this platform!")));
-	return;
-#endif
 	agora::rtc::RtcEngineContext RtcEngineContext;
 	RtcEngineContext.appId = TCHAR_TO_ANSI(*APP_ID);
 	RtcEngineContext.eventHandler = this;

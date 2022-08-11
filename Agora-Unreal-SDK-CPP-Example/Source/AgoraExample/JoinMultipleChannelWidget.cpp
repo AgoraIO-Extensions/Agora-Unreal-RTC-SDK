@@ -6,6 +6,11 @@
 
 void UJoinMultipleChannelWidget::InitAgoraWidget(FString APP_ID, FString TOKEN, FString CHANNEL_NAME)
 {
+#if PLATFORM_IOS
+	GEngine->AddOnScreenDebugMessage(-1, 60.f, FColor::White, FString::Printf(TEXT("Not Support in this platform!")));
+	return;
+#endif
+
 	CheckAndroidPermission();
 
 	InitAgoraEngine(APP_ID, TOKEN, CHANNEL_NAME);
