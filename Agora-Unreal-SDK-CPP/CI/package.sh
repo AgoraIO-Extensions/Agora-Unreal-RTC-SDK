@@ -58,6 +58,7 @@ cp -r "$ANDROID_SRC_PATH"/Agora_*/rtc/sdk/ "$ANDROID_DST_PATH"
 
 echo "[Unreal CI] copying IOS ..."
 IOS_DST_PATH="$PLUGIN_PATH/IOS/Release"
+mkdir -p $IOS_DST_PATH
 rm -f IOS_DST_PATH/*
 cp -PRf $IOS_SRC_PATH/Agora_*/libs/*.xcframework/ios-arm64_armv7/*framework "$IOS_DST_PATH"
 
@@ -73,16 +74,19 @@ cd "$CI_DIR"
 
 echo "[Unreal CI] copying Mac ..."
 MAC_DST_PATH="$PLUGIN_PATH/Mac/Release"
+mkdir -p $MAC_DST_PATH
 rm -f MAC_DST_PATH/*
 cp -PRf $MAC_SRC_PATH/Agora_*/libs/*.xcframework/macos-arm64_x86_64/*framework "$MAC_DST_PATH"
 
 echo "[Unreal CI] copying Win x86 ..."
 WINx86_DST_PATH="$PLUGIN_PATH/Win/Release/x86"
+mkdir -p $WINx86_DST_PATH
 rm -f WINx86_DST_PATH/*
 cp -PRf $WIN_SRC_PATH/Agora_*/sdk/x86 "$WINx86_DST_PATH"
 
 echo "[Unreal CI] copying Win x86_64 ..."
 WINx86_64_DST_PATH="$PLUGIN_PATH/Win/Release/x86_64"
+mkdir -p $WINx86_64_DST_PATH
 rm -f WINx86_64_DST_PATH/*
 cp -PRf $WIN_SRC_PATH/Agora_*/sdk/x86_64 "$WINx86_64_DST_PATH"
 
