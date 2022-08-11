@@ -13,6 +13,10 @@ void UJoinMultipleChannelWidget::InitAgoraWidget(FString APP_ID, FString TOKEN, 
 	PrepareScreenCapture();
 
 	SetUpUIEvent();
+
+#if PLATFORM_ANDROID
+	StartScreenShrareClick();
+#endif
 }
 
 void UJoinMultipleChannelWidget::SetUpUIEvent()

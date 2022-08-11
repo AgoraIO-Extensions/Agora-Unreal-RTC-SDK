@@ -30,6 +30,10 @@ void USendMultiCameraStreamWidget::BackHomeClick()
 
 void USendMultiCameraStreamWidget::InitAgoraEngine(FString APP_ID, FString TOKEN, FString CHANNEL_NAME)
 {
+#if PLATFORM_ANDROID || PLATFORM_IOS
+	GEngine->AddOnScreenDebugMessage(-1, 60.f, FColor::White, FString::Printf(TEXT("Not Support in this platform!")));
+	return;
+#endif
 	agora::rtc::RtcEngineContext RtcEngineContext;
 	std::string APP_IDStr(TCHAR_TO_ANSI(*APP_ID));
 	AppID = APP_IDStr;
