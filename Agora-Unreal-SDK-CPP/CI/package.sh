@@ -53,6 +53,7 @@ PLUGIN_PATH=$CI_DIR/temp/"$PLUGIN_NAME"/Source/ThirdParty/"$PLUGIN_NAME"Library
 
 echo "[Unreal CI] copying Android ..."
 ANDROID_DST_PATH="$PLUGIN_PATH"/Android/Release
+mkdir -p $ANDROID_DST_PATH
 rm -f ANDROID_DST_PATH/*
 cp -r "$ANDROID_SRC_PATH"/Agora_*/rtc/sdk/ "$ANDROID_DST_PATH"
 
