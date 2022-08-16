@@ -1,14 +1,14 @@
 
-# Agora-Unreal-CPP-SDK
+# Agora-Unreal-RTC-SDK
 
 The Agora-Unreal-SDK contains two directory.
 
 
-## Agora-Unreal-SDK-CPP-Example
+## Agora-Unreal-RTC-SDK-Example
 
 It contains demo project of Agora Unreal CPP SDK . You can run the demo project according to the README in Agora-Unreal-SDK-CPP-Example/README.md
 
-## Agora-Unreal-SDK-CPP
+## Agora-Unreal-RTC-SDK
 
 The SDK release download link
 

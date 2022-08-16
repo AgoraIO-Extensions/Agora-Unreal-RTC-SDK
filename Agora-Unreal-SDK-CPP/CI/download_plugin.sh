@@ -30,6 +30,54 @@ ANDROID_URL=$4
 IOS_URL=$5
 
 #--------------------------------------
+# Set URL
+#--------------------------------------
+
+FLAG=0
+while read -r line; do
+    if [[ $line == *">>>$SDK_TYPE"* ]]; then
+        FLAG=1
+    fi
+    if [[ $line == *"<<<end"* ]]; then
+        FLAG=0
+    fi
+
+    if [[ $FLAG == 1 ]]; then
+        case $line in
+            *"IOS"*)
+                if [ -z "$5" ]; then
+                    IOS_URL=$(echo "$line" | sed 's/IOS[[:space:]]*=//;s/^[[:space:]]*//')
+                else
+                    IOS_URL=$5
+                fi
+                ;;
+            *"ANDROID"*)
+                if [ -z "$4" ]; then
+                    ANDROID_URL=$(echo "$line" | sed 's/ANDROID[[:space:]]*=//;s/^[[:space:]]*//')
+                else
+                    ANDROID_URL=$4
+                fi
+                ;;
+            *"MAC"*)
+                if [ -z "$3" ]; then
+                    MAC_URL=$(echo "$line" | sed 's/MAC[[:space:]]*=//;s/^[[:space:]]*//')
+                else
+                    MAC_URL=$3
+                fi
+                ;;
+            *"WIN"*)
+                if [ -z "$2" ]; then
+                    WIN_URL=$(echo "$line" | sed 's/WIN[[:space:]]*=//;s/^[[:space:]]*//')
+                else
+                    WIN_URL=$2
+                fi
+                ;;
+        esac
+    fi
+done < "$CUR_DIR/url_config.txt"
+
+
+#--------------------------------------
 # Download plugins
 #--------------------------------------
 echo "IOS URL: $IOS_URL"
