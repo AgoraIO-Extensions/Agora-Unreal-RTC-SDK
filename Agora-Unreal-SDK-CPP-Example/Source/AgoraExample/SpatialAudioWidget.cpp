@@ -82,7 +82,7 @@ void USpatialAudioWidget::OnJoinButtonClick()
 }
 
 
-void USpatialAudioWidget::LeftMoveButtonClick()
+void USpatialAudioWidget::RightMoveButtonClick()
 {
 	RemoteVoicePositionInfo remoteVoicePos{ { 0.0f, 1.0f, 0.0f }, { 0.0f, 0.0f, 0.0f } };
 
@@ -91,7 +91,7 @@ void USpatialAudioWidget::LeftMoveButtonClick()
 	UE_LOG(LogTemp, Warning, TEXT("LocalSpatialAudioEngine->updateSelfPosition returns: %d"), ret);
 }
 
-void USpatialAudioWidget::RightMoveButtonClick()
+void USpatialAudioWidget::LeftMoveButtonClick()
 {
 	RemoteVoicePositionInfo remoteVoicePos{ { 0.0f, -1.0f, 0.0f }, { 0.0f, 0.0f, 0.0f } };
 
