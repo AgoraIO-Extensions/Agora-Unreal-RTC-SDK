@@ -19,8 +19,6 @@ void UScreenShareWidget::InitAgoraWidget(FString APP_ID, FString TOKEN, FString 
 	InitAgoraEngine(APP_ID, TOKEN, CHANNEL_NAME);
 
 	SetUpUIEvent();
-
-	JoinChannel();
 	/*this get all windows in you devices ,you can move this to other position. 
 	this code may freeze,you can move this to button click */
 #if PLATFORM_WINDOWS || PLATFORM_MAC
@@ -141,6 +139,7 @@ void UScreenShareWidget::StartScreenShrareClick()
 	}
 #endif
 	UpdateChannelMediaOptions();
+	JoinChannel();
 }
 
 void UScreenShareWidget::GetScreenDisplayId()
