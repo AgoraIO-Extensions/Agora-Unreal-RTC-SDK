@@ -16,7 +16,7 @@ void UMainAgoraUserWidget::JoinChannelAudioClick()
 
 void UMainAgoraUserWidget::DvicesManagerClick()
 {
-	LoadWidget(FString("WidgetBlueprint'/Game/API-Example/Advance/DvicesManager/BP_DeviceManager.BP_DeviceManager_C'"));
+	LoadWidget(FString("WidgetBlueprint'/Game/API-Example/Advance/DevicesManager/BP_DeviceManager.BP_DeviceManager_C'"));
 }
 
 void UMainAgoraUserWidget::JoinMultipleChannelClick()
