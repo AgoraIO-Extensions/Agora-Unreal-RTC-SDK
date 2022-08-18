@@ -6,7 +6,7 @@
 namespace agora {
 	namespace rtc {
 		namespace ue {
-			VideoRender::VideoRender(ICacheManager* CacheManager)
+			VideoRender::VideoRender(ICacheManager* CacheManager):RenderFrameId(VIDEO_SOURCE_TYPE::VIDEO_SOURCE_CAMERA, 0, "")
 			{
 				RenderTexture = nullptr;
 				RenderVideoFrame = nullptr;
