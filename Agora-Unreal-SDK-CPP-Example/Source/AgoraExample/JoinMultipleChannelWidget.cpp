@@ -318,6 +318,8 @@ void UJoinMultipleChannelWidget::NativeDestruct()
 
 	if (RtcEngineProxy!=nullptr)
 	{
+		RtcEngineProxy->stopScreenCapture();
+
 		RtcEngineProxy->release();
 		delete RtcEngineProxy;
 		RtcEngineProxy = nullptr;

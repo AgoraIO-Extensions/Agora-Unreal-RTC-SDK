@@ -80,6 +80,10 @@ void USendMultiCameraStreamWidget::CheckAndroidPermission()
 
 void USendMultiCameraStreamWidget::GetVideoDeviceManager()
 {
+	if (!VideoDeviceManager)
+	{
+		return;
+	}
 	VideoDeviceInfos = VideoDeviceManager->enumerateVideoDevices();
 
 	if (VideoDeviceInfos != nullptr && VideoDeviceInfos->getCount() > 0)
