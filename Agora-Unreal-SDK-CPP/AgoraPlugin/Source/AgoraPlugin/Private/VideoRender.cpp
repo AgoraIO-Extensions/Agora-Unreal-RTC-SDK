@@ -22,6 +22,7 @@ namespace agora {
 				RenderVideoFrame = nullptr;
 				if (RenderTexture != nullptr)
 				{
+
 					RenderTexture->ReleaseResource();
 					RenderTexture = nullptr;
 				}
@@ -39,12 +40,14 @@ namespace agora {
 				if (!RenderVideoFrame) {
 					return;
 				}
-				if (RenderTexture == nullptr || RenderTexture->GetSizeX() != RenderVideoFrame->width || RenderTexture->GetSizeY() != RenderVideoFrame->height) {
-					if (RenderTexture != nullptr)
+				if (RenderTexture == nullptr || !RenderTexture->IsValidLowLevel() || RenderTexture->GetSizeX() != RenderVideoFrame->width || RenderTexture->GetSizeY() != RenderVideoFrame->height) {
+					
+					//UE_LOG(LogTemp, Warning, TEXT("RenderTexture: %s"),*FString(RenderTexture->IsValidLowLevel() ? "true" : "false") );
+					/*if (RenderTexture != nullptr)
 					{
 						RenderTexture->ReleaseResource();
 						RenderTexture = nullptr;
-					}
+					}*/
 					RenderTexture = UTexture2D::CreateTransient(RenderVideoFrame->width, RenderVideoFrame->height, PF_R8G8B8A8);
 				}
 				else

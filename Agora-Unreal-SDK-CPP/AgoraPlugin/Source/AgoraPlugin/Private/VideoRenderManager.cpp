@@ -16,6 +16,7 @@ namespace agora {
 
             void VideoRenderManager::Tick(float DeltaTime)
             {
+                std::lock_guard<std::mutex> lock(VideoRenderMutex);
                 for (VideoRenderIter = VideoRenderMap.begin(); VideoRenderIter != VideoRenderMap.end(); VideoRenderIter++)
                 {
                     if (VideoRenderIter->second!=nullptr)
