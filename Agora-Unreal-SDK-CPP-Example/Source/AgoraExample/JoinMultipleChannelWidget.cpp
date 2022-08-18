@@ -19,15 +19,12 @@ void UJoinMultipleChannelWidget::InitAgoraWidget(FString APP_ID, FString TOKEN, 
 
 	SetUpUIEvent();
 
-#if PLATFORM_ANDROID
-	StartScreenShrareClick();
-#endif
 }
 
 void UJoinMultipleChannelWidget::SetUpUIEvent()
 {
 	StartScreenShrareBtn->SetVisibility(ESlateVisibility::Collapsed);
-#if PLATFORM_WINDOWS || PLATFORM_MAC
+#if PLATFORM_WINDOWS || PLATFORM_MAC || PLATFORM_ANDROID
 	StartScreenShrareBtn->OnClicked.AddDynamic(this, &UJoinMultipleChannelWidget::StartScreenShrareClick);
 	StartScreenShrareBtn->SetVisibility(ESlateVisibility::Visible);
 #endif
