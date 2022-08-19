@@ -8,14 +8,14 @@ buildUtils = new agora.build.BuildUtils()
 compileConfig = [
     "sourceDir": "agora-unreal-sdk-cpp-ng",
     "non-publish": [
-        "command": "./ci/build/build_mac.sh",
+        "command": "./.github/ci/build/build_mac.sh",
         "extraArgs": "",
     ],
     "publish": [
-        "command": "./ci/build/build_mac.sh",
+        "command": "./.github/ci/build/build_mac.sh",
         "extraArgs": "",
     ]
-]
+] 
 
 def doBuild(buildVariables) {
     type = params.Package_Publish ? "publish" : "non-publish"
