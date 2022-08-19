@@ -318,8 +318,9 @@ void UJoinMultipleChannelWidget::NativeDestruct()
 
 	if (RtcEngineProxy!=nullptr)
 	{
+#if !PLATFORM_IOS
 		RtcEngineProxy->stopScreenCapture();
-
+#endif
 		RtcEngineProxy->release();
 		delete RtcEngineProxy;
 		RtcEngineProxy = nullptr;
