@@ -10,6 +10,7 @@ namespace agora {
 			{
 				RenderTexture = nullptr;
 				RenderVideoFrame = nullptr;
+				RenderImage = nullptr;
 				VideoCacheManager = CacheManager;
 				bEnableUpdatePreview = false;
 				ArgbPixSize = 4;
@@ -20,9 +21,9 @@ namespace agora {
 				UE_LOG(LogTemp, Warning, TEXT("~VideoRender"));
 				VideoCacheManager->clear(&RenderFrameId);
 				RenderVideoFrame = nullptr;
+				RenderImage = nullptr;
 				if (RenderTexture != nullptr)
 				{
-
 					RenderTexture->ReleaseResource();
 					RenderTexture = nullptr;
 				}

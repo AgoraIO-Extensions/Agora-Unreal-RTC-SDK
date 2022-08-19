@@ -150,6 +150,12 @@ void USendMultiCameraStreamWidget::MainCameraLeaveChannel()
 
 	auto ret = ((agora::rtc::IRtcEngineEx*)RtcEngineProxy)->leaveChannelEx(connection);
 
+	agora::rtc::VideoCanvas videoCanvas;
+	videoCanvas.view = nullptr;
+	videoCanvas.uid = 0;
+	videoCanvas.sourceType = agora::rtc::VIDEO_SOURCE_TYPE::VIDEO_SOURCE_CAMERA_PRIMARY;
+	RtcEngineProxy->setupLocalVideo(videoCanvas);
+
 	UE_LOG(LogTemp, Warning, TEXT("SecondCameraLeaveChannel returns: %d ,ChannelName %s ,Uid %d"), ret, *FString(ChannelName.c_str()), Uid1);
 	PrimaryVideo->Brush = EmptyBrush;
 }
@@ -182,6 +188,13 @@ void USendMultiCameraStreamWidget::SecondCameraLeaveChannel()
 	connection.localUid = Uid2;
 	RtcEngineProxy->stopSecondaryCameraCapture();
 	auto ret = ((agora::rtc::IRtcEngineEx*)RtcEngineProxy)->leaveChannelEx(connection);
+
+	agora::rtc::VideoCanvas videoCanvas;
+	videoCanvas.view = nullptr;
+	videoCanvas.uid = 0;
+	videoCanvas.sourceType = agora::rtc::VIDEO_SOURCE_TYPE::VIDEO_SOURCE_CAMERA_SECONDARY;
+	RtcEngineProxy->setupLocalVideo(videoCanvas);
+
 	SecondVideo->Brush = EmptyBrush;
 	UE_LOG(LogTemp, Warning, TEXT("SecondCameraLeaveChannel returns: %d ,ChannelName %s ,Uid %d"), ret, *FString(ChannelName.c_str()) ,Uid2);
 }
