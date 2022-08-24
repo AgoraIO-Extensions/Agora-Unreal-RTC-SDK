@@ -60,6 +60,7 @@ Fill in your App ID, Channel Name and optionally the token if you set up the app
 **2) Running at individual level**
 In case you are focusing on one API sample, you may run the individual code the following way, using *Basic/joinChannelAudio/BasicAudioCall/* as an example:
 	- Find a blueprint named **BP_Agoractor** in the **WorldOutliner**, enter your AppID and Channel Name in the position below.
+
 ![Sample-PlayAudio](https://user-images.githubusercontent.com/1261195/186288166-50bb7c3f-66e2-4b88-a0de-df2ab2ac19af.gif)
 
 
@@ -73,6 +74,9 @@ In case you are focusing on one API sample, you may run the individual code the 
 File->Package Project->Windows->Windows(64-bit)
 
 ![Windowspackages](../ReadmePicture/windowspackage.jpg)
+
+#### 32bit Windows
+Unreal5 does not support it.  The plugin is disabled by default in AgoraPluginLibrary.Build.cs.  If you want to use the plugin on 32bit Windows machine, please uncomment the relevant code.
 
 ### MacOS Packaging
 
@@ -151,7 +155,7 @@ void UAgoraVideoWidget::CheckAndroidPermission()
 
 
 
-## FAQs
+# FAQs
 
 ### What should I do if UE4 Editor crashes on MacOS?
 Make sure you have added the following audio/video permissions to `info.plist` of **UE4Editor.app**.
