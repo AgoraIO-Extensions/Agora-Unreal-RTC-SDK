@@ -133,9 +133,9 @@ zip -r "$PLUGIN_NAME".zip $PLUGIN_NAME
 
 mkdir "$CI_DIR"/output
 
-mv "$CI_DIR"/temp/"$PLUGIN_NAME".zip  "$CI_DIR"/temp/Agora_Unreal_RTC_CPP_SDK_${SDK_VERSION}_${SDK_TYPE}_${build_time}_${BUILD_NUMBER}.zip
+mv "$CI_DIR"/temp/"$PLUGIN_NAME".zip  "$CI_DIR"/temp/Agora_Unreal_RTC_CPP_SDK_${SDK_VERSION}_${profile}_${build_time}_${BUILD_NUMBER}.zip
 
-cp "$CI_DIR"/temp/Agora_Unreal_RTC_SDK_${SDK_VERSION}_${SDK_TYPE}_${build_time}_${BUILD_NUMBER}.zip "$WORKSPACE" || exit 1
+cp "$CI_DIR"/temp/Agora_Unreal_RTC_CPP_SDK_${SDK_VERSION}_${profile}_${build_time}_${BUILD_NUMBER}.zip "$WORKSPACE" || exit 1
 
 rm -rf "$CI_DIR"/temp
 
