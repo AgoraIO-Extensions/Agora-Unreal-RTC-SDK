@@ -76,7 +76,9 @@ File->Package Project->Windows->Windows(64-bit)
 ![Windowspackages](../ReadmePicture/windowspackage.jpg)
 
 #### 32bit Windows
-Unreal5 does not support it.  The plugin is disabled by default in AgoraPluginLibrary.Build.cs.  If you want to use the plugin on 32bit Windows machine, please uncomment the relevant code.
+Since UE5 does not support 32-bit Windows, our plugin leave out the 32-bit implementation by default; otherwise, the compilation will result in error for UE5.  If you want to use the 32-bit build in UE4, please uncomment the win32 related code in AgoraPluginLibrary.Build.cs.  See this screenshot:
+
+![code_16613129312915](https://user-images.githubusercontent.com/1261195/186325436-d8bf6543-5aea-4adc-a903-0199519339eb.png)
 
 ### MacOS Packaging
 
@@ -187,6 +189,6 @@ Make sure you have accepted or added "Screen Recording" permission for the App (
 
 This is a trick to do quick mirroring effect.
 
-## Connect With Us
+# Connect With Us
 - If you have any questions, create an issue [here](https://github.com/AgoraIO-Extensions/Agora-Unreal-SDK-CPP-NG/issues).
 - You can find full API document at [Document Center](https://docs.agora.io/en/)
