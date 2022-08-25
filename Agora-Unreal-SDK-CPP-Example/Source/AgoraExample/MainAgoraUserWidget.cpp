@@ -81,7 +81,7 @@ void UMainAgoraUserWidget::NativeConstruct()
 
 	JoinChannelAudio->OnClicked.AddDynamic(this, &UMainAgoraUserWidget::JoinChannelAudioClick);
 
-	DevicesManager->OnClicked.AddDynamic(this, &UMainAgoraUserWidget::DvicesManagerClick);
+	DeviceManager->OnClicked.AddDynamic(this, &UMainAgoraUserWidget::DvicesManagerClick);
 
 	JoinMultipleChannel->OnClicked.AddDynamic(this, &UMainAgoraUserWidget::JoinMultipleChannelClick);
 

@@ -24,7 +24,7 @@ public:
 	UButton* JoinChannelAudio = nullptr;
 
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
-	UButton* DevicesManager = nullptr;
+	UButton* DeviceManager = nullptr;
 
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	UButton* JoinMultipleChannel = nullptr;
