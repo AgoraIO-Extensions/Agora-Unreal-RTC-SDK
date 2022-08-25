@@ -26,11 +26,17 @@ void UMediaplayerWidget::onVideoSizeChanged(uid_t uid, int width, int height, in
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Black, FString::Printf(TEXT("onVideoSizeChanged uid:%d ,width:%d ,height:%d"),uid,width,height));
 
+
 		if (uid == 0)
 		{
+#if ENGINE_MAJOR_VERSION > 4
+			UCanvasPanelSlot* imageSlot = dynamic_cast<UCanvasPanelSlot*>(remoteVideo->Slot.Get());
+#else
 			UCanvasPanelSlot* imageSlot = dynamic_cast<UCanvasPanelSlot*>(remoteVideo->Slot);
+#endif
 			imageSlot->SetSize(FVector2D(width, height));
 		}
+
 	});
 }
 
