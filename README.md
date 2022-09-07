@@ -4,7 +4,9 @@
 This repo contains Agora Unreal SDK and API-Examples in their respective folders.
 
 ## Very Important Note
-Until this note is removed, the SDK provided here is a **developer preview version**.   If there is any concern or feedback, please contact your Solution Architect for support. 
+
+ 1. Until this note is removed, the SDK provided here is a **developer preview version**.   If there is any concern or feedback, please contact your Solution Architect for support.
+ 2. **Blueprint** support is already on roadmap and will be delivered by late September.
 
 
 ## Agora-Unreal-RTC-SDK-Example
@@ -22,3 +24,4 @@ The SDK release download link:
 ## License
 
 The sample projects are under the MIT license.
+
