@@ -19,16 +19,44 @@ This project contains different scenes on how to integrate the Agora SDK APIs in
 
 ## Example Case
 
+### Common APIs
+The following APIs are used to run the life cycle of a session of the RTC engine:
+- createAgoraRtcEngine, initialize, joinChannel, setClientRole, leaveChannel, release
+
 ### Basic Case
-- JoinChannelAudio
-- JoinChannelVideo
+| Demo                                                         | Description                                        | APIs                                                         |
+| ------------------------------------------------------------ | -------------------------------------------------- | ------------------------------------------------------------ |
+| [JoinChannelAudio](Source/AgoraExample/AgoraAudioWidget.cpp) | basic demo to show audio call                      | enableAudio               |
+| [JoinChannelVideo](Source/AgoraExample/AgoraVideoWidget.cppo) | basic demo to show video call |enableAudio, enableVideo, setVideoEncoderConfiguration, setupLocalVideo, setupRemoteVideoEx |
+
+
 ### Advance Case
-- DeviceManager
-- JoinMultipleChannel
-- MediaPlayer
-- ScreenShare
-- SendMultiCameraStream
-- SpatialAudio
+| Demo                                                         | Description                                        | APIs                                                         |
+| ------------------------------------------------------------ | -------------------------------------------------- | ------------------------------------------------------------ |
+| [DeviceManager](Source/AgoraExample/DeviceManagerUserWidget.cpp)| show how to get and set Device on the desktop platforms  | queryInterface, startPreview, AudioDeviceManager::enumerateRecordingDevices/enumeratePlaybackDevices/setRecordingDevice/setPlaybackDevice/setRecordingDeviceVolume/setPlaybackDeviceVolume/reset, VideoDeviceManager::enumerateVideoDevices/getCount/getDevice/setDevice/reset          |
+| [JoinMultipleChannel](Source/AgoraExample/JoinMultipleChannelWidget.cpp) | multi-channel video call| startScreenCaptureByDisplayId, startScreenCaptureByWindowId, getScreenCaptureSources, joinChannelEx, setupLocalVideo, setupRemoteVideoEx, stopScreenCapture |
+| [MediaPlayer](Source/AgoraExample/MediaplayerWidget.cpp)| playback local media file| createMediaPlayer, destroyMediaPlayer, setupLocalVideo, MediaPlayer::play/stop/pause/resume/open/getMediaPlayerId
+| [ScreenShare](Source/AgoraExample/ScreenShareWidget.cpp) | screensharing demo| startScreenCaptureByDisplayId, startScreenCaptureByWindowId, getScreenCaptureSources, stopScreenCapture, setupLocalVideo, updateChannelMediaOptions |
+| [SendMultiCameraStream](Source/AgoraExample/SendMultiCameraStreamWidget.cpp) | shows how to send multiple video streams| startPrimaryCameraCapture, startSecondaryCameraCapture, stopPrimaryCameraCapture, stopSecondaryCameraCapture, joinChannelEx, leaveChannelEx, startPreview,setupLocalVideo, setupRemoteVideoEx |
+| [SpatialAudio](Source/AgoraExample/SpatialAudioWidget.cpp) | using the spatial audio feature| queryInterface, ILocalSpatialAudioEngine::updateSelfPosition/updateRemotePosition/setAudioRecvRange/initialize/release; |
+
+
+### Upcoming API Samples
+| Demo                                                         | Description                                        | APIs                                                         |
+| ------------------------------------------------------------ | -------------------------------------------------- | ------------------------------------------------------------ |
+| [AudioMixing](Source/AgoraExample/AudioMixing) | audioMixing and play audio effect in the channel | |
+| [CustomCaptureAudio](Source/AgoraExample/CustomCaptureAudio) | Sending raw data from AudioSource into the Agora channel | |
+| [CustomRenderAudio](Source/AgoraExample/CustomRenderAudio) | use AudioSource to play raw data received in the Agora channel | |
+| [Echo Test](Source/AgoraExample/EchoTest)| Speak and get echo back | |
+| [JoinChannelVideoToken](Source/AgoraExample/JoinChannelVideoToken) | demo on how to run Agora app with a token  | |
+| [PlaybackAudioFrame](Source/AgoraExample/PlaybackAudioFrame) | playback single user's audio frame on an AudioSource object  | |
+| [ProcessAudioRawData](Source/AgoraExample/ProcessAudioRawData) | playback audio frames from the channel on an AudioSource object | |
+| [ProcessVideoRawData](Source/AgoraExample/ProcessVideoRawData) | show how to setup raw video capture and render | |
+| [RtmpStreaming](Source/AgoraExample/RtmpStreaming) | stream video by RTMP Push to a CDN | |
+| [ScreenShareOnMobile](Source/AgoraExample/ScreenShareOnMobile) | sharing application screen view from Unreal camera  | |
+| [SendStreamMessage](Source/AgoraExample/SendStreamMessage) | Send Messages to other users in channel  | |
+| [SetEncryption](Source/AgoraExample/SetEncryption) | sending video with encryption  | |
+| [SetVideoEncoderConfiguration](Source/AgoraExample/SetVideoEncoderConfiguration) | video demo with multiple encoding dimension choice | |
 
 
 ## Run Project
@@ -192,3 +220,4 @@ This is a trick to do quick mirroring effect.
 # Connect With Us
 - If you have any questions, create an issue [here](https://github.com/AgoraIO-Extensions/Agora-Unreal-SDK-CPP-NG/issues).
 - You can find full API document at [Document Center](https://docs.agora.io/en/)
+
