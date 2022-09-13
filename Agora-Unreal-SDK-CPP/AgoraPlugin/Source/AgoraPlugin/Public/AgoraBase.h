@@ -845,6 +845,7 @@ enum INTERFACE_ID_TYPE {
   AGORA_IID_CLOUD_SPATIAL_AUDIO = 10,
   AGORA_IID_LOCAL_SPATIAL_AUDIO = 11,
   AGORA_IID_MEDIA_RECORDER = 12,
+  AGORA_IID_MUSIC_CONTENT_CENTER = 13,
 };
 
 /**
@@ -1767,7 +1768,7 @@ enum SIMULCAST_STREAM_MODE {
   /*
   * disable simulcast stream
   */
-  DISABLE_SIMULCAST_STREM = 0,
+  DISABLE_SIMULCAST_STREAM = 0,
   /*
   * always enable simulcast stream
   */
@@ -5238,7 +5239,6 @@ struct ScreenVideoParameters {
  * The audio configuration for the shared screen stream.
  */
 struct ScreenAudioParameters {
-#if defined(__ANDROID__)
   /**
    * The audio sample rate (Hz). The default value is `16000`.
    */
@@ -5247,7 +5247,6 @@ struct ScreenAudioParameters {
    * The number of audio channels. The default value is `2`, indicating dual channels.
    */
   int channels = 2;
-#endif
   /**
    * The volume of the captured system audio. The value range is [0,100]. The default value is
    * `100`.
