@@ -85,10 +85,10 @@ mkdir -p $ANDROID_DST_PATH
 rm -f ANDROID_DST_PATH/*
 cp -r "$ANDROID_SRC_PATH"/Agora_*/rtc/sdk/ "$ANDROID_DST_PATH"
 
-if [ "$SDK_TYPE" == "FULL" ]; then
+if [ "$profile" == "FULL" ]; then
     rm -rf "$PLUGIN_PATH"/Android/Release/APL_armv7TemplateVoice.xml
     mv "$PLUGIN_PATH"/Android/Release/APL_armv7TemplateFULL.xml "$PLUGIN_PATH"/Android/Release/APL_armv7Template.xml
-elif [ "$SDK_TYPE" == "VOICE" ]; then
+elif [ "$profile" == "VOICE" ]; then
     rm -rf "$PLUGIN_PATH"/Android/Release/APL_armv7TemplateFULL.xml
     mv "$PLUGIN_PATH"/Android/Release/APL_armv7TemplateVOICE.xml "$PLUGIN_PATH"/Android/Release/APL_armv7Template.xml
 fi
