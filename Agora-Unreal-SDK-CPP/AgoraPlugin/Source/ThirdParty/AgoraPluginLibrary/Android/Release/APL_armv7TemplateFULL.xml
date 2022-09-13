@@ -45,25 +45,7 @@
 	<!-- optional files or directories to copy to Intermediate/Android/APK -->
 	<resourceCopies>
 		<log text="PluginDir: $S(PluginDir)"/>
-		<copyFile src="$S(PluginDir)/$S(Architecture)/libagora-fdkaac.so" dst="$S(BuildDir)/libs/$S(Architecture)/libagora-fdkaac.so"/>
-		<copyFile src="$S(PluginDir)/$S(Architecture)/libagora-ffmpeg.so" dst="$S(BuildDir)/libs/$S(Architecture)/libagora-ffmpeg.so"/>
-		<copyFile src="$S(PluginDir)/$S(Architecture)/libagora-rtc-sdk.so" dst="$S(BuildDir)/libs/$S(Architecture)/libagora-rtc-sdk.so"/>
-		<copyFile src="$S(PluginDir)/$S(Architecture)/libagora-soundtouch.so" dst="$S(BuildDir)/libs/$S(Architecture)/libagora-soundtouch.so"/>
-		<copyFile src="$S(PluginDir)/$S(Architecture)/libagora_ai_noise_suppression_extension.so" dst="$S(BuildDir)/libs/$S(Architecture)/libagora_ai_noise_suppression_extension.so"/>
-		<copyFile src="$S(PluginDir)/$S(Architecture)/libagora_audio_beauty_extension.so" dst="$S(BuildDir)/libs/$S(Architecture)/libagora_audio_beauty_extension.so"/>
-		<copyFile src="$S(PluginDir)/$S(Architecture)/libagora_clear_vision_extension.so" dst="$S(BuildDir)/libs/$S(Architecture)/libagora_clear_vision_extension.so"/>
-		<copyFile src="$S(PluginDir)/$S(Architecture)/libagora_content_inspect_extension.so" dst="$S(BuildDir)/libs/$S(Architecture)/libagora_content_inspect_extension.so"/>
-		<copyFile src="$S(PluginDir)/$S(Architecture)/libagora_dav1d.so" dst="$S(BuildDir)/libs/$S(Architecture)/libagora_dav1d.so"/>
-		<copyFile src="$S(PluginDir)/$S(Architecture)/libagora_drm_loader_extension.so" dst="$S(BuildDir)/libs/$S(Architecture)/libagora_drm_loader_extension.so"/>
-		<copyFile src="$S(PluginDir)/$S(Architecture)/libagora_pvc_extension.so" dst="$S(BuildDir)/libs/$S(Architecture)/libagora_pvc_extension.so"/>
-		<copyFile src="$S(PluginDir)/$S(Architecture)/libagora_screen_capture_extension.so" dst="$S(BuildDir)/libs/$S(Architecture)/libagora_screen_capture_extension.so"/>
-		<copyFile src="$S(PluginDir)/$S(Architecture)/libagora_segmentation_extension.so" dst="$S(BuildDir)/libs/$S(Architecture)/libagora_segmentation_extension.so"/>
-		<copyFile src="$S(PluginDir)/$S(Architecture)/libagora_spatial_audio_extension.so" dst="$S(BuildDir)/libs/$S(Architecture)/libagora_spatial_audio_extension.so"/>
-		<copyFile src="$S(PluginDir)/$S(Architecture)/libagora_super_resolution_extension.so" dst="$S(BuildDir)/libs/$S(Architecture)/libagora_super_resolution_extension.so"/>
-		<copyFile src="$S(PluginDir)/$S(Architecture)/libudrm3.so" dst="$S(BuildDir)/libs/$S(Architecture)/libudrm3.so"/>
-		<copyFile src="$S(PluginDir)/agora-rtc-sdk.jar" dst="$S(BuildDir)/libs/agora-rtc-sdk.jar" />
-		<copyFile src="$S(PluginDir)/agora-rtc-sdk-javadoc.jar" dst="$S(BuildDir)/libs/agora-rtc-sdk-javadoc.jar" />
-		<copyFile src="$S(PluginDir)/AgoraScreenShareExtension.aar" dst="$S(BuildDir)/libs/AgoraScreenShareExtension.aar" />
+<!-- AgoraInsert -->
 	</resourceCopies>
 	<androidManifestUpdates>
 		<addPermission android:name="android.permission.INTERNET"/>
