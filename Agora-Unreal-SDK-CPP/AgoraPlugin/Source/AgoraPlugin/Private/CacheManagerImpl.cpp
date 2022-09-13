@@ -121,7 +121,6 @@ void CacheManagerImpl::clear(const VideoFrameIdentity *Identity)
 	std::lock_guard<std::recursive_mutex> lock(Mutex);
 	auto it = DataMap.find(*Identity);
 	if (it == DataMap.end()) {
-		Mutex.unlock();
 		return;
 	}
 	else {
@@ -140,8 +139,9 @@ void CacheManagerImpl::clear(const VideoFrameIdentity *Identity)
 				frames->SwipFrame = nullptr;
 			}
 			delete frames;
-			DataMap.erase(it);
+			
 		}
+		DataMap.erase(it);
 	}
 }
 

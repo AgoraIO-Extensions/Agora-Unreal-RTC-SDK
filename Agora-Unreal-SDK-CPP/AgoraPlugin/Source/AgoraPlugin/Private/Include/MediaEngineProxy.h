@@ -13,7 +13,7 @@ namespace ue
 
 using namespace agora::media;
 
-class MediaEngineProxy{
+class MediaEngineProxy {
 
 public:
 	MediaEngineProxy(IRtcEngine* Engine); 

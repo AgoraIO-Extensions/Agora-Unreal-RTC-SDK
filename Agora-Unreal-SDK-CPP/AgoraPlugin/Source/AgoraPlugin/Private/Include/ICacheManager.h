@@ -13,7 +13,14 @@ typedef struct VideoFrameIdentity {
 
     VIDEO_SOURCE_TYPE Type;
     unsigned int Id;
-    const char* Channel;
+    std::string Channel;
+
+    VideoFrameIdentity(VIDEO_SOURCE_TYPE Type ,unsigned int Id ,const char* ChannelName)
+    {
+        this->Type =Type;
+        this->Id = Id;
+        Channel = std::string(ChannelName);
+    }
 
     bool operator <(const VideoFrameIdentity& Other) const
     {
@@ -29,7 +36,7 @@ typedef struct VideoFrameIdentity {
             }
             else if (Id == Other.Id)
             {
-                if (strcmp(Channel, Other.Channel) != 0)
+                if (Channel.c_str() == Other.Channel.c_str())
                 {
                     return true;
                 }

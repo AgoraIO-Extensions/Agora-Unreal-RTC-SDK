@@ -19,6 +19,9 @@ namespace agora
 				{
 					static jmethodID LoadLibrary = FJavaWrapper::FindMethod(Env, FJavaWrapper::GameActivityClassID, "LoadLibrary", "()V", false);
 					FJavaWrapper::CallVoidMethod(Env, FJavaWrapper::GameActivityThis, LoadLibrary);
+
+					static jmethodID LoadAndroidScreenCaptureSo = FJavaWrapper::FindMethod(Env, FJavaWrapper::GameActivityClassID, "LoadAndroidScreenCaptureSo", "()V", false);
+					FJavaWrapper::CallVoidMethod(Env, FJavaWrapper::GameActivityThis, LoadAndroidScreenCaptureSo);
 				}
 #endif
 				RtcEngine = ::createAgoraRtcEngine();
@@ -36,7 +39,10 @@ namespace agora
 			void RtcEngineProxy::release(bool sync) {
 				if (RtcEngine != nullptr)
 				{
-					MediaProxy->registerVideoFrameObserver(nullptr);
+					if (MediaProxy != nullptr)
+					{
+						MediaProxy->registerVideoFrameObserver(nullptr);
+					}
 					RtcEngine->release(sync);
 					RtcEngine = nullptr;
 				}
@@ -45,15 +51,24 @@ namespace agora
 				int ret = RtcEngine->initialize(context);
 
 				UE_LOG(LogTemp, Warning, TEXT("RtcEngineProxy initialize %d"), ret);
-				AppType appType = kAppTypeUnreal;
-				char parameters[512] = "";
-				sprintf(parameters, "{\"rtc.set_app_type\": %d}", appType);
-				agora::base::AParameter apm(RtcEngine);
-				apm->setParameters(parameters);
-
 				if (RtcEngine != nullptr && ret == 0)
 				{
+					AppType appType = kAppTypeUnreal;
+					char parametersType[512] = "";
+					sprintf(parametersType, "{\"rtc.set_app_type\": %d}", appType);
+					agora::base::AParameter apm(RtcEngine);
+					apm->setParameters(parametersType);
+#if PLATFORM_ANDROID
+					char parametersDataOutput[512] = "";
+					sprintf(parametersDataOutput, "{\"che.video.android_camera_output_type\":0}");
+					apm->setParameters(parametersDataOutput);
+#endif
 					MediaProxy = std::make_unique<MediaEngineProxy>(RtcEngine);
+					return ret;
+				}
+				else if(RtcEngine != nullptr && ret != 0)
+				{
+					return ret;
 				}
 				return -ERROR_NULLPTR;
 			}
@@ -101,7 +116,8 @@ namespace agora
 
 			int RtcEngineProxy::leaveChannel() {
 				if (RtcEngine != nullptr) {
-					return RtcEngine->leaveChannel();
+					int ret = RtcEngine->leaveChannel();
+					return ret;
 				}
 				return -ERROR_NULLPTR;
 			}
@@ -275,8 +291,6 @@ namespace agora
 			}
 
 			int RtcEngineProxy::setupRemoteVideo(agora::rtc::VideoCanvas const& canvas) {
-
-
 				if (RtcEngine != nullptr) {
 					if (canvas.view != nullptr) {
 						VideoRenderMgr->setRenderImage((UImage*)canvas.view, canvas.uid, "", canvas.sourceType);
@@ -1128,14 +1142,14 @@ namespace agora
 				}
 				return -ERROR_NULLPTR;
 			}
-
+#if defined (_WIN32) || defined(__linux__) || defined(__ANDROID__)
 			int RtcEngineProxy::loadExtensionProvider(char const* path, bool unload_after_use) {
 				if (RtcEngine != nullptr) {
 					return RtcEngine->loadExtensionProvider(path, unload_after_use);
 				}
 				return -ERROR_NULLPTR;
 			}
-
+#endif
 			int RtcEngineProxy::setExtensionProviderProperty(char const* provider, char const* key, char const* value) {
 				if (RtcEngine != nullptr) {
 					return RtcEngine->setExtensionProviderProperty(provider, key, value);
@@ -1410,7 +1424,7 @@ namespace agora
 				return -ERROR_NULLPTR;
 			}
 #endif 
-#if defined(__ANDROID__)
+#if defined(__ANDROID__) || (defined(__APPLE__) && TARGET_OS_IOS)
 			int RtcEngineProxy::startScreenCapture(agora::rtc::ScreenCaptureParameters2 const& captureParams) {
 				if (RtcEngine != nullptr) {
 					return RtcEngine->startScreenCapture(captureParams);
@@ -1425,7 +1439,7 @@ namespace agora
 				return -ERROR_NULLPTR;
 			}
 #endif
-#if defined(_WIN32) || (defined(__APPLE__) && TARGET_OS_MAC && !TARGET_OS_IPHONE) || defined(__ANDROID__)
+#if defined(_WIN32) || defined(__APPLE__) || defined(__ANDROID__)
 			int RtcEngineProxy::stopScreenCapture() {
 				if (RtcEngine != nullptr) {
 					return RtcEngine->stopScreenCapture();

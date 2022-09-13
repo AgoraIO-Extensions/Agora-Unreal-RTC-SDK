@@ -6,10 +6,11 @@
 namespace agora {
 	namespace rtc {
 		namespace ue {
-			VideoRender::VideoRender(ICacheManager* CacheManager)
+			VideoRender::VideoRender(ICacheManager* CacheManager):RenderFrameId(VIDEO_SOURCE_TYPE::VIDEO_SOURCE_CAMERA, 0, "")
 			{
 				RenderTexture = nullptr;
 				RenderVideoFrame = nullptr;
+				RenderImage = nullptr;
 				VideoCacheManager = CacheManager;
 				bEnableUpdatePreview = false;
 				ArgbPixSize = 4;
@@ -20,11 +21,7 @@ namespace agora {
 				UE_LOG(LogTemp, Warning, TEXT("~VideoRender"));
 				VideoCacheManager->clear(&RenderFrameId);
 				RenderVideoFrame = nullptr;
-				if (RenderTexture != nullptr)
-				{
-					RenderTexture->ReleaseResource();
-					RenderTexture = nullptr;
-				}
+				RenderImage = nullptr;
 			}
 
 			void VideoRender::onTick()
@@ -39,12 +36,8 @@ namespace agora {
 				if (!RenderVideoFrame) {
 					return;
 				}
-				if (RenderTexture == nullptr || RenderTexture->GetSizeX() != RenderVideoFrame->width || RenderTexture->GetSizeY() != RenderVideoFrame->height) {
-					if (RenderTexture != nullptr)
-					{
-						RenderTexture->ReleaseResource();
-						RenderTexture = nullptr;
-					}
+				if (RenderTexture == nullptr || !RenderTexture->IsValidLowLevel() || RenderTexture->GetSizeX() != RenderVideoFrame->width || RenderTexture->GetSizeY() != RenderVideoFrame->height) {
+					
 					RenderTexture = UTexture2D::CreateTransient(RenderVideoFrame->width, RenderVideoFrame->height, PF_R8G8B8A8);
 				}
 				else
