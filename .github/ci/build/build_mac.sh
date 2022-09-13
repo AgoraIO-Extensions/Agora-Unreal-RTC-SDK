@@ -57,7 +57,7 @@ CI_DIR=$(pwd)/Agora-Unreal-SDK-CPP/CI
 Template_DIR=$(pwd)/Agora-Unreal-SDK-CPP/AgoraPlugin
 PLUGIN_NAME="AgoraPlugin"
 
-git checkout DEMO_BRANCH
+git checkout $BRANCH
 #echo "[Unreal CI] start preparing resources"
 cd "$CI_DIR" || exit 1
 mkdir temp
@@ -88,7 +88,7 @@ cp -r "$ANDROID_SRC_PATH"/Agora_*/rtc/sdk/ "$ANDROID_DST_PATH"
 if [ "$SDK_TYPE" == "FULL" ]; then
     rm -rf "$PLUGIN_PATH"/Android/Release/APL_armv7TemplateVoice.xml
     mv "$PLUGIN_PATH"/Android/Release/APL_armv7TemplateFULL.xml "$PLUGIN_PATH"/Android/Release/APL_armv7Template.xml
-elif [ "$SDK_TYPE" == "Voice" ]; then
+elif [ "$SDK_TYPE" == "VOICE" ]; then
     rm -rf "$PLUGIN_PATH"/Android/Release/APL_armv7TemplateFULL.xml
     mv "$PLUGIN_PATH"/Android/Release/APL_armv7TemplateVOICE.xml "$PLUGIN_PATH"/Android/Release/APL_armv7Template.xml
 fi
