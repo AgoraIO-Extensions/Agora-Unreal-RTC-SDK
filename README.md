@@ -5,7 +5,7 @@ This repo contains Agora Unreal SDK and API-Examples in their respective folders
 
 ## Very Important Note
 
- 1. Until this note is removed, the SDK provided here is a **developer preview version**.   If there is any concern or feedback, please contact your Solution Architect for support.
+ 1. Until this note is removed, the SDK provided here is a **developer preview version**.   If there is any concern or feedback, please contact your Solution Architect for support.  Or, create an issue here.
  2. **Blueprint** support is already on roadmap and will be delivered by late September.
 
 
