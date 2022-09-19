@@ -2,9 +2,13 @@
 
 
 #include "CustomCaptureVideoScene.h"
+#include <mutex>
+
+
 
 void UCustomCaptureVideoScene::InitAgoraWidget(FString APP_ID, FString TOKEN, FString CHANNEL_NAME)
 {
+
 	CheckAndroidPermission();
 
 	InitAgoraEngine(APP_ID, TOKEN, CHANNEL_NAME);
@@ -12,12 +16,71 @@ void UCustomCaptureVideoScene::InitAgoraWidget(FString APP_ID, FString TOKEN, FS
 	SetExternalVideoSource();
 
 	JoinChannel();
+
+	InitCamera();
+
+	BackHomeBtn->OnClicked.AddDynamic(this, &UCustomCaptureVideoScene::BackHomeClick);
 }
 
-void UCustomCaptureVideoScene::NativeConstruct()
+
+void UCustomCaptureVideoScene::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
+{
+	Super::NativeTick(MyGeometry, InDeltaTime);
+
+	UTexture2D* cameraFrame = (UTexture2D*)localVideo->Brush.GetResourceObject();
+	UMediaTexture* cameraFrameTexture = (UMediaTexture*)cameraFrame;
+	if (cameraFrame->PlatformData !=nullptr)
+	{
+		if(externalVideoFrame ==nullptr)
+		{
+			externalVideoFrame = new agora::media::base::ExternalVideoFrame();
+		}
+		externalVideoFrame->type = agora::media::base::ExternalVideoFrame::VIDEO_BUFFER_TYPE::VIDEO_BUFFER_RAW_DATA;
+		externalVideoFrame->format = agora::media::base::VIDEO_PIXEL_FORMAT::VIDEO_PIXEL_BGRA;
+
+		TArray<FColor> OutColors;
+		FMediaTextureResource* MediaTextureResource = static_cast<FMediaTextureResource*>(cameraFrameTexture->Resource);
+		MediaTextureResource->ReadPixels(OutColors);
+		externalVideoFrame->stride = cameraFrameTexture->GetWidth();
+		externalVideoFrame->height = cameraFrameTexture->GetHeight();
+		externalVideoFrame->cropLeft = 10;
+		externalVideoFrame->cropTop = 10;
+		externalVideoFrame->cropRight = 10;
+		externalVideoFrame->cropBottom = 10;
+		externalVideoFrame->rotation = 0;
+		if (externalVideoFrame->buffer == nullptr )
+		{
+			externalVideoFrame->buffer = (uint8*)FMemory::Malloc(OutColors.Num() * 4);
+		}
+		FMemory::Memcpy(externalVideoFrame->buffer, OutColors.GetData(), OutColors.Num() * 4);
+		externalVideoFrame->timestamp = getTimeStamp();
+
+		MediaEngineManager->pushVideoFrame(externalVideoFrame);
+	}
+
+}
+
+
+void UCustomCaptureVideoScene::NativeDestruct()
 {
 	Super::NativeConstruct();
-	
+	if (RtcEngineProxy != nullptr)
+	{
+		//MediaEngineManager.reset(nullptr);
+		RtcEngineProxy->release();
+		delete RtcEngineProxy;
+		RtcEngineProxy = nullptr;
+	}
+	if (externalVideoFrame != nullptr)
+	{
+		if(externalVideoFrame->buffer != nullptr)
+		{
+			delete externalVideoFrame->buffer;
+			externalVideoFrame->buffer = nullptr;
+		}
+		delete externalVideoFrame;
+		externalVideoFrame = nullptr;
+	}
 }
 
 void UCustomCaptureVideoScene::CheckAndroidPermission()
@@ -57,17 +120,18 @@ void UCustomCaptureVideoScene::InitAgoraEngine(FString APP_ID, FString TOKEN, FS
 
 void UCustomCaptureVideoScene::SetExternalVideoSource()
 {
-	int ret = RtcEngineProxy->queryInterface(INTERFACE_ID_TYPE::AGORA_IID_MEDIA_ENGINE,(void**)&MediaEngineProxy);
+	int ret = RtcEngineProxy->queryInterface(INTERFACE_ID_TYPE::AGORA_IID_MEDIA_ENGINE,(void**)&MediaEngineManager);
 
 	GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Red, FString::Printf(TEXT("MediaEngine init is %d"),ret));
 
-	if (MediaEngineProxy != nullptr)
-	{
-		agora::rtc::SenderOptions sendoptions;
+	agora::rtc::SenderOptions sendoptions;
 
-		MediaEngineProxy->setExternalVideoSource(true,false, agora::media::EXTERNAL_VIDEO_SOURCE_TYPE::VIDEO_FRAME, sendoptions);
-	}
+	int ret1 = MediaEngineManager->setExternalVideoSource(true, false, agora::media::EXTERNAL_VIDEO_SOURCE_TYPE::VIDEO_FRAME, sendoptions);
+	
+	GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Red, FString::Printf(TEXT("setExternalVideoSource init is %d"), ret1));
 }
+
+
 
 void UCustomCaptureVideoScene::JoinChannel()
 {
@@ -75,4 +139,25 @@ void UCustomCaptureVideoScene::JoinChannel()
 	RtcEngineProxy->enableVideo();
 	RtcEngineProxy->setClientRole(agora::rtc::CLIENT_ROLE_TYPE::CLIENT_ROLE_BROADCASTER);
 	RtcEngineProxy->joinChannel(Token.c_str(), ChannelName.c_str(), "", 0);
+}
+
+std::time_t UCustomCaptureVideoScene::getTimeStamp()
+{
+	std::chrono::time_point<std::chrono::system_clock, std::chrono::milliseconds> tp = std::chrono::time_point_cast<std::chrono::milliseconds>(std::chrono::system_clock::now());//获取当前时间点
+	std::time_t timestamp = tp.time_since_epoch().count();
+	return timestamp;
+}
+
+
+void UCustomCaptureVideoScene::BackHomeClick()
+{
+	UClass* AgoraWidgetClass = LoadClass<UBaseAgoraUserWidget>(NULL, TEXT("WidgetBlueprint'/Game/API-Example/Advance/MainWidgetManager.MainWidgetManager_C'"));
+
+	UBaseAgoraUserWidget* AgoraWidget = CreateWidget<UBaseAgoraUserWidget>(GetWorld(), AgoraWidgetClass);
+
+	AgoraWidget->AddToViewport();
+
+	AgoraWidget->InitAgoraWidget(FString(AppID.c_str()), FString(Token.c_str()), FString(ChannelName.c_str()));
+
+	this->RemoveFromViewport();
 }

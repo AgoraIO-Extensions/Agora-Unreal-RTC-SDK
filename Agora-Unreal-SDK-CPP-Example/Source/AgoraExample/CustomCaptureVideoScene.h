@@ -6,8 +6,13 @@
 #include "BaseAgoraUserWidget.h"
 #include "AgoraPluginInterface.h"
 #include "Components/Image.h"
+#include "MediaTexture.h"
+#include "Components/CanvasPanelSlot.h"
+#include "../Private/Misc/MediaTextureResource.h"
 #include <iostream>
 #include <string.h>
+#include <chrono> 
+#include "Components/Button.h"
 #include "CustomCaptureVideoScene.generated.h"
 using namespace agora::rtc;
 using namespace agora;
@@ -20,6 +25,24 @@ class AGORAEXAMPLE_API UCustomCaptureVideoScene : public UBaseAgoraUserWidget, p
 	GENERATED_BODY()
 	
 public:
+
+
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	UImage* localVideo = nullptr;
+
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	UButton* BackHomeBtn = nullptr;
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void InitCamera();
+
+	UFUNCTION(BlueprintCallable)
+	void BackHomeClick();
+
+	IRtcEngine* RtcEngineProxy;
+
+	agora::media::base::ExternalVideoFrame* externalVideoFrame;
+
 	void InitAgoraWidget(FString APP_ID, FString TOKEN, FString CHANNEL_NAME) override;
 
 	std::string AppID;
@@ -28,23 +51,20 @@ public:
 
 	std::string ChannelName;
 
-	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
-	UImage* localVideo = nullptr;
-
-	IRtcEngine* RtcEngineProxy;
-
-	agora::media::IMediaEngine* MediaEngineProxy;
-
-	agora::util::AutoPtr<agora::media::IMediaEngine> MediaEngineManager;
-
 protected:
-	void NativeConstruct() override;
+	void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
+
+	void NativeDestruct();
 
 	void CheckAndroidPermission();
 
 	void InitAgoraEngine(FString APP_ID, FString TOKEN, FString CHANNEL_NAME);
 
 	void SetExternalVideoSource();
-private:
+
 	void JoinChannel();
+
+	std::time_t getTimeStamp();
+
+	agora::media::IMediaEngine* MediaEngineManager;
 };

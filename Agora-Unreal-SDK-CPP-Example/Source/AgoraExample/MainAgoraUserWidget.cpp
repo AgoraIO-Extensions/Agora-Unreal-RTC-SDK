@@ -44,6 +44,10 @@ void UMainAgoraUserWidget::SpatialAudioClick()
 	LoadWidget(FString("WidgetBlueprint'/Game/API-Example/Advance/SpatialAudio/BP_SpatialAudio.BP_SpatialAudio_C'"));
 }
 
+void UMainAgoraUserWidget::CustomCaptureVideoClick()
+{
+	LoadWidget(FString("WidgetBlueprint'/Game/API-Example/Advance/CustomCaptureVideo/BP_CustomCaptureVideoScene.BP_CustomCaptureVideoScene_C'"));
+}
 
 void UMainAgoraUserWidget::LoadWidget(FString WidgetName)
 {
@@ -92,5 +96,7 @@ void UMainAgoraUserWidget::NativeConstruct()
 	SendMultiCameraStream->OnClicked.AddDynamic(this, &UMainAgoraUserWidget::SendMultiCameraStreamClick);
 
 	SpatialAudio->OnClicked.AddDynamic(this, &UMainAgoraUserWidget::SpatialAudioClick);
+
+	CustomCaptureVideo->OnClicked.AddDynamic(this, &UMainAgoraUserWidget::CustomCaptureVideoClick);
 }
 

@@ -42,6 +42,9 @@ public:
 	UButton* SpatialAudio = nullptr;
 
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	UButton* CustomCaptureVideo = nullptr;
+
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	UEditableTextBox* AppidBox;
 
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
@@ -73,6 +76,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void SpatialAudioClick();
+
+	UFUNCTION(BlueprintCallable)
+	void CustomCaptureVideoClick();
 
 	FString APP_ID; 
 
