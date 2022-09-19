@@ -177,7 +177,6 @@ void UDeviceManagerUserWidget::NativeDestruct()
 	{
 		AudioDeviceManager.reset(nullptr);
 		VideoDeviceManager.reset(nullptr);
-
 		RtcEngineProxy->release();
 		delete RtcEngineProxy;
 		RtcEngineProxy = nullptr;

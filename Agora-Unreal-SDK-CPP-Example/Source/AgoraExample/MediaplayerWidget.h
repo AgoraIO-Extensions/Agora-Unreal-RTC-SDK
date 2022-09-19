@@ -81,7 +81,7 @@ public:
 	FSlateBrush EmptyBrush;
 
 
-	void onVideoSizeChanged(uid_t uid, int width, int height, int rotation) override;
+	//void onVideoSizeChanged(uid_t uid, int width, int height, int rotation) override;
 
 private:
 

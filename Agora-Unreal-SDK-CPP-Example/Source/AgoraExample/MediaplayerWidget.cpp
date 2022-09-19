@@ -20,25 +20,25 @@ void UMediaplayerWidget::InitAgoraWidget(FString APP_ID, FString TOKEN, FString 
 
 }
 
-void UMediaplayerWidget::onVideoSizeChanged(uid_t uid, int width, int height, int rotation)
-{
-	AsyncTask(ENamedThreads::GameThread, [=]()
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Black, FString::Printf(TEXT("onVideoSizeChanged uid:%d ,width:%d ,height:%d"),uid,width,height));
-
-
-		if (uid == 0)
-		{
-#if ENGINE_MAJOR_VERSION > 4
-			UCanvasPanelSlot* imageSlot = dynamic_cast<UCanvasPanelSlot*>(remoteVideo->Slot.Get());
-#else
-			UCanvasPanelSlot* imageSlot = dynamic_cast<UCanvasPanelSlot*>(remoteVideo->Slot);
-#endif
-			imageSlot->SetSize(FVector2D(width, height));
-		}
-
-	});
-}
+//void UMediaplayerWidget::onVideoSizeChanged(uid_t uid, int width, int height, int rotation)
+//{
+//	AsyncTask(ENamedThreads::GameThread, [=]()
+//	{
+//		GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Black, FString::Printf(TEXT("onVideoSizeChanged uid:%d ,width:%d ,height:%d"),uid,width,height));
+//
+//
+//		if (uid == 0)
+//		{
+//#if ENGINE_MAJOR_VERSION > 4
+//			UCanvasPanelSlot* imageSlot = dynamic_cast<UCanvasPanelSlot*>(remoteVideo->Slot.Get());
+//#else
+//			UCanvasPanelSlot* imageSlot = dynamic_cast<UCanvasPanelSlot*>(remoteVideo->Slot);
+//#endif
+//			imageSlot->SetSize(FVector2D(width, height));
+//		}
+//
+//	});
+//}
 
 void UMediaplayerWidget::InitAgoraEngine(FString APP_ID, FString TOKEN, FString CHANNEL_NAME)
 {
