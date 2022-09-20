@@ -8,7 +8,6 @@
 
 void UCustomCaptureVideoScene::InitAgoraWidget(FString APP_ID, FString TOKEN, FString CHANNEL_NAME)
 {
-
 	CheckAndroidPermission();
 
 	InitAgoraEngine(APP_ID, TOKEN, CHANNEL_NAME);
@@ -26,12 +25,11 @@ void UCustomCaptureVideoScene::InitAgoraWidget(FString APP_ID, FString TOKEN, FS
 void UCustomCaptureVideoScene::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
 	Super::NativeTick(MyGeometry, InDeltaTime);
-
 	UTexture2D* cameraFrame = (UTexture2D*)localVideo->Brush.GetResourceObject();
 	UMediaTexture* cameraFrameTexture = (UMediaTexture*)cameraFrame;
-	if (cameraFrame->PlatformData !=nullptr)
+	if (cameraFrame->PlatformData != nullptr)
 	{
-		if(externalVideoFrame ==nullptr)
+		if (externalVideoFrame == nullptr)
 		{
 			externalVideoFrame = new agora::media::base::ExternalVideoFrame();
 		}
@@ -47,15 +45,18 @@ void UCustomCaptureVideoScene::NativeTick(const FGeometry& MyGeometry, float InD
 		externalVideoFrame->cropRight = 10;
 		externalVideoFrame->cropBottom = 10;
 		externalVideoFrame->rotation = 0;
-		if (externalVideoFrame->buffer == nullptr )
+		if (OutColors.Num() != 4)
 		{
-			externalVideoFrame->buffer = (uint8*)FMemory::Malloc(OutColors.Num() * 4);
+			if (externalVideoFrame->buffer == nullptr)
+			{
+				externalVideoFrame->buffer = (uint8*)FMemory::Malloc(OutColors.Num() * 4);
+			}
+			FMemory::Memcpy(externalVideoFrame->buffer, OutColors.GetData(), OutColors.Num() * 4);
+			MediaEngineManager->pushVideoFrame(externalVideoFrame);
 		}
-		FMemory::Memcpy(externalVideoFrame->buffer, OutColors.GetData(), OutColors.Num() * 4);
 		externalVideoFrame->timestamp = getTimeStamp();
-
-		MediaEngineManager->pushVideoFrame(externalVideoFrame);
 	}
+	
 
 }
 
