@@ -17,7 +17,7 @@ void UCustomCaptureVideoScene::InitAgoraWidget(FString APP_ID, FString TOKEN, FS
 
 	JoinChannel();
 
-	InitCamera();
+	InitVideo();
 
 	BackHomeBtn->OnClicked.AddDynamic(this, &UCustomCaptureVideoScene::BackHomeClick);
 }

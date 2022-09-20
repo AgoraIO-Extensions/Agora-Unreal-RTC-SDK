@@ -35,7 +35,7 @@ public:
 	UButton* BackHomeBtn = nullptr;
 
 	UFUNCTION(BlueprintImplementableEvent)
-	void InitCamera();
+	void InitVideo();
 
 	UFUNCTION(BlueprintCallable)
 	void BackHomeClick();
