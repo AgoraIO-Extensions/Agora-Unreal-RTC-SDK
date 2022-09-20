@@ -26,46 +26,32 @@ void UCustomCaptureVideoScene::NativeTick(const FGeometry& MyGeometry, float InD
 {
 	Super::NativeTick(MyGeometry, InDeltaTime);
 	UTexture2D* tex = (UTexture2D*)localVideo->Brush.GetResourceObject();
-	//UMediaTexture* cameraFrameTexture = (UMediaTexture*)cameraFrame;
-	//if (cameraFrame->PlatformData != nullptr)
-	//{
-		if (externalVideoFrame == nullptr)
-		{
-			externalVideoFrame = new agora::media::base::ExternalVideoFrame();
-		}
-		externalVideoFrame->type = agora::media::base::ExternalVideoFrame::VIDEO_BUFFER_TYPE::VIDEO_BUFFER_RAW_DATA;
-		externalVideoFrame->format = agora::media::base::VIDEO_PIXEL_FORMAT::VIDEO_PIXEL_BGRA;
-	/*	TArray<FColor> OutColors;
-		FMediaTextureResource* MediaTextureResource = static_cast<FMediaTextureResource*>(cameraFrameTexture->Resource);
-		MediaTextureResource->ReadPixels(OutColors);*/
-		externalVideoFrame->stride = tex->GetSizeX();
-		externalVideoFrame->height = tex->GetSizeY();
-		externalVideoFrame->cropLeft = 10;
-		externalVideoFrame->cropTop = 10;
-		externalVideoFrame->cropRight = 10;
-		externalVideoFrame->cropBottom = 10;
-		externalVideoFrame->rotation = 0;
-	/*	if (OutColors.Num() != 4)
-		{*/
-			if (externalVideoFrame->buffer == nullptr)
-			{
-				externalVideoFrame->buffer = (uint8*)FMemory::Malloc(tex->GetSizeX() * tex->GetSizeY()*4);
-			}
-			externalVideoFrame->timestamp = getTimeStamp();
-			if (tex->PlatformData!=nullptr)
-			{
-				uint8* raw = (uint8*)tex->PlatformData->Mips[0].BulkData.Lock(LOCK_READ_ONLY);
-				memcpy(externalVideoFrame->buffer, raw, tex->GetSizeX() * tex->GetSizeY() * 4);
-				tex->PlatformData->Mips[0].BulkData.Unlock();
+	if (externalVideoFrame == nullptr)
+	{
+		externalVideoFrame = new agora::media::base::ExternalVideoFrame();
+	}
+	externalVideoFrame->type = agora::media::base::ExternalVideoFrame::VIDEO_BUFFER_TYPE::VIDEO_BUFFER_RAW_DATA;
+	externalVideoFrame->format = agora::media::base::VIDEO_PIXEL_FORMAT::VIDEO_PIXEL_BGRA;
+	externalVideoFrame->stride = tex->GetSizeX();
+	externalVideoFrame->height = tex->GetSizeY();
+	externalVideoFrame->cropLeft = 10;
+	externalVideoFrame->cropTop = 10;
+	externalVideoFrame->cropRight = 10;
+	externalVideoFrame->cropBottom = 10;
+	externalVideoFrame->rotation = 0;
+	if (externalVideoFrame->buffer == nullptr)
+	{
+		externalVideoFrame->buffer = (uint8*)FMemory::Malloc(tex->GetSizeX() * tex->GetSizeY()*4);
+	}
+	externalVideoFrame->timestamp = getTimeStamp();
+	if (tex->PlatformData!=nullptr)
+	{
+		uint8* raw = (uint8*)tex->PlatformData->Mips[0].BulkData.Lock(LOCK_READ_ONLY);
+		memcpy(externalVideoFrame->buffer, raw, tex->GetSizeX() * tex->GetSizeY() * 4);
+		tex->PlatformData->Mips[0].BulkData.Unlock();
 
-				MediaEngineManager->pushVideoFrame(externalVideoFrame);
-			}
-			
-		//}
-
-	//}
-	
-
+		MediaEngineManager->pushVideoFrame(externalVideoFrame);
+	}
 }
 
 
