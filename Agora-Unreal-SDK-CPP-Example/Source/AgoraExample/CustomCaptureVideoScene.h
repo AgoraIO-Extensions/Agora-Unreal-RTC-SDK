@@ -13,6 +13,9 @@
 #include <string.h>
 #include <chrono> 
 #include "Components/Button.h"
+#if PLATFORM_ANDROID
+#include "AndroidPermission/Classes/AndroidPermissionFunctionLibrary.h"
+#endif
 #include "CustomCaptureVideoScene.generated.h"
 using namespace agora::rtc;
 using namespace agora;

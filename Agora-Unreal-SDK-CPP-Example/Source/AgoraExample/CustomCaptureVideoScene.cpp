@@ -37,7 +37,6 @@ void UCustomCaptureVideoScene::NativeTick(const FGeometry& MyGeometry, float InD
 		}
 		externalVideoFrame->type = agora::media::base::ExternalVideoFrame::VIDEO_BUFFER_TYPE::VIDEO_BUFFER_RAW_DATA;
 		externalVideoFrame->format = agora::media::base::VIDEO_PIXEL_FORMAT::VIDEO_PIXEL_BGRA;
-
 		TArray<FColor> OutColors;
 		FMediaTextureResource* MediaTextureResource = static_cast<FMediaTextureResource*>(cameraFrameTexture->Resource);
 		MediaTextureResource->ReadPixels(OutColors);
@@ -70,7 +69,7 @@ void UCustomCaptureVideoScene::NativeDestruct()
 		{
 			if (externalVideoFrame->buffer != nullptr)
 			{
-				delete externalVideoFrame->buffer;
+				FMemory::Free(externalVideoFrame->buffer);
 				externalVideoFrame->buffer = nullptr;
 			}
 			delete externalVideoFrame;
