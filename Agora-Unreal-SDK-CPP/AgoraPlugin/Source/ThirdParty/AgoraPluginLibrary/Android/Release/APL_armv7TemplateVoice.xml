@@ -33,6 +33,10 @@
 					boolean init = RtcEngineImpl.initializeNativeLibs();
 					System.out.println("Call LoadLibrary Result is " + init);
 				}
+				public void LoadAndroidScreenCaptureSo()
+				{
+					System.out.println("Call LoadAndroidScreenCaptureSo Result");
+				}
 			]]>
 		</insert>
 	</gameActivityClassAdditions>
