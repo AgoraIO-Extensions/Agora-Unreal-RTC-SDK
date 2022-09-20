@@ -25,8 +25,6 @@ class AGORAEXAMPLE_API UCustomCaptureVideoScene : public UBaseAgoraUserWidget, p
 	GENERATED_BODY()
 	
 public:
-
-
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	UImage* localVideo = nullptr;
 

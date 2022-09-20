@@ -66,20 +66,23 @@ void UCustomCaptureVideoScene::NativeDestruct()
 	Super::NativeConstruct();
 	if (RtcEngineProxy != nullptr)
 	{
-		//MediaEngineManager.reset(nullptr);
+		if (externalVideoFrame != nullptr)
+		{
+			if (externalVideoFrame->buffer != nullptr)
+			{
+				delete externalVideoFrame->buffer;
+				externalVideoFrame->buffer = nullptr;
+			}
+			delete externalVideoFrame;
+			externalVideoFrame = nullptr;
+		}
+		if(MediaEngineManager!=nullptr)
+		{
+			MediaEngineManager->release();
+		}
 		RtcEngineProxy->release();
 		delete RtcEngineProxy;
 		RtcEngineProxy = nullptr;
-	}
-	if (externalVideoFrame != nullptr)
-	{
-		if(externalVideoFrame->buffer != nullptr)
-		{
-			delete externalVideoFrame->buffer;
-			externalVideoFrame->buffer = nullptr;
-		}
-		delete externalVideoFrame;
-		externalVideoFrame = nullptr;
 	}
 }
 
@@ -143,7 +146,7 @@ void UCustomCaptureVideoScene::JoinChannel()
 
 std::time_t UCustomCaptureVideoScene::getTimeStamp()
 {
-	std::chrono::time_point<std::chrono::system_clock, std::chrono::milliseconds> tp = std::chrono::time_point_cast<std::chrono::milliseconds>(std::chrono::system_clock::now());//获取当前时间点
+	std::chrono::time_point<std::chrono::system_clock, std::chrono::milliseconds> tp = std::chrono::time_point_cast<std::chrono::milliseconds>(std::chrono::system_clock::now());
 	std::time_t timestamp = tp.time_since_epoch().count();
 	return timestamp;
 }
