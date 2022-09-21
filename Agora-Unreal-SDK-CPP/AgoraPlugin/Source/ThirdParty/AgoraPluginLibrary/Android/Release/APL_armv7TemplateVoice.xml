@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- steps to add to build additions -->
+<root xmlns:android="http://schemas.android.com/apk/res/android">
+	<!-- init section is always evaluated once per architecture -->
+	<init>
+		<setBool result="bSupported" value="false"/>
+		<isArch arch="armeabi-v7a">
+			<setBool result="bSupported" value="true"/>
+		</isArch>
+		<isArch arch="arm64-v8a">
+			<setBool result="bSupported" value="true"/>
+		</isArch>
+		<isArch arch="x86">
+			<setBool result="bSupported" value="true"/>
+		</isArch>
+		<isArch arch="x86_64">
+			<setBool result="bSupported" value="true"/>
+		</isArch>
+	</init>
+
+	<gameActivityImportAdditions>
+		<insert>
+			import io.agora.rtc2.internal.RtcEngineImpl;
+			import io.agora.rtc2.internal.CommonUtility;
+		</insert>
+	</gameActivityImportAdditions>
+
+	<gameActivityClassAdditions>
+		<insert>
+			<![CDATA[
+				public void LoadLibrary()
+				{
+					boolean init = RtcEngineImpl.initializeNativeLibs();
+					System.out.println("Call LoadLibrary Result is " + init);
+				}
+				public void LoadAndroidScreenCaptureSo()
+				{
+					System.out.println("Call LoadAndroidScreenCaptureSo Result");
+				}
+			]]>
+		</insert>
+	</gameActivityClassAdditions>
+	<!-- optional files or directories to copy to Intermediate/Android/APK -->
+	<resourceCopies>
+		<log text="PluginDir: $S(PluginDir)"/>
+<!-- AgoraInsert -->
+	</resourceCopies>
+	<androidManifestUpdates>
+		<addPermission android:name="android.permission.INTERNET"/>
+		<addPermission android:name="android.permission.RECORD_AUDIO"/>
+		<addPermission android:name="android.permission.READ_PHONE_STATE"/>
+		<addPermission android:name="android.permission.MODIFY_AUDIO_SETTINGS"/>
+		<addPermission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+		<addPermission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+		<addPermission android:name="android.permission.BLUETOOTH"/>
+	</androidManifestUpdates>
+
+	<!-- optional libraries to load in GameActivity.java before libUE4.so -->
+	<soLoadLibrary>
+		<if condition="bSupported">
+			<true>
+				<!-- <loadLibrary name="agora-crypto" failmsg="Failed to load agora-crypto library" /> -->
+				<!-- <loadLibrary name="crypto_1_0_0" failmsg="Failed to load crypto_1_0_0 library" /> -->
+				<loadLibrary name="libagora-fdkaac" failmsg="Failed to load libagora-fdkaac library" />
+				<loadLibrary name="libagora-ffmpeg" failmsg="Failed to load libagora-ffmpeg library" />
+				<loadLibrary name="libagora-rtc-sdk" failmsg="Failed to load libagora-rtc-sdk library" />
+				<loadLibrary name="libagora-soundtouch" failmsg="Failed to load libagora-soundtouch library" />
+				<loadLibrary name="libagora_ai_noise_suppression_extension" failmsg="Failed to load libagora_ai_noise_suppression_extension library" />
+				<loadLibrary name="libagora_audio_beauty_extension" failmsg="Failed to load libagora_audio_beauty_extension library" />
+				<loadLibrary name="libagora_clear_vision_extension" failmsg="Failed to load libagora_clear_vision_extension library" />
+				<loadLibrary name="libagora_content_inspect_extension" failmsg="Failed to load libagora_content_inspect_extension library" />
+				<loadLibrary name="libagora_dav1d" failmsg="Failed to load libagora_dav1d library" />
+				<loadLibrary name="libagora_pvc_extension" failmsg="Failed to load libagora_pvc_extension library" />
+				<loadLibrary name="libagora_screen_capture_extension" failmsg="Failed to load libagora_screen_capture_extension library" />
+				<loadLibrary name="libagora_segmentation_extension" failmsg="Failed to load libagora_segmentation_extension library" />
+				<loadLibrary name="libagora_spatial_audio_extension" failmsg="Failed to load libagora_spatial_audio_extension library" />
+				<loadLibrary name="libagora_super_resolution_extension" failmsg="Failed to load libagora_super_resolution_extension library" />
+				<loadLibrary name="agora-rtc-sdk" failmsg="Failed to load agora-rtc-sdk library" />
+				<loadLibrary name="AgoraScreenShareExtension" failmsg="Failed to load AgoraScreenShareExtension library" />
+			</true>
+		</if>
+	</soLoadLibrary>
+</root>
