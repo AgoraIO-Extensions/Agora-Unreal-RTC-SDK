@@ -17,7 +17,7 @@ void UMediaplayerWidget::InitAgoraWidget(FString APP_ID, FString TOKEN, FString 
 
 	JoinChannelWithMPK();
 
-
+	bURLOpen = true;
 }
 
 //void UMediaplayerWidget::onVideoSizeChanged(uid_t uid, int width, int height, int rotation)
