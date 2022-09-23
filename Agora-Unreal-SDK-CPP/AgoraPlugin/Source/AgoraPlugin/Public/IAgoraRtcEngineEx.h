@@ -52,7 +52,6 @@ class IRtcEngineEventHandlerEx : public IRtcEngineEventHandler {
   using IRtcEngineEventHandler::onIntraRequestReceived;
   using IRtcEngineEventHandler::onFirstLocalVideoFrame;
   using IRtcEngineEventHandler::onFirstLocalVideoFramePublished;
-  using IRtcEngineEventHandler::onVideoSourceFrameSizeChanged;
   using IRtcEngineEventHandler::onFirstRemoteVideoDecoded;
   using IRtcEngineEventHandler::onVideoSizeChanged;
   using IRtcEngineEventHandler::onLocalVideoStateChanged;
@@ -214,12 +213,15 @@ class IRtcEngineEventHandlerEx : public IRtcEngineEventHandler {
     (void)connection;
   }
 
-  /** Occurs when the first local video frame is displayed on the video window.
-   @param connection The connection of the local user.
-   @param width The width (pixels) of the video stream.
-   @param height The height (pixels) of the video stream.
-   @param elapsed The time elapsed (ms) from the local user calling
-   \ref IRtcEngine::joinChannel "joinChannel" until this callback is triggered.
+  /**
+   * Occurs when the first local video frame is displayed on the video window.
+   * 
+   * @deprecated 4.0.0 This callback is deprecated, use void onFirstLocalVideoFrame(VIDEO_SOURCE_TYPE source, int width, int height, int elapsed) instead.
+   * 
+   * @param connection The connection of the local user.
+   * @param width The width (pixels) of the video stream.
+   * @param height The height (pixels) of the video stream.
+   * @param elapsed The time elapsed (ms) from the local user calling \ref IRtcEngine::joinChannel "joinChannel" until this callback is triggered.
    */
   virtual void onFirstLocalVideoFrame(const RtcConnection& connection, int width, int height, int elapsed) {
     (void)connection;
@@ -228,21 +230,16 @@ class IRtcEngineEventHandlerEx : public IRtcEngineEventHandler {
     (void)elapsed;
   }
 
-  /** Occurs when the first local video frame is published.
-
-   @param elapsed The time elapsed (ms) from the local user calling
-  \ref IRtcEngine::joinChannel "joinChannel" to the SDK triggers this callback.
+  /**
+   * Occurs when the first local video frame is published.
+   * 
+   * @deprecated 4.0.0 This callback is deprecated, use void onFirstLocalVideoFramePublished(VIDEO_SOURCE_TYPE source, int elapsed) instead.
+   * 
+   * @param elapsed The time elapsed (ms) from the local user calling \ref IRtcEngine::joinChannel "joinChannel" to the SDK triggers this callback.
   */
   virtual void onFirstLocalVideoFramePublished(const RtcConnection& connection, int elapsed) {
     (void)connection;
     (void)elapsed;
-  }
-
-  virtual void onVideoSourceFrameSizeChanged(const RtcConnection& connection, VIDEO_SOURCE_TYPE sourceType, int width, int height) {
-    (void)connection;
-    (void)sourceType;
-    (void)width;
-    (void)height;
   }
 
   /**
@@ -265,17 +262,15 @@ class IRtcEngineEventHandlerEx : public IRtcEngineEventHandler {
   }
 
   /**
-   * when video size changed or rotation changed, the function will be called
-   * @param [in] uid
-   *        the uid of the remote user or local user (0)
-   * @param [in] width
-   *        the new width of the video
-   * @param [in] height
-   *        the new height of the video
-   * @param [in] rotation
-   *        the rotation of the video
+   * Occurs when the local or remote video size or rotation has changed.
+   * @param connection The connection of the user ID.
+   * @param sourceType The video source type.
+   * @param uid The user ID. 0 indicates the local user.
+   * @param width The new width (pixels) of the video.
+   * @param height The new height (pixels) of the video.
+   * @param rotation The rotation information of the video.
    */
-  virtual void onVideoSizeChanged(const RtcConnection& connection, uid_t uid, int width, int height, int rotation) {
+  virtual void onVideoSizeChanged(const RtcConnection& connection, VIDEO_SOURCE_TYPE sourceType, uid_t uid, int width, int height, int rotation) {
     (void)connection;
     (void)uid;
     (void)width;
@@ -283,6 +278,8 @@ class IRtcEngineEventHandlerEx : public IRtcEngineEventHandler {
     (void)rotation;
   }
   /** Occurs when the local video stream state changes
+   * 
+   * @deprecated 4.0.0 This callback is deprecated, use void onLocalVideoStateChanged(VIDEO_SOURCE_TYPE source, LOCAL_VIDEO_STREAM_STATE state, LOCAL_VIDEO_STREAM_ERROR error) instead.
    *
    * This callback indicates the state of the local video stream, including camera capturing and video encoding,
    * and allows you to troubleshoot issues when exceptions occur.
@@ -465,6 +462,8 @@ class IRtcEngineEventHandlerEx : public IRtcEngineEventHandler {
 
   /**
    * Reports the statistics of the local video.
+   * 
+   * @deprecated 4.0.0 This callback is deprecated, use void onLocalVideoStats(VIDEO_SOURCE_TYPE source, const LocalVideoStats& stats) instead.
    *
    * The SDK triggers this callback once every two seconds after the user joins the channel.
    *

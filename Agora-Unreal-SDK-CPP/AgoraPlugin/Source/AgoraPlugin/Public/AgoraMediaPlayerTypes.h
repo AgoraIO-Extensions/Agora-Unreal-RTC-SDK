@@ -7,9 +7,7 @@
 #pragma once  // NOLINT(build/header_guard)
 
 #include <cstring>
-#if __cplusplus >= 201103L || (defined(_MSC_VER) && _MSC_VER >= 1800)
-#include <cstdint>
-#endif
+#include <stdint.h>
 
 #include "AgoraOptional.h"
 
@@ -378,7 +376,7 @@ struct PlayerUpdatedInfo {
  */
 class IMediaPlayerCustomDataProvider {
 public:
-    
+
     /**
      * @brief The player requests to read the data callback, you need to fill the specified length of data into the buffer
      * @param buffer the buffer pointer that you need to fill data.
@@ -386,7 +384,7 @@ public:
      * @return you need return offset value if succeed. return 0 if failed.
      */
     virtual int onReadData(unsigned char *buffer, int bufferSize) = 0;
-    
+
     /**
      * @brief The Player seek event callback, you need to operate the corresponding stream seek operation, You can refer to the definition of lseek() at https://man7.org/linux/man-pages/man2/lseek.2.html
      * @param offset the value of seek offset.
@@ -400,7 +398,7 @@ public:
      * whence >= 0 && whence < 3 , return offset value if succeed. return -1 if failed.
      */
     virtual int64_t onSeek(int64_t offset, int whence) = 0;
-    
+
     virtual ~IMediaPlayerCustomDataProvider() {}
 };
 
@@ -421,22 +419,28 @@ struct MediaSource {
    */
   int64_t startPos;
   /**
-  * Autoplay when media source is opened
-  *
-  */
+   * Determines whether to autoplay after opening a media resource.
+   * - true: (Default) Autoplay after opening a media resource.
+   * - false: Do not autoplay after opening a media resource.
+   */
   bool autoPlay;
   /**
-   * Enable caching.
+   * Determines whether to enable cache streaming to local files. If enable cached, the media player will
+   * use the url or uri as the cache index.
+   * - true: Enable cache.
+   * - false: (Default) Disable cache.
    */
   bool enableCache;
   /**
-   * if the value is true, it means playing agora URL. 
-   * The default value is false
+   * Determines whether the opened media resource is a stream through the Agora Broadcast Streaming Network(CDN).
+   * - true: It is a stream through the Agora Broadcast Streaming Network.
+   * - false: (Default) It is not a stream through the Agora Broadcast Streaming Network.
    */
   Optional<bool> isAgoraSource;
   /**
-   * If it is set to true, it means that the live stream will be optimized for quick start. 
-   * The default value is false
+   * Determines whether the opened media resource is a live stream. If is a live stream, it can speed up the opening of media resources.
+   * - true: It is a live stream.
+   * - false: (Default) It is not is a live stream.
    */
   Optional<bool> isLiveSource;
   /**

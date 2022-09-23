@@ -64,11 +64,25 @@ namespace agora
 					apm->setParameters(parametersDataOutput);
 #endif
 					MediaProxy = std::make_unique<MediaEngineProxy>(RtcEngine);
+					return ret;
+				}
+				else if(RtcEngine != nullptr && ret != 0)
+				{
+					return ret;
 				}
 				return -ERROR_NULLPTR;
 			}
 			int RtcEngineProxy::queryInterface(agora::rtc::INTERFACE_ID_TYPE iid, void** inter) {
 				if (RtcEngine != nullptr) {
+					if (iid == INTERFACE_ID_TYPE::AGORA_IID_MEDIA_ENGINE)
+					{
+						*inter = (void*)(MediaProxy.get());
+						if (*inter == nullptr)
+						{
+							return -ERROR_NULLPTR;
+						}
+						return 0;
+					}
 					return RtcEngine->queryInterface(iid, inter);
 				}
 				return -ERROR_NULLPTR;
@@ -1419,7 +1433,7 @@ namespace agora
 				return -ERROR_NULLPTR;
 			}
 #endif 
-#if defined(__ANDROID__)
+#if defined(__ANDROID__) || (defined(__APPLE__) && TARGET_OS_IOS)
 			int RtcEngineProxy::startScreenCapture(agora::rtc::ScreenCaptureParameters2 const& captureParams) {
 				if (RtcEngine != nullptr) {
 					return RtcEngine->startScreenCapture(captureParams);
@@ -1434,7 +1448,7 @@ namespace agora
 				return -ERROR_NULLPTR;
 			}
 #endif
-#if defined(_WIN32) || (defined(__APPLE__) && TARGET_OS_MAC && !TARGET_OS_IPHONE) || defined(__ANDROID__)
+#if defined(_WIN32) || defined(__APPLE__) || defined(__ANDROID__)
 			int RtcEngineProxy::stopScreenCapture() {
 				if (RtcEngine != nullptr) {
 					return RtcEngine->stopScreenCapture();

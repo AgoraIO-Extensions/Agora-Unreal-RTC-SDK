@@ -3,7 +3,6 @@
 
 #include "AgoraHeaderBase.h"
 #include "MediaEngineProxy.h"
-#include "VideoObserverInternal.h"
 #include "VideoRenderManager.h"
 #if PLATFORM_ANDROID
 #include "Android/AndroidApplication.h"
@@ -20,7 +19,7 @@ namespace agora
 			class MediaEngineProxy;
 			class AGORAPLUGIN_API RtcEngineProxy : public IRtcEngineEx
 			{
-			private:
+			protected:
 
 				IRtcEngine* RtcEngine;
 				std::unique_ptr<MediaEngineProxy> MediaProxy;
@@ -31,7 +30,6 @@ namespace agora
 				RtcEngineProxy();
 
 				util::AutoPtr<agora::media::IMediaEngine> MediaEngine;
-
 				virtual int queryInterface(rtc::INTERFACE_ID_TYPE iid, void** inter) override;
 				virtual void release(bool sync = false) override;
 				virtual int initialize(const RtcEngineContext& context) override;
@@ -243,11 +241,11 @@ namespace agora
 				virtual int updateScreenCaptureRegion(const Rectangle& regionRect) override;
 				virtual int updateScreenCaptureParameters(const ScreenCaptureParameters& captureParams) override;
 #endif
-#if defined(__ANDROID__)
+#if defined(__ANDROID__) || (defined(__APPLE__) && TARGET_OS_IOS) 
 				virtual int startScreenCapture(const ScreenCaptureParameters2& captureParams) override;
 				virtual int updateScreenCapture(const ScreenCaptureParameters2& captureParams) override;
 #endif
-#if defined(_WIN32) || (defined(__APPLE__) && TARGET_OS_MAC && !TARGET_OS_IPHONE) || defined(__ANDROID__)
+#if defined(_WIN32) || defined(__APPLE__) || defined(__ANDROID__)
 				virtual int stopScreenCapture() override;
 #endif
 				virtual int getCallId(agora::util::AString& callId) override;
