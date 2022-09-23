@@ -256,6 +256,13 @@ typedef const char* user_id_t;
 static const uint8_t kMaxCodecNameLength = 50;
 
 /**
+  * The maximum metadata size.
+  */
+enum MAX_METADATA_SIZE_TYPE {
+  MAX_METADATA_SIZE_IN_BYTE = 1024
+};
+
+/**
  * The definition of the PacketOptions struct, which contains infomation of the packet
  * in the RTP (Real-time Transport Protocal) header.
  */

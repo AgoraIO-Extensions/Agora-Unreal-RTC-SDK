@@ -59,12 +59,6 @@ namespace agora
 				int ret = RtcEngine->initialize(context);
 
 				UE_LOG(LogTemp, Warning, TEXT("RtcEngineProxy initialize %d"), ret);
-					AppType appType = kAppTypeUnreal;
-				char parameters[512] = "";
-				sprintf(parameters, "{\"rtc.set_app_type\": %d}", appType);
-				agora::base::AParameter apm(RtcEngine);
-				apm->setParameters(parameters);
-
 				if (RtcEngine != nullptr && ret == 0)
 				{
 					AppType appType = kAppTypeUnreal;
