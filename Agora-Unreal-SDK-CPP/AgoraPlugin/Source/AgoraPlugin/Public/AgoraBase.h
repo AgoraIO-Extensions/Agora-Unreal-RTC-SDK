@@ -752,6 +752,33 @@ enum ERROR_CODE_TYPE {
   ERR_VDM_CAMERA_NOT_AUTHORIZED = 1501,
 };
 
+enum LICENSE_ERROR_TYPE {
+  /**
+   * 1: Invalid license
+  */
+  LICENSE_ERR_INVALID = 1,
+  /**
+   * 2: License expired
+  */
+  LICENSE_ERR_EXPIRE = 2,
+  /**
+   * 3: Exceed license minutes limit
+  */
+  LICENSE_ERR_MINUTES_EXCEED = 3,
+  /**
+   * 4: License use in limited period
+  */
+  LICENSE_ERR_LIMITED_PERIOD = 4,
+  /**
+   * 5: Same license used in different devices at the same time
+  */
+  LICENSE_ERR_DIFF_DEVICES = 5,
+  /**
+   * 99: SDK internal error
+  */
+  LICENSE_ERR_INTERNAL = 99,
+};
+
 /**
  * The operational permission of the SDK on the audio session.
  */
@@ -845,6 +872,7 @@ enum INTERFACE_ID_TYPE {
   AGORA_IID_CLOUD_SPATIAL_AUDIO = 10,
   AGORA_IID_LOCAL_SPATIAL_AUDIO = 11,
   AGORA_IID_MEDIA_RECORDER = 12,
+  AGORA_IID_MUSIC_CONTENT_CENTER = 13,
 };
 
 /**
@@ -1767,7 +1795,7 @@ enum SIMULCAST_STREAM_MODE {
   /*
   * disable simulcast stream
   */
-  DISABLE_SIMULCAST_STREM = 0,
+  DISABLE_SIMULCAST_STREAM = 0,
   /*
   * always enable simulcast stream
   */
@@ -3687,6 +3715,11 @@ enum CONNECTION_CHANGED_REASON_TYPE
    * 20: The connection is failed due to too many broadcasters in the channel.
    */
   CONNECTION_CHANGED_TOO_MANY_BROADCASTERS = 20,
+
+  /**
+   * 21: The connection is failed due to license verification failed.
+   */
+  CONNECTION_CHANGED_LICENSE_VERIFY_FAILED = 21,
 };
 
 /**
@@ -5238,7 +5271,6 @@ struct ScreenVideoParameters {
  * The audio configuration for the shared screen stream.
  */
 struct ScreenAudioParameters {
-#if defined(__ANDROID__)
   /**
    * The audio sample rate (Hz). The default value is `16000`.
    */
@@ -5247,7 +5279,6 @@ struct ScreenAudioParameters {
    * The number of audio channels. The default value is `2`, indicating dual channels.
    */
   int channels = 2;
-#endif
   /**
    * The volume of the captured system audio. The value range is [0,100]. The default value is
    * `100`.

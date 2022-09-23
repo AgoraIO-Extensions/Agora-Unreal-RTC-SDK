@@ -17,8 +17,6 @@ class AGORAEXAMPLE_API UBaseAgoraUserWidget : public UUserWidget
 	GENERATED_BODY()
 public:
 	virtual void InitAgoraWidget(FString APP_ID, FString TOKEN, FString CHANNEL_NAME);
-
-
 protected:
 	void NativeConstruct() override;
 

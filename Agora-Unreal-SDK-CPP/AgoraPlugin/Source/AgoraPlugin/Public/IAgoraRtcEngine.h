@@ -740,9 +740,20 @@ struct AdvancedAudioOptions {
 };
 
 struct ImageTrackOptions {
+  /**
+   * The local file path of image source.
+   */
   const char* imageUrl;
+  /**
+   * The encoding frame rate (fps) of image track. The default value is 1.
+   */
   int fps;
-  ImageTrackOptions() : imageUrl(NULL), fps(1) {}
+  /**
+   * The mirror mode of image track. If set to VIDEO_MIRROR_MODE_ENABLED, then the image would be mirrored
+   * before encoding.
+   */
+  VIDEO_MIRROR_MODE_TYPE mirrorMode;
+  ImageTrackOptions() : imageUrl(NULL), fps(1), mirrorMode(VIDEO_MIRROR_MODE_DISABLED) {}
 };
 
 /**
@@ -751,8 +762,8 @@ struct ImageTrackOptions {
 struct ChannelMediaOptions {
   /**
    * Determines whether to publish the video of the camera track.
-   * - true: Publish the video track of the camera capturer.
-   * - false: (Default) Do not publish the video track of the camera capturer.
+   * - true: (Default) Publish the video track of the camera capturer.
+   * - false: Do not publish the video track of the camera capturer.
    */
   Optional<bool> publishCameraTrack;
   /**
@@ -762,9 +773,9 @@ struct ChannelMediaOptions {
    */
   Optional<bool> publishSecondaryCameraTrack;
   /**
-   * Determines whether to publish the recorded audio.
-   * - true: Publish the recorded audio.
-   * - false: (Default) Do not publish the recorded audio.
+   * Determines whether to publish the recorded audio of microphone.
+   * - true: (Default)Publish the recorded audio of microphone.
+   * - false: Do not publish the recorded audio of microphone.
    */
   Optional<bool> publishMicrophoneTrack;
 
@@ -777,7 +788,7 @@ struct ChannelMediaOptions {
   Optional<bool> publishScreenCaptureVideo;
    /**
    * Determines whether to publish the audio track of the screen capturer.
-   * - true: Publish the video audio of the screen capturer.
+   * - true: Publish the audio track of the screen capturer.
    * - false: (Default) Do not publish the audio track of the screen capturer.
    */
   Optional<bool> publishScreenCaptureAudio;
@@ -795,7 +806,7 @@ struct ChannelMediaOptions {
    */
   Optional<bool> publishSecondaryScreenTrack;
   #endif
-
+    
   /**
    * Determines whether to publish the audio of the custom audio track.
    * - true: Publish the audio of the custom audio track.
@@ -803,7 +814,7 @@ struct ChannelMediaOptions {
    */
   Optional<bool> publishCustomAudioTrack;
   /**
-   * Determines the source id of the custom audio, default is 0.
+   * The source id of the custom audio, default is 0.
    */
   Optional<int> publishCustomAudioSourceId;
   /**
@@ -813,9 +824,9 @@ struct ChannelMediaOptions {
    */
   Optional<bool> publishCustomAudioTrackEnableAec;
   /**
-   * Determines whether to publish direct custom audio track.
-   * - true: publish.
-   * - false: (Default) Do not publish.
+   * Determines whether to publish custom audio track of microphone source.
+   * - true: Publish custom audio track of microphone source.
+   * - false: (Default) Do not publish custom audio track of microphone source.
    */
   Optional<bool> publishDirectCustomAudioTrack;
   /**
@@ -833,66 +844,70 @@ struct ChannelMediaOptions {
   /**
    * Determines whether to publish the video of the encoded video track.
    * - true: Publish the video of the encoded video track.
-   * - false: (default) Do not publish the video of the encoded video track.
+   * - false: (Default) Do not publish the video of the encoded video track.
    */
   Optional<bool> publishEncodedVideoTrack;
   /**
-  * Determines whether to publish the audio track of media player source.
-  * - true: Publish the audio track of media player source.
-  * - false: (default) Do not publish the audio track of media player source.
+   * Determines whether to publish the audio track of media player source.
+   * - true: Publish the audio track of media player source.
+   * - false: (Default) Do not publish the audio track of media player source.
   */
   Optional<bool> publishMediaPlayerAudioTrack;
   /**
-  * Determines whether to publish the video track of media player source.
-  * - true: Publish the video track of media player source.
-  * - false: (default) Do not publish the video track of media player source.
+   * Determines whether to publish the video track of media player source.
+   * - true: Publish the video track of media player source.
+   * - false: (Default) Do not publish the video track of media player source.
   */
   Optional<bool> publishMediaPlayerVideoTrack;
   /**
-  * Determines whether to publish the local transcoded video track.
-  * - true: Publish the video track of local transcoded video track.
-  * - false: (default) Do not publish the local transcoded video track.
+   * Determines whether to publish the local transcoded video track.
+   * - true: Publish the video track of local transcoded video track.
+   * - false: (Default) Do not publish the local transcoded video track.
   */
   Optional<bool> publishTrancodedVideoTrack;
   /**
-   * Determines whether to subscribe to all audio streams automatically. It can replace calling \ref IRtcEngine::setDefaultMuteAllRemoteAudioStreams
+   * Determines whether to subscribe all remote audio streams automatically. It can replace calling \ref IRtcEngine::setDefaultMuteAllRemoteAudioStreams
    * "setDefaultMuteAllRemoteAudioStreams" before joining a channel.
-   * - true: Subscribe to all audio streams automatically.
-   * - false: (Default) Do not subscribe to any audio stream automatically.
+   * - true: (Default) Subscribe all remote audio streams automatically.
+   * - false: Do not subscribe any remote audio stream automatically.
    */
   Optional<bool> autoSubscribeAudio;
   /**
-   * Determines whether to subscribe to all video streams automatically. It can replace calling \ref IRtcEngine::setDefaultMuteAllRemoteVideoStreams
+   * Determines whether to subscribe all remote video streams automatically. It can replace calling \ref IRtcEngine::setDefaultMuteAllRemoteVideoStreams
    * "setDefaultMuteAllRemoteVideoStreams" before joining a channel.
-   * - true: Subscribe to all video streams automatically.
-   * - false: (Default) do not subscribe to any video stream automatically.
+   * - true: (Default) Subscribe all remote video streams automatically.
+   * - false: Do not subscribe any remote video stream automatically.
    */
   Optional<bool> autoSubscribeVideo;
   /**
    * Determines whether to enable audio recording or playout.
-   * - true: It's used to publish audio and mix microphone, or subscribe audio and playout
-   * - false: It's used to publish extenal audio frame only without mixing microphone, or no need audio device to playout audio either
+   * - true: (Default) It's used to publish audio and mix microphone, or subscribe audio and playout.
+   * - false: It's used to publish extenal audio frame only without mixing microphone, or no need audio device to playout audio either.
    */
   Optional<bool> enableAudioRecordingOrPlayout;
   /**
-  * Determines which media player source should be published.
-  * - DEFAULT_PLAYER_ID(0) is default.
-  */
+   * Determines which media player source should be published.
+   * You can get the MediaPlayerId after calling getMediaPlayerId() of AgoraMediaPlayer.
+   */
   Optional<int> publishMediaPlayerId;
   /**
-   * The client role type: #CLIENT_ROLE_TYPE.
+   * The client role type. See \ref CLIENT_ROLE_TYPE.
+   * Default is CLIENT_ROLE_AUDIENCE.
    */
   Optional<CLIENT_ROLE_TYPE> clientRoleType;
   /**
-   * The audience latency level type. See \ref agora::rtc::AUDIENCE_LATENCY_LEVEL_TYPE "AUDIENCE_LATENCY_LEVEL_TYPE"
+   * The audience latency level type. See \ref AUDIENCE_LATENCY_LEVEL_TYPE.
+   * Default is AUDIENCE_LATENCY_LEVEL_ULTRA_LOW_LATENCY.
    */
   Optional<AUDIENCE_LATENCY_LEVEL_TYPE> audienceLatencyLevel;
   /**
-   * The default video stream type: #VIDEO_STREAM_TYPE.
+   * The default video stream type. See \ref VIDEO_STREAM_TYPE.
+   * Default is VIDEO_STREAM_HIGH.
    */
   Optional<VIDEO_STREAM_TYPE> defaultVideoStreamType;
   /**
-   * The channel profile: #CHANNEL_PROFILE_TYPE.
+   * The channel profile. See \ref CHANNEL_PROFILE_TYPE.
+   * Default is CHANNEL_PROFILE_LIVE_BROADCASTING.
    */
   Optional<CHANNEL_PROFILE_TYPE> channelProfile;
   /**
@@ -906,13 +921,14 @@ struct ChannelMediaOptions {
    */
   Optional<int> mediaPlayerAudioDelayMs;
   /**
-   * The token
+   * The token to be renewed.
    */
   Optional<const char*> token;
   /**
    * Enable media packet encryption.
-   * This parameter is ignored when calling function updateChannelMediaOptions()
-   * - false is default.
+   * It will be ignored when calling function updateChannelMediaOptions().
+   * - true:  Enable media packet encryption.
+   * - false: (Default) Do not Enable media packet encryption.
    */
   Optional<bool> enableBuiltInMediaEncryption;
   /**
@@ -929,16 +945,15 @@ struct ChannelMediaOptions {
    * - false: (Default) Use default settings for audience role.
    */
   Optional<bool> isInteractiveAudience;
-
   /**
-   * The custom video track id which will used to publish or preview
+   * The custom video track id which will used to publish or preview.
+   * You can get the VideoTrackId after calling createCustomVideoTrack() of IRtcEngine.
    */
   Optional<video_track_id_t> customVideoTrackId;
-
   /**
-   * Determines whether local audio stream can be filtered .
+   * Determines whether local audio stream can be filtered.
    * - true: (Default) Can be filtered when audio level is low.
-   * - false: Do not Filter this audio stream.
+   * - false: Do not filter this audio stream.
    */
   Optional<bool> isAudioFilterable;
 
@@ -1477,12 +1492,6 @@ class IRtcEngineEventHandler {
     (void)elapsed;
   }
 
-  virtual void onVideoSourceFrameSizeChanged(VIDEO_SOURCE_TYPE sourceType, int width, int height) {
-    (void)sourceType;
-    (void)width;
-    (void)height;
-  }
-
   /** Occurs when the first remote video frame is received and decoded.
 
   @deprecated This callback is deprecated since v3.1.200. Use
@@ -1505,7 +1514,15 @@ class IRtcEngineEventHandler {
     (void)elapsed;
   }
 
-  virtual void onVideoSizeChanged(uid_t uid, int width, int height, int rotation) {
+  /**
+   * Occurs when the local or remote video size or rotation has changed.
+   * @param sourceType The video source type.
+   * @param uid The user ID. 0 indicates the local user.
+   * @param width The new width (pixels) of the video.
+   * @param height The new height (pixels) of the video.
+   * @param rotation The rotation information of the video.
+   */
+  virtual void onVideoSizeChanged(VIDEO_SOURCE_TYPE sourceType, uid_t uid, int width, int height, int rotation) {
     (void)uid;
     (void)width;
     (void)height;
@@ -1920,6 +1937,15 @@ class IRtcEngineEventHandler {
    */
   virtual void onTokenPrivilegeWillExpire(const char* token) {
     (void)token;
+  }
+
+  /**
+   * Occurs when connection license verification fails.
+   *
+   * You can know the reason according to error code
+   */
+  virtual void onLicenseValidationFailure(LICENSE_ERROR_TYPE error) {
+    (void)error;
   }
 
   /** Occurs when the first local audio frame is published.
@@ -2597,6 +2623,11 @@ struct RtcEngineContext {
   CHANNEL_PROFILE_TYPE channelProfile;
 
   /**
+   * The license used for verification when connecting channel. Charge according to the license
+   */
+  const char* license;
+
+  /**
    * The audio application scenario. See #AUDIO_SCENARIO_TYPE.
    *
    * @note Agora recommends the following scenarios:
@@ -2638,6 +2669,7 @@ struct RtcEngineContext {
   RtcEngineContext()
       : eventHandler(NULL), appId(NULL), context(NULL),
         channelProfile(CHANNEL_PROFILE_LIVE_BROADCASTING),
+        license(NULL),
         audioScenario(AUDIO_SCENARIO_DEFAULT),
         areaCode(AREA_CODE_GLOB),
         logConfig(), useExternalEglContext(false) {}
@@ -2844,17 +2876,17 @@ struct DirectCdnStreamingMediaOptions {
   /**
   * Determines whether to publish the audio track of media player source.
   * - true: Publish the audio track of media player source.
-  * - false: (default) Do not publish the audio track of media player source.
+  * - false: (Default) Do not publish the audio track of media player source.
   */
   Optional<bool> publishMediaPlayerAudioTrack;
   /**
   * Determines which media player source should be published.
-  * - DEFAULT_PLAYER_ID(0) is default.
+  * You can get the MediaPlayerId after calling getMediaPlayerId() of AgoraMediaPlayer.
   */
   Optional<int> publishMediaPlayerId;
-
   /**
-   * The custom video track id which will used to publish
+   * The custom video track id which will used to publish.
+   * You can get the VideoTrackId after calling createCustomVideoTrack() of IRtcEngine.
    */
   Optional<video_track_id_t> customVideoTrackId;
 
@@ -2916,9 +2948,7 @@ class IMediaPlayer;
 /**
  * The IRtcEngine class.
  *
- * This class provides the main methods that can be invoked by y
- 
- r app.
+ * This class provides the main methods that can be invoked by your app.
  *
  * IRtcEngine is the basic interface class of the Agora Native SDK.
  * Creating an IRtcEngine object and then calling the methods of
@@ -6204,7 +6234,7 @@ class IRtcEngine : public agora::base::IEngineBase {
   virtual int updateScreenCaptureParameters(const ScreenCaptureParameters& captureParams) = 0;
 #endif // _WIN32 || (__APPLE__ && !TARGET_OS_IPHONE && TARGET_OS_MAC)
 
-#if defined(__ANDROID__)
+#if defined(__ANDROID__) || (defined(__APPLE__) && TARGET_OS_IOS)
   /**
    * Starts screen sharing.
    *
@@ -6228,7 +6258,7 @@ class IRtcEngine : public agora::base::IEngineBase {
   virtual int updateScreenCapture(const ScreenCaptureParameters2& captureParams) = 0;
 #endif
 
-#if defined(_WIN32) || (defined(__APPLE__) && TARGET_OS_MAC && !TARGET_OS_IPHONE) || defined(__ANDROID__)
+#if defined(_WIN32) || defined(__APPLE__) || defined(__ANDROID__)
   /**
    * Stops the screen sharing.
    *
@@ -7257,169 +7287,6 @@ class IRtcEngine : public agora::base::IEngineBase {
    * - < 0: Failure.
    */
   virtual int enableWirelessAccelerate(bool enabled) = 0;
-};
-
-class IRtcEngineParameter {
- public:
-  virtual ~IRtcEngineParameter() {}
-
-  /**
-   * Releases the resource.
-   */
-  virtual void release() = 0;
-
-  /** Sets the bool value of the JSON.
-  @param key Key name
-  @param value Value
-  @return int
-
-  - 0: Success.
-  - < 0: Failure.
-  */
-  virtual int setBool(const char* key, bool value) = 0;
-
-  /** Sets the int value of the JSON.
-  @param key Key name
-  @param value Value
-  @return int
-
-  - 0: Success.
-  - < 0: Failure.
-  */
-  virtual int setInt(const char* key, int value) = 0;
-
-  /** Sets the unsigned int value of the JSON.
-  @param key Key name
-  @param value Value
-  @return int
-
-- 0: Success.
-- < 0: Failure.
-  */
-  virtual int setUInt(const char* key, unsigned int value) = 0;
-
-  /** Sets the double value of the JSON.
-  @param key Key name
-  @param value Value
-  @return int
-
-- 0: Success.
-- < 0: Failure.
-  */
-  virtual int setNumber(const char* key, double value) = 0;
-
-  /** Sets the string value of the JSON.
-  @param key Key name
-  @param value Value
-  @return int
-
-- 0: Success.
-- < 0: Failure.
-  */
-  virtual int setString(const char* key, const char* value) = 0;
-
-  /** Sets the object value of the JSON.
-  @param key Key name
-  @param value Value
-  @return int
-
-- 0: Success.
-- < 0: Failure.
-  */
-  virtual int setObject(const char* key, const char* value) = 0;
-
-  /** Gets the bool value of the JSON.
-  @param key Key name
-  @param value Value
-  @return int
-
-- 0: Success.
-- < 0: Failure.
-  */
-  virtual int getBool(const char* key, bool& value) = 0;
-
-  /** Gets the int value of the JSON.
-  @param key Key name
-  @param value Value
-  @return int
-
-- 0: Success.
-- < 0: Failure.
-  */
-  virtual int getInt(const char* key, int& value) = 0;
-
-  /** Gets the unsigned int value of the JSON.
-  @param key Key name
-  @param value Value
-  @return int
-
-- 0: Success.
-- < 0: Failure.
-  */
-  virtual int getUInt(const char* key, unsigned int& value) = 0;
-
-  /** Gets the double value of the JSON.
-  @param key Key name
-  @param value Value
-  @return int
-
-- 0: Success.
-- < 0: Failure.
-  */
-  virtual int getNumber(const char* key, double& value) = 0;
-
-  /** Gets the string value of the JSON.
-  @param key Key name
-  @param value Value
-  @return int
-
-- 0: Success.
-- < 0: Failure.
-  */
-  virtual int getString(const char* key, agora::util::AString& value) = 0;
-
-  /** Gets a child object value of the JSON.
-  @param key Key name
-  @param value Value
-  @return int
-
-- 0: Success.
-- < 0: Failure.
-  */
-  virtual int getObject(const char* key, agora::util::AString& value) = 0;
-
-  /** Gets the array value of the JSON.
-  @param key Key name
-  @param value Value
-  @return int
-
-- 0: Success.
-- < 0: Failure.
-  */
-  virtual int getArray(const char* key, agora::util::AString& value) = 0;
-
-  /** Sets the parameters of the SDK or engine.
-  @param parameters Parameters
-  @return int
-
-- 0: Success.
-- < 0: Failure.
-  */
-  virtual int setParameters(const char* parameters) = 0;
-
-  /** Sets the profile to control the RTC engine.
-  @param profile Profile
-  @param merge
-   - True: Merge with the original value.
-   - False: Do not merge with the orginal value.
-  @return int
-
-- 0: Success.
-- < 0: Failure.
-  */
-  virtual int setProfile(const char* profile, bool merge) = 0;
-
-  virtual int convertPath(const char* filePath, agora::util::AString& value) = 0;
 };
 
 class AAudioDeviceManager : public agora::util::AutoPtr<IAudioDeviceManager> {

@@ -139,8 +139,9 @@ void CacheManagerImpl::clear(const VideoFrameIdentity *Identity)
 				frames->SwipFrame = nullptr;
 			}
 			delete frames;
-			DataMap.erase(it);
+			
 		}
+		DataMap.erase(it);
 	}
 }
 

@@ -22,8 +22,6 @@ void UAgoraAudioWidget::InitAgoraEngine(FString APP_ID, FString TOKEN, FString C
 	RtcEngineContext.eventHandler = this;
 	RtcEngineContext.channelProfile = agora::CHANNEL_PROFILE_TYPE::CHANNEL_PROFILE_LIVE_BROADCASTING;
 
-
-	AppId = APP_ID;
 	Token = TOKEN;
 	ChannelName = CHANNEL_NAME;
 
@@ -36,7 +34,6 @@ void UAgoraAudioWidget::SetUpUIEvent()
 {
 	JoinBtn->OnClicked.AddDynamic(this, &UAgoraAudioWidget::OnJoinButtonClick);
 	LeaveBtn->OnClicked.AddDynamic(this, &UAgoraAudioWidget::OnLeaveButtonClick);
-	BackHomeBtn->OnClicked.AddDynamic(this, &UAgoraAudioWidget::BackHomeClick);
 }
 
 void UAgoraAudioWidget::CheckAndroidPermission()
@@ -60,27 +57,15 @@ void UAgoraAudioWidget::OnJoinButtonClick() {
 	SetButtonClickAble(false);
 
 	RtcEngineProxy->enableAudio();
-	RtcEngineProxy->joinChannel(TCHAR_TO_ANSI(*Token), TCHAR_TO_ANSI(*ChannelName), "", 0);
 	RtcEngineProxy->setClientRole(agora::rtc::CLIENT_ROLE_TYPE::CLIENT_ROLE_BROADCASTER);
+	RtcEngineProxy->joinChannel(TCHAR_TO_ANSI(*Token), TCHAR_TO_ANSI(*ChannelName), "", 0);
+
 }
 
 void UAgoraAudioWidget::OnLeaveButtonClick() {
 	UE_LOG(LogTemp, Warning, TEXT("UAgoraAudioWidget OnLeaveButtonClick ======"));
 	SetButtonClickAble(true);
 	RtcEngineProxy->leaveChannel();
-}
-
-void UAgoraAudioWidget::BackHomeClick()
-{
-	UClass* AgoraWidgetClass = LoadClass<UBaseAgoraUserWidget>(NULL, TEXT("WidgetBlueprint'/Game/API-Example/Advance/MainWidgetManager.MainWidgetManager_C'"));
-
-	UBaseAgoraUserWidget* AgoraWidget = CreateWidget<UBaseAgoraUserWidget>(GetWorld(), AgoraWidgetClass);
-
-	AgoraWidget->AddToViewport();
-
-	AgoraWidget->InitAgoraWidget(AppId, Token, ChannelName);
-
-	this->RemoveFromViewport();
 }
 
 #pragma region RtcEngineCallBack

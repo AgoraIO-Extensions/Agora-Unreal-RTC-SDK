@@ -37,12 +37,6 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget))
 	UComboBoxString* ComboBoxDisplayId = nullptr;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-	UButton* BackHomeBtn = nullptr;
-
-	UFUNCTION(BlueprintCallable)
-	void BackHomeClick();
-
 	UFUNCTION(BlueprintCallable)
 	void OnLeaveButtonClick();
 
@@ -59,8 +53,6 @@ public:
 private:
 
 	agora::rtc::IRtcEngine* RtcEngineProxy;
-
-	FString AppId;
 
 	FString Token;
 

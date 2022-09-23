@@ -28,14 +28,8 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
 	UButton* CallBtn = nullptr;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-	UButton* BackHomeBtn = nullptr;
-
 	UFUNCTION(BlueprintCallable)
 	void CallDeviceManagerApi();
-
-	UFUNCTION(BlueprintCallable)
-	void BackHomeClick();
 
 	void InitAgoraWidget(FString APP_ID, FString TOKEN, FString CHANNEL_NAME) override;
 
@@ -50,8 +44,6 @@ private:
 	IAudioDeviceCollection* AudioPlaybackDeviceInfos;
 
 	IVideoDeviceCollection* VideoDeviceInfos;
-
-	FString AppId;
 
 	FString Token;
 

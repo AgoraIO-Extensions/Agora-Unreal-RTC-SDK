@@ -20,25 +20,19 @@ void UMediaplayerWidget::InitAgoraWidget(FString APP_ID, FString TOKEN, FString 
 
 }
 
-//void UMediaplayerWidget::onVideoSizeChanged(uid_t uid, int width, int height, int rotation)
-//{
-//	AsyncTask(ENamedThreads::GameThread, [=]()
-//	{
-//		GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Black, FString::Printf(TEXT("onVideoSizeChanged uid:%d ,width:%d ,height:%d"),uid,width,height));
-//
-//
-//		if (uid == 0)
-//		{
-//#if ENGINE_MAJOR_VERSION > 4
-//			UCanvasPanelSlot* imageSlot = dynamic_cast<UCanvasPanelSlot*>(remoteVideo->Slot.Get());
-//#else
-//			UCanvasPanelSlot* imageSlot = dynamic_cast<UCanvasPanelSlot*>(remoteVideo->Slot);
-//#endif
-//			imageSlot->SetSize(FVector2D(width, height));
-//		}
-//
-//	});
-//}
+void UMediaplayerWidget::onVideoSizeChanged(uid_t uid, int width, int height, int rotation)
+{
+	AsyncTask(ENamedThreads::GameThread, [=]()
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Black, FString::Printf(TEXT("onVideoSizeChanged uid:%d ,width:%d ,height:%d"),uid,width,height));
+
+		if (uid == 0)
+		{
+			UCanvasPanelSlot* imageSlot = dynamic_cast<UCanvasPanelSlot*>(remoteVideo->Slot);
+			imageSlot->SetSize(FVector2D(width, height));
+		}
+	});
+}
 
 void UMediaplayerWidget::InitAgoraEngine(FString APP_ID, FString TOKEN, FString CHANNEL_NAME)
 {
@@ -66,7 +60,6 @@ void UMediaplayerWidget::SetUpUIEvent()
 	ResumeButton->OnClicked.AddDynamic(this, &UMediaplayerWidget::OnResumeButtonClick);
 	OpenButton->OnClicked.AddDynamic(this, &UMediaplayerWidget::OnOpenButtonClick);
 	CheckBoxUrl->OnCheckStateChanged.AddDynamic(this, &UMediaplayerWidget::CheckBoxValueChange);
-	BackHomeBtn->OnClicked.AddDynamic(this, &UMediaplayerWidget::BackHomeClick);
 }
 
 void UMediaplayerWidget::InitMediaPlayer()
@@ -126,19 +119,6 @@ void UMediaplayerWidget::CheckBoxValueChange(bool isOn)
 	bURLOpen = isOn;
 
 	UE_LOG(LogTemp, Warning, TEXT("TCheckBoxValueChange is %s"), (bURLOpen ? TEXT("true") : TEXT("false")));
-}
-
-void UMediaplayerWidget::BackHomeClick()
-{
-	UClass* AgoraWidgetClass = LoadClass<UBaseAgoraUserWidget>(NULL, TEXT("WidgetBlueprint'/Game/API-Example/Advance/MainWidgetManager.MainWidgetManager_C'"));
-
-	UBaseAgoraUserWidget* AgoraWidget = CreateWidget<UBaseAgoraUserWidget>(GetWorld(), AgoraWidgetClass);
-
-	AgoraWidget->AddToViewport();
-
-	AgoraWidget->InitAgoraWidget(FString(AppID.c_str()), FString(Token.c_str()), FString(ChannelName.c_str()));
-
-	this->RemoveFromViewport();
 }
 
 void UMediaplayerWidget::OnPlayButtonClick()
@@ -287,8 +267,6 @@ void UMediaplayerWidget::NativeDestruct()
 	Super::NativeDestruct();
 	if (RtcEngineProxy != nullptr)
 	{
-		RtcEngineProxy->destroyMediaPlayer(MediaPlayer);
-		MediaPlayer.reset();
 		if (handler != nullptr)
 		{
 			delete handler;

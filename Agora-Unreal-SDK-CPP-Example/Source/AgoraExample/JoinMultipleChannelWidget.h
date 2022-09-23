@@ -39,12 +39,6 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget))
 	UButton* JoinBtn = nullptr;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-	UButton* BackHomeBtn = nullptr;
-
-	UFUNCTION(BlueprintCallable)
-	void BackHomeClick();
-
 	UFUNCTION(BlueprintCallable)
 	void StartScreenShrareClick();
 
@@ -88,8 +82,8 @@ private:
 	int SelectDisplayId;
 
 	FSlateBrush EmptyBrush;
-#if PLATFORM_WINDOWS || PLATFORM_MAC
-	agora::rtc::IScreenCaptureSourceList* infos;
+#if defined(_WIN32) || (defined(__APPLE__) && !TARGET_OS_IPHONE && TARGET_OS_MAC)
+	agora::rtc::IScreenCaptureSourceList* ScreenShareinfos;
 #endif
 	void InitAgoraEngine(FString APP_ID, FString TOKEN, FString CHANNEL_NAME);
 

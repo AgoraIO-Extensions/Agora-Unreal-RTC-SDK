@@ -48,12 +48,6 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget))
 	UCheckBox* CheckBoxUrl;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-	UButton* BackHomeBtn = nullptr;
-
-	UFUNCTION(BlueprintCallable)
-	void BackHomeClick();
-
 	UFUNCTION(BlueprintCallable)
 	void OnPlayButtonClick();
 
@@ -81,7 +75,7 @@ public:
 	FSlateBrush EmptyBrush;
 
 
-	//void onVideoSizeChanged(uid_t uid, int width, int height, int rotation) override;
+	void onVideoSizeChanged(uid_t uid, int width, int height, int rotation) override;
 
 private:
 

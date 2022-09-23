@@ -6,11 +6,6 @@
 
 void UJoinMultipleChannelWidget::InitAgoraWidget(FString APP_ID, FString TOKEN, FString CHANNEL_NAME)
 {
-#if PLATFORM_IOS
-	GEngine->AddOnScreenDebugMessage(-1, 60.f, FColor::White, FString::Printf(TEXT("Not Support in this platform!")));
-	return;
-#endif
-
 	CheckAndroidPermission();
 
 	InitAgoraEngine(APP_ID, TOKEN, CHANNEL_NAME);
@@ -18,18 +13,16 @@ void UJoinMultipleChannelWidget::InitAgoraWidget(FString APP_ID, FString TOKEN, 
 	PrepareScreenCapture();
 
 	SetUpUIEvent();
-
 }
 
 void UJoinMultipleChannelWidget::SetUpUIEvent()
 {
 	StartScreenShrareBtn->SetVisibility(ESlateVisibility::Collapsed);
-#if PLATFORM_WINDOWS || PLATFORM_MAC || PLATFORM_ANDROID
+#if PLATFORM_WINDOWS || PLATFORM_MAC
 	StartScreenShrareBtn->OnClicked.AddDynamic(this, &UJoinMultipleChannelWidget::StartScreenShrareClick);
 	StartScreenShrareBtn->SetVisibility(ESlateVisibility::Visible);
 #endif
 	JoinBtn->OnClicked.AddDynamic(this, &UJoinMultipleChannelWidget::JoinChannelClick);
-	BackHomeBtn->OnClicked.AddDynamic(this, &UJoinMultipleChannelWidget::BackHomeClick);
 }
 
 void UJoinMultipleChannelWidget::CheckAndroidPermission()
@@ -66,48 +59,23 @@ void  UJoinMultipleChannelWidget::InitAgoraEngine(FString APP_ID, FString TOKEN,
 	RtcEngineProxy->initialize(RtcEngineContext);
 }
 
-void UJoinMultipleChannelWidget::BackHomeClick()
-{
-	UClass* AgoraWidgetClass = LoadClass<UBaseAgoraUserWidget>(NULL, TEXT("WidgetBlueprint'/Game/API-Example/Advance/MainWidgetManager.MainWidgetManager_C'"));
-
-	UBaseAgoraUserWidget* AgoraWidget = CreateWidget<UBaseAgoraUserWidget>(GetWorld(), AgoraWidgetClass);
-
-	AgoraWidget->AddToViewport();
-
-	AgoraWidget->InitAgoraWidget(FString(AppID.c_str()), FString(Token.c_str()), FString(ChannelName.c_str()));
-
-	this->RemoveFromViewport();
-}
-
 void UJoinMultipleChannelWidget::StartScreenShrareClick()
 {
-#if PLATFORM_IOS
-	//iPhone not support screen capture       
-#elif PLATFORM_ANDROID
-	ScreenCaptureParameters2 parameters2;
-	parameters2.captureAudio = true;
-	parameters2.captureVideo = true;
-	auto ret = RtcEngineProxy->startScreenCapture(parameters2);
-	UE_LOG(LogTemp, Warning, TEXT("StartScreenShrareClick JoinChannel ====== %d"), ret);
-#else
+#if defined(_WIN32) || (defined(__APPLE__) && !TARGET_OS_IPHONE && TARGET_OS_MAC)
 	RtcEngineProxy->stopScreenCapture();
 	agora::rtc::ScreenCaptureParameters capParam;
 	const agora::rtc::Rectangle regionRect;
-#if PLATFORM_WINDOWS
+#if defined(_WIN32)
 	SIZE size;
 	size.cx = 100;
 	size.cy = 100;
-#else
+#endif
+#if defined(__APPLE__) && TARGET_OS_MAC && !TARGET_OS_IPHONE
 	agora::rtc::SIZE size;
 	size.width = 100;
 	size.height = 100;
 #endif
-	if (infos == nullptr)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("GetScreenDisplay is null"));
-		return;
-	}
-	agora::rtc::ScreenCaptureSourceInfo info = infos->getSourceInfo(SelectDisplayId);
+	agora::rtc::ScreenCaptureSourceInfo info = ScreenShareinfos->getSourceInfo(SelectDisplayId);
 	if (info.type == agora::rtc::ScreenCaptureSourceType_Screen)
 	{
 		RtcEngineProxy->startScreenCaptureByDisplayId((uint64)(info.sourceId), regionRect, capParam);
@@ -122,35 +90,36 @@ void UJoinMultipleChannelWidget::StartScreenShrareClick()
 
 void UJoinMultipleChannelWidget::PrepareScreenCapture()
 {
-#if PLATFORM_WINDOWS || PLATFORM_MAC
-#if PLATFORM_WINDOWS
+#if defined(_WIN32) || (defined(__APPLE__) && !TARGET_OS_IPHONE && TARGET_OS_MAC)
+	RtcEngineProxy->stopScreenCapture();
+	agora::rtc::ScreenCaptureParameters capParam;
+	const agora::rtc::Rectangle regionRect;
+#if defined(_WIN32)
 	SIZE size;
 	size.cx = 100;
 	size.cy = 100;
 #endif
-#if PLATFORM_MAC
+#if defined(__APPLE__) && TARGET_OS_MAC && !TARGET_OS_IPHONE
 	agora::rtc::SIZE size;
 	size.width = 100;
 	size.height = 100;
 #endif
-
-	infos = RtcEngineProxy->getScreenCaptureSources(size, size, true);
-
-	if (infos == nullptr)
+	ScreenShareinfos = RtcEngineProxy->getScreenCaptureSources(size, size, true);
+	if (ScreenShareinfos == nullptr)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("GetScreenDisplay is null"));
 		return;
 	}
 
-	for (size_t i = 0; i < infos->getCount(); i++) {
-		agora::rtc::ScreenCaptureSourceInfo info = infos->getSourceInfo(i);
+	for (size_t i = 0; i < ScreenShareinfos->getCount(); i++) {
+		agora::rtc::ScreenCaptureSourceInfo info = ScreenShareinfos->getSourceInfo(i);
 		FString Displayid(UTF8_TO_TCHAR(info.sourceName));
 		ComboBoxDisplayId->AddOption(Displayid);
 	}
 
 	ComboBoxDisplayId->OnSelectionChanged.AddDynamic(this, &UJoinMultipleChannelWidget::SelectValueCallBack);
 
-	if (infos != nullptr && infos->getCount() > 0)
+	if (ScreenShareinfos != nullptr && ScreenShareinfos->getCount() > 0)
 	{
 		ComboBoxDisplayId->SetSelectedIndex(0);
 		SelectDisplayId = 0;
@@ -318,9 +287,6 @@ void UJoinMultipleChannelWidget::NativeDestruct()
 
 	if (RtcEngineProxy!=nullptr)
 	{
-#if !PLATFORM_IOS
-		RtcEngineProxy->stopScreenCapture();
-#endif
 		RtcEngineProxy->release();
 		delete RtcEngineProxy;
 		RtcEngineProxy = nullptr;

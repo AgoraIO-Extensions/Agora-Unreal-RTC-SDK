@@ -28,9 +28,6 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget))
 	UButton* LeaveBtn = nullptr;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-	UButton* BackHomeBtn = nullptr;
-
 	void CheckAndroidPermission();
 
 	UFUNCTION(BlueprintCallable)
@@ -38,9 +35,6 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void OnLeaveButtonClick();
-
-	UFUNCTION(BlueprintCallable)
-	void BackHomeClick();
 
 	void InitAgoraWidget(FString APP_ID, FString TOKEN, FString CHANNEL_NAME) override;
 
@@ -54,8 +48,6 @@ public:
 private:
 
 	agora::rtc::IRtcEngine* RtcEngineProxy;
-
-	FString AppId;
 
 	FString Token;
 
