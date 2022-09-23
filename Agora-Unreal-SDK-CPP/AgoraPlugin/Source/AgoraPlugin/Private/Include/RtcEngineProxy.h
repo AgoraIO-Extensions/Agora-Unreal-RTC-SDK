@@ -30,7 +30,6 @@ namespace agora
 				RtcEngineProxy();
 
 				util::AutoPtr<agora::media::IMediaEngine> MediaEngine;
-
 				virtual int queryInterface(rtc::INTERFACE_ID_TYPE iid, void** inter) override;
 				virtual void release(bool sync = false) override;
 				virtual int initialize(const RtcEngineContext& context) override;

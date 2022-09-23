@@ -48,8 +48,13 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget))
 	UButton* SecondCameraLeave = nullptr;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	UButton* BackHomeBtn = nullptr;
+
 	void InitAgoraWidget(FString APP_ID, FString TOKEN, FString CHANNEL_NAME) override;
 
+	UFUNCTION(BlueprintCallable)
+	void BackHomeClick();
 	UFUNCTION(BlueprintCallable)
 	void MainCameraJoinChannel();
 	UFUNCTION(BlueprintCallable)
@@ -107,4 +112,6 @@ private:
 	CameraCapturerConfiguration ConfigSecond;
 
 	bool bIsChannelJoined = false;
+
+	FSlateBrush EmptyBrush;
 };

@@ -21,11 +21,6 @@ namespace agora {
 				UE_LOG(LogTemp, Warning, TEXT("~VideoRender"));
 				VideoCacheManager->clear(&RenderFrameId);
 				RenderVideoFrame = nullptr;
-				if (RenderTexture != nullptr)
-				{
-					RenderTexture->ReleaseResource();
-					RenderTexture = nullptr;
-				}
 				RenderImage = nullptr;
 			}
 
@@ -41,14 +36,10 @@ namespace agora {
 				if (!RenderVideoFrame) {
 					return;
 				}
-				if (RenderTexture == nullptr || RenderTexture->GetSizeX() != RenderVideoFrame->width || RenderTexture->GetSizeY() != RenderVideoFrame->height) {
-					if (RenderTexture != nullptr)
-					{
-						RenderTexture->ReleaseResource();
-						RenderTexture = nullptr;
-					}
-				if (RenderTexture == nullptr || !RenderTexture->IsValidLowLevel() || RenderTexture->GetSizeX() != RenderVideoFrame->width || RenderTexture->GetSizeY() != RenderVideoFrame->height) {					RenderTexture = UTexture2D::CreateTransient(RenderVideoFrame->width, RenderVideoFrame->height, PF_R8G8B8A8);
-				}
+				if (RenderTexture == nullptr || !RenderTexture->IsValidLowLevel() || RenderTexture->GetSizeX() != RenderVideoFrame->width || RenderTexture->GetSizeY() != RenderVideoFrame->height) {
+					
+					RenderTexture = UTexture2D::CreateTransient(RenderVideoFrame->width, RenderVideoFrame->height, PF_R8G8B8A8);
+								}
 				else
 				{
 					UTexture2D* tex = (UTexture2D*)RenderTexture;

@@ -7,7 +7,6 @@ void USpatialAudioWidget::InitAgoraWidget(FString APP_ID, FString TOKEN, FString
 {
 	GEngine->AddOnScreenDebugMessage(-1, 60.f, FColor::Yellow, FString::Printf(TEXT("If you want to test this case ,please add another User join")));
 
-
 	CheckAndroidPermission();
 
 	InitAgoraEngine(APP_ID, TOKEN, CHANNEL_NAME);
@@ -24,6 +23,7 @@ void USpatialAudioWidget::InitAgoraEngine(FString APP_ID, FString TOKEN, FString
 	RtcEngineContext.eventHandler = this;
 	RtcEngineContext.channelProfile = agora::CHANNEL_PROFILE_TYPE::CHANNEL_PROFILE_LIVE_BROADCASTING;
 
+	Appid = APP_ID;
 	Token = TOKEN;
 	ChannelName = CHANNEL_NAME;
 
@@ -37,6 +37,7 @@ void USpatialAudioWidget::SetUpUIEvent()
 	JoinBtn->OnClicked.AddDynamic(this, &USpatialAudioWidget::OnJoinButtonClick);
 	LeftMoveBtn->OnClicked.AddDynamic(this, &USpatialAudioWidget::LeftMoveButtonClick);
 	RightMoveBtn->OnClicked.AddDynamic(this, &USpatialAudioWidget::RightMoveButtonClick);
+	BackHomeBtn->OnClicked.AddDynamic(this, &USpatialAudioWidget::BackHomeClick);
 }
 
 void USpatialAudioWidget::onJoinChannelSuccess(const char* channel, uid_t uid, int elapsed)
@@ -59,6 +60,19 @@ void USpatialAudioWidget::onUserJoined(uid_t uid, int elapsed)
 	RemoteUid = uid;
 }
 
+void USpatialAudioWidget::BackHomeClick()
+{
+	UClass* AgoraWidgetClass = LoadClass<UBaseAgoraUserWidget>(NULL, TEXT("WidgetBlueprint'/Game/API-Example/Advance/MainWidgetManager.MainWidgetManager_C'"));
+
+	UBaseAgoraUserWidget* AgoraWidget = CreateWidget<UBaseAgoraUserWidget>(GetWorld(), AgoraWidgetClass);
+
+	AgoraWidget->AddToViewport();
+
+	AgoraWidget->InitAgoraWidget(Appid, Token, ChannelName);
+
+	this->RemoveFromViewport();
+}
+
 void USpatialAudioWidget::OnJoinButtonClick()
 {
 	UE_LOG(LogTemp, Warning, TEXT("USpatialAudioWidget OnJoinButtonClick ======"));
@@ -67,7 +81,7 @@ void USpatialAudioWidget::OnJoinButtonClick()
 }
 
 
-void USpatialAudioWidget::LeftMoveButtonClick()
+void USpatialAudioWidget::RightMoveButtonClick()
 {
 	RemoteVoicePositionInfo remoteVoicePos{ { 0.0f, 1.0f, 0.0f }, { 0.0f, 0.0f, 0.0f } };
 
@@ -76,7 +90,7 @@ void USpatialAudioWidget::LeftMoveButtonClick()
 	UE_LOG(LogTemp, Warning, TEXT("LocalSpatialAudioEngine->updateSelfPosition returns: %d"), ret);
 }
 
-void USpatialAudioWidget::RightMoveButtonClick()
+void USpatialAudioWidget::LeftMoveButtonClick()
 {
 	RemoteVoicePositionInfo remoteVoicePos{ { 0.0f, -1.0f, 0.0f }, { 0.0f, 0.0f, 0.0f } };
 

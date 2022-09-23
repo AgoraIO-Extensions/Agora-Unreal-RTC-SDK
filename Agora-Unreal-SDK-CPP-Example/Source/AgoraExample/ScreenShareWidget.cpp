@@ -6,6 +6,11 @@
 
 void UScreenShareWidget::InitAgoraWidget(FString APP_ID, FString TOKEN, FString CHANNEL_NAME)
 {
+#if PLATFORM_IOS
+	GEngine->AddOnScreenDebugMessage(-1, 60.f, FColor::White, FString::Printf(TEXT("Not Support in this platform!")));
+	return;
+#endif
+
 #if PLATFORM_ANDROID
 	CheckAndroidPermission();
 	ComboBoxDisplayId->SetVisibility(ESlateVisibility::Collapsed);
@@ -14,8 +19,6 @@ void UScreenShareWidget::InitAgoraWidget(FString APP_ID, FString TOKEN, FString 
 	InitAgoraEngine(APP_ID, TOKEN, CHANNEL_NAME);
 
 	SetUpUIEvent();
-
-	JoinChannel();
 	/*this get all windows in you devices ,you can move this to other position. 
 	this code may freeze,you can move this to button click */
 #if PLATFORM_WINDOWS || PLATFORM_MAC
@@ -27,20 +30,18 @@ void UScreenShareWidget::SetUpUIEvent()
 {
 	ScreenShareBtn->OnClicked.AddDynamic(this, &UScreenShareWidget::StartScreenShrareClick);
 	LeaveBtn->OnClicked.AddDynamic(this, &UScreenShareWidget::OnLeaveButtonClick);
+	BackHomeBtn->OnClicked.AddDynamic(this, &UScreenShareWidget::BackHomeClick);
 }
 
 
 void UScreenShareWidget::InitAgoraEngine(FString APP_ID, FString TOKEN, FString CHANNEL_NAME)
 {
-#if PLATFORM_IOS
-	GEngine->AddOnScreenDebugMessage(-1, 60.f, FColor::White, FString::Printf(TEXT("Not Support in this platform!")));
-	return;
-#endif
 	agora::rtc::RtcEngineContext RtcEngineContext;
 	RtcEngineContext.appId = TCHAR_TO_ANSI(*APP_ID);
 	RtcEngineContext.eventHandler = this;
 	RtcEngineContext.channelProfile = agora::CHANNEL_PROFILE_TYPE::CHANNEL_PROFILE_LIVE_BROADCASTING;
 
+	AppId = APP_ID;
 	Token = TOKEN;
 	ChannelName = CHANNEL_NAME;
 
@@ -75,6 +76,19 @@ void UScreenShareWidget::JoinChannel() {
 	RtcEngineProxy->enableAudio();
 	RtcEngineProxy->enableVideo();
 	auto ret = RtcEngineProxy->joinChannel(TCHAR_TO_ANSI(*Token), TCHAR_TO_ANSI(*ChannelName),"",0);
+}
+
+void UScreenShareWidget::BackHomeClick()
+{
+	UClass* AgoraWidgetClass = LoadClass<UBaseAgoraUserWidget>(NULL, TEXT("WidgetBlueprint'/Game/API-Example/Advance/MainWidgetManager.MainWidgetManager_C'"));
+
+	UBaseAgoraUserWidget* AgoraWidget = CreateWidget<UBaseAgoraUserWidget>(GetWorld(), AgoraWidgetClass);
+
+	AgoraWidget->AddToViewport();
+
+	AgoraWidget->InitAgoraWidget(AppId, Token, ChannelName);
+
+	this->RemoveFromViewport();
 }
 
 void UScreenShareWidget::OnLeaveButtonClick() {
@@ -125,6 +139,7 @@ void UScreenShareWidget::StartScreenShrareClick()
 	}
 #endif
 	UpdateChannelMediaOptions();
+	JoinChannel();
 }
 
 void UScreenShareWidget::GetScreenDisplayId()

@@ -12,5 +12,8 @@ void UBaseAgoraUserWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 	APlayerController* PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
-	PlayerController->bShowMouseCursor = true;
+	if (PlayerController!=nullptr)
+	{
+		PlayerController->bShowMouseCursor = true;
+	}
 }

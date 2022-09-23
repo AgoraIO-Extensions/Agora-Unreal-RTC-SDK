@@ -44,6 +44,9 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget))
 	UButton* NextBtn = nullptr;											/* If there are multiple remote users, use this button to switch */
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	UButton* BackHomeBtn = nullptr;
+
 	UFUNCTION(BlueprintCallable)
 	void OnLeaveButtonClick();
 
@@ -55,6 +58,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void OnNextButtonClick();
+
+	UFUNCTION(BlueprintCallable)
+	void BackHomeClick();
 
 	void CheckAndroidPermission();
 

@@ -22,6 +22,7 @@ void UDeviceManagerUserWidget::InitAgoraEngine(FString APP_ID, FString TOKEN, FS
 	RtcEngineContext.eventHandler = this;
 	RtcEngineContext.channelProfile = agora::CHANNEL_PROFILE_TYPE::CHANNEL_PROFILE_LIVE_BROADCASTING;
 
+	AppId = APP_ID;
 	Token = TOKEN;
 	ChannelName = CHANNEL_NAME;
 
@@ -35,7 +36,7 @@ void UDeviceManagerUserWidget::InitAgoraEngine(FString APP_ID, FString TOKEN, FS
 void UDeviceManagerUserWidget::SetUpUIEvent() {
 
 	CallBtn->OnClicked.AddDynamic(this, &UDeviceManagerUserWidget::CallDeviceManagerApi);
-
+	BackHomeBtn->OnClicked.AddDynamic(this, &UDeviceManagerUserWidget::BackHomeClick);
 }
 
 void UDeviceManagerUserWidget::CallDeviceManagerApi()
@@ -45,6 +46,19 @@ void UDeviceManagerUserWidget::CallDeviceManagerApi()
 	GetVideoDeviceManager();
 	SetCurrentDevice();
 	SetCurrentDeviceVolume();
+}
+
+void UDeviceManagerUserWidget::BackHomeClick()
+{
+	UClass* AgoraWidgetClass = LoadClass<UBaseAgoraUserWidget>(NULL, TEXT("WidgetBlueprint'/Game/API-Example/Advance/MainWidgetManager.MainWidgetManager_C'"));
+
+	UBaseAgoraUserWidget* AgoraWidget = CreateWidget<UBaseAgoraUserWidget>(GetWorld(), AgoraWidgetClass);
+
+	AgoraWidget->AddToViewport();
+
+	AgoraWidget->InitAgoraWidget(AppId,Token,ChannelName);
+
+	this->RemoveFromViewport();
 }
 
 void UDeviceManagerUserWidget::GetAudioRecordingDevice()
@@ -163,7 +177,6 @@ void UDeviceManagerUserWidget::NativeDestruct()
 	{
 		AudioDeviceManager.reset(nullptr);
 		VideoDeviceManager.reset(nullptr);
-
 		RtcEngineProxy->release();
 		delete RtcEngineProxy;
 		RtcEngineProxy = nullptr;

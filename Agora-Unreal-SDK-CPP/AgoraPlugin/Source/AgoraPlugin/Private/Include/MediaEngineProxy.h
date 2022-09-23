@@ -18,7 +18,7 @@ class MediaEngineProxy : IMediaEngine{
 public:
 	MediaEngineProxy(IRtcEngine* Engine); 
 
-	~MediaEngineProxy();
+	//~MediaEngineProxy();
 
 	int registerVideoFrameObserver(IVideoFrameObserver* observer) override;
 
