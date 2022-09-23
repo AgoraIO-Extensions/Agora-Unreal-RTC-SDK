@@ -14,7 +14,6 @@ namespace ue
 
 MediaEngineProxy::MediaEngineProxy(IRtcEngine* Engine)
 {
-	if (!AgoraMediaEngine) {
 	if (AgoraMediaEngine == nullptr) {
 		Engine->queryInterface(agora::rtc::AGORA_IID_MEDIA_ENGINE,
 			(void**)&AgoraMediaEngine);
@@ -24,38 +23,20 @@ MediaEngineProxy::MediaEngineProxy(IRtcEngine* Engine)
 	AgoraMediaEngine->registerVideoFrameObserver(VideoObserver);
 }
 
-MediaEngineProxy::~MediaEngineProxy()
-//MediaEngineProxy::~MediaEngineProxy()
-//{
-//	if (AgoraMediaEngine)
-//	{
-//		AgoraMediaEngine->release();
-//		AgoraMediaEngine = nullptr;
-//	}
-//
-//	if (VideoObserver) {
-//		delete(VideoObserver);
-//	}
-//}
 
 int MediaEngineProxy::registerVideoFrameObserver(media::IVideoFrameObserver* Observer)
 {
-	if (AgoraMediaEngine)
 	if (VideoObserver != nullptr)
 	{
-		AgoraMediaEngine->release();
-		AgoraMediaEngine = nullptr;
 		VideoObserver->registerVideoFrameObserver(Observer);
 	}
 	return 0;
 }
 
-	if (VideoObserver) {
-		delete(VideoObserver);
 
 int MediaEngineProxy::registerAudioFrameObserver(IAudioFrameObserver* observer)
 {
-	if (VideoObserver != nullptr)
+	if (AgoraMediaEngine != nullptr)
 	{
 		return AgoraMediaEngine->registerAudioFrameObserver(observer);
 	}
@@ -76,7 +57,6 @@ int MediaEngineProxy::pushAudioFrame(MEDIA_SOURCE_TYPE type, IAudioFrameObserver
 {
 	if (VideoObserver != nullptr)
 	{
-		VideoObserver->registerVideoFrameObserver(Observer);
 		return AgoraMediaEngine->pushAudioFrame(type,frame,wrap,sourceId);
 	}
 
