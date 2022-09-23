@@ -752,6 +752,33 @@ enum ERROR_CODE_TYPE {
   ERR_VDM_CAMERA_NOT_AUTHORIZED = 1501,
 };
 
+enum LICENSE_ERROR_TYPE {
+  /**
+   * 1: Invalid license
+  */
+  LICENSE_ERR_INVALID = 1,
+  /**
+   * 2: License expired
+  */
+  LICENSE_ERR_EXPIRE = 2,
+  /**
+   * 3: Exceed license minutes limit
+  */
+  LICENSE_ERR_MINUTES_EXCEED = 3,
+  /**
+   * 4: License use in limited period
+  */
+  LICENSE_ERR_LIMITED_PERIOD = 4,
+  /**
+   * 5: Same license used in different devices at the same time
+  */
+  LICENSE_ERR_DIFF_DEVICES = 5,
+  /**
+   * 99: SDK internal error
+  */
+  LICENSE_ERR_INTERNAL = 99,
+};
+
 /**
  * The operational permission of the SDK on the audio session.
  */
@@ -3688,6 +3715,11 @@ enum CONNECTION_CHANGED_REASON_TYPE
    * 20: The connection is failed due to too many broadcasters in the channel.
    */
   CONNECTION_CHANGED_TOO_MANY_BROADCASTERS = 20,
+
+  /**
+   * 21: The connection is failed due to license verification failed.
+   */
+  CONNECTION_CHANGED_LICENSE_VERIFY_FAILED = 21,
 };
 
 /**

@@ -14,6 +14,7 @@ namespace ue
 
 MediaEngineProxy::MediaEngineProxy(IRtcEngine* Engine)
 {
+	if (!AgoraMediaEngine) {
 	if (AgoraMediaEngine == nullptr) {
 		Engine->queryInterface(agora::rtc::AGORA_IID_MEDIA_ENGINE,
 			(void**)&AgoraMediaEngine);
@@ -23,6 +24,7 @@ MediaEngineProxy::MediaEngineProxy(IRtcEngine* Engine)
 	AgoraMediaEngine->registerVideoFrameObserver(VideoObserver);
 }
 
+MediaEngineProxy::~MediaEngineProxy()
 //MediaEngineProxy::~MediaEngineProxy()
 //{
 //	if (AgoraMediaEngine)
@@ -38,13 +40,18 @@ MediaEngineProxy::MediaEngineProxy(IRtcEngine* Engine)
 
 int MediaEngineProxy::registerVideoFrameObserver(media::IVideoFrameObserver* Observer)
 {
+	if (AgoraMediaEngine)
 	if (VideoObserver != nullptr)
 	{
+		AgoraMediaEngine->release();
+		AgoraMediaEngine = nullptr;
 		VideoObserver->registerVideoFrameObserver(Observer);
 	}
 	return 0;
 }
 
+	if (VideoObserver) {
+		delete(VideoObserver);
 
 int MediaEngineProxy::registerAudioFrameObserver(IAudioFrameObserver* observer)
 {
@@ -54,7 +61,6 @@ int MediaEngineProxy::registerAudioFrameObserver(IAudioFrameObserver* observer)
 	}
 	return -ERROR_NULLPTR;
 }
-
 
 int MediaEngineProxy::registerVideoEncodedFrameObserver(IVideoEncodedFrameObserver* observer)
 {
@@ -70,10 +76,13 @@ int MediaEngineProxy::pushAudioFrame(MEDIA_SOURCE_TYPE type, IAudioFrameObserver
 {
 	if (VideoObserver != nullptr)
 	{
+		VideoObserver->registerVideoFrameObserver(Observer);
 		return AgoraMediaEngine->pushAudioFrame(type,frame,wrap,sourceId);
 	}
+
 	return -ERROR_NULLPTR;
 }
+
 
 
 int MediaEngineProxy::pushCaptureAudioFrame(IAudioFrameObserver::AudioFrame* frame)
@@ -86,6 +95,7 @@ int MediaEngineProxy::pushCaptureAudioFrame(IAudioFrameObserver::AudioFrame* fra
 }
 
 
+
 int MediaEngineProxy::pushReverseAudioFrame(IAudioFrameObserver::AudioFrame* frame)
 {
 	if (AgoraMediaEngine != nullptr)
@@ -94,6 +104,8 @@ int MediaEngineProxy::pushReverseAudioFrame(IAudioFrameObserver::AudioFrame* fra
 	}
 	return -ERROR_NULLPTR;
 }
+
+
 
 
 int MediaEngineProxy::pushDirectAudioFrame(IAudioFrameObserver::AudioFrame* frame)
@@ -106,6 +118,8 @@ int MediaEngineProxy::pushDirectAudioFrame(IAudioFrameObserver::AudioFrame* fram
 }
 
 
+
+
 int MediaEngineProxy::pullAudioFrame(IAudioFrameObserver::AudioFrame* frame)
 {
 	if (AgoraMediaEngine != nullptr)
@@ -114,6 +128,8 @@ int MediaEngineProxy::pullAudioFrame(IAudioFrameObserver::AudioFrame* frame)
 	}
 	return -ERROR_NULLPTR;
 }
+
+
 
 
 int MediaEngineProxy::setExternalVideoSource(bool enabled, bool useTexture, EXTERNAL_VIDEO_SOURCE_TYPE sourceType /*= VIDEO_FRAME*/, rtc::SenderOptions encodedVideoOption /*= rtc::SenderOptions()*/)

@@ -3,25 +3,33 @@
 
 This repo contains Agora Unreal SDK and API-Examples in their respective folders.
 
-## Very Important Note
 
- 1. Until this note is removed, the SDK provided here is a **developer preview version**.   If there is any concern or feedback, please contact your Solution Architect for support.  Or, create an issue here.
- 2. **Blueprint** support is already on roadmap and will be delivered by late September.
+## Frequently Asked Questions
+
+### Is this an officially supported SDK?
+
+The SDK provided here is a developer preview version with limited support. More information regarding the official release will be provided closer the launch date. Please follow the repository to stay up-to-date with the latest changes and additions.
+
+### How can I report issues?
+
+To report any problems with the SDK, please file a ticket using the [Agora Console support system](https://agora-ticket.agora.io/). Please include the Unreal version that you are using, as well as screenshots of error logs and a description of the steps taken to trigger the issue.
+
+### Does this SDK support Blueprints?
+Blueprint support is scheduled for September-October, 2022.
 
 
 ## Agora-Unreal-RTC-SDK-Example
 
-It contains demo project of Agora Unreal CPP SDK . You can run the demo project according to the README in Agora-Unreal-SDK-CPP-Example/README.md
+Contains the demo project of Agora Unreal CPP SDK. Run the demo project according to the README in Agora-Unreal-SDK-CPP-Example/README.md
+
 
 ## Agora-Unreal-RTC-SDK
 
-The SDK release download link:
+SDK release download link:
 
 [![DownLoad](https://img.shields.io/badge/Download-4.0.0-000?style=for-the-badge&logoColor=white)](https://github.com/AgoraIO-Extensions/Agora-Unreal-RTC-SDK-NG/releases)
 
 
-
 ## License
 
-The sample projects are under the MIT license.
-
+Sample projects available under MIT license.
