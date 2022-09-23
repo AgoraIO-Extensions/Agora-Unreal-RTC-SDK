@@ -86,8 +86,11 @@ UCLASS(Blueprintable)
 class AGORAPLUGIN_API AIPacketObserver : public AActor, public agora::rtc::IPacketObserver
 {
 	GENERATED_BODY()
-
+protected:
+	void BeginPlay() override;
 public:
+	AIPacketObserver();
+	void Tick(float DeltaTime) override;
 	UPROPERTY(BlueprintAssignable, Category = "Agora|Event")
 	FOnSendAudioPacket OnSendAudioPacket;
 	UPROPERTY(BlueprintAssignable, Category = "Agora|Event")
@@ -96,6 +99,7 @@ public:
 	FOnReceiveAudioPacket OnReceiveAudioPacket;
 	UPROPERTY(BlueprintAssignable, Category = "Agora|Event")
 	FOnReceiveVideoPacket OnReceiveVideoPacket;
+
 	bool onSendAudioPacket(agora::rtc::IPacketObserver::Packet& packet) override;
 
 	bool onSendVideoPacket(agora::rtc::IPacketObserver::Packet& packet) override;

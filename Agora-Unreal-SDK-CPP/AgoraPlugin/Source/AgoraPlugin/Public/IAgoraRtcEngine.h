@@ -1939,6 +1939,15 @@ class IRtcEngineEventHandler {
     (void)token;
   }
 
+  /**
+   * Occurs when connection license verification fails.
+   *
+   * You can know the reason according to error code
+   */
+  virtual void onLicenseValidationFailure(LICENSE_ERROR_TYPE error) {
+    (void)error;
+  }
+
   /** Occurs when the first local audio frame is published.
 
    @param elapsed The time elapsed (ms) from the local user calling
@@ -2614,6 +2623,11 @@ struct RtcEngineContext {
   CHANNEL_PROFILE_TYPE channelProfile;
 
   /**
+   * The license used for verification when connecting channel. Charge according to the license
+   */
+  const char* license;
+
+  /**
    * The audio application scenario. See #AUDIO_SCENARIO_TYPE.
    *
    * @note Agora recommends the following scenarios:
@@ -2655,6 +2669,7 @@ struct RtcEngineContext {
   RtcEngineContext()
       : eventHandler(NULL), appId(NULL), context(NULL),
         channelProfile(CHANNEL_PROFILE_LIVE_BROADCASTING),
+        license(NULL),
         audioScenario(AUDIO_SCENARIO_DEFAULT),
         areaCode(AREA_CODE_GLOB),
         logConfig(), useExternalEglContext(false) {}

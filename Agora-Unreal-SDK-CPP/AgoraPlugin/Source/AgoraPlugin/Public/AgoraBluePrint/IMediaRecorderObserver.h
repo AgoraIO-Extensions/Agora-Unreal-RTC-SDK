@@ -17,14 +17,16 @@ UCLASS(Blueprintable)
 class AGORAPLUGIN_API AIMediaRecorderObserver : public AActor, public agora::media::IMediaRecorderObserver
 {
 	GENERATED_BODY()
-
+protected:
+	void BeginPlay() override;
 public:
+	AIMediaRecorderObserver();
+	void Tick(float DeltaTime) override;
 	UPROPERTY(BlueprintAssignable, Category = "Agora|Event")
 	FOnRecorderStateChanged OnRecorderStateChanged;
 	UPROPERTY(BlueprintAssignable, Category = "Agora|Event")
 	FOnRecorderInfoUpdated OnRecorderInfoUpdated;
 	void onRecorderStateChanged(agora::media::RecorderState state, agora::media::RecorderErrorCode error) override;
-
 	void onRecorderInfoUpdated(const agora::media::RecorderInfo& info) override;
 
 };

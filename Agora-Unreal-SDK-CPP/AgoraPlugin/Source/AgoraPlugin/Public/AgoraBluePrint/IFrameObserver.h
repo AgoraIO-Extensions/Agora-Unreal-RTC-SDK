@@ -225,8 +225,11 @@ UCLASS(Blueprintable)
 class AGORAPLUGIN_API AIAudioFrameObserver : public AActor, public agora::media::IAudioFrameObserver
 {
 	GENERATED_BODY()
-
+protected:
+	void BeginPlay() override;
 public:
+	AIAudioFrameObserver();
+	void Tick(float DeltaTime) override;
 	UPROPERTY(BlueprintAssignable, Category = "Agora|Event")
 	FOnPlaybackAudioFrameBeforeMixing OnPlaybackAudioFrameBeforeMixing;
 	UPROPERTY(BlueprintAssignable, Category = "Agora|Event")
@@ -270,8 +273,11 @@ UCLASS(Blueprintable)
 class AGORAPLUGIN_API AIAudioSpectrumObserver : public AActor, public agora::media::IAudioSpectrumObserver
 {
 	GENERATED_BODY()
-
+protected:
+	void BeginPlay() override;
 public:
+	AIAudioSpectrumObserver();
+	void Tick(float DeltaTime) override;
 	UPROPERTY(BlueprintAssignable, Category = "Agora|Event")
 	FOnLocalAudioSpectrum OnLocalAudioSpectrum;
 	UPROPERTY(BlueprintAssignable, Category = "Agora|Event")
@@ -288,8 +294,11 @@ UCLASS(Blueprintable)
 class AGORAPLUGIN_API AIVideoFrameObserver : public AActor, public agora::media::IVideoFrameObserver
 {
 	GENERATED_BODY()
-
+protected:
+	void BeginPlay() override;
 public:
+	AIVideoFrameObserver();
+	void Tick(float DeltaTime) override;
 	UPROPERTY(BlueprintAssignable, Category = "Agora|Event")
 	FOnCaptureVideoFrame OnCaptureVideoFrame;
 	UPROPERTY(BlueprintAssignable, Category = "Agora|Event")

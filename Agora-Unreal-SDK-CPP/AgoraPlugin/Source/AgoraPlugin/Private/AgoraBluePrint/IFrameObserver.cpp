@@ -17,6 +17,24 @@ bool AIAudioFrameObserver::onPlaybackAudioFrameBeforeMixing(const char* channelI
 	OnPlaybackAudioFrameBeforeMixing.Broadcast(FString(channelId), uid, frame);
 	return true;
 }
+
+void AIAudioSpectrumObserver::BeginPlay()
+{
+	Super::BeginPlay();
+}
+
+
+AIAudioSpectrumObserver::AIAudioSpectrumObserver()
+{
+	PrimaryActorTick.bCanEverTick = false;
+}
+
+
+void AIAudioSpectrumObserver::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+}
+
 bool AIAudioSpectrumObserver::onLocalAudioSpectrum(const agora::media::AudioSpectrumData& data)
 {
 	FAudioSpectrumData audioSpectrumData;
@@ -60,6 +78,24 @@ bool AIAudioSpectrumObserver::onRemoteAudioSpectrum(const agora::media::UserAudi
 	OnRemoteAudioSpectrum.Broadcast(userAudioInfos, spectrumNumber);
 	return true;
 }
+
+void AIVideoFrameObserver::BeginPlay()
+{
+	Super::BeginPlay();
+}
+
+
+AIVideoFrameObserver::AIVideoFrameObserver()
+{
+	PrimaryActorTick.bCanEverTick = false;
+}
+
+
+void AIVideoFrameObserver::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+}
+
 bool AIVideoFrameObserver::onCaptureVideoFrame(agora::media::base::VideoFrame& videoFrame)
 {
 	FVideoFrame frame;
@@ -616,6 +652,24 @@ agora::media::base::VIDEO_PIXEL_FORMAT AIVideoFrameObserver::getVideoFormatPrefe
 	GetVideoFormatPreference.Broadcast();
 
 	return agora::media::base::VIDEO_PIXEL_RGBA;
+}
+
+
+void AIAudioFrameObserver::BeginPlay()
+{
+	Super::BeginPlay();
+}
+
+
+AIAudioFrameObserver::AIAudioFrameObserver()
+{
+	PrimaryActorTick.bCanEverTick = false;
+}
+
+
+void AIAudioFrameObserver::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
 }
 
 bool AIAudioFrameObserver::onRecordAudioFrame(const char* channelId, agora::media::IAudioFrameObserverBase::AudioFrame& audioFrame)

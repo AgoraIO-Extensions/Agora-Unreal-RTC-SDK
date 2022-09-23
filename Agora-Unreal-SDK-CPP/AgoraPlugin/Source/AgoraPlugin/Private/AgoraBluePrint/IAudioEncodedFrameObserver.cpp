@@ -3,6 +3,24 @@
 
 #include "AgoraBluePrint/IAudioEncodedFrameObserver.h"
 
+
+void AIPacketObserver::BeginPlay()
+{
+	Super::BeginPlay();
+}
+
+
+AIPacketObserver::AIPacketObserver()
+{
+	PrimaryActorTick.bCanEverTick = false;
+}
+
+
+void AIPacketObserver::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+}
+
 bool AIPacketObserver::onSendAudioPacket(agora::rtc::IPacketObserver::Packet& packet)
 {
 	FPacket pack;

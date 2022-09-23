@@ -21,6 +21,11 @@ UCLASS(Blueprintable)
 class AGORAPLUGIN_API AIMediaStreamingSourceObserver : public AActor, public agora::rtc::IMediaStreamingSourceObserver
 {
 	GENERATED_BODY()
+protected:
+	void BeginPlay() override;
+public:
+	AIMediaStreamingSourceObserver();
+	void Tick(float DeltaTime) override;
 	UPROPERTY(BlueprintAssignable, Category = "Agora|Event")
 	FOnStateChanged OnStateChanged;
 	UPROPERTY(BlueprintAssignable, Category = "Agora|Event")

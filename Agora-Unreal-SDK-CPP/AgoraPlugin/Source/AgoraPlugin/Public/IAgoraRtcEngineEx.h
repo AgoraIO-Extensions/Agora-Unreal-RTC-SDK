@@ -75,6 +75,7 @@ class IRtcEngineEventHandlerEx : public IRtcEngineEventHandler {
   using IRtcEngineEventHandler::onStreamMessageError;
   using IRtcEngineEventHandler::onRequestToken;
   using IRtcEngineEventHandler::onTokenPrivilegeWillExpire;
+  using IRtcEngineEventHandler::onLicenseValidationFailure;
   using IRtcEngineEventHandler::onFirstLocalAudioFramePublished;
   using IRtcEngineEventHandler::onFirstRemoteAudioFrame;
   using IRtcEngineEventHandler::onFirstRemoteAudioDecoded;
@@ -578,6 +579,16 @@ class IRtcEngineEventHandlerEx : public IRtcEngineEventHandler {
    */
   virtual void onRequestToken(const RtcConnection& connection) {
     (void)connection;
+  }
+
+  /**
+   * Occurs when connection license verification fails.
+   *
+   * You can know the reason according to error code
+   */
+  virtual void onLicenseValidationFailure(const RtcConnection& connection, LICENSE_ERROR_TYPE reason) {
+    (void)connection;
+    (void)reason;
   }
 
   /**

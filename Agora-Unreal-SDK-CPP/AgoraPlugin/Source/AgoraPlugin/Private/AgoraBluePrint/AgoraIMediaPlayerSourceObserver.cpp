@@ -71,9 +71,39 @@ void AIMediaPlayerSourceObserver::onAudioVolumeIndication(int volume)
 	OnAudioVolumeIndication.Broadcast(volume);
 }
 
-void AIMediaPlayerSourceObserver::BeginPlay()
+
+AIMediaPlayerSourceObserver::AIMediaPlayerSourceObserver()
 {
 	PrimaryActorTick.bCanEverTick = false;
+}
+
+
+void AIMediaPlayerSourceObserver::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+}
+
+void AIMediaPlayerSourceObserver::BeginPlay()
+{
+	Super::BeginPlay();
+}
+
+
+void AIMediaPlayerCustomDataProvider::BeginPlay()
+{
+	Super::BeginPlay();
+}
+
+
+AIMediaPlayerCustomDataProvider::AIMediaPlayerCustomDataProvider()
+{
+	PrimaryActorTick.bCanEverTick = false;
+}
+
+
+void AIMediaPlayerCustomDataProvider::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
 }
 
 int AIMediaPlayerCustomDataProvider::onReadData(unsigned char* buffer, int bufferSize)

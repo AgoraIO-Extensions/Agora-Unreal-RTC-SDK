@@ -3,6 +3,24 @@
 
 #include "AgoraBluePrint/IMediaStreamingSourceObserver.h"
 
+
+void AIMediaStreamingSourceObserver::BeginPlay()
+{
+	Super::BeginPlay();
+}
+
+
+AIMediaStreamingSourceObserver::AIMediaStreamingSourceObserver()
+{
+	PrimaryActorTick.bCanEverTick = false;
+}
+
+
+void AIMediaStreamingSourceObserver::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+}
+
 void AIMediaStreamingSourceObserver::onStateChanged(agora::rtc::STREAMING_SRC_STATE state, agora::rtc::STREAMING_SRC_ERR err_code)
 {
 	OnStateChanged.Broadcast((ESTREAMING_SRC_STATE)state, (ESTREAMING_SRC_ERR)err_code);

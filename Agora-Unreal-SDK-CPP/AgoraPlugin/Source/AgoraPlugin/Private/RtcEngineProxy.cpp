@@ -18,10 +18,16 @@ namespace agora
 				if (JNIEnv* Env = FAndroidApplication::GetJavaEnv())
 				{
 					static jmethodID LoadLibrary = FJavaWrapper::FindMethod(Env, FJavaWrapper::GameActivityClassID, "LoadLibrary", "()V", false);
-					FJavaWrapper::CallVoidMethod(Env, FJavaWrapper::GameActivityThis, LoadLibrary);
-
+					if (LoadLibrary != NULL)
+					{
+						FJavaWrapper::CallVoidMethod(Env, FJavaWrapper::GameActivityThis, LoadLibrary);
+					}
+					
 					static jmethodID LoadAndroidScreenCaptureSo = FJavaWrapper::FindMethod(Env, FJavaWrapper::GameActivityClassID, "LoadAndroidScreenCaptureSo", "()V", false);
-					FJavaWrapper::CallVoidMethod(Env, FJavaWrapper::GameActivityThis, LoadAndroidScreenCaptureSo);
+					if (LoadAndroidScreenCaptureSo != NULL)
+					{
+						FJavaWrapper::CallVoidMethod(Env, FJavaWrapper::GameActivityThis, LoadAndroidScreenCaptureSo);
+					}
 				}
 #endif
 				RtcEngine = ::createAgoraRtcEngine();
@@ -74,6 +80,15 @@ namespace agora
 			}
 			int RtcEngineProxy::queryInterface(agora::rtc::INTERFACE_ID_TYPE iid, void** inter) {
 				if (RtcEngine != nullptr) {
+					if (iid == INTERFACE_ID_TYPE::AGORA_IID_MEDIA_ENGINE)
+					{
+						*inter = (void*)(MediaProxy.get());
+						if (*inter == nullptr)
+						{
+							return -ERROR_NULLPTR;
+						}
+						return 0;
+					}
 					return RtcEngine->queryInterface(iid, inter);
 				}
 				return -ERROR_NULLPTR;

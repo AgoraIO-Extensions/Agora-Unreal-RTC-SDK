@@ -149,8 +149,13 @@ UCLASS(Blueprintable)
 class AGORAPLUGIN_API AIMediaPlayerSourceObserver : public AActor, public agora::rtc::IMediaPlayerSourceObserver
 {
 	GENERATED_BODY()
+protected:
+	void BeginPlay() override;
 
 public:
+	AIMediaPlayerSourceObserver();
+	void Tick(float DeltaTime) override;
+
 	UPROPERTY(BlueprintAssignable, Category = "Agora|Event")
 	FOnPlayerSourceStateChanged OnPlayerSourceStateChanged;
 	UPROPERTY(BlueprintAssignable, Category = "Agora|Event")
@@ -196,16 +201,17 @@ public:
 
 	void onAudioVolumeIndication(int volume) override;
 
-protected:
-	void BeginPlay() override;
 };
 
 UCLASS(Blueprintable)
 class AGORAPLUGIN_API AIMediaPlayerCustomDataProvider : public AActor, public agora::media::base::IMediaPlayerCustomDataProvider
 {
 	GENERATED_BODY()
-
+protected:
+	void BeginPlay() override;
 public:
+	AIMediaPlayerCustomDataProvider();
+	void Tick(float DeltaTime) override;
 	UPROPERTY(BlueprintAssignable, Category = "Agora|Event")
 	FOnReadData OnReadData;
 	UPROPERTY(BlueprintAssignable, Category = "Agora|Event")

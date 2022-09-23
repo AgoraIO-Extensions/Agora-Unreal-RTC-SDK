@@ -4,6 +4,7 @@
 #include "AgoraBluePrint/AgoraMediaPlayer.h"
 #include "IAgoraMediaPlayer.h"
 
+
 int UIMediaPlayer::GetMediaPlayerId()
 {
 	return MediaPlayer->getMediaPlayerId();
