@@ -18,6 +18,7 @@ namespace agora
 				if (JNIEnv* Env = FAndroidApplication::GetJavaEnv())
 				{
 					static jmethodID LoadLibrary = FJavaWrapper::FindMethod(Env, FJavaWrapper::GameActivityClassID, "LoadLibrary", "()V", false);
+					FJavaWrapper::CallVoidMethod(Env, FJavaWrapper::GameActivityThis, LoadLibrary);
 					if (LoadLibrary != NULL)
 					{
 						FJavaWrapper::CallVoidMethod(Env, FJavaWrapper::GameActivityThis, LoadLibrary);
@@ -45,6 +46,7 @@ namespace agora
 			void RtcEngineProxy::release(bool sync) {
 				if (RtcEngine != nullptr)
 				{
+					MediaProxy->registerVideoFrameObserver(nullptr);
 					if (MediaProxy != nullptr)
 					{
 						MediaProxy->registerVideoFrameObserver(nullptr);
@@ -57,6 +59,12 @@ namespace agora
 				int ret = RtcEngine->initialize(context);
 
 				UE_LOG(LogTemp, Warning, TEXT("RtcEngineProxy initialize %d"), ret);
+					AppType appType = kAppTypeUnreal;
+				char parameters[512] = "";
+				sprintf(parameters, "{\"rtc.set_app_type\": %d}", appType);
+				agora::base::AParameter apm(RtcEngine);
+				apm->setParameters(parameters);
+
 				if (RtcEngine != nullptr && ret == 0)
 				{
 					AppType appType = kAppTypeUnreal;
@@ -131,6 +139,7 @@ namespace agora
 
 			int RtcEngineProxy::leaveChannel() {
 				if (RtcEngine != nullptr) {
+				return RtcEngine->leaveChannel();
 					int ret = RtcEngine->leaveChannel();
 					return ret;
 				}
@@ -306,6 +315,7 @@ namespace agora
 			}
 
 			int RtcEngineProxy::setupRemoteVideo(agora::rtc::VideoCanvas const& canvas) {
+
 				if (RtcEngine != nullptr) {
 					if (canvas.view != nullptr) {
 						VideoRenderMgr->setRenderImage((UImage*)canvas.view, canvas.uid, "", canvas.sourceType);

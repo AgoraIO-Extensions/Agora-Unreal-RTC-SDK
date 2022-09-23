@@ -42,8 +42,7 @@ int MediaEngineProxy::registerVideoFrameObserver(media::IVideoFrameObserver* Obs
 	{
 		VideoObserver->registerVideoFrameObserver(Observer);
 	}
-	return 0;
-}
+	return 0;}
 
 
 int MediaEngineProxy::registerAudioFrameObserver(IAudioFrameObserver* observer)
