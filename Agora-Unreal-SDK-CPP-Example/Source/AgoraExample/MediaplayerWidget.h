@@ -95,7 +95,7 @@ private:
 
 	std::string ChannelName;
 
-	bool bURLOpen;
+	bool bURLOpen = true;
 
 	void InitAgoraEngine(FString APP_ID, FString TOKEN, FString CHANNEL_NAME);
 
