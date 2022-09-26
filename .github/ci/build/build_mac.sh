@@ -58,6 +58,7 @@ Template_DIR=$(pwd)/Agora-Unreal-SDK-CPP/AgoraPlugin
 PLUGIN_NAME="AgoraPlugin"
 
 git checkout $BRANCH
+git pull
 #echo "[Unreal CI] start preparing resources"
 cd "$CI_DIR" || exit 1
 mkdir temp
