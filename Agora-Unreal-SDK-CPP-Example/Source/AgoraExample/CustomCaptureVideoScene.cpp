@@ -2,8 +2,6 @@
 
 
 #include "CustomCaptureVideoScene.h"
-#include <mutex>
-
 
 
 void UCustomCaptureVideoScene::InitAgoraWidget(FString APP_ID, FString TOKEN, FString CHANNEL_NAME)
@@ -44,7 +42,17 @@ void UCustomCaptureVideoScene::NativeTick(const FGeometry& MyGeometry, float InD
 		externalVideoFrame->buffer = (uint8*)FMemory::Malloc(tex->GetSizeX() * tex->GetSizeY()*4);
 	}
 	externalVideoFrame->timestamp = getTimeStamp();
-	if (tex->PlatformData!=nullptr)
+#if ENGINE_MAJOR_VERSION > 4
+	if (tex->GetPlatformData() != nullptr)
+	{
+		uint8* raw = (uint8*)tex->GetPlatformData()->Mips[0].BulkData.Lock(LOCK_READ_ONLY);
+		memcpy(externalVideoFrame->buffer, raw, tex->GetSizeX() * tex->GetSizeY() * 4);
+		tex->GetPlatformData()->Mips[0].BulkData.Unlock();
+
+		MediaEngineManager->pushVideoFrame(externalVideoFrame);
+	}
+#else
+	if (tex->PlatformData != nullptr)
 	{
 		uint8* raw = (uint8*)tex->PlatformData->Mips[0].BulkData.Lock(LOCK_READ_ONLY);
 		memcpy(externalVideoFrame->buffer, raw, tex->GetSizeX() * tex->GetSizeY() * 4);
@@ -52,6 +60,8 @@ void UCustomCaptureVideoScene::NativeTick(const FGeometry& MyGeometry, float InD
 
 		MediaEngineManager->pushVideoFrame(externalVideoFrame);
 	}
+#endif
+	
 }
 
 
