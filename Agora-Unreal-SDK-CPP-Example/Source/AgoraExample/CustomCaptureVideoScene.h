@@ -6,7 +6,6 @@
 #include "BaseAgoraUserWidget.h"
 #include "AgoraPluginInterface.h"
 #include "Components/Image.h"
-#include "MediaTexture.h"
 #include "Components/CanvasPanelSlot.h"
 #include "../Private/Misc/MediaTextureResource.h"
 #include <iostream>
