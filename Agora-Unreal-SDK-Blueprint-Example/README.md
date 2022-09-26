@@ -69,7 +69,7 @@ To build and run the sample application, first obtain an app ID:
 
 ### Compile and run demo. 
 
-1) Open any level, for example Basic/joinChannelAudio/BasicAudioCall/ You can find a blueprint named BP_Agoractor in the WorldOutliner, enter your appid and channelname in the position below.
+1) Open any level blueprint, for example Basic/joinChannelAudio/BasicAudioCall/ enter your appid and channelname in the position below.
   
 ![appid](../ReadmePicture/appidBP.jpg)
 
@@ -135,8 +135,6 @@ In Android, the following permissions need to be applied dynamically, which can 
 2. android.permission.CAMERA
 3. android.permission.READ_PHONE_STATE
 4. android.permission.WRITE_EXTERNAL_STORAGE
-
-you can include "AndroidPermission/Classes/AndroidPermissionFunctionLibrary.h" and call this method to get permission.
 
 ![Alt text](../ReadmePicture/AndroidperimissionBP.jpg?raw=true "PackageProject")
 
