@@ -19,18 +19,7 @@ void UCustomCaptureVideoScene::InitAgoraWidget(FString APP_ID, FString TOKEN, FS
 
 	JoinChannel();
 
-	TArray<AActor*> OutActors;
-
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ASceneCapture2D::StaticClass(), OutActors);
-
-	for (AActor* actor : OutActors)
-	{
-		UKismetSystemLibrary::PrintString(GetWorld(), actor->GetName()+"==================>>>>>");
-		if (actor->GetName() == "SceneCapture2D_1")
-		{
-			CameraActor = (ASceneCapture2D*)actor;
-		}
-	}
+	GetScreenCapture2DCamera();
 }
 
 
@@ -62,15 +51,6 @@ void UCustomCaptureVideoScene::NativeTick(const FGeometry& MyGeometry, float InD
 			externalVideoFrame->buffer = (uint8*)FMemory::Malloc(TextureRenderTarget->SizeX * TextureRenderTarget->SizeY * 4);
 		}
 		externalVideoFrame->timestamp = getTimeStamp();
-#if ENGINE_MAJOR_VERSION > 4
-		if (tex->GetPlatformData() != nullptr)
-		{
-			uint8* raw = (uint8*)tex->GetPlatformData()->Mips[0].BulkData.Lock(LOCK_READ_ONLY);
-			memcpy(externalVideoFrame->buffer, raw, tex->GetSizeX() * tex->GetSizeY() * 4);
-			tex->GetPlatformData()->Mips[0].BulkData.Unlock();
-			MediaEngineManager->pushVideoFrame(externalVideoFrame);
-		}
-#else
 		if (SurfData.Num() > 4)
 		{
 			memcpy(externalVideoFrame->buffer, SurfData.GetData(), TextureRenderTarget->SizeX * TextureRenderTarget->SizeY * 4);
@@ -79,7 +59,6 @@ void UCustomCaptureVideoScene::NativeTick(const FGeometry& MyGeometry, float InD
 				MediaEngineManager->pushVideoFrame(externalVideoFrame);
 			}
 		}
-#endif
 	}
 }
 
@@ -164,6 +143,21 @@ void UCustomCaptureVideoScene::JoinChannel()
 	RtcEngineProxy->enableVideo();
 	RtcEngineProxy->setClientRole(agora::rtc::CLIENT_ROLE_TYPE::CLIENT_ROLE_BROADCASTER);
 	RtcEngineProxy->joinChannel(Token.c_str(), ChannelName.c_str(), "", 0);
+}
+
+void UCustomCaptureVideoScene::GetScreenCapture2DCamera()
+{
+	TArray<AActor*> OutActors;
+
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ASceneCapture2D::StaticClass(), OutActors);
+
+	for (AActor* actor : OutActors)
+	{
+		if (actor->GetName() == "SceneCapture2D_1")
+		{
+			CameraActor = (ASceneCapture2D*)actor;
+		}
+	}
 }
 
 std::time_t UCustomCaptureVideoScene::getTimeStamp()

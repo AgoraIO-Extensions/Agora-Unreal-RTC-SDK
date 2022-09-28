@@ -62,6 +62,8 @@ protected:
 
 	void JoinChannel();
 
+	void GetScreenCapture2DCamera();
+
 	std::time_t getTimeStamp();
 
 	agora::media::IMediaEngine* MediaEngineManager;
