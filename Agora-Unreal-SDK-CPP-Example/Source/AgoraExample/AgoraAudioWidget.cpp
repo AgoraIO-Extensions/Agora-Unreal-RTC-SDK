@@ -36,7 +36,6 @@ void UAgoraAudioWidget::SetUpUIEvent()
 {
 	JoinBtn->OnClicked.AddDynamic(this, &UAgoraAudioWidget::OnJoinButtonClick);
 	LeaveBtn->OnClicked.AddDynamic(this, &UAgoraAudioWidget::OnLeaveButtonClick);
-	BackHomeBtn->OnClicked.AddDynamic(this, &UAgoraAudioWidget::BackHomeClick);
 }
 
 void UAgoraAudioWidget::CheckAndroidPermission()
@@ -70,18 +69,6 @@ void UAgoraAudioWidget::OnLeaveButtonClick() {
 	RtcEngineProxy->leaveChannel();
 }
 
-void UAgoraAudioWidget::BackHomeClick()
-{
-	UClass* AgoraWidgetClass = LoadClass<UBaseAgoraUserWidget>(NULL, TEXT("WidgetBlueprint'/Game/API-Example/Advance/MainWidgetManager.MainWidgetManager_C'"));
-
-	UBaseAgoraUserWidget* AgoraWidget = CreateWidget<UBaseAgoraUserWidget>(GetWorld(), AgoraWidgetClass);
-
-	AgoraWidget->AddToViewport();
-
-	AgoraWidget->InitAgoraWidget(AppId, Token, ChannelName);
-
-	this->RemoveFromViewport();
-}
 
 #pragma region RtcEngineCallBack
 void UAgoraAudioWidget::onJoinChannelSuccess(const char* channel, agora::rtc::uid_t uid, int elapsed)

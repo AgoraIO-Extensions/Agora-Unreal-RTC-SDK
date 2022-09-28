@@ -56,7 +56,6 @@ void UAgoraVideoWidget::SetUpUIEvent() {
 	NextBtn->SetIsEnabled(false);
 	PreviousBtn->OnClicked.AddDynamic(this, &UAgoraVideoWidget::OnPreviousButtonClick);
 	NextBtn->OnClicked.AddDynamic(this, &UAgoraVideoWidget::OnNextButtonClick);
-	BackHomeBtn->OnClicked.AddDynamic(this, &UAgoraVideoWidget::BackHomeClick);
 }
 
 
@@ -94,18 +93,6 @@ void UAgoraVideoWidget::OnNextButtonClick()
 	PreviousBtn->SetIsEnabled(true);
 }
 
-void UAgoraVideoWidget::BackHomeClick()
-{
-	UClass* AgoraWidgetClass = LoadClass<UBaseAgoraUserWidget>(NULL, TEXT("WidgetBlueprint'/Game/API-Example/Advance/MainWidgetManager.MainWidgetManager_C'"));
-
-	UBaseAgoraUserWidget* AgoraWidget = CreateWidget<UBaseAgoraUserWidget>(GetWorld(), AgoraWidgetClass);
-
-	AgoraWidget->AddToViewport();
-
-	AgoraWidget->InitAgoraWidget(FString(AppID.c_str()), FString(Token.c_str()), FString(ChannelName.c_str()));
-
-	this->RemoveFromViewport();
-}
 
 void UAgoraVideoWidget::CheckAndroidPermission()
 {

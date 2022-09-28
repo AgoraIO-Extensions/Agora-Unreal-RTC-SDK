@@ -34,9 +34,6 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void CallDeviceManagerApi();
 
-	UFUNCTION(BlueprintCallable)
-	void BackHomeClick();
-
 	void InitAgoraWidget(FString APP_ID, FString TOKEN, FString CHANNEL_NAME) override;
 
 private:

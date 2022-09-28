@@ -30,7 +30,6 @@ void UScreenShareWidget::SetUpUIEvent()
 {
 	ScreenShareBtn->OnClicked.AddDynamic(this, &UScreenShareWidget::StartScreenShrareClick);
 	LeaveBtn->OnClicked.AddDynamic(this, &UScreenShareWidget::OnLeaveButtonClick);
-	BackHomeBtn->OnClicked.AddDynamic(this, &UScreenShareWidget::BackHomeClick);
 }
 
 
@@ -76,19 +75,6 @@ void UScreenShareWidget::JoinChannel() {
 	RtcEngineProxy->enableAudio();
 	RtcEngineProxy->enableVideo();
 	auto ret = RtcEngineProxy->joinChannel(TCHAR_TO_ANSI(*Token), TCHAR_TO_ANSI(*ChannelName),"",0);
-}
-
-void UScreenShareWidget::BackHomeClick()
-{
-	UClass* AgoraWidgetClass = LoadClass<UBaseAgoraUserWidget>(NULL, TEXT("WidgetBlueprint'/Game/API-Example/Advance/MainWidgetManager.MainWidgetManager_C'"));
-
-	UBaseAgoraUserWidget* AgoraWidget = CreateWidget<UBaseAgoraUserWidget>(GetWorld(), AgoraWidgetClass);
-
-	AgoraWidget->AddToViewport();
-
-	AgoraWidget->InitAgoraWidget(AppId, Token, ChannelName);
-
-	this->RemoveFromViewport();
 }
 
 void UScreenShareWidget::OnLeaveButtonClick() {

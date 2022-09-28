@@ -29,7 +29,6 @@ void UJoinMultipleChannelWidget::SetUpUIEvent()
 	StartScreenShrareBtn->SetVisibility(ESlateVisibility::Visible);
 #endif
 	JoinBtn->OnClicked.AddDynamic(this, &UJoinMultipleChannelWidget::JoinChannelClick);
-	BackHomeBtn->OnClicked.AddDynamic(this, &UJoinMultipleChannelWidget::BackHomeClick);
 }
 
 void UJoinMultipleChannelWidget::CheckAndroidPermission()
@@ -66,18 +65,6 @@ void  UJoinMultipleChannelWidget::InitAgoraEngine(FString APP_ID, FString TOKEN,
 	RtcEngineProxy->initialize(RtcEngineContext);
 }
 
-void UJoinMultipleChannelWidget::BackHomeClick()
-{
-	UClass* AgoraWidgetClass = LoadClass<UBaseAgoraUserWidget>(NULL, TEXT("WidgetBlueprint'/Game/API-Example/Advance/MainWidgetManager.MainWidgetManager_C'"));
-
-	UBaseAgoraUserWidget* AgoraWidget = CreateWidget<UBaseAgoraUserWidget>(GetWorld(), AgoraWidgetClass);
-
-	AgoraWidget->AddToViewport();
-
-	AgoraWidget->InitAgoraWidget(FString(AppID.c_str()), FString(Token.c_str()), FString(ChannelName.c_str()));
-
-	this->RemoveFromViewport();
-}
 
 void UJoinMultipleChannelWidget::StartScreenShrareClick()
 {

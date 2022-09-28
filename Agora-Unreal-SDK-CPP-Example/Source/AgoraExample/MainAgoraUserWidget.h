@@ -7,6 +7,7 @@
 #include "Components/Button.h"
 #include "Components/EditableTextBox.h"
 #include "Kismet/GameplayStatics.h"
+#include "AgoraConfig.h"
 #include "MainAgoraUserWidget.generated.h"
 
 /**
@@ -53,43 +54,15 @@ public:
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	UEditableTextBox* ChannelBox;
 
-	UFUNCTION(BlueprintCallable)
-	void JoinChannelVideoClick();
-
-	UFUNCTION(BlueprintCallable)
-	void JoinChannelAudioClick();
-
-	UFUNCTION(BlueprintCallable)
-	void DvicesManagerClick();
-
-	UFUNCTION(BlueprintCallable)
-	void JoinMultipleChannelClick();
-
-	UFUNCTION(BlueprintCallable)
-	void MediaPlayerClick();
-
-	UFUNCTION(BlueprintCallable)
-	void ScreenShareClick();
-
-	UFUNCTION(BlueprintCallable)
-	void SendMultiCameraStreamClick();
-
-	UFUNCTION(BlueprintCallable)
-	void SpatialAudioClick();
-
-	UFUNCTION(BlueprintCallable)
-	void CustomCaptureVideoClick();
-
 	FString APP_ID; 
 
 	FString TOKEN;
 
 	FString CHANNEL_NAME;
 
-	void LoadWidget(FString WidgetName);
-
-	void InitAgoraWidget(FString Id, FString Token, FString Channelname) override;
-
 protected:
 	void NativeConstruct() override;
+
+	void NativeDestruct() override;
+
 };

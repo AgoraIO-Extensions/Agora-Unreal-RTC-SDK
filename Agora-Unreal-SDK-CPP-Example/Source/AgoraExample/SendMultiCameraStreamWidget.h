@@ -54,8 +54,6 @@ public:
 	void InitAgoraWidget(FString APP_ID, FString TOKEN, FString CHANNEL_NAME) override;
 
 	UFUNCTION(BlueprintCallable)
-	void BackHomeClick();
-	UFUNCTION(BlueprintCallable)
 	void MainCameraJoinChannel();
 	UFUNCTION(BlueprintCallable)
 	void MainCameraLeaveChannel();
@@ -63,8 +61,6 @@ public:
 	void SecondCameraJoinChannel();
 	UFUNCTION(BlueprintCallable)
 	void SecondCameraLeaveChannel();
-
-
 
 	unsigned int Uid1 = 123;
 

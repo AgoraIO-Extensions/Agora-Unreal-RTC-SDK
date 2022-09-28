@@ -59,9 +59,6 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void OnNextButtonClick();
 
-	UFUNCTION(BlueprintCallable)
-	void BackHomeClick();
-
 	void CheckAndroidPermission();
 
 	void InitAgoraWidget(FString APP_ID, FString TOKEN, FString CHANNEL_NAME) override;

@@ -33,12 +33,6 @@ public:
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	UButton* BackHomeBtn = nullptr;
 
-	UFUNCTION(BlueprintImplementableEvent)
-	void InitVideo();
-
-	UFUNCTION(BlueprintCallable)
-	void BackHomeClick();
-
 	IRtcEngine* RtcEngineProxy;
 
 	agora::media::base::ExternalVideoFrame* externalVideoFrame;

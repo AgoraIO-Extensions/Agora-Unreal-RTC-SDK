@@ -39,9 +39,6 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void OnLeaveButtonClick();
 
-	UFUNCTION(BlueprintCallable)
-	void BackHomeClick();
-
 	void InitAgoraWidget(FString APP_ID, FString TOKEN, FString CHANNEL_NAME) override;
 
 	void NativeDestruct() override;

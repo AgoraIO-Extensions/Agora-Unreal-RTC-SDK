@@ -52,9 +52,6 @@ public:
 	UButton* BackHomeBtn = nullptr;
 
 	UFUNCTION(BlueprintCallable)
-	void BackHomeClick();
-
-	UFUNCTION(BlueprintCallable)
 	void OnPlayButtonClick();
 
 	UFUNCTION(BlueprintCallable)
@@ -80,8 +77,7 @@ public:
 
 	FSlateBrush EmptyBrush;
 
-
-	//void onVideoSizeChanged(uid_t uid, int width, int height, int rotation) override;
+	void onVideoSizeChanged(VIDEO_SOURCE_TYPE sourceType, uid_t uid, int width, int height, int rotation) override;
 
 private:
 

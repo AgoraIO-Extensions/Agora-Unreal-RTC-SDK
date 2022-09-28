@@ -41,9 +41,6 @@ public:
 	UButton* BackHomeBtn = nullptr;
 
 	UFUNCTION(BlueprintCallable)
-	void BackHomeClick();
-
-	UFUNCTION(BlueprintCallable)
 	void OnLeaveButtonClick();
 
 	UFUNCTION(BlueprintCallable)

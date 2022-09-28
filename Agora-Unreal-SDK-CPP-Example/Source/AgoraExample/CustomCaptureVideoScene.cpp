@@ -13,10 +13,6 @@ void UCustomCaptureVideoScene::InitAgoraWidget(FString APP_ID, FString TOKEN, FS
 	SetExternalVideoSource();
 
 	JoinChannel();
-
-	InitVideo();
-
-	BackHomeBtn->OnClicked.AddDynamic(this, &UCustomCaptureVideoScene::BackHomeClick);
 }
 
 
@@ -153,18 +149,4 @@ std::time_t UCustomCaptureVideoScene::getTimeStamp()
 	std::chrono::time_point<std::chrono::system_clock, std::chrono::milliseconds> tp = std::chrono::time_point_cast<std::chrono::milliseconds>(std::chrono::system_clock::now());
 	std::time_t timestamp = tp.time_since_epoch().count();
 	return timestamp;
-}
-
-
-void UCustomCaptureVideoScene::BackHomeClick()
-{
-	UClass* AgoraWidgetClass = LoadClass<UBaseAgoraUserWidget>(NULL, TEXT("WidgetBlueprint'/Game/API-Example/Advance/MainWidgetManager.MainWidgetManager_C'"));
-
-	UBaseAgoraUserWidget* AgoraWidget = CreateWidget<UBaseAgoraUserWidget>(GetWorld(), AgoraWidgetClass);
-
-	AgoraWidget->AddToViewport();
-
-	AgoraWidget->InitAgoraWidget(FString(AppID.c_str()), FString(Token.c_str()), FString(ChannelName.c_str()));
-
-	this->RemoveFromViewport();
 }
