@@ -60,7 +60,7 @@ To build and run the sample application, first obtain an app ID:
 
 ### Integrating the SDK
 
-1. Download the SDK and its [source code](https://www.baidu.com). If you have any questions, create an issue [here](https://github.com/AgoraIO-Extensions/Agora-Unreal-SDK-CPP-NG/issues).
+1. Download the SDK and its [source code](https://github.com/AgoraIO-Extensions/Agora-Unreal-RTC-SDK/releases). If you have any questions, create an issue [here](https://github.com/AgoraIO-Extensions/Agora-Unreal-SDK-CPP-NG/issues).
 2. unZip SourceCode, Create [Plugins] floder in your project root directory.Copy unZip file to [Plugins];
  
 ![unZip](../ReadmePicture/copy_path.jpg)
