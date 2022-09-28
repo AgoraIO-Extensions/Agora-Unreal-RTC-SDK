@@ -17,9 +17,13 @@
 #endif
 #include "Kismet/GameplayStatics.h"
 #include "Engine/SceneCapture2D.h"
+#include "Camera/CameraActor.h"
+#include <mutex>
 #include "CustomCaptureVideoScene.generated.h"
 using namespace agora::rtc;
 using namespace agora;
+
+
 /**
  * 
  */
@@ -41,14 +45,15 @@ public:
 
 	void InitAgoraWidget(FString APP_ID, FString TOKEN, FString CHANNEL_NAME) override;
 
+	void OnBackBufferReady_RenderThread(SWindow& window, const FTexture2DRHIRef& ref);
+
 	std::string AppID;
 
 	std::string Token;
 
 	std::string ChannelName;
 
-	ASceneCapture2D* CameraActor;
-
+	std::mutex VideoPushMutex;
 protected:
 	void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
@@ -62,9 +67,14 @@ protected:
 
 	void JoinChannel();
 
-	void GetScreenCapture2DCamera();
-
 	std::time_t getTimeStamp();
 
+	void swap(agora::media::base::ExternalVideoFrame*& SwipFrame, agora::media::base::ExternalVideoFrame*& CurrentFrame);
+
 	agora::media::IMediaEngine* MediaEngineManager;
+
+	void NativeConstruct() override;
+
 };
+
+
