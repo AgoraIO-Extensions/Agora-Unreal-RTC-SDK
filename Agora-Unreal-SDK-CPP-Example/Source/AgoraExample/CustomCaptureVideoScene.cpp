@@ -2,6 +2,11 @@
 
 
 #include "CustomCaptureVideoScene.h"
+#include "Components/SceneCaptureComponent2D.h"
+#include "Engine/TextureRenderTarget2D.h"
+#include "Camera/CameraActor.h"
+
+
 
 
 void UCustomCaptureVideoScene::InitAgoraWidget(FString APP_ID, FString TOKEN, FString CHANNEL_NAME)
@@ -13,51 +18,69 @@ void UCustomCaptureVideoScene::InitAgoraWidget(FString APP_ID, FString TOKEN, FS
 	SetExternalVideoSource();
 
 	JoinChannel();
+
+	TArray<AActor*> OutActors;
+
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ASceneCapture2D::StaticClass(), OutActors);
+
+	for (AActor* actor : OutActors)
+	{
+		UKismetSystemLibrary::PrintString(GetWorld(), actor->GetName()+"==================>>>>>");
+		if (actor->GetName() == "SceneCapture2D_1")
+		{
+			CameraActor = (ASceneCapture2D*)actor;
+		}
+	}
 }
 
 
 void UCustomCaptureVideoScene::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
 	Super::NativeTick(MyGeometry, InDeltaTime);
-	UTexture2D* tex = (UTexture2D*)localVideo->Brush.GetResourceObject();
-	if (externalVideoFrame == nullptr)
+	if (CameraActor != nullptr)
 	{
-		externalVideoFrame = new agora::media::base::ExternalVideoFrame();
-	}
-	externalVideoFrame->type = agora::media::base::ExternalVideoFrame::VIDEO_BUFFER_TYPE::VIDEO_BUFFER_RAW_DATA;
-	externalVideoFrame->format = agora::media::base::VIDEO_PIXEL_FORMAT::VIDEO_PIXEL_BGRA;
-	externalVideoFrame->stride = tex->GetSizeX();
-	externalVideoFrame->height = tex->GetSizeY();
-	externalVideoFrame->cropLeft = 10;
-	externalVideoFrame->cropTop = 10;
-	externalVideoFrame->cropRight = 10;
-	externalVideoFrame->cropBottom = 10;
-	externalVideoFrame->rotation = 0;
-	if (externalVideoFrame->buffer == nullptr)
-	{
-		externalVideoFrame->buffer = (uint8*)FMemory::Malloc(tex->GetSizeX() * tex->GetSizeY()*4);
-	}
-	externalVideoFrame->timestamp = getTimeStamp();
+		UTextureRenderTarget2D* TextureRenderTarget = CameraActor->GetCaptureComponent2D()->TextureTarget;
+		TArray<FColor> SurfData;
+		FRenderTarget* RenderTarget = TextureRenderTarget->GameThread_GetRenderTargetResource();
+		RenderTarget->ReadPixels(SurfData);
+
+		if (externalVideoFrame == nullptr)
+		{
+			externalVideoFrame = new agora::media::base::ExternalVideoFrame();
+		}
+		externalVideoFrame->type = agora::media::base::ExternalVideoFrame::VIDEO_BUFFER_TYPE::VIDEO_BUFFER_RAW_DATA;
+		externalVideoFrame->format = agora::media::base::VIDEO_PIXEL_FORMAT::VIDEO_PIXEL_BGRA;
+		externalVideoFrame->stride = TextureRenderTarget->SizeX;
+		externalVideoFrame->height = TextureRenderTarget->SizeY;
+		externalVideoFrame->cropLeft = 10;
+		externalVideoFrame->cropTop = 10;
+		externalVideoFrame->cropRight = 10;
+		externalVideoFrame->cropBottom = 10;
+		externalVideoFrame->rotation = 0;
+		if (externalVideoFrame->buffer == nullptr)
+		{
+			externalVideoFrame->buffer = (uint8*)FMemory::Malloc(TextureRenderTarget->SizeX * TextureRenderTarget->SizeY * 4);
+		}
+		externalVideoFrame->timestamp = getTimeStamp();
 #if ENGINE_MAJOR_VERSION > 4
-	if (tex->GetPlatformData() != nullptr)
-	{
-		uint8* raw = (uint8*)tex->GetPlatformData()->Mips[0].BulkData.Lock(LOCK_READ_ONLY);
-		memcpy(externalVideoFrame->buffer, raw, tex->GetSizeX() * tex->GetSizeY() * 4);
-		tex->GetPlatformData()->Mips[0].BulkData.Unlock();
-
-		MediaEngineManager->pushVideoFrame(externalVideoFrame);
-	}
+		if (tex->GetPlatformData() != nullptr)
+		{
+			uint8* raw = (uint8*)tex->GetPlatformData()->Mips[0].BulkData.Lock(LOCK_READ_ONLY);
+			memcpy(externalVideoFrame->buffer, raw, tex->GetSizeX() * tex->GetSizeY() * 4);
+			tex->GetPlatformData()->Mips[0].BulkData.Unlock();
+			MediaEngineManager->pushVideoFrame(externalVideoFrame);
+		}
 #else
-	if (tex->PlatformData != nullptr)
-	{
-		uint8* raw = (uint8*)tex->PlatformData->Mips[0].BulkData.Lock(LOCK_READ_ONLY);
-		memcpy(externalVideoFrame->buffer, raw, tex->GetSizeX() * tex->GetSizeY() * 4);
-		tex->PlatformData->Mips[0].BulkData.Unlock();
-
-		MediaEngineManager->pushVideoFrame(externalVideoFrame);
-	}
+		if (SurfData.Num() > 4)
+		{
+			memcpy(externalVideoFrame->buffer, SurfData.GetData(), TextureRenderTarget->SizeX * TextureRenderTarget->SizeY * 4);
+			if (MediaEngineManager != nullptr)
+			{
+				MediaEngineManager->pushVideoFrame(externalVideoFrame);
+			}
+		}
 #endif
-	
+	}
 }
 
 
@@ -81,7 +104,6 @@ void UCustomCaptureVideoScene::NativeDestruct()
 			MediaEngineManager->release();
 		}
 		RtcEngineProxy->release();
-		delete RtcEngineProxy;
 		RtcEngineProxy = nullptr;
 	}
 }

@@ -15,6 +15,8 @@
 #if PLATFORM_ANDROID
 #include "AndroidPermission/Classes/AndroidPermissionFunctionLibrary.h"
 #endif
+#include "Kismet/GameplayStatics.h"
+#include "Engine/SceneCapture2D.h"
 #include "CustomCaptureVideoScene.generated.h"
 using namespace agora::rtc;
 using namespace agora;
@@ -44,6 +46,8 @@ public:
 	std::string Token;
 
 	std::string ChannelName;
+
+	ASceneCapture2D* CameraActor;
 
 protected:
 	void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
