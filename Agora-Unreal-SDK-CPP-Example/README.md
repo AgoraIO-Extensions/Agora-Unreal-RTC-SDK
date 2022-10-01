@@ -37,7 +37,8 @@ This project contains different scenes on how to integrate the Agora SDK APIs in
 
 Before you can build and run any Agora project, you will need to add your AppID to the configuration. Go to your  [developer account’s project console](https://console.agora.io/projects), create a new AppId or copy the AppId from an existing project.
 
-**Note**  it is important that for a production ready project, you should always use an AppId with token enabled. However, in testing a demo, you will skip this part. Using a testing mode AppId can save time for POC integration.  [![enter image description here](https://user-images.githubusercontent.com/1261195/110023464-11eb0480-7ce2-11eb-99d6-031af60715ab.png)](https://user-images.githubusercontent.com/1261195/110023464-11eb0480-7ce2-11eb-99d6-031af60715ab.png)
+**Note**  it is important that for a production ready project, you should always use an AppId with token enabled. However, in testing a demo, you will skip this part. Using a testing mode AppId can save time for POC integration.
+ ![Test Mode APPID](https://user-images.githubusercontent.com/1261195/110023464-11eb0480-7ce2-11eb-99d6-031af60715ab.png)
 
 ### Integrating the SDK
 
@@ -59,7 +60,8 @@ Fill in your App ID, Channel Name and optionally the token if you set up the app
 
 **2) Running at individual level**
 In case you are focusing on one API sample, you may run the individual code the following way, using *Basic/joinChannelAudio/BasicAudioCall/* as an example:
-	- Find a blueprint named **BP_Agoractor** in the **WorldOutliner**, enter your AppID and Channel Name in the position below.
+	- Find a blueprint named **BP_Agoractor** in the **WorldOutliner**
+	- enter your AppID and Channel Name in the position below
 
 ![Sample-PlayAudio](https://user-images.githubusercontent.com/1261195/186288166-50bb7c3f-66e2-4b88-a0de-df2ab2ac19af.gif)
 
@@ -90,7 +92,7 @@ File -> Package Project -> Mac
 
 ![contextMenu_and_MacNoEditor](https://user-images.githubusercontent.com/1261195/186290440-ab80de0e-b87c-4a3a-a589-cc68960b6397.png)
 
-2. Edit "Contents ->" Info.plist" (Double-click to open it in XCode)
+2. Edit Contents/Info.plist (Double-click to open it in XCode,  then see Step 3 next; or Step 3b if using your favorite text editor).
 
 3. Select "Information Property List" and add the following two permissions:
 
@@ -99,7 +101,13 @@ File -> Package Project -> Mac
 
 ![privacy_plist](https://user-images.githubusercontent.com/1261195/186293374-d550e36c-cd87-4feb-b79d-8344945af827.gif)
 
-
+3b. Equivalent of editing with Xcode, you may just open the plist file with a text editor and paste the following XML snippet into it:
+```xml
+	<key>NSCameraUsageDescription</key>
+	<string>Use camera</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Use mic</string>
+```
 
 #### Add the SDK frameworks
 
@@ -112,12 +120,12 @@ The following permissions are also required on iOS:
 - Privacy - Camera Usage Description
 - Privacy - Microphone Usage Description
 
-
 To add the above permissions to the info.plist, you can enter them in the UE Editor.
-1. **Copy the following text:**
+1. **Copy the following single line text:**
 
-`<key>NSCameraUsageDescription</key><string>AgoraVideoCall</string> <key>NSMicrophoneUsageDescription</key><string>AgoraVideoCall</string>`
-
+```xml
+<key>NSCameraUsageDescription</key><string>AgoraVideoCall</string><key>NSMicrophoneUsageDescription</key><string>AgoraVideoCall</string>
+```
 2. Open the screen at **Edit-> Project Settings->Platforms: iOS**
 3. Enter the text to the "**additional plist data**" field:
 <img width="936" alt="iOS_add_permission" src="https://user-images.githubusercontent.com/1261195/186298955-19949598-fcf8-46ac-8d8a-d0d0e320917c.png">
