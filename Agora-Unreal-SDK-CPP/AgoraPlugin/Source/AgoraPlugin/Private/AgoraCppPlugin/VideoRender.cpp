@@ -13,7 +13,7 @@ namespace agora {
 				RenderImage = nullptr;
 				VideoCacheManager = CacheManager;
 				bEnableUpdatePreview = false;
-				ArgbPixSize = 4;
+				ArgbPixSize = 4; 
 			}
 
 			VideoRender::~VideoRender()
@@ -39,7 +39,7 @@ namespace agora {
 				if (RenderTexture == nullptr || !RenderTexture->IsValidLowLevel() || RenderTexture->GetSizeX() != RenderVideoFrame->width || RenderTexture->GetSizeY() != RenderVideoFrame->height) {
 					
 					RenderTexture = UTexture2D::CreateTransient(RenderVideoFrame->width, RenderVideoFrame->height, PF_R8G8B8A8);
-								}
+				}
 				else
 				{
 					UTexture2D* tex = (UTexture2D*)RenderTexture;
