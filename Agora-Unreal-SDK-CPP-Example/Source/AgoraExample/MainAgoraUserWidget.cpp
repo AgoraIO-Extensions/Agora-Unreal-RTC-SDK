@@ -22,6 +22,18 @@ void UMainAgoraUserWidget::NativeConstruct()
 
 		ChannelBox->SetText(FText::FromString(LoadedGame->Channelname));
 	}
+
+	InitLevelArray();
+
+	for (int i = 0; i < LevelArray.Num(); i++)
+	{
+		ULevelSwitchItem* temp = NewObject<ULevelSwitchItem>();
+
+		temp->LevelName = LevelArray[i];
+
+		LevelTileView->AddItem(temp);
+	}
+
 }
 
 void UMainAgoraUserWidget::NativeDestruct()
@@ -38,5 +50,17 @@ void UMainAgoraUserWidget::NativeDestruct()
 		UE_LOG(LogTemp,Warning,TEXT("Save Config Succeed"));
 	}
 	
+}
+
+void UMainAgoraUserWidget::InitLevelArray()
+{
+	LevelArray.Add(FString("BasicAudioCallScene"));
+	LevelArray.Add(FString("BasicVideoCallScene"));
+	LevelArray.Add(FString("DeviceMnager"));
+	LevelArray.Add(FString("JoinMultipleChannel"));
+	LevelArray.Add(FString("MediaPlayer"));
+	LevelArray.Add(FString("ScreenShare"));
+	LevelArray.Add(FString("SendMultiCameraStream"));
+	LevelArray.Add(FString("SpatialAudio"));
 }
 

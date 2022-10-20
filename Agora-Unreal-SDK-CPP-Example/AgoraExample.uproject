@@ -12,7 +12,8 @@
 				"Engine",
 				"Slate",
 				"SlateCore",
-				"UMG"
+				"UMG",
+				"CoreUObject"
 			]
 		}
 	]
