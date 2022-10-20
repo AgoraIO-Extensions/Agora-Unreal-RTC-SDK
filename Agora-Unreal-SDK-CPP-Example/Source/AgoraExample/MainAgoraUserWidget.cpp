@@ -58,7 +58,7 @@ void UMainAgoraUserWidget::InitLevelArray()
 	LevelArray.Add(FString("BasicVideoCallScene"));
 	LevelArray.Add(FString("DeviceMnager"));
 	LevelArray.Add(FString("JoinMultipleChannel"));
-	LevelArray.Add(FString("MediaPlayer"));
+	LevelArray.Add(FString("Mediaplayer"));
 	LevelArray.Add(FString("ScreenShare"));
 	LevelArray.Add(FString("SendMultiCameraStream"));
 	LevelArray.Add(FString("SpatialAudio"));
