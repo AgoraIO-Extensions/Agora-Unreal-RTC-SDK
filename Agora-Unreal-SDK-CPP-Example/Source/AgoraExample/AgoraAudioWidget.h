@@ -28,6 +28,9 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget))
 	UButton* LeaveBtn = nullptr;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget))
+	UButton* VolumeIndicationBtn = nullptr;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
 	UButton* BackHomeBtn = nullptr;
 
@@ -39,6 +42,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void OnLeaveButtonClick();
 
+	UFUNCTION(BlueprintCallable)
+	void OnVolumeIndicationClick();
+
 	void InitAgoraWidget(FString APP_ID, FString TOKEN, FString CHANNEL_NAME) override;
 
 	void NativeDestruct() override;
@@ -47,6 +53,7 @@ public:
 
 	void onJoinChannelSuccess(const char* channel, agora::rtc::uid_t uid, int elapsed);
 
+	void onAudioVolumeIndication(const agora::rtc::AudioVolumeInfo* speakers, unsigned int speakerNumber, int totalVolume) override;
 
 private:
 
