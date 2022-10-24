@@ -79,15 +79,18 @@ void AIRtcEngineEventHandler::onAudioVolumeIndication(const agora::rtc::AudioVol
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
-		FAudioVolumeInfo audioVolumeInfo;
-		if (speakers!=nullptr)
+		TArray<FAudioVolumeInfo> audioVolumeInfo;
+
+		for (unsigned int i = 0; i < speakerNumber; i++)
 		{
-			audioVolumeInfo.uid = speakers->uid;
-			audioVolumeInfo.volume = speakers->volume;
-			audioVolumeInfo.vad = speakers->vad;
-			audioVolumeInfo.voicePitch = speakers->voicePitch;
+			FAudioVolumeInfo info;
+			info.uid = speakers[i].uid;
+			info.vad = speakers[i].vad;
+			info.voicePitch = speakers[i].voicePitch;
+			info.volume = speakers[i].volume;
+			audioVolumeInfo.Add(info);
 		}
-		OnAudioVolumeIndication.Broadcast(audioVolumeInfo, speakerNumber, totalVolume);
+		OnAudioVolumeIndication.Broadcast(audioVolumeInfo, totalVolume);
 	});
 }
 void AIRtcEngineEventHandler::onLeaveChannel(const agora::rtc::RtcStats& stats)

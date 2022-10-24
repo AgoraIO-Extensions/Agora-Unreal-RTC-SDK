@@ -13,7 +13,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FEventHandlerTypeEx);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnJoinChannelSuccessEx, const FRtcConnection&, connection, int, elapsed);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnRejoinChannelSuccessEx, const FRtcConnection&, connection, int, elapsed);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_FiveParams(FOnAudioQualityEx, const FRtcConnection&, connection, int64, remoteUid, int, quality, int, delay, int, lost);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnAudioVolumeIndicationEx, const FRtcConnection&, connection, const FAudioVolumeInfo, speakers, int, speakerNumber, int, totalVolume);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnAudioVolumeIndicationEx, const FRtcConnection&, connection, const TArray<FAudioVolumeInfo>&, speakers, int, totalVolume);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnLeaveChannelEx, const FRtcConnection&, connection, const FRtcStats&, stats);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnRtcStatsEx, const FRtcConnection&, connection, const FRtcStats&, stats);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnNetworkQualityEx, const FRtcConnection&, connection, int64, remoteUid, int, txQuality, int, rxQuality);

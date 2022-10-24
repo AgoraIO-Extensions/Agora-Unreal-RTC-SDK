@@ -15,7 +15,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_FiveParams(FOnProxyConnected, FString, channe
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnError, int, err, FString, msg);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnAudioQuality, int64, uid, int, quality, int, delay, int, lost);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnLastmileProbeResult, const FLastmileProbeResult&, result);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnAudioVolumeIndication, FAudioVolumeInfo, speakers, int, speakerNumber, int, totalVolume);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnAudioVolumeIndication,const TArray<FAudioVolumeInfo>&, speakers, int, totalVolume);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnLeaveChannel,const FRtcStats&, stats);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnRtcStats,const FRtcStats&, stats);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnAudioDeviceStateChanged, FString, deviceId, int, deviceType, int, deviceState);
