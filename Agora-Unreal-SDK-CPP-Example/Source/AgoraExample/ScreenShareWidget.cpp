@@ -6,13 +6,10 @@
 
 void UScreenShareWidget::InitAgoraWidget(FString APP_ID, FString TOKEN, FString CHANNEL_NAME)
 {
-#if PLATFORM_IOS
-	GEngine->AddOnScreenDebugMessage(-1, 60.f, FColor::White, FString::Printf(TEXT("Not Support in this platform!")));
-	return;
-#endif
-
+#if PLATFORM_ANDROID || PLATFORM_IOS
 #if PLATFORM_ANDROID
 	CheckAndroidPermission();
+#endif
 	ComboBoxDisplayId->SetVisibility(ESlateVisibility::Collapsed);
 #endif
 
@@ -52,21 +49,19 @@ void UScreenShareWidget::InitAgoraEngine(FString APP_ID, FString TOKEN, FString 
 
 void UScreenShareWidget::UpdateChannelMediaOptions()
 {
-#if PLATFORM_WINDOWS || PLATFORM_ANDROID || PLATFORM_MAC
 	agora::rtc::ChannelMediaOptions options;
 	options.autoSubscribeAudio = true;
 	options.autoSubscribeVideo = true;
 	options.publishCameraTrack = false;
 #if PLATFORM_WINDOWS || PLATFORM_MAC
 	options.publishScreenTrack = true;
-#elif PLATFORM_ANDROID
+#elif PLATFORM_ANDROID || PLATFORM_IOS
 	options.publishScreenCaptureAudio = true;
 	options.publishScreenCaptureVideo = true;
 #endif
 	options.clientRoleType = agora::rtc::CLIENT_ROLE_TYPE::CLIENT_ROLE_BROADCASTER;
 
 	RtcEngineProxy->updateChannelMediaOptions(options);
-#endif
 }
 
 void UScreenShareWidget::JoinChannel() {
@@ -80,17 +75,14 @@ void UScreenShareWidget::JoinChannel() {
 void UScreenShareWidget::OnLeaveButtonClick() {
 	UE_LOG(LogTemp, Warning, TEXT("UVideoWidget OnLeaveButtonClick ======"));
 
-#if PLATFORM_WINDOWS || PLATFORM_ANDROID || PLATFORM_MAC
 	RtcEngineProxy->stopScreenCapture();
-#endif
+
 	RtcEngineProxy->leaveChannel();
 }
 
 void UScreenShareWidget::StartScreenShrareClick()
-{
-#if PLATFORM_IOS
-	//iPhone not support screen capture       
-#elif PLATFORM_ANDROID
+{    
+#if PLATFORM_ANDROID || PLATFORM_IOS
 	ScreenCaptureParameters2 parameters2;
 	parameters2.captureAudio = true;
 	parameters2.captureVideo = true;
@@ -177,7 +169,6 @@ void UScreenShareWidget::SelectValueCallBack(FString SelectedItem, ESelectInfo::
 
 void UScreenShareWidget::onJoinChannelSuccess(const char* channel, agora::rtc::uid_t uid, int elapsed)
 {
-
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
 		UE_LOG(LogTemp, Warning, TEXT("JoinChannelSuccess"));
