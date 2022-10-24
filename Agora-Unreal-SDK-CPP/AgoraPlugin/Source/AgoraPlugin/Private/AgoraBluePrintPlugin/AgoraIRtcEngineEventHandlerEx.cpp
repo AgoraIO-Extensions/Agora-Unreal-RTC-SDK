@@ -45,7 +45,7 @@ void AIRtcEngineEventHandlerEx::onAudioQuality(const agora::rtc::RtcConnection& 
 		FRtcConnection rtcConnection;
 		rtcConnection.channelId=FString(connection.channelId);
 		rtcConnection.localUid=connection.localUid;
-		OnAudioQualityEx.Broadcast(rtcConnection, remoteUid, quality, delay, lost);
+		OnAudioQualityEx.Broadcast(rtcConnection, (int64)remoteUid, quality, delay, lost);
 	});
 }
 void AIRtcEngineEventHandlerEx::onAudioVolumeIndication(const agora::rtc::RtcConnection& connection, const agora::rtc::AudioVolumeInfo* speakers, unsigned int speakerNumber, int totalVolume)
@@ -161,7 +161,7 @@ void AIRtcEngineEventHandlerEx::onNetworkQuality(const agora::rtc::RtcConnection
 		FRtcConnection rtcConnection;
 		rtcConnection.channelId=FString(connection.channelId);
 		rtcConnection.localUid=connection.localUid;
-		OnNetworkQualityEx.Broadcast(rtcConnection, remoteUid, txQuality, rxQuality);
+		OnNetworkQualityEx.Broadcast(rtcConnection, (int64)remoteUid, txQuality, rxQuality);
 	});
 }
 void AIRtcEngineEventHandlerEx::onIntraRequestReceived(const agora::rtc::RtcConnection& connection)
@@ -201,7 +201,7 @@ void AIRtcEngineEventHandlerEx::onFirstRemoteVideoDecoded(const agora::rtc::RtcC
 		FRtcConnection rtcConnection;
 		rtcConnection.channelId=FString(connection.channelId);
 		rtcConnection.localUid=connection.localUid;
-		OnFirstRemoteVideoDecodedEx.Broadcast(rtcConnection, remoteUid, width, height, elapsed);
+		OnFirstRemoteVideoDecodedEx.Broadcast(rtcConnection, (int64)remoteUid, width, height, elapsed);
 	});
 }
 void AIRtcEngineEventHandlerEx::onVideoSizeChanged(const agora::rtc::RtcConnection& connection, agora::rtc::VIDEO_SOURCE_TYPE sourceType, agora::rtc::uid_t uid, int width, int height, int rotation)
@@ -211,7 +211,7 @@ void AIRtcEngineEventHandlerEx::onVideoSizeChanged(const agora::rtc::RtcConnecti
 		FRtcConnection rtcConnection;
 		rtcConnection.channelId=FString(connection.channelId);
 		rtcConnection.localUid=connection.localUid;
-		OnVideoSizeChangedEx.Broadcast(rtcConnection, (EVIDEO_SOURCE_TYPE)sourceType,uid, width, height, rotation);
+		OnVideoSizeChangedEx.Broadcast(rtcConnection, (EVIDEO_SOURCE_TYPE)sourceType,(int64)uid, width, height, rotation);
 	});
 }
 void AIRtcEngineEventHandlerEx::onLocalVideoStateChanged(const agora::rtc::RtcConnection& connection, agora::rtc::LOCAL_VIDEO_STREAM_STATE state, agora::rtc::LOCAL_VIDEO_STREAM_ERROR errorCode)
@@ -231,7 +231,7 @@ void AIRtcEngineEventHandlerEx::onRemoteVideoStateChanged(const agora::rtc::RtcC
 		FRtcConnection rtcConnection;
 		rtcConnection.channelId=FString(connection.channelId);
 		rtcConnection.localUid=connection.localUid;
-		OnRemoteVideoStateChangedEx.Broadcast(rtcConnection, remoteUid, (EREMOTE_VIDEO_STATE)state, (EREMOTE_VIDEO_STATE_REASON)reason, elapsed);
+		OnRemoteVideoStateChangedEx.Broadcast(rtcConnection, (int64)remoteUid, (EREMOTE_VIDEO_STATE)state, (EREMOTE_VIDEO_STATE_REASON)reason, elapsed);
 	});
 }
 void AIRtcEngineEventHandlerEx::onFirstRemoteVideoFrame(const agora::rtc::RtcConnection& connection, agora::rtc::uid_t remoteUid, int width, int height, int elapsed)
@@ -241,7 +241,7 @@ void AIRtcEngineEventHandlerEx::onFirstRemoteVideoFrame(const agora::rtc::RtcCon
 		FRtcConnection rtcConnection;
 		rtcConnection.channelId=FString(connection.channelId);
 		rtcConnection.localUid=connection.localUid;
-		OnFirstRemoteVideoFrameEx.Broadcast(rtcConnection, remoteUid, width, height, elapsed);
+		OnFirstRemoteVideoFrameEx.Broadcast(rtcConnection, (int64)remoteUid, width, height, elapsed);
 	});
 }
 void AIRtcEngineEventHandlerEx::onUserJoined(const agora::rtc::RtcConnection& connection, agora::rtc::uid_t remoteUid, int elapsed)
@@ -251,7 +251,7 @@ void AIRtcEngineEventHandlerEx::onUserJoined(const agora::rtc::RtcConnection& co
 		FRtcConnection rtcConnection;
 		rtcConnection.channelId=FString(connection.channelId);
 		rtcConnection.localUid=connection.localUid;
-		OnUserJoinedEx.Broadcast(rtcConnection, remoteUid, elapsed);
+		OnUserJoinedEx.Broadcast(rtcConnection, (int64)remoteUid, elapsed);
 	});
 }
 void AIRtcEngineEventHandlerEx::onUserOffline(const agora::rtc::RtcConnection& connection, agora::rtc::uid_t remoteUid, agora::rtc::USER_OFFLINE_REASON_TYPE reason)
@@ -261,7 +261,7 @@ void AIRtcEngineEventHandlerEx::onUserOffline(const agora::rtc::RtcConnection& c
 		FRtcConnection rtcConnection;
 		rtcConnection.channelId=FString(connection.channelId);
 		rtcConnection.localUid=connection.localUid;
-		OnUserOfflineEx.Broadcast(rtcConnection, remoteUid, (EUSER_OFFLINE_REASON_TYPE)reason);
+		OnUserOfflineEx.Broadcast(rtcConnection, (int64)remoteUid, (EUSER_OFFLINE_REASON_TYPE)reason);
 	});
 }
 void AIRtcEngineEventHandlerEx::onUserMuteAudio(const agora::rtc::RtcConnection& connection, agora::rtc::uid_t remoteUid, bool muted)
@@ -271,7 +271,7 @@ void AIRtcEngineEventHandlerEx::onUserMuteAudio(const agora::rtc::RtcConnection&
 		FRtcConnection rtcConnection;
 		rtcConnection.channelId=FString(connection.channelId);
 		rtcConnection.localUid=connection.localUid;
-		OnUserMuteAudioEx.Broadcast(rtcConnection, remoteUid, muted);
+		OnUserMuteAudioEx.Broadcast(rtcConnection, (int64)remoteUid, muted);
 	});
 }
 void AIRtcEngineEventHandlerEx::onUserMuteVideo(const agora::rtc::RtcConnection& connection, agora::rtc::uid_t remoteUid, bool muted)
@@ -281,7 +281,7 @@ void AIRtcEngineEventHandlerEx::onUserMuteVideo(const agora::rtc::RtcConnection&
 		FRtcConnection rtcConnection;
 		rtcConnection.channelId=FString(connection.channelId);
 		rtcConnection.localUid=connection.localUid;
-		OnUserMuteVideoEx.Broadcast(rtcConnection, remoteUid, muted);
+		OnUserMuteVideoEx.Broadcast(rtcConnection, (int64)remoteUid, muted);
 	});
 }
 void AIRtcEngineEventHandlerEx::onUserEnableVideo(const agora::rtc::RtcConnection& connection, agora::rtc::uid_t remoteUid, bool enabled)
@@ -291,7 +291,7 @@ void AIRtcEngineEventHandlerEx::onUserEnableVideo(const agora::rtc::RtcConnectio
 		FRtcConnection rtcConnection;
 		rtcConnection.channelId=FString(connection.channelId);
 		rtcConnection.localUid=connection.localUid;
-		OnUserEnableVideoEx.Broadcast(rtcConnection, remoteUid, enabled);
+		OnUserEnableVideoEx.Broadcast(rtcConnection, (int64)remoteUid, enabled);
 	});
 }
 void AIRtcEngineEventHandlerEx::onUserEnableLocalVideo(const agora::rtc::RtcConnection& connection, agora::rtc::uid_t remoteUid, bool enabled)
@@ -301,7 +301,7 @@ void AIRtcEngineEventHandlerEx::onUserEnableLocalVideo(const agora::rtc::RtcConn
 		FRtcConnection rtcConnection;
 		rtcConnection.channelId=FString(connection.channelId);
 		rtcConnection.localUid=connection.localUid;
-		OnUserEnableLocalVideoEx.Broadcast(rtcConnection, remoteUid, enabled);
+		OnUserEnableLocalVideoEx.Broadcast(rtcConnection, (int64)remoteUid, enabled);
 	});
 }
 void AIRtcEngineEventHandlerEx::onUserStateChanged(const agora::rtc::RtcConnection& connection, agora::rtc::uid_t remoteUid, uint32_t state)
@@ -311,7 +311,7 @@ void AIRtcEngineEventHandlerEx::onUserStateChanged(const agora::rtc::RtcConnecti
 		FRtcConnection rtcConnection;
 		rtcConnection.channelId=FString(connection.channelId);
 		rtcConnection.localUid=connection.localUid;
-		OnUserStateChangedEx.Broadcast(rtcConnection, remoteUid, state);
+		OnUserStateChangedEx.Broadcast(rtcConnection, (int64)remoteUid, state);
 	});
 }
 void AIRtcEngineEventHandlerEx::onLocalAudioStats(const agora::rtc::RtcConnection& connection, const agora::rtc::LocalAudioStats& stats)
@@ -454,7 +454,7 @@ void AIRtcEngineEventHandlerEx::onStreamMessage(const agora::rtc::RtcConnection&
 		FRtcConnection rtcConnection;
 		rtcConnection.channelId=FString(connection.channelId);
 		rtcConnection.localUid=connection.localUid;
-		OnStreamMessageEx.Broadcast(rtcConnection, remoteUid, streamId, FString(data), length, sentTs);
+		OnStreamMessageEx.Broadcast(rtcConnection, (int64)remoteUid, streamId, FString(data), length, sentTs);
 	});
 }
 void AIRtcEngineEventHandlerEx::onStreamMessageError(const agora::rtc::RtcConnection& connection, agora::rtc::uid_t remoteUid, int streamId, int code, int missed, int cached)
@@ -464,7 +464,7 @@ void AIRtcEngineEventHandlerEx::onStreamMessageError(const agora::rtc::RtcConnec
 		FRtcConnection rtcConnection;
 		rtcConnection.channelId=FString(connection.channelId);
 		rtcConnection.localUid=connection.localUid;
-		OnStreamMessageErrorEx.Broadcast(rtcConnection, remoteUid, streamId, code, missed, cached);
+		OnStreamMessageErrorEx.Broadcast(rtcConnection, (int64)remoteUid, streamId, code, missed, cached);
 	});
 }
 void AIRtcEngineEventHandlerEx::onRequestToken(const agora::rtc::RtcConnection& connection)
@@ -514,7 +514,7 @@ void AIRtcEngineEventHandlerEx::onFirstRemoteAudioDecoded(const agora::rtc::RtcC
 		FRtcConnection rtcConnection;
 		rtcConnection.channelId=FString(connection.channelId);
 		rtcConnection.localUid=connection.localUid;
-		OnFirstRemoteAudioDecodedEx.Broadcast(rtcConnection, uid, elapsed);
+		OnFirstRemoteAudioDecodedEx.Broadcast(rtcConnection, (int64)uid, elapsed);
 	});
 }
 void AIRtcEngineEventHandlerEx::onLocalAudioStateChanged(const agora::rtc::RtcConnection& connection, agora::rtc::LOCAL_AUDIO_STREAM_STATE state, agora::rtc::LOCAL_AUDIO_STREAM_ERROR error)
@@ -544,7 +544,7 @@ void AIRtcEngineEventHandlerEx::onActiveSpeaker(const agora::rtc::RtcConnection&
 		FRtcConnection rtcConnection;
 		rtcConnection.channelId=FString(connection.channelId);
 		rtcConnection.localUid=connection.localUid;
-		OnActiveSpeakerEx.Broadcast(rtcConnection, uid);
+		OnActiveSpeakerEx.Broadcast(rtcConnection, (int64)uid);
 	});
 }
 void AIRtcEngineEventHandlerEx::onClientRoleChanged(const agora::rtc::RtcConnection& connection, agora::rtc::CLIENT_ROLE_TYPE oldRole, agora::rtc::CLIENT_ROLE_TYPE newRole)
@@ -584,7 +584,7 @@ void AIRtcEngineEventHandlerEx::onRemoteVideoTransportStats(const agora::rtc::Rt
 		FRtcConnection rtcConnection;
 		rtcConnection.channelId=FString(connection.channelId);
 		rtcConnection.localUid=connection.localUid;
-		OnRemoteVideoTransportStatsEx.Broadcast(rtcConnection, remoteUid, delay, lost, rxKBitRate);
+		OnRemoteVideoTransportStatsEx.Broadcast(rtcConnection, (int64)remoteUid, delay, lost, rxKBitRate);
 	});
 }
 void AIRtcEngineEventHandlerEx::onConnectionStateChanged(const agora::rtc::RtcConnection& connection, agora::rtc::CONNECTION_STATE_TYPE state, agora::rtc::CONNECTION_CHANGED_REASON_TYPE reason)
@@ -672,6 +672,6 @@ void AIRtcEngineEventHandlerEx::onSnapshotTaken(const agora::rtc::RtcConnection&
 		FRtcConnection rtcConnection;
 		rtcConnection.channelId=FString(connection.channelId);
 		rtcConnection.localUid=connection.localUid;
-		OnSnapshotTakenEx.Broadcast(rtcConnection, uid, FString(filePath), width, height, errCode);
+		OnSnapshotTakenEx.Broadcast(rtcConnection, (int64)uid, FString(filePath), width, height, errCode);
 	});
 }
