@@ -20,7 +20,7 @@ using namespace agora;
 /**
  * 
  */
-UCLASS()
+UCLASS(Abstract)
 class AGORAEXAMPLE_API UEncryptionSampleWidget : public UBaseAgoraUserWidget, public agora::rtc::IRtcEngineEventHandler
 {
 	GENERATED_BODY()

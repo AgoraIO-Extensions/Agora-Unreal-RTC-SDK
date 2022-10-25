@@ -27,7 +27,7 @@ using namespace agora;
 /**
  * 
  */
-UCLASS()
+UCLASS(Abstract)
 class AGORAEXAMPLE_API UCustomCaptureVideoScene : public UBaseAgoraUserWidget, public agora::rtc::IRtcEngineEventHandler
 {
 	GENERATED_BODY()

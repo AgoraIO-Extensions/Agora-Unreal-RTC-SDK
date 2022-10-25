@@ -21,7 +21,7 @@ using namespace agora;
 /**
  * 
  */
-UCLASS()
+UCLASS(Abstract)
 class AGORAEXAMPLE_API UMediaplayerWidget : public UBaseAgoraUserWidget, public agora::rtc::IRtcEngineEventHandler 
 {
 	GENERATED_BODY()

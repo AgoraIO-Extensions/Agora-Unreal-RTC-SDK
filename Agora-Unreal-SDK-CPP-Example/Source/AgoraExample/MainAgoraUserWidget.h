@@ -15,7 +15,7 @@
 /**
  * 
  */
-UCLASS()
+UCLASS(Abstract)
 class AGORAEXAMPLE_API UMainAgoraUserWidget : public UBaseAgoraUserWidget
 {
 	GENERATED_BODY()
