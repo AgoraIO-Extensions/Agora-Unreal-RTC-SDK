@@ -13,11 +13,21 @@
 #endif
 #include "AgoraAudioWidget.generated.h"
 
+class RtcEngineEventHandler : public agora::rtc::IRtcEngineEventHandler
+{
+public:
+	void onUserJoined(agora::rtc::uid_t uid, int elapsed) override;
+
+	void onAudioVolumeIndication(const agora::rtc::AudioVolumeInfo* speakers, unsigned int speakerNumber, int totalVolume) override;
+
+	void onJoinChannelSuccess(const char* channel, agora::rtc::uid_t uid, int elapsed) override;
+};
+
 /**
  * 
  */
 UCLASS(Abstract)
-class AGORAEXAMPLE_API UAgoraAudioWidget : public UBaseAgoraUserWidget, public agora::rtc::IRtcEngineEventHandler
+class AGORAEXAMPLE_API UAgoraAudioWidget : public UBaseAgoraUserWidget
 {
 	GENERATED_BODY()
 public:
@@ -49,11 +59,6 @@ public:
 
 	void NativeDestruct() override;
 
-	void onUserJoined(agora::rtc::uid_t uid, int elapsed) override;
-
-	void onJoinChannelSuccess(const char* channel, agora::rtc::uid_t uid, int elapsed);
-
-	void onAudioVolumeIndication(const agora::rtc::AudioVolumeInfo* speakers, unsigned int speakerNumber, int totalVolume) override;
 
 private:
 
@@ -70,4 +75,8 @@ private:
 	void InitAgoraEngine(FString APP_ID, FString TOKEN, FString CHANNEL_NAME);
 
 	void SetUpUIEvent();
+
+	RtcEngineEventHandler* rtcEventHandler;
 };
+
+
