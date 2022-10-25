@@ -2055,14 +2055,9 @@ int AAgoraRtcEngine::EnableEncryption(bool enabled, FEncryptionConfig& config)
 	encryptionConfig.encryptionMode = (agora::rtc::ENCRYPTION_MODE)config.encryptionMode;
 	std::string EncryptionKey = TCHAR_TO_ANSI(*config.encryptionKey);
 	encryptionConfig.encryptionKey = EncryptionKey.c_str();
+	std::string encryptionKdfSalt = TCHAR_TO_ANSI(*config.encryptionKdfSalt);
+	FMemory::Memcpy(encryptionConfig.encryptionKdfSalt, encryptionKdfSalt.c_str(), 32);
 	int ret = RtcEngineProxy::enableEncryption(enabled, encryptionConfig);
-	TArray<int> data;
-	for (int i = 0; i < 32; i++) {
-		data.Add(encryptionConfig.encryptionKdfSalt[i]);
-	}
-	config.encryptionKdfSalt = data;
-	config.encryptionKey = encryptionConfig.encryptionKey;
-	config.encryptionMode = (ENCRYPTION_MODE)encryptionConfig.encryptionMode;
 	return ret;
 }
 int AAgoraRtcEngine::CreateDataStream(int streamId, FDataStreamConfig& config)
@@ -3216,20 +3211,12 @@ int AAgoraRtcEngine::EnableEncryptionEx(FRtcConnection& connection, bool enabled
 	rtcConnection.localUid = connection.localUid;
 	agora::rtc::EncryptionConfig encryptionConfig;
 	encryptionConfig.encryptionMode = (agora::rtc::ENCRYPTION_MODE)config.encryptionMode;
-
 	std::string EncryptionKey = TCHAR_TO_ANSI(*config.encryptionKey);
-
 	encryptionConfig.encryptionKey = EncryptionKey.c_str();
+	std::string encryptionKdfSalt = TCHAR_TO_ANSI(*config.encryptionKdfSalt);
+	FMemory::Memcpy(encryptionConfig.encryptionKdfSalt, encryptionKdfSalt.c_str(), 32);
 
 	int ret = RtcEngineProxy::enableEncryptionEx(rtcConnection, enabled, encryptionConfig);
-	TArray<int> data;
-	for (int i = 0; i < 32; i++) {
-		data.Add(encryptionConfig.encryptionKdfSalt[i]);
-	}
-	config.encryptionKdfSalt = data;
-	config.encryptionKey = encryptionConfig.encryptionKey;
-	config.encryptionMode = (ENCRYPTION_MODE)encryptionConfig.encryptionMode;
-
 	return ret;
 }
 

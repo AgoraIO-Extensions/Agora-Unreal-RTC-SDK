@@ -1356,7 +1356,7 @@ struct FEncryptionConfig
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|EncryptionConfig")
 	FString encryptionKey;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|EncryptionConfig")
-	TArray<int> encryptionKdfSalt;
+	FString encryptionKdfSalt;
 };
 
 USTRUCT(BlueprintType)
