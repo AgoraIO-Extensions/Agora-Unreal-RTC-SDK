@@ -19,12 +19,9 @@ void UAgoraAudioWidget::InitAgoraEngine(FString APP_ID, FString TOKEN, FString C
 	agora::rtc::RtcEngineContext RtcEngineContext;
 
 	RtcEngineContext.appId = TCHAR_TO_ANSI(*APP_ID);
-
-	rtcEventHandler = new RtcEngineEventHandler();
-
-	RtcEngineContext.eventHandler = rtcEventHandler;
-
+	RtcEngineContext.eventHandler = this;
 	RtcEngineContext.channelProfile = agora::CHANNEL_PROFILE_TYPE::CHANNEL_PROFILE_LIVE_BROADCASTING;
+
 
 	AppId = APP_ID;
 	Token = TOKEN;
@@ -85,7 +82,7 @@ void UAgoraAudioWidget::OnVolumeIndicationClick()
 }
 
 #pragma region RtcEngineCallBack
-void RtcEngineEventHandler::onJoinChannelSuccess(const char* channel, agora::rtc::uid_t uid, int elapsed)
+void UAgoraAudioWidget::onJoinChannelSuccess(const char* channel, agora::rtc::uid_t uid, int elapsed)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
@@ -93,7 +90,7 @@ void RtcEngineEventHandler::onJoinChannelSuccess(const char* channel, agora::rtc
 	});
 }
 
-void RtcEngineEventHandler::onAudioVolumeIndication(const agora::rtc::AudioVolumeInfo* speakers, unsigned int speakerNumber, int totalVolume)
+void UAgoraAudioWidget::onAudioVolumeIndication(const agora::rtc::AudioVolumeInfo* speakers, unsigned int speakerNumber, int totalVolume)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
@@ -104,12 +101,12 @@ void RtcEngineEventHandler::onAudioVolumeIndication(const agora::rtc::AudioVolum
 	});
 }
 
-void RtcEngineEventHandler::onUserJoined(agora::rtc::uid_t uid, int elapsed) {
-
+void UAgoraAudioWidget::onUserJoined(agora::rtc::uid_t uid, int elapsed) {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Blue, FString::Printf(TEXT("UAgoraAudioWidget::onUserJoined uid: %u"), uid));
 	});
+
 }
 #pragma endregion RtcEngineCallBack
 
@@ -126,9 +123,5 @@ void UAgoraAudioWidget::NativeDestruct() {
 		RtcEngineProxy->release();
 		delete RtcEngineProxy;
 		RtcEngineProxy = nullptr;
-	}
-	if (rtcEventHandler != nullptr)
-	{
-		rtcEventHandler = nullptr;
 	}
 }
