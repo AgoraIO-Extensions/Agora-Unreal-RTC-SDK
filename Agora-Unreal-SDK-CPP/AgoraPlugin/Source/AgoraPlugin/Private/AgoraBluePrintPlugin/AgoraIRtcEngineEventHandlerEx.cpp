@@ -451,12 +451,18 @@ void AIRtcEngineEventHandlerEx::onConnectionBanned(const agora::rtc::RtcConnecti
 }
 void AIRtcEngineEventHandlerEx::onStreamMessage(const agora::rtc::RtcConnection& connection, agora::rtc::uid_t remoteUid, int streamId, const char* data, size_t length, uint64_t sentTs)
 {
+
+	char* tempdata = new char[length];
+	FMemory::Memcpy(tempdata, data, length);
+	std::string temp(tempdata);
+	delete[] tempdata;
+
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
 		FRtcConnection rtcConnection;
 		rtcConnection.channelId=FString(connection.channelId);
 		rtcConnection.localUid=connection.localUid;
-		OnStreamMessageEx.Broadcast(rtcConnection, (int64)remoteUid, streamId, FString(data), length, sentTs);
+		OnStreamMessageEx.Broadcast(rtcConnection, (int64)remoteUid, streamId, FString(UTF8_TO_TCHAR(temp.c_str())), length, sentTs);
 	});
 }
 void AIRtcEngineEventHandlerEx::onStreamMessageError(const agora::rtc::RtcConnection& connection, agora::rtc::uid_t remoteUid, int streamId, int code, int missed, int cached)

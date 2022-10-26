@@ -6,6 +6,8 @@
 #include "GameFramework/Actor.h"
 #include "AgoraCppPlugin/Include/AgoraHeaderBase.h"
 #include "URtcEngineProxyCompatibility.h"
+#include <iostream>
+#include <string.h>
 #include "AgoraIRtcEngineEventHandler.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FEventHandlerType);

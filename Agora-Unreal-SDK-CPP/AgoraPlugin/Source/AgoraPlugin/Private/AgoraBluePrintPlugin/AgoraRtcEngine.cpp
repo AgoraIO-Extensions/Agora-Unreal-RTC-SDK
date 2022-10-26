@@ -2060,18 +2060,18 @@ int AAgoraRtcEngine::EnableEncryption(bool enabled, FEncryptionConfig& config)
 	int ret = RtcEngineProxy::enableEncryption(enabled, encryptionConfig);
 	return ret;
 }
-int AAgoraRtcEngine::CreateDataStream(int streamId, FDataStreamConfig& config)
+int AAgoraRtcEngine::CreateDataStream(int& streamId, FDataStreamConfig& config)
 {
 	agora::rtc::DataStreamConfig dataStreamConfig;
 	dataStreamConfig.syncWithAudio = config.syncWithAudio;
 	dataStreamConfig.ordered = config.ordered;
 	return RtcEngineProxy::createDataStream(&streamId, dataStreamConfig);
 }
-int AAgoraRtcEngine::SendStreamMessage(int streamId, FString data, int64 length)
+int AAgoraRtcEngine::SendStreamMessage(int streamId, FString data)
 {
-	std::string Data = TCHAR_TO_ANSI(*data);
+	const char* Data = TCHAR_TO_UTF8(*data);
 
-	return RtcEngineProxy::sendStreamMessage(streamId, Data.c_str(), length);
+	return RtcEngineProxy::sendStreamMessage(streamId, Data, strlen(Data));
 }
 int AAgoraRtcEngine::AddVideoWatermark(FString watermarkUrl, FWatermarkOptions& options)
 {
@@ -3220,7 +3220,7 @@ int AAgoraRtcEngine::EnableEncryptionEx(FRtcConnection& connection, bool enabled
 	return ret;
 }
 
-int AAgoraRtcEngine::CreateDataStreamEx(int streamId, FDataStreamConfig& config, FRtcConnection& connection)
+int AAgoraRtcEngine::CreateDataStreamEx(int& streamId, FDataStreamConfig& config, FRtcConnection& connection)
 {
 	agora::rtc::DataStreamConfig dataStreamConfig;
 	dataStreamConfig.syncWithAudio = config.syncWithAudio;
@@ -3231,14 +3231,14 @@ int AAgoraRtcEngine::CreateDataStreamEx(int streamId, FDataStreamConfig& config,
 	rtcConnection.localUid = connection.localUid;
 	return RtcEngineProxy::createDataStreamEx(&streamId, dataStreamConfig, rtcConnection);
 }
-int AAgoraRtcEngine::SendStreamMessageEx(int streamId, FString data, int64 length, FRtcConnection& connection)
+int AAgoraRtcEngine::SendStreamMessageEx(int streamId, FString data, FRtcConnection& connection)
 {
 	agora::rtc::RtcConnection rtcConnection;
 	std::string ChannelId = TCHAR_TO_ANSI(*connection.channelId);
 	rtcConnection.channelId = ChannelId.c_str();
 	rtcConnection.localUid = connection.localUid;
-	std::string Data = TCHAR_TO_ANSI(*data);
-	return RtcEngineProxy::sendStreamMessageEx(streamId, Data.c_str(), length, rtcConnection);
+	const char* Data = TCHAR_TO_ANSI(*data);
+	return RtcEngineProxy::sendStreamMessageEx(streamId, Data, strlen(Data), rtcConnection);
 }
 int AAgoraRtcEngine::AddVideoWatermarkEx(FString watermarkUrl, FWatermarkOptions& options, FRtcConnection& connection)
 {

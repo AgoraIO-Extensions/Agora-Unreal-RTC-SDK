@@ -545,9 +545,13 @@ void AIRtcEngineEventHandler::onConnectionBanned()
 }
 void AIRtcEngineEventHandler::onStreamMessage(agora::rtc::uid_t userId, int streamId, const char* data, size_t length, uint64_t sentTs)
 {
+	char* tempdata = new char[length];
+	FMemory::Memcpy(tempdata, data, length);
+	std::string temp(tempdata);
+	delete[] tempdata;
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
-		OnStreamMessage.Broadcast((int64)userId, streamId, FString(data), length, sentTs);
+		OnStreamMessage.Broadcast((int64)userId, streamId, FString(UTF8_TO_TCHAR(temp.c_str())), length, sentTs);
 	});
 }
 void AIRtcEngineEventHandler::onStreamMessageError(agora::rtc::uid_t userId, int streamId, int code, int missed, int cached)

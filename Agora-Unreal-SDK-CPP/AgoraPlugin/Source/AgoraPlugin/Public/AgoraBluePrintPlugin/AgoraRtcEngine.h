@@ -461,9 +461,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
 	int EnableEncryption(bool enabled, FEncryptionConfig& config);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
-	int CreateDataStream(int streamId, FDataStreamConfig& config);
+	int CreateDataStream(int& streamId, FDataStreamConfig& config);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
-	int SendStreamMessage(int streamId, FString data, int64 length);
+	int SendStreamMessage(int streamId, FString data);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
 	int AddVideoWatermark(FString watermarkUrl, FWatermarkOptions& options);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
@@ -581,9 +581,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
 	int EnableEncryptionEx(FRtcConnection& connection, bool enabled, FEncryptionConfig& config);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
-	int CreateDataStreamEx(int streamId, FDataStreamConfig& config, FRtcConnection& connection);
+	int CreateDataStreamEx(int& streamId, FDataStreamConfig& config, FRtcConnection& connection);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
-	int SendStreamMessageEx(int streamId, FString data, int64 length, FRtcConnection& connection);
+	int SendStreamMessageEx(int streamId, FString data, FRtcConnection& connection);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
 	int AddVideoWatermarkEx(FString watermarkUrl, FWatermarkOptions& options, FRtcConnection& connection);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
