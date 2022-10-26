@@ -45,6 +45,7 @@ void UStreamMessageWidget::onSendButtonClick()
 	if (sendMessage =="")
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Dont send empty message!"));
+		return;
 	}
 	int streamId = CreateDataStreamId();
 	if (streamId < 0)
@@ -75,7 +76,6 @@ int UStreamMessageWidget::CreateDataStreamId()
 
 void UStreamMessageWidget::SendStreamMessage(int streamId, const char* message)
 {
-
 	int ret = RtcEngineProxy->sendStreamMessage(streamId, message, strlen(message));
 
 	UE_LOG(LogTemp, Warning, TEXT("SendStreamMessage: ret %d"), ret);
