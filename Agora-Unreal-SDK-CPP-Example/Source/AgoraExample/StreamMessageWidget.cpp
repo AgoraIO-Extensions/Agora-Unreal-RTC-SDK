@@ -22,7 +22,7 @@ void UStreamMessageWidget::InitAgoraEngine(FString APP_ID, FString TOKEN, FStrin
 	RtcEngineContext.appId = TCHAR_TO_ANSI(*APP_ID);
 	RtcEngineContext.eventHandler = this;
 	RtcEngineContext.channelProfile = agora::CHANNEL_PROFILE_TYPE::CHANNEL_PROFILE_LIVE_BROADCASTING;
-
+	RtcEngineContext.audioScenario = agora::rtc::AUDIO_SCENARIO_TYPE::AUDIO_SCENARIO_GAME_STREAMING;
 
 	AppId = APP_ID;
 	Token = TOKEN;
@@ -54,7 +54,7 @@ void UStreamMessageWidget::onSendButtonClick()
 	}
 	else
 	{
-		SendStreamMessage(streamId, TCHAR_TO_ANSI(*sendMessage));
+		SendStreamMessage(streamId, TCHAR_TO_UTF8(*sendMessage));
 		SendTextBox->SetText(FText::GetEmpty());
 	}
 }
@@ -116,9 +116,13 @@ void UStreamMessageWidget::onJoinChannelSuccess(const char* channel, agora::rtc:
 
 void UStreamMessageWidget::onStreamMessage(uid_t userId, int streamId, const char* data, size_t length, uint64_t sentTs)
 {
+	char* tempdata = new char[length];
+	FMemory::Memcpy(tempdata, data, length);
+	std::string temp(tempdata);
+	UE_LOG(LogTemp, Warning, TEXT("UStreamMessageWidget onStreamMessage ======%s"),*FString(temp.c_str()));
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Blue, FString::Printf(TEXT("UStreamMessageWidget::onStreamMessage uid: %u,streamId %d,data %s,length %d,sentTs %d"), userId,streamId,data,length,sentTs));
+		GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Blue, FString::Printf(TEXT("UStreamMessageWidget::onStreamMessage uid: %u,streamId %d,data %s,length %d,sentTs %d"), userId,streamId, *FString(temp.c_str()),length,sentTs));
 	});
 }
 

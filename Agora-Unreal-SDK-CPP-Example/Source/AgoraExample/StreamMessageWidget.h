@@ -12,6 +12,8 @@
 #if PLATFORM_ANDROID
 #include "AndroidPermission/Classes/AndroidPermissionFunctionLibrary.h"
 #endif
+#include <iostream>
+#include <string.h>
 #include "StreamMessageWidget.generated.h"
 using namespace agora::rtc;
 using namespace agora;
