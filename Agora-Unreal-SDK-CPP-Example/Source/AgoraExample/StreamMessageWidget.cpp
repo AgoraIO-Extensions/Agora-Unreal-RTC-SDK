@@ -75,7 +75,8 @@ int UStreamMessageWidget::CreateDataStreamId()
 
 void UStreamMessageWidget::SendStreamMessage(int streamId, const char* message)
 {
-	int ret = RtcEngineProxy->sendStreamMessage(streamId,message, strlen(message));
+
+	int ret = RtcEngineProxy->sendStreamMessage(streamId, message, strlen(message));
 
 	UE_LOG(LogTemp, Warning, TEXT("SendStreamMessage: ret %d"), ret);
 }
@@ -119,11 +120,12 @@ void UStreamMessageWidget::onStreamMessage(uid_t userId, int streamId, const cha
 	char* tempdata = new char[length];
 	FMemory::Memcpy(tempdata, data, length);
 	std::string temp(tempdata);
-	UE_LOG(LogTemp, Warning, TEXT("UStreamMessageWidget onStreamMessage ======%s"),*FString(temp.c_str()));
+	delete[] tempdata;
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Blue, FString::Printf(TEXT("UStreamMessageWidget::onStreamMessage uid: %u,streamId %d,data %s,length %d,sentTs %d"), userId,streamId, *FString(temp.c_str()),length,sentTs));
+		GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Blue, FString::Printf(TEXT("UStreamMessageWidget::onStreamMessage uid: %u,streamId %d,data %s,length %d,sentTs %d"), userId,streamId, *FString(UTF8_TO_TCHAR(temp.c_str())),length,sentTs));
 	});
+
 }
 
 void UStreamMessageWidget::onStreamMessageError(uid_t userId, int streamId, int code, int missed, int cached)
