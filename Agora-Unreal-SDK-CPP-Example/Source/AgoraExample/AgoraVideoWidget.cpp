@@ -125,7 +125,8 @@ void UAgoraVideoWidget::OnLeaveButtonClick() {
 		((IRtcEngineEx*)RtcEngineProxy)->setupRemoteVideoEx(videoCanvas, connection);
 	}
 	RemoteUserIdArray.Empty();
-
+	localVideo->SetBrush(EmptyBrush);
+	remoteVideo->SetBrush(EmptyBrush);
 	RtcEngineProxy->leaveChannel();
 }
 
@@ -206,7 +207,7 @@ void UAgoraVideoWidget::onLeaveChannel(const agora::rtc::RtcStats& stats)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
-		UE_LOG(LogTemp, Warning, TEXT("UVideoWidget::onLeaveChannel  uid"));
+		UE_LOG(LogTemp, Warning, TEXT("UVideoWidget::onLeaveChannel"));
 		agora::rtc::VideoCanvas videoCanvas;
 		videoCanvas.view = nullptr;
 		videoCanvas.uid = 0;
@@ -215,8 +216,6 @@ void UAgoraVideoWidget::onLeaveChannel(const agora::rtc::RtcStats& stats)
 		{
 			RtcEngineProxy->setupLocalVideo(videoCanvas);
 		}
-		localVideo->SetBrush(EmptyBrush);
-		remoteVideo->SetBrush(EmptyBrush);
 	});
 }
 #pragma endregion RtcEngineCallBack
