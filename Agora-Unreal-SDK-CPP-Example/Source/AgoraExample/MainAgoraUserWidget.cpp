@@ -63,5 +63,6 @@ void UMainAgoraUserWidget::InitLevelArray()
 	LevelArray.Add(FString("SendMultiCameraStream"));
 	LevelArray.Add(FString("SpatialAudio"));
 	LevelArray.Add(FString("SetEncryptionScene"));
+	LevelArray.Add(FString("StreamMessageScene"));
 }
 
