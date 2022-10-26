@@ -101,8 +101,6 @@ void UStreamMessageWidget::OnJoinChannel() {
 	RtcEngineProxy->enableAudio();
 	RtcEngineProxy->joinChannel(TCHAR_TO_ANSI(*Token), TCHAR_TO_ANSI(*ChannelName), "", 0);
 	RtcEngineProxy->setClientRole(agora::rtc::CLIENT_ROLE_TYPE::CLIENT_ROLE_BROADCASTER);
-
-	RtcEngineProxy
 }
 
 
@@ -128,7 +126,7 @@ void UStreamMessageWidget::onStreamMessageError(uid_t userId, int streamId, int 
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Blue, FString::Printf(TEXT("UStreamMessageWidget::onStreamMessage uid: %u,streamId %d,code %s,missed %d,cached %d"), userId, streamId, code, missed, cached));
+		GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Blue, FString::Printf(TEXT("UStreamMessageWidget::onStreamMessage uid: %u,streamId %d,code %d,missed %d,cached %d"), userId, streamId, code, missed, cached));
 	});
 }
 
