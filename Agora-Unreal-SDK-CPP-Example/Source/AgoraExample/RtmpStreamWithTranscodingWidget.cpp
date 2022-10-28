@@ -57,6 +57,8 @@ void URtmpStreamWithTranscodingWidget::OnStartButtonClick()
 			Verify remote
 			1.install ffmpeg(brew install ffmpeg)
 			2.ffplay rtmp://play.xxxxx.xxx.xxxx
+			or 
+			1.vlc open rtmp://play.xxxxx.xxx.xxxx
 		 */
 	}
 }
