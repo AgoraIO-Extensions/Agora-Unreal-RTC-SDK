@@ -77,11 +77,11 @@ enum EAUDIO_SAMPLE_RATE_TYPE {
 
 	AUDIO_SAMPLE_NULL = 0,
 
-	AUDIO_SAMPLE_RATE_32000 = 32000,
+	AUDIO_SAMPLE_RATE_32000 = 1,
 
-	AUDIO_SAMPLE_RATE_44100 = 44100,
+	AUDIO_SAMPLE_RATE_44100 = 2,
 
-	AUDIO_SAMPLE_RATE_48000 = 48000,
+	AUDIO_SAMPLE_RATE_48000 = 3,
 };
 
 
@@ -930,30 +930,58 @@ enum class EAUDIO_ENCODED_FRAME_OBSERVER_POSITION :uint8 {
 };
 UENUM(BlueprintType)
 enum EAUDIO_ENCODING_TYPE {
-	AUDIO_ENCODING_TYPE_NULL = 0x000000,
+	AUDIO_ENCODING_TYPE_NULL = 0,
 
-	AUDIO_ENCODING_TYPE_AAC_16000_LOW = 0x010101,
+	AUDIO_ENCODING_TYPE_AAC_16000_LOW = 1,
 
-	AUDIO_ENCODING_TYPE_AAC_16000_MEDIUM = 0x010102,
+	AUDIO_ENCODING_TYPE_AAC_16000_MEDIUM = 2,
 
-	AUDIO_ENCODING_TYPE_AAC_32000_LOW = 0x010201,
+	AUDIO_ENCODING_TYPE_AAC_32000_LOW = 3,
 
-	AUDIO_ENCODING_TYPE_AAC_32000_MEDIUM = 0x010202,
+	AUDIO_ENCODING_TYPE_AAC_32000_MEDIUM = 4,
 
-	AUDIO_ENCODING_TYPE_AAC_32000_HIGH = 0x010203,
+	AUDIO_ENCODING_TYPE_AAC_32000_HIGH = 5,
 
-	AUDIO_ENCODING_TYPE_AAC_48000_MEDIUM = 0x010302,
+	AUDIO_ENCODING_TYPE_AAC_48000_MEDIUM = 6,
 
-	AUDIO_ENCODING_TYPE_AAC_48000_HIGH = 0x010303,
+	AUDIO_ENCODING_TYPE_AAC_48000_HIGH = 7,
 
-	AUDIO_ENCODING_TYPE_OPUS_16000_LOW = 0x020101,
+	AUDIO_ENCODING_TYPE_OPUS_16000_LOW = 8,
 
-	AUDIO_ENCODING_TYPE_OPUS_16000_MEDIUM = 0x020102,
+	AUDIO_ENCODING_TYPE_OPUS_16000_MEDIUM = 9,
 
-	AUDIO_ENCODING_TYPE_OPUS_48000_MEDIUM = 0x020302,
+	AUDIO_ENCODING_TYPE_OPUS_48000_MEDIUM = 10,
 
-	AUDIO_ENCODING_TYPE_OPUS_48000_HIGH = 0x020303,
+	AUDIO_ENCODING_TYPE_OPUS_48000_HIGH = 11,
 };
+
+
+//UENUM(BlueprintType)
+//enum EAUDIO_ENCODING_TYPE {
+//	AUDIO_ENCODING_TYPE_NULL = 0x000000,
+//
+//	AUDIO_ENCODING_TYPE_AAC_16000_LOW = 0x010101,
+//
+//	AUDIO_ENCODING_TYPE_AAC_16000_MEDIUM = 0x010102,
+//
+//	AUDIO_ENCODING_TYPE_AAC_32000_LOW = 0x010201,
+//
+//	AUDIO_ENCODING_TYPE_AAC_32000_MEDIUM = 0x010202,
+//
+//	AUDIO_ENCODING_TYPE_AAC_32000_HIGH = 0x010203,
+//
+//	AUDIO_ENCODING_TYPE_AAC_48000_MEDIUM = 0x010302,
+//
+//	AUDIO_ENCODING_TYPE_AAC_48000_HIGH = 0x010303,
+//
+//	AUDIO_ENCODING_TYPE_OPUS_16000_LOW = 0x020101,
+//
+//	AUDIO_ENCODING_TYPE_OPUS_16000_MEDIUM = 0x020102,
+//
+//	AUDIO_ENCODING_TYPE_OPUS_48000_MEDIUM = 0x020302,
+//
+//	AUDIO_ENCODING_TYPE_OPUS_48000_HIGH = 0x020303,
+//};
 
 USTRUCT(BlueprintType)
 struct FAudioEncodedFrameObserverConfig
@@ -1215,17 +1243,17 @@ struct FLiveTranscoding
 	GENERATED_BODY()
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LiveTranscoding")
-	int width;
+	int width=360;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LiveTranscoding")
-	int height;
+	int height=640;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LiveTranscoding")
-	int videoBitrate;
+	int videoBitrate=400;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LiveTranscoding")
-	int videoFramerate;
+	int videoFramerate=15;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LiveTranscoding")
-	bool lowLatency;
+	bool lowLatency=false;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LiveTranscoding")
-	int videoGop;
+	int videoGop=30;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LiveTranscoding")
 	EVIDEO_CODEC_PROFILE_TYPE videoCodecProfile = EVIDEO_CODEC_PROFILE_TYPE::VIDEO_CODEC_PROFILE_HIGH;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LiveTranscoding")
@@ -1233,7 +1261,7 @@ struct FLiveTranscoding
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LiveTranscoding")
 	EVIDEO_CODEC_TYPE_FOR_STREAM videoCodecType =EVIDEO_CODEC_TYPE_FOR_STREAM::VIDEO_CODEC_H264_FOR_STREAM;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LiveTranscoding")
-	int userCount;
+	int userCount=0;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LiveTranscoding")
 	TArray<FTranscodingUser> transcodingUsers;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LiveTranscoding")
@@ -1243,23 +1271,23 @@ struct FLiveTranscoding
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LiveTranscoding")
 	TArray <FRtcImage> watermark;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LiveTranscoding")
-	int watermarkCount;
+	int watermarkCount=0;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LiveTranscoding")
 	TArray<FRtcImage> backgroundImage;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LiveTranscoding")
-	int backgroundImageCount;
+	int backgroundImageCount=0;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LiveTranscoding")
-	TEnumAsByte<EAUDIO_SAMPLE_RATE_TYPE> audioSampleRate;
+	TEnumAsByte<EAUDIO_SAMPLE_RATE_TYPE> audioSampleRate = EAUDIO_SAMPLE_RATE_TYPE::AUDIO_SAMPLE_RATE_48000;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LiveTranscoding")
-	int audioBitrate;
+	int audioBitrate=48;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LiveTranscoding")
-	int audioChannels;
+	int audioChannels=1;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LiveTranscoding")
 	EAUDIO_CODEC_PROFILE_TYPE audioCodecProfile =EAUDIO_CODEC_PROFILE_TYPE::AUDIO_CODEC_PROFILE_LC_AAC;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LiveTranscoding")
 	TArray<FLiveStreamAdvancedFeature> advancedFeatures;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LiveTranscoding")
-	int advancedFeatureCount;
+	int advancedFeatureCount = 0;
 };
 
 USTRUCT(BlueprintType)

@@ -736,7 +736,51 @@ int AAgoraRtcEngine::RegisterAudioEncodedFrameObserver(FAudioEncodedFrameObserve
 {
 	agora::rtc::AudioEncodedFrameObserverConfig audioEncodedFrameObserverConfig;
 	audioEncodedFrameObserverConfig.postionType = (agora::rtc::AUDIO_ENCODED_FRAME_OBSERVER_POSITION)config.postionType;
-	audioEncodedFrameObserverConfig.encodingType = (agora::rtc::AUDIO_ENCODING_TYPE)config.encodingType.GetValue();
+	if ((agora::rtc::AUDIO_ENCODING_TYPE)config.encodingType.GetValue()==1)
+	{
+		audioEncodedFrameObserverConfig.encodingType = agora::rtc::AUDIO_ENCODING_TYPE::AUDIO_ENCODING_TYPE_AAC_16000_LOW;
+	}
+	else if (((agora::rtc::AUDIO_ENCODING_TYPE)config.encodingType.GetValue() == 2))
+	{
+		audioEncodedFrameObserverConfig.encodingType = agora::rtc::AUDIO_ENCODING_TYPE::AUDIO_ENCODING_TYPE_AAC_16000_MEDIUM;
+	}
+	else if (((agora::rtc::AUDIO_ENCODING_TYPE)config.encodingType.GetValue() == 3))
+	{
+		audioEncodedFrameObserverConfig.encodingType = agora::rtc::AUDIO_ENCODING_TYPE::AUDIO_ENCODING_TYPE_AAC_32000_LOW;
+	}
+	else if (((agora::rtc::AUDIO_ENCODING_TYPE)config.encodingType.GetValue() == 4))
+	{
+		audioEncodedFrameObserverConfig.encodingType = agora::rtc::AUDIO_ENCODING_TYPE::AUDIO_ENCODING_TYPE_AAC_32000_MEDIUM;
+	}
+	else if (((agora::rtc::AUDIO_ENCODING_TYPE)config.encodingType.GetValue() == 5))
+	{
+		audioEncodedFrameObserverConfig.encodingType = agora::rtc::AUDIO_ENCODING_TYPE::AUDIO_ENCODING_TYPE_AAC_32000_HIGH;
+	}
+	else if (((agora::rtc::AUDIO_ENCODING_TYPE)config.encodingType.GetValue() == 6))
+	{
+		audioEncodedFrameObserverConfig.encodingType = agora::rtc::AUDIO_ENCODING_TYPE::AUDIO_ENCODING_TYPE_AAC_48000_MEDIUM;
+	}
+	else if (((agora::rtc::AUDIO_ENCODING_TYPE)config.encodingType.GetValue() == 7))
+	{
+		audioEncodedFrameObserverConfig.encodingType = agora::rtc::AUDIO_ENCODING_TYPE::AUDIO_ENCODING_TYPE_AAC_48000_HIGH;
+	}
+	else if (((agora::rtc::AUDIO_ENCODING_TYPE)config.encodingType.GetValue() == 8))
+	{
+		audioEncodedFrameObserverConfig.encodingType = agora::rtc::AUDIO_ENCODING_TYPE::AUDIO_ENCODING_TYPE_OPUS_16000_LOW;
+	}
+	else if (((agora::rtc::AUDIO_ENCODING_TYPE)config.encodingType.GetValue() == 9))
+	{
+		audioEncodedFrameObserverConfig.encodingType = agora::rtc::AUDIO_ENCODING_TYPE::AUDIO_ENCODING_TYPE_OPUS_16000_MEDIUM;
+	}
+	else if (((agora::rtc::AUDIO_ENCODING_TYPE)config.encodingType.GetValue() == 10))
+	{
+		audioEncodedFrameObserverConfig.encodingType = agora::rtc::AUDIO_ENCODING_TYPE::AUDIO_ENCODING_TYPE_OPUS_48000_MEDIUM;
+	}
+	else if (((agora::rtc::AUDIO_ENCODING_TYPE)config.encodingType.GetValue() == 11))
+	{
+		audioEncodedFrameObserverConfig.encodingType = agora::rtc::AUDIO_ENCODING_TYPE::AUDIO_ENCODING_TYPE_OPUS_48000_HIGH;
+	}	
+	
 	return RtcEngineProxy::registerAudioEncodedFrameObserver(audioEncodedFrameObserverConfig, observer);
 }
 int AAgoraRtcEngine::StopAudioRecording()
@@ -1700,7 +1744,18 @@ int AAgoraRtcEngine::StartRtmpStreamWithTranscoding(FString url, FLiveTranscodin
 	}
 	liveTranscoding.backgroundImage = bgImage;
 	liveTranscoding.backgroundImageCount = transcoding.backgroundImageCount;
-	liveTranscoding.audioSampleRate = (agora::rtc::AUDIO_SAMPLE_RATE_TYPE)transcoding.audioSampleRate.GetValue();
+	if (transcoding.audioSampleRate.GetValue() ==1)
+	{
+		liveTranscoding.audioSampleRate = agora::rtc::AUDIO_SAMPLE_RATE_TYPE::AUDIO_SAMPLE_RATE_32000;
+	}
+	else if (transcoding.audioSampleRate.GetValue() == 2)
+	{
+		liveTranscoding.audioSampleRate = agora::rtc::AUDIO_SAMPLE_RATE_TYPE::AUDIO_SAMPLE_RATE_44100;
+	}
+	else if (transcoding.audioSampleRate.GetValue() == 3)
+	{
+		liveTranscoding.audioSampleRate = agora::rtc::AUDIO_SAMPLE_RATE_TYPE::AUDIO_SAMPLE_RATE_48000;
+	}
 	liveTranscoding.audioBitrate = transcoding.audioBitrate;
 	liveTranscoding.audioChannels = transcoding.audioChannels;
 	liveTranscoding.audioCodecProfile = (agora::rtc::AUDIO_CODEC_PROFILE_TYPE)transcoding.audioCodecProfile;
@@ -1781,7 +1836,18 @@ int AAgoraRtcEngine::UpdateRtmpTranscoding(FLiveTranscoding& transcoding)
 	}
 	liveTranscoding.backgroundImage = bgImage;
 	liveTranscoding.backgroundImageCount = transcoding.backgroundImageCount;
-	liveTranscoding.audioSampleRate = (agora::rtc::AUDIO_SAMPLE_RATE_TYPE)transcoding.audioSampleRate.GetValue();
+	if (transcoding.audioSampleRate.GetValue() == 1)
+	{
+		liveTranscoding.audioSampleRate = agora::rtc::AUDIO_SAMPLE_RATE_TYPE::AUDIO_SAMPLE_RATE_32000;
+	}
+	else if (transcoding.audioSampleRate.GetValue() == 2)
+	{
+		liveTranscoding.audioSampleRate = agora::rtc::AUDIO_SAMPLE_RATE_TYPE::AUDIO_SAMPLE_RATE_44100;
+	}
+	else if (transcoding.audioSampleRate.GetValue() == 3)
+	{
+		liveTranscoding.audioSampleRate = agora::rtc::AUDIO_SAMPLE_RATE_TYPE::AUDIO_SAMPLE_RATE_48000;
+	}
 	liveTranscoding.audioBitrate = transcoding.audioBitrate;
 	liveTranscoding.audioChannels = transcoding.audioChannels;
 	liveTranscoding.audioCodecProfile = (agora::rtc::AUDIO_CODEC_PROFILE_TYPE)transcoding.audioCodecProfile;
@@ -2110,7 +2176,18 @@ int AAgoraRtcEngine::AddInjectStreamUrl(FString url, FInjectStreamConfig& config
 	injectStreamConfig.videoGop = config.videoGop;
 	injectStreamConfig.videoFramerate = config.videoFramerate;
 	injectStreamConfig.videoBitrate = config.videoBitrate;
-	injectStreamConfig.audioSampleRate = (agora::rtc::AUDIO_SAMPLE_RATE_TYPE)config.audioSampleRate.GetValue();
+	if (config.audioSampleRate.GetValue() == 1)
+	{
+		injectStreamConfig.audioSampleRate = agora::rtc::AUDIO_SAMPLE_RATE_TYPE::AUDIO_SAMPLE_RATE_32000;
+	}
+	else if (config.audioSampleRate.GetValue() == 2)
+	{
+		injectStreamConfig.audioSampleRate = agora::rtc::AUDIO_SAMPLE_RATE_TYPE::AUDIO_SAMPLE_RATE_44100;
+	}
+	else if (config.audioSampleRate.GetValue() == 3)
+	{
+		injectStreamConfig.audioSampleRate = agora::rtc::AUDIO_SAMPLE_RATE_TYPE::AUDIO_SAMPLE_RATE_48000;
+	}
 	injectStreamConfig.audioBitrate = config.audioBitrate;
 	injectStreamConfig.audioChannels = config.audioChannels;
 	std::string Url = TCHAR_TO_ANSI(*url);
