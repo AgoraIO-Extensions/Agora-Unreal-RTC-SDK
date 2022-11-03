@@ -65,5 +65,8 @@ void UMainAgoraUserWidget::InitLevelArray()
 	LevelArray.Add(FString("SetEncryptionScene"));
 	LevelArray.Add(FString("StreamMessageScene"));
 	LevelArray.Add(FString("StartRtmpStreamWithTranscoding"));
+	LevelArray.Add(FString("CustomCaptureAudio"));
+	LevelArray.Add(FString("CustomCaptureVideo"));
+	LevelArray.Add(FString("ProcessVideoRawData"));
 }
 

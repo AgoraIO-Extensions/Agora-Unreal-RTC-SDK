@@ -30,7 +30,6 @@ void UCustomCaptureVideoScene::InitAgoraWidget(FString APP_ID, FString TOKEN, FS
 
 void UCustomCaptureVideoScene::OnBackBufferReady_RenderThread(SWindow& window, const FTexture2DRHIRef& BackBuffer)
 {
-	std::lock_guard<std::mutex> lock(VideoPushMutex);
 	FRHICommandListImmediate& RHICmdList = FRHICommandListExecutor::GetImmediateCommandList();
 	auto width = BackBuffer->GetSizeX();
 	auto height = BackBuffer->GetSizeY();
@@ -63,7 +62,6 @@ void UCustomCaptureVideoScene::OnBackBufferReady_RenderThread(SWindow& window, c
 		{
 			MediaEngineManager->pushVideoFrame(externalVideoFrame);
 		}
-		
 	}
 }
 
@@ -164,16 +162,15 @@ std::time_t UCustomCaptureVideoScene::getTimeStamp()
 }
 
 
-void UCustomCaptureVideoScene::swap(agora::media::base::ExternalVideoFrame*& SwipFrame, agora::media::base::ExternalVideoFrame*& CurrentFrame)
-{
-	agora::media::base::ExternalVideoFrame* Temp = SwipFrame;
-	SwipFrame = CurrentFrame;
-	CurrentFrame = Temp;
-}
-
 void UCustomCaptureVideoScene::NativeConstruct()
 {
 	Super::NativeConstruct();
-	MediaEngineManager = nullptr;
+
+	if (RtcEngineProxy != nullptr)
+	{
+		RtcEngineProxy->release();
+		delete RtcEngineProxy;
+		RtcEngineProxy = nullptr;
+	}
 	externalVideoFrame = nullptr; 
 }

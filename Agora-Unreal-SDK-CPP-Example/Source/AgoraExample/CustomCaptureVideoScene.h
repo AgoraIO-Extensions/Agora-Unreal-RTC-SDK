@@ -69,8 +69,6 @@ protected:
 
 	std::time_t getTimeStamp();
 
-	void swap(agora::media::base::ExternalVideoFrame*& SwipFrame, agora::media::base::ExternalVideoFrame*& CurrentFrame);
-
 	agora::media::IMediaEngine* MediaEngineManager;
 
 	void NativeConstruct() override;
