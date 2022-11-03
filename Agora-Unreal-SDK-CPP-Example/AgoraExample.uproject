@@ -13,9 +13,8 @@
 				"Slate",
 				"SlateCore",
 				"UMG",
-				"CoreUObject",
-				"AudioMixer"
+				"CoreUObject"
 			]
 		}
-	],
+	]
 }
