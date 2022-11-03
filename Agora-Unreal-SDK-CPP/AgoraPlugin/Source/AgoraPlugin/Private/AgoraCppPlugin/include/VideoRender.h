@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "SlateOptMacros.h"
-#include "Engine/Texture2D.h"
 #include "Components/Image.h"
 #include "DataManager.h"
 #include "Engine/Texture2D.h"

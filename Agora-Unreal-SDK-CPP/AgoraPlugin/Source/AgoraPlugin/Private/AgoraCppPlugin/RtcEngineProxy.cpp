@@ -46,11 +46,6 @@ namespace agora
 			void RtcEngineProxy::release(bool sync) {
 				if (RtcEngine != nullptr)
 				{
-					if (MediaProxy != nullptr)
-					{
-						MediaProxy->registerVideoFrameObserver(nullptr);
-					}
-					MediaProxy.reset();
 					RtcEngine->release(sync);
 					RtcEngine = nullptr;
 				}
