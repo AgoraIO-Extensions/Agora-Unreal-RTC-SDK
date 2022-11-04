@@ -56,9 +56,9 @@ void UMainAgoraUserWidget::InitLevelArray()
 {
 	LevelArray.Add(FString("BasicAudioCallScene"));
 	LevelArray.Add(FString("BasicVideoCallScene"));
-	LevelArray.Add(FString("DeviceMnager"));
+	LevelArray.Add(FString("DeviceManager"));
 	LevelArray.Add(FString("JoinMultipleChannel"));
-	LevelArray.Add(FString("Mediaplayer"));
+	LevelArray.Add(FString("MediaPlayer"));
 	LevelArray.Add(FString("ScreenShare"));
 	LevelArray.Add(FString("SendMultiCameraStream"));
 	LevelArray.Add(FString("SpatialAudio"));
@@ -67,6 +67,7 @@ void UMainAgoraUserWidget::InitLevelArray()
 	LevelArray.Add(FString("StartRtmpStreamWithTranscoding"));
 	LevelArray.Add(FString("CustomCaptureAudio"));
 	LevelArray.Add(FString("CustomCaptureVideo"));
+	LevelArray.Add(FString("ProcessAudioRawData"));
 	LevelArray.Add(FString("ProcessVideoRawData"));
 }
 

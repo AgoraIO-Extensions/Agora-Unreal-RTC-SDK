@@ -8,7 +8,7 @@ public class AgoraExample : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 	
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "AgoraPlugin", "MediaAssets", "RHI", "HTTP" });
+		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "AgoraPlugin", "MediaAssets", "RHI", "HTTP", "AudioMixer" });
 
         if (Target.Platform == UnrealTargetPlatform.Android)
         {

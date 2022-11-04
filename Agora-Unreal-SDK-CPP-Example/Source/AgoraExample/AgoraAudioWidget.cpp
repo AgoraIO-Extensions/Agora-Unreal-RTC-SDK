@@ -62,8 +62,6 @@ void UAgoraAudioWidget::OnJoinButtonClick() {
 	RtcEngineProxy->enableAudio();
 	RtcEngineProxy->joinChannel(TCHAR_TO_ANSI(*Token), TCHAR_TO_ANSI(*ChannelName), "", 0);
 	RtcEngineProxy->setClientRole(agora::rtc::CLIENT_ROLE_TYPE::CLIENT_ROLE_BROADCASTER);
-
-	
 }
 
 void UAgoraAudioWidget::OnLeaveButtonClick() {
