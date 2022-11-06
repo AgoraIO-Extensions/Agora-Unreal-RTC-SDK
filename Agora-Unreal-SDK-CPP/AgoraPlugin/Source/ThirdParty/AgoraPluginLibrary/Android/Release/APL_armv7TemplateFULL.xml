@@ -86,10 +86,10 @@
 
 	<buildGradleAdditions>
 		<insert>
-			repositories {
-			flatDir{ dirs '/src/main/libs/' }
-			}
-			dependencies { implementation (name: 'AgoraScreenShareExtension',ext:'aar') }
+dependencies {
+	implementation fileTree(dir: 'libs', include: ['*.aar'])
+	implementation fileTree(dir: 'src/main/libs', include: ['*.aar'])
+}
 		</insert>
 	</buildGradleAdditions>
 </root>
