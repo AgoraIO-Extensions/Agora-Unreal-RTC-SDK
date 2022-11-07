@@ -22,8 +22,29 @@ struct RemoteVoicePositionInfo {
   float position[3];
   // The forward vector of remote voice, (x, y, z). When it's not set, the vector is forward to listner.
   float forward[3];
-
   RemoteVoicePositionInfo() = default;
+};
+
+struct SpatialAudioZone {
+  //the zone id
+  int zoneSetId;
+  //zone center point
+  float position[3];
+  //forward direction 
+  float forward[3];
+  //right direction
+  float right[3];
+  //up direction
+  float up[3];
+  //the forward side length of the zone
+  float forwardLength;
+  //tehe right side length of the zone
+  float rightLength;
+  //the up side length of the zone
+  float upLength;
+  //the audio attenuation of zone
+  float audioAttenuation;
+  SpatialAudioZone() = default;
 };
 
 /** The definition of LocalSpatialAudioConfig
@@ -175,6 +196,38 @@ class IBaseSpatialAudioEngine: public RefCountInterface {
    * - <0: Failure.
    */
   virtual int muteAllRemoteAudioStreams(bool mute) = 0;
+    
+    
+  /**
+   * Setting up sound Space
+   *
+   * @param zones The Sound space array
+   * @param zoneCount the sound Space count of  array
+   * @return
+   * - 0: Success.
+   * - <0: Failure.
+   */
+  virtual int setZones(const SpatialAudioZone *zones, unsigned int zoneCount) = 0;
+  /**
+   * Set the audio attenuation coefficient of the player
+   * @param playerId The ID of the media player. You can get it by IMediaPlayer::getMediaPlayerId.
+   * @param attenuation The audio attenuation of the  media player.
+   * @param forceSet Whether to force the setting of audio attenuation coefficient.
+   * @return
+   * - 0: Success.
+   * - <0: Failure.
+   */
+  virtual int setPlayerAttenuation(int playerId, double attenuation, bool forceSet) = 0;
+  /**
+   * Mute or unmute remote user audio stream.
+   *
+   * @param uid  The ID of the remote user.
+   * @param mute When it's false, SDK will receive remote user audio streams, otherwise SDK will not receive remote user audio streams.
+   * @return
+   * - 0: Success.
+   * - <0: Failure.
+   */
+  virtual int muteRemoteAudioStream(uid_t uid, bool mute) = 0;
 };
 
 class ILocalSpatialAudioEngine : public IBaseSpatialAudioEngine {
@@ -250,6 +303,9 @@ public:
    * - <0: Failure.
    */
   virtual int clearRemotePositionsEx(const RtcConnection& connection) = 0;
+  
+  
+  virtual int setRemoteAudioAttenuation(uid_t uid, double attenuation, bool forceSet) = 0;
 };
 
 }  // namespace rtc

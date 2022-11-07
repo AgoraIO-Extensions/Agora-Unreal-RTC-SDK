@@ -268,6 +268,16 @@ public:
     virtual int initialize(const MusicContentCenterConfiguration & configuration) = 0;
 
     /**
+     * Renew token of music content center
+     * 
+     * @param token The new token.
+     * @return 
+     * - 0: Success.
+     * - < 0: Failure.
+     */
+    virtual int renewToken(const char* token) = 0;
+
+    /**
      * release music content center resource.
      * 
      */

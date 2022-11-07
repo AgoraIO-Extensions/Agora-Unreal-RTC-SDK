@@ -274,6 +274,28 @@ public:
   virtual int getRecordingDeviceVolume(int *volume) = 0;
 
   /**
+   * Specifies an audio loopback recording device with the device ID.
+   *
+   * @param deviceId ID of the audio loopback recording device. It can be retrieved by
+   * the \ref enumeratePlaybackDevices "enumeratePlaybackDevices" method.
+   * Plugging or unplugging the audio device does not change the device ID.
+   * @return
+   * - 0: Success.
+   * - < 0: Failure.
+   */
+  virtual int setLoopbackDevice(const char deviceId[MAX_DEVICE_ID_LENGTH]) = 0;
+
+  /**
+   * Gets the audio loopback recording device by the device ID.
+   *
+   * @param deviceId ID of the audio loopback recording device.
+   * @return
+   * - 0: Success.
+   * - < 0: Failure.
+   */
+  virtual int getLoopbackDevice(char deviceId[MAX_DEVICE_ID_LENGTH]) = 0;
+
+  /**
    * Mutes or unmutes the audio playback device.
    *
    * @param mute Determines whether to mute the audio playback device.
@@ -436,6 +458,19 @@ public:
    - < 0: Failure.
    */
   virtual int followSystemRecordingDevice(bool enable) = 0;
+
+  /** The status of following system default loopback device.
+
+   @note The status of following system default loopback device.
+
+   @param enable Variable to whether the current device follow system default loopback device or not.
+   - true: The current device will change when the system default loopback device changed.
+   - false: The current device will change only current device is removed.
+   @return
+   - 0: Success.
+   - < 0: Failure.
+   */
+  virtual int followSystemLoopbackDevice(bool enable) = 0;
 
   /**
    * Releases all IAudioDeviceManager resources.

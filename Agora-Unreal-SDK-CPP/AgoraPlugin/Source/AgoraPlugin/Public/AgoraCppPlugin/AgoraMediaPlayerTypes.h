@@ -296,7 +296,7 @@ struct PlayerStreamInfo {
   /** The number of bits per sample if the stream is audio. */
   int audioBitsPerSample;
 
-  /** The total duration (second) of the media stream. */
+  /** The total duration (millisecond) of the media stream. */
   int64_t duration;
 
   PlayerStreamInfo() : streamIndex(0),
@@ -376,7 +376,7 @@ struct PlayerUpdatedInfo {
  */
 class IMediaPlayerCustomDataProvider {
 public:
-
+    
     /**
      * @brief The player requests to read the data callback, you need to fill the specified length of data into the buffer
      * @param buffer the buffer pointer that you need to fill data.
@@ -384,7 +384,7 @@ public:
      * @return you need return offset value if succeed. return 0 if failed.
      */
     virtual int onReadData(unsigned char *buffer, int bufferSize) = 0;
-
+    
     /**
      * @brief The Player seek event callback, you need to operate the corresponding stream seek operation, You can refer to the definition of lseek() at https://man7.org/linux/man-pages/man2/lseek.2.html
      * @param offset the value of seek offset.
@@ -398,7 +398,7 @@ public:
      * whence >= 0 && whence < 3 , return offset value if succeed. return -1 if failed.
      */
     virtual int64_t onSeek(int64_t offset, int whence) = 0;
-
+    
     virtual ~IMediaPlayerCustomDataProvider() {}
 };
 
