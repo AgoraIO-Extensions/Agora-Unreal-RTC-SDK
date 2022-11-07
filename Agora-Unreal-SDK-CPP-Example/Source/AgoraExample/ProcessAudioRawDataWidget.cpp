@@ -16,8 +16,6 @@ void UProcessAudioRawDataWidget::InitAgoraWidget(FString APP_ID, FString TOKEN, 
 }
 
 
-
-
 void UProcessAudioRawDataWidget::InitAgoraEngine(FString APP_ID, FString TOKEN, FString CHANNEL_NAME)
 {
 	agora::rtc::RtcEngineContext RtcEngineContext;

@@ -48,7 +48,7 @@ void URtmpStreamWithTranscodingWidget::OnStartButtonClick()
 
 	auto ret = RtcEngineProxy->startRtmpStreamWithTranscoding(TCHAR_TO_ANSI(*url), liveTranscoding);
 
-	delete transcodingUsers;
+	delete[]transcodingUsers;
 	GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Blue, FString::Printf(TEXT("StartRtmpStreamWithTranscoding  ret %d"), ret));
 	if (ret == 0)
 	{
@@ -146,7 +146,7 @@ void URtmpStreamWithTranscodingWidget::OnUpdateButtonClick() {
 
 	int ret = RtcEngineProxy->updateRtmpTranscoding(liveTranscoding);
 
-	delete transcodingUsers;
+	delete[] transcodingUsers;
 	UE_LOG(LogTemp, Warning, TEXT("UpdateRtmpTranscoding %d"), ret);
 }
 

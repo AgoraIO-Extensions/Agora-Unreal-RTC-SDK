@@ -11,6 +11,9 @@
 #include "Sound/SoundWaveProcedural.h"
 #include "AgoraSoundWaveProcedural.h"
 #include "Components/AudioComponent.h"
+#if PLATFORM_ANDROID
+#include "AndroidPermission/Classes/AndroidPermissionFunctionLibrary.h"
+#endif
 #include "ProcessAudioRawDataWidget.generated.h"
 
 using namespace agora::rtc;
@@ -18,7 +21,7 @@ using namespace agora;
 /**
  * 
  */
-UCLASS()
+UCLASS(Abstract)
 class AGORAEXAMPLE_API UProcessAudioRawDataWidget : public UBaseAgoraUserWidget, public agora::rtc::IRtcEngineEventHandlerEx, public agora::media::IAudioFrameObserver
 {
 	GENERATED_BODY()
@@ -41,19 +44,11 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void OnLeaveButtonClick();
 
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite,Category ="Sound")
 	class UAgoraSoundWaveProcedural* AgoraSoundWaveProcedural;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Audio")
 	class UAudioComponent* AgoraSound;
 
-
-
-
 	void InitAgoraWidget(FString APP_ID, FString TOKEN, FString CHANNEL_NAME) override;
-
-
 
 	void NativeDestruct() override;
 

@@ -27,7 +27,7 @@ using namespace agora;
 /**
  * 
  */
-UCLASS()
+UCLASS(Abstract)
 class AGORAEXAMPLE_API UProcessVideoRawDataWidget : public UBaseAgoraUserWidget, public agora::rtc::IRtcEngineEventHandler , public media::IVideoFrameObserver
 {
 	GENERATED_BODY()

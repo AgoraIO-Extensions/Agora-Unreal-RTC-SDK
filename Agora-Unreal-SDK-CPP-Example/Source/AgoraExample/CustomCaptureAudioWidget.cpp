@@ -113,6 +113,7 @@ void UCustomCaptureAudioWidget::DownLoad(FString URL) {
 	HttpRequest->SetVerb(TEXT("GET"));
 	HttpRequest->ProcessRequest();
 }
+
 void UCustomCaptureAudioWidget::HandleDownloadRequest(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded) {
 	if (!HttpRequest.IsValid() || !HttpResponse.IsValid())
 	{
@@ -123,7 +124,7 @@ void UCustomCaptureAudioWidget::HandleDownloadRequest(FHttpRequestPtr HttpReques
 		UE_LOG(LogTemp, Warning, TEXT("UCustomCaptureAudioWidget GetContentLength ====== %d"), HttpResponse->GetContentLength());
 
 		const uint8* AudioData = HttpResponse->GetContent().GetData();
-		Runnable = new FAgoraRunnable(MediaEngine, AudioData, HttpResponse->GetContentLength());
+		Runnable = new FAgoraCaptureRunnable(MediaEngine, AudioData, HttpResponse->GetContentLength());
 		FRunnableThread* RunnableThread = FRunnableThread::Create(Runnable, TEXT("Agora"));
 	}
 }
@@ -137,7 +138,7 @@ void UCustomCaptureAudioWidget::NativeTick(const FGeometry& MyGeometry, float In
 
 #pragma region AgoraThread
 
-FAgoraRunnable::FAgoraRunnable(agora::media::IMediaEngine* MediaEngine, const uint8* audioData, int dataLength)
+FAgoraCaptureRunnable::FAgoraCaptureRunnable(agora::media::IMediaEngine* MediaEngine, const uint8* audioData, int dataLength)
 {
 	sendByte = nullptr;
 
@@ -148,12 +149,12 @@ FAgoraRunnable::FAgoraRunnable(agora::media::IMediaEngine* MediaEngine, const ui
 	FMemory::Memcpy(this->audioData, audioData, dataLength * sizeof(uint8));
 }
 
-FAgoraRunnable::~FAgoraRunnable()
+FAgoraCaptureRunnable::~FAgoraCaptureRunnable()
 {
 
 }
 
-uint32 FAgoraRunnable::Run()
+uint32 FAgoraCaptureRunnable::Run()
 {
 	auto tic = getTimeStamp();
 	bStopThread = false;
@@ -207,21 +208,21 @@ uint32 FAgoraRunnable::Run()
 	return 0;
 }
 
-void FAgoraRunnable::Stop()
+void FAgoraCaptureRunnable::Stop()
 {
 	sendByte = nullptr;
 
 	bStopThread = true;
 }
 
-void FAgoraRunnable::Exit()
+void FAgoraCaptureRunnable::Exit()
 {
 	sendByte = nullptr;
 
 	bStopThread = true;
 }
 
-std::time_t FAgoraRunnable::getTimeStamp()
+std::time_t FAgoraCaptureRunnable::getTimeStamp()
 {
 	std::chrono::time_point<std::chrono::system_clock, std::chrono::milliseconds> tp = std::chrono::time_point_cast<std::chrono::milliseconds>(std::chrono::system_clock::now());
 	std::time_t timestamp = tp.time_since_epoch().count();

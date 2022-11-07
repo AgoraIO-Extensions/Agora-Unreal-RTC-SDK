@@ -67,6 +67,7 @@ void UMainAgoraUserWidget::InitLevelArray()
 	LevelArray.Add(FString("StartRtmpStreamWithTranscoding"));
 	LevelArray.Add(FString("CustomCaptureAudio"));
 	LevelArray.Add(FString("CustomCaptureVideo"));
+	LevelArray.Add(FString("CustomRenderAudio"));
 	LevelArray.Add(FString("ProcessAudioRawData"));
 	LevelArray.Add(FString("ProcessVideoRawData"));
 }

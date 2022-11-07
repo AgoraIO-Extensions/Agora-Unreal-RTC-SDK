@@ -13,35 +13,33 @@
 #endif
 #include "Kismet/GameplayStatics.h"
 #include "AudioDevice.h"
-#include <mutex>
-#include "Http.h"
 #include "HAL/Runnable.h"
 #include <chrono>
-#include "CustomCaptureAudioWidget.generated.h"
-
+#include "AgoraSoundWaveProcedural.h"
+#include "CustomRenderAudioWidget.generated.h"
 using namespace agora::rtc;
 using namespace agora::util;
-
 
 /**
  * 
  */
 UCLASS(Abstract)
-class AGORAEXAMPLE_API UCustomCaptureAudioWidget : public UBaseAgoraUserWidget, public agora::rtc::IRtcEngineEventHandler
+class AGORAEXAMPLE_API UCustomRenderAudioWidget : public UBaseAgoraUserWidget, public agora::rtc::IRtcEngineEventHandler
 {
 	GENERATED_BODY()
 public:
-
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
 	UButton* BackHomeBtn = nullptr;
+
+	class UAgoraSoundWaveProcedural* AgoraSoundWaveProcedural;
+
+	class UAudioComponent* AgoraSound;
 
 	void CheckAndroidPermission();
 
 	void JoinChannel();
 
 	void InitAgoraWidget(FString APP_ID, FString TOKEN, FString CHANNEL_NAME) override;
-
-	void SetExternalAudioSource();
 
 	void NativeDestruct() override;
 
@@ -65,38 +63,35 @@ private:
 
 	void InitAgoraEngine(FString APP_ID, FString TOKEN, FString CHANNEL_NAME);
 
-	void DownLoad(FString URL);
-
-	void HandleDownloadRequest(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded);
+	void InitConfig();
 
 	int AudioDataLength;
 
-	void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
+	int SAMPLE_RATE = 44100;
 
-	int SAMPLE_RATE = 48000;
-
-	int CHANNEL = 2;
+	int CHANNEL = 1;
+	
+	int PULL_FREQ_PER_SEC = 100;
 
 	FRunnable* Runnable;
 };
 
-
 #pragma region AgoraThread
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FAgoraOnCompleteSignature);
-
-class FAgoraCaptureRunnable : public FRunnable
+class FAgoraRenderRunnable : public FRunnable
 {
+
 public:
 
-	FAgoraCaptureRunnable(agora::media::IMediaEngine* MediaEngine, const uint8* audioData, int dataLength);
-	virtual ~FAgoraCaptureRunnable();
+	FAgoraRenderRunnable(agora::media::IMediaEngine* MediaEngine, UAgoraSoundWaveProcedural* Soundwaveprocedural);
+
+	virtual ~FAgoraRenderRunnable();
 
 	virtual uint32 Run() override;
 	virtual void Stop() override;
 	virtual void Exit() override;
 
-	FAgoraOnCompleteSignature OnCompleteDelegate;
+	class UAgoraSoundWaveProcedural* AgoraSoundWaveProcedural;
 
 protected:
 
@@ -106,13 +101,9 @@ protected:
 
 	agora::media::IMediaEngine* MediaEngine;
 
-	uint8* audioData;
+	int CHANNEL = 1;
 
-	int dataLength;
-
-	int CHANNEL = 2;
-
-	int SAMPLE_RATE = 48000;
+	int SAMPLE_RATE = 44100;
 
 	int PUSH_FREQ_PER_SEC = 100;
 
@@ -122,6 +113,3 @@ protected:
 };
 
 #pragma endregion
-
-
-
