@@ -26,6 +26,7 @@ int32 UAgoraSoundWaveProcedural::OnGeneratePCMAudio(TArray<uint8>& OutAudio, int
 		return NumSamples;
 	}
 
+
 	OutAudio.Reset();
 
 	OutAudio.AddZeroed(frame.bytesPerSample * frame.samplesPerChannel * frame.channels);

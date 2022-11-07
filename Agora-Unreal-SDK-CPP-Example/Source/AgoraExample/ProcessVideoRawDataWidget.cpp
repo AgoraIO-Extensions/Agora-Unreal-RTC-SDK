@@ -33,6 +33,8 @@ void UProcessVideoRawDataWidget::InitAgoraEngine(FString APP_ID, FString TOKEN, 
 	RtcEngineProxy->queryInterface(AGORA_IID_MEDIA_ENGINE, (void**)&MediaEngine);
 
 	MediaEngine->registerVideoFrameObserver(this);
+
+
 }
 
 void UProcessVideoRawDataWidget::SetUpUIEvent() {

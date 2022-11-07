@@ -13,8 +13,11 @@ void UCustomRenderAudioWidget::InitAgoraWidget(FString APP_ID, FString TOKEN, FS
 
 	InitConfig();
 
-	Runnable = new FAgoraRenderRunnable(MediaEngine, AgoraSoundWaveProcedural);
-	FRunnableThread* RunnableThread = FRunnableThread::Create(Runnable, TEXT("Agora"));
+	if (Runnable == nullptr)
+	{
+		Runnable = new FAgoraRenderRunnable(MediaEngine, AgoraSoundWaveProcedural);
+		FRunnableThread* RunnableThread = FRunnableThread::Create(Runnable, TEXT("Agora"));
+	}
 }
 
 
@@ -147,7 +150,7 @@ uint32 FAgoraRenderRunnable::Run()
 	externalAudioFrame.channels = CHANNEL;
 	externalAudioFrame.buffer = FMemory::Malloc(SAMPLE_RATE / PUSH_FREQ_PER_SEC * agora::rtc::BYTES_PER_SAMPLE::TWO_BYTES_PER_SAMPLE * CHANNEL);
 	externalAudioFrame.renderTimeMs = 10;
-
+	externalAudioFrame.avsync_type = 0;
 	while (!bStopThread)
 	{
 		if (MediaEngine == nullptr)
@@ -165,11 +168,10 @@ uint32 FAgoraRenderRunnable::Run()
 			{
 				AgoraSoundWaveProcedural->AddToFrames(externalAudioFrame);
 			}
-			FMemory::Free(externalAudioFrame.buffer);
 		}
 		FPlatformProcess::Sleep(0.001f);
 	}
-
+	FMemory::Free(externalAudioFrame.buffer);
 	return 0;
 }
 

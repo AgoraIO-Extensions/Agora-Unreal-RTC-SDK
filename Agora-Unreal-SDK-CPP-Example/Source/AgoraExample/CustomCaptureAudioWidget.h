@@ -49,6 +49,8 @@ public:
 
 	void onJoinChannelSuccess(const char* channel, agora::rtc::uid_t uid, int elapsed);
 
+	void StartPushAudio();
+
 private:
 
 	agora::rtc::IRtcEngine* RtcEngineProxy;
@@ -65,13 +67,7 @@ private:
 
 	void InitAgoraEngine(FString APP_ID, FString TOKEN, FString CHANNEL_NAME);
 
-	void DownLoad(FString URL);
-
-	void HandleDownloadRequest(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded);
-
 	int AudioDataLength;
-
-	void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
 	int SAMPLE_RATE = 48000;
 

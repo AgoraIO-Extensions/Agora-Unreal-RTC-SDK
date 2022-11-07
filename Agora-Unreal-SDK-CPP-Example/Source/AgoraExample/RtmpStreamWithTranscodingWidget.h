@@ -15,7 +15,7 @@
 #endif
 #include <iostream>
 #include <string.h>
-#include "AgoraCppPlugin/IAgoraRtcEngine.h"
+#include "AgoraPluginInterface.h"
 #include "RtmpStreamWithTranscodingWidget.generated.h"
 using namespace agora::rtc;
 using namespace agora;
@@ -62,8 +62,6 @@ public:
 	void CheckAndroidPermission();
 
 	void InitAgoraWidget(FString APP_ID, FString TOKEN, FString CHANNEL_NAME) override;
-
-
 
 protected:
 

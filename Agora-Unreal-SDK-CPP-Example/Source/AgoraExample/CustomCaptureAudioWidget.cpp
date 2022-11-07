@@ -14,7 +14,7 @@ void UCustomCaptureAudioWidget::InitAgoraWidget(FString APP_ID, FString TOKEN, F
 
 	JoinChannel();
 
-	DownLoad(FString("http://114.236.93.153:8080/download/audio/audio_pcm.wav"));
+	StartPushAudio();
 }
 
 void UCustomCaptureAudioWidget::SetExternalAudioSource()
@@ -77,6 +77,15 @@ void UCustomCaptureAudioWidget::onJoinChannelSuccess(const char* channel, agora:
 		});
 }
 
+void UCustomCaptureAudioWidget::StartPushAudio()
+{
+	FString LoadDir = FPaths::ProjectContentDir() / TEXT("Audio/Agora.io-Interactions.wav");  //ÎÄ¼þÂ·¾¶
+	TArray<uint8> result;
+	FFileHelper::LoadFileToArray(result, *LoadDir, 0);
+	Runnable = new FAgoraCaptureRunnable(MediaEngine, result.GetData(), result.Num() * sizeof(uint8));
+	FRunnableThread* RunnableThread = FRunnableThread::Create(Runnable, TEXT("Agora"));
+}
+
 void UCustomCaptureAudioWidget::onUserJoined(agora::rtc::uid_t uid, int elapsed)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -104,37 +113,6 @@ void UCustomCaptureAudioWidget::NativeDestruct()
 		RtcEngineProxy = nullptr;
 	}
 }
-
-
-void UCustomCaptureAudioWidget::DownLoad(FString URL) {
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = FHttpModule::Get().CreateRequest();
-	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UCustomCaptureAudioWidget::HandleDownloadRequest);
-	HttpRequest->SetURL(URL);
-	HttpRequest->SetVerb(TEXT("GET"));
-	HttpRequest->ProcessRequest();
-}
-
-void UCustomCaptureAudioWidget::HandleDownloadRequest(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded) {
-	if (!HttpRequest.IsValid() || !HttpResponse.IsValid())
-	{
-		return;
-	}
-	else if (bSucceeded && EHttpResponseCodes::IsOk(HttpResponse->GetResponseCode()))
-	{
-		UE_LOG(LogTemp, Warning, TEXT("UCustomCaptureAudioWidget GetContentLength ====== %d"), HttpResponse->GetContentLength());
-
-		const uint8* AudioData = HttpResponse->GetContent().GetData();
-		Runnable = new FAgoraCaptureRunnable(MediaEngine, AudioData, HttpResponse->GetContentLength());
-		FRunnableThread* RunnableThread = FRunnableThread::Create(Runnable, TEXT("Agora"));
-	}
-}
-
-void UCustomCaptureAudioWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
-{
-	Super::NativeTick(MyGeometry, InDeltaTime);
-}
-
-
 
 #pragma region AgoraThread
 
@@ -170,6 +148,7 @@ uint32 FAgoraCaptureRunnable::Run()
 		if ((toc - tic) >= 10)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("UCustomCaptureAudioWidget TimeStamp ====== %d"), toc - tic);
+
 			if (dataLength != 0)
 			{
 				if (dataLength < 0)
@@ -191,16 +170,11 @@ uint32 FAgoraCaptureRunnable::Run()
 				externalAudioFrame.buffer = (void*)sendByte;
 				externalAudioFrame.renderTimeMs = 10;
 				int ret = MediaEngine->pushAudioFrame(agora::media::AUDIO_PLAYOUT_SOURCE, &externalAudioFrame);
-				UE_LOG(LogTemp, Warning, TEXT("UCustomCaptureAudioWidget pushAudioFrame ====== %d"), ret);
+				//UE_LOG(LogTemp, Warning, TEXT("UCustomCaptureAudioWidget pushAudioFrame ====== %d"), ret);
 				Ptr += SAMPLE_RATE / PUSH_FREQ_PER_SEC * 2 * CHANNEL;
 				dataLength -= SAMPLE_RATE / PUSH_FREQ_PER_SEC * 2 * CHANNEL;
 				tic = toc;
 			}
-			else
-			{
-				tic = toc + 1;
-			}
-
 		}
 		FPlatformProcess::Sleep(0.001f);
 	}
