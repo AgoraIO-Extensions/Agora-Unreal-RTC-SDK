@@ -132,7 +132,7 @@ void UEncryptionSampleWidget::SetEncryption()
 
 	EncryptionConfig config;
 	config.encryptionMode = EncrytionMode;
-	config.encryptionKey = secret;
+	config.encryptionKey = TCHAR_TO_ANSI(*RoomPasswordTextBox->GetText().ToString());
 	FMemory::Memcpy(config.encryptionKdfSalt, deviceName, 32);
 	int ret = RtcEngineProxy->enableEncryption(true, config);
 

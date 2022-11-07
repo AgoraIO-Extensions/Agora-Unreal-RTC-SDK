@@ -162,7 +162,7 @@ void UMediaplayerWidget::OnOpenButtonClick()
 	}
 	else
 	{
-		FString LoadDir = FPaths::ProjectContentDir() / TEXT("Movies/MPK.mp4");  //ÎÄ¼þÂ·¾¶
+		FString LoadDir = FPaths::ProjectContentDir() / TEXT("Movies/MPK.mp4");  
 
 		path = TCHAR_TO_ANSI(*LoadDir);
 	}

@@ -14,6 +14,7 @@
 #endif
 #include <iostream>
 #include <string.h>
+#include "Components/EditableTextBox.h"
 #include "EncryptionSampleWidget.generated.h"
 using namespace agora::rtc;
 using namespace agora;
@@ -39,6 +40,9 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
 	UButton* BackHomeBtn = nullptr;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	UEditableTextBox* RoomPasswordTextBox = nullptr;
 
 	UFUNCTION(BlueprintCallable)
 	void OnLeaveButtonClick();
