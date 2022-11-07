@@ -33,8 +33,6 @@ class AGORAEXAMPLE_API UCustomCaptureVideoScene : public UBaseAgoraUserWidget, p
 	GENERATED_BODY()
 	
 public:
-	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
-	UImage* localVideo = nullptr;
 
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	UButton* BackHomeBtn = nullptr;
@@ -53,9 +51,8 @@ public:
 
 	std::string ChannelName;
 
-	std::mutex VideoPushMutex;
+	FDelegateHandle eventId;
 protected:
-	void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
 	void NativeDestruct();
 

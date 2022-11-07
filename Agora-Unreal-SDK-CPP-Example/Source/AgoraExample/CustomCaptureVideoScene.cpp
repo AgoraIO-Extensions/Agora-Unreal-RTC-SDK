@@ -24,7 +24,7 @@ void UCustomCaptureVideoScene::InitAgoraWidget(FString APP_ID, FString TOKEN, FS
 
 	if (FSlateApplication::IsInitialized())
 	{
-		FSlateApplication::Get().GetRenderer()->OnBackBufferReadyToPresent().AddUObject(this, &UCustomCaptureVideoScene::OnBackBufferReady_RenderThread);
+		eventId = FSlateApplication::Get().GetRenderer()->OnBackBufferReadyToPresent().AddUObject(this, &UCustomCaptureVideoScene::OnBackBufferReady_RenderThread);
 	}
 }
 
@@ -65,33 +65,16 @@ void UCustomCaptureVideoScene::OnBackBufferReady_RenderThread(SWindow& window, c
 	}
 }
 
-void UCustomCaptureVideoScene::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
-{
-	Super::NativeTick(MyGeometry, InDeltaTime);
-}
 
 
 void UCustomCaptureVideoScene::NativeDestruct()
 {
 	Super::NativeConstruct();
+	FSlateApplication::Get().GetRenderer()->OnBackBufferReadyToPresent().Remove(eventId);
 	if (RtcEngineProxy != nullptr)
 	{
-		if (externalVideoFrame != nullptr)
-		{
-			if (externalVideoFrame->buffer != nullptr)
-			{
-				FMemory::Free(externalVideoFrame->buffer);
-				externalVideoFrame->buffer = nullptr;
-			}
-			delete externalVideoFrame;
-			externalVideoFrame = nullptr;
-		}
-		if(MediaEngineManager!=nullptr)
-		{
-			MediaEngineManager->release();
-			MediaEngineManager = nullptr;
-		}
 		RtcEngineProxy->release();
+		delete RtcEngineProxy;
 		RtcEngineProxy = nullptr;
 	}
 }
@@ -166,11 +149,6 @@ void UCustomCaptureVideoScene::NativeConstruct()
 {
 	Super::NativeConstruct();
 
-	if (RtcEngineProxy != nullptr)
-	{
-		RtcEngineProxy->release();
-		delete RtcEngineProxy;
-		RtcEngineProxy = nullptr;
-	}
+
 	externalVideoFrame = nullptr; 
 }
