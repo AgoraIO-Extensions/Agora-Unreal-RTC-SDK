@@ -275,10 +275,6 @@ void USendMultiCameraStreamWidget::onLeaveChannel(const RtcConnection& connectio
 	});
 }
 
-void USendMultiCameraStreamWidget::onClientRoleChanged(const RtcConnection& connection, CLIENT_ROLE_TYPE oldRole, CLIENT_ROLE_TYPE newRole)
-{
-	GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Red, FString::Printf(TEXT("OnClientRoleChanged")));
-}
 
 void USendMultiCameraStreamWidget::onUserJoined(const RtcConnection& connection, uid_t remoteUid, int elapsed)
 {

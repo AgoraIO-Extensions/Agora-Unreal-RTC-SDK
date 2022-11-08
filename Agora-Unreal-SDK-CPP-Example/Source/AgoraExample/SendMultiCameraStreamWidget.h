@@ -76,8 +76,6 @@ public:
 
 	void onLeaveChannel(const RtcConnection& connection, const RtcStats& stats) override;
 
-	void onClientRoleChanged(const RtcConnection& connection, CLIENT_ROLE_TYPE oldRole, CLIENT_ROLE_TYPE newRole) override;
-
 	void onUserJoined(const RtcConnection& connection, uid_t remoteUid, int elapsed) override;
 
 protected:

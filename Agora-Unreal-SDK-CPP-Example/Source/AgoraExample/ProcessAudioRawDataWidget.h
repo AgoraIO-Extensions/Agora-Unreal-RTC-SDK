@@ -60,10 +60,13 @@ public:
 	bool onRecordAudioFrame(const char* channelId, agora::media::IAudioFrameObserverBase::AudioFrame& audioFrame) override;
 	bool onPlaybackAudioFrame(const char* channelId, agora::media::IAudioFrameObserverBase::AudioFrame& audioFrame) override;
 	bool onMixedAudioFrame(const char* channelId, agora::media::IAudioFrameObserverBase::AudioFrame& audioFrame) override;
+	bool onEarMonitoringAudioFrame(AudioFrame& audioFrame) override;
+	AudioParams getEarMonitoringAudioParams() override;
 	int getObservedAudioFramePosition() override;
 	agora::media::IAudioFrameObserverBase::AudioParams getPlaybackAudioParams() override;
 	agora::media::IAudioFrameObserverBase::AudioParams getRecordAudioParams() override;
 	agora::media::IAudioFrameObserverBase::AudioParams getMixedAudioParams() override;
+
 
 private:
 

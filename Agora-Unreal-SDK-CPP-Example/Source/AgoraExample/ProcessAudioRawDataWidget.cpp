@@ -125,27 +125,39 @@ void UProcessAudioRawDataWidget::onUserJoined(const RtcConnection& connection, u
 	});
 }
 
-bool UProcessAudioRawDataWidget::onPlaybackAudioFrameBeforeMixing(const char* channelId,agora::rtc::uid_t uid, agora::media::IAudioFrameObserverBase::AudioFrame& audioFrame)
+
+bool UProcessAudioRawDataWidget::onPlaybackAudioFrameBeforeMixing(const char* channelId, rtc::uid_t uid, AudioFrame& audioFrame)
 {
 	return true;
 }
 
-bool UProcessAudioRawDataWidget::onRecordAudioFrame(const char* channelId, agora::media::IAudioFrameObserverBase::AudioFrame& audioFrame)
+
+bool UProcessAudioRawDataWidget::onRecordAudioFrame(const char* channelId, AudioFrame& audioFrame)
 {
 	return true;
 }
 
-bool UProcessAudioRawDataWidget::onPlaybackAudioFrame(const char* channelId, agora::media::IAudioFrameObserverBase::AudioFrame& audioFrame)
-{
 
+bool UProcessAudioRawDataWidget::onPlaybackAudioFrame(const char* channelId, AudioFrame& audioFrame)
+{
 	AgoraSoundWaveProcedural->AddToFrames(audioFrame);
 
 	return false;
 }
 
-bool UProcessAudioRawDataWidget::onMixedAudioFrame(const char* channelId, agora::media::IAudioFrameObserverBase::AudioFrame& audioFrame)
+bool UProcessAudioRawDataWidget::onMixedAudioFrame(const char* channelId, AudioFrame& audioFrame)
 {
 	return true;
+}
+
+bool UProcessAudioRawDataWidget::onEarMonitoringAudioFrame(AudioFrame& audioFrame)
+{
+	return true;
+}
+
+agora::media::IAudioFrameObserverBase::AudioParams UProcessAudioRawDataWidget::getEarMonitoringAudioParams()
+{
+	return this->audioParams;
 }
 
 int UProcessAudioRawDataWidget::getObservedAudioFramePosition()
@@ -170,7 +182,10 @@ agora::media::IAudioFrameObserverBase::AudioParams UProcessAudioRawDataWidget::g
 {
 	return this->audioParams;
 }
-
+bool agora::media::IAudioFrameObserverBase::onEarMonitoringAudioFrame(AudioFrame& audioFrame)
+{
+	return true;
+}
 
 #pragma endregion RtcEngineCallBack
 
@@ -189,3 +204,5 @@ void UProcessAudioRawDataWidget::NativeDestruct() {
 		RtcEngineProxy = nullptr;
 	}
 }
+
+
