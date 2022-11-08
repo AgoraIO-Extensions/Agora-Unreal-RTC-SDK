@@ -105,6 +105,7 @@ void UProcessVideoRawDataWidget::onLeaveChannel(const agora::rtc::RtcStats& stat
 #pragma endregion RtcEngineCallBack
 
 
+bool bisRelease = false;
 
 
 void UProcessVideoRawDataWidget::NativeDestruct() {
@@ -113,23 +114,27 @@ void UProcessVideoRawDataWidget::NativeDestruct() {
 
 	if (RtcEngineProxy != nullptr)
 	{
+		UE_LOG(LogTemp, Warning, TEXT("UProcessVideoRawDataWidget::NativeDestruct"));
+		if (MediaEngine!=nullptr)
+		{
+			MediaEngine->registerVideoFrameObserver(nullptr);
+		}
 		RtcEngineProxy->release();
 		delete RtcEngineProxy;
 		RtcEngineProxy = nullptr;
-
-		LocalRenderTexture = nullptr;
-		RemoteRenderTexture = nullptr;
 	}
 
 }
+
 
 #pragma region RtcEngineCallBack
 
 bool UProcessVideoRawDataWidget::onCaptureVideoFrame(VideoFrame& videoFrame)
 {
+	UE_LOG(LogTemp, Warning, TEXT("UProcessVideoRawDataWidget::onCaptureVideoFrame"));
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
-		if (LocalRenderTexture == nullptr || !LocalRenderTexture->IsValidLowLevel())
+		if (LocalRenderTexture == nullptr || (LocalRenderTexture!=nullptr&& !LocalRenderTexture->IsValidLowLevel()))
 		{
 			LocalRenderTexture = UTexture2D::CreateTransient(videoFrame.width, videoFrame.height, PF_R8G8B8A8);
 		}
@@ -151,9 +156,10 @@ bool UProcessVideoRawDataWidget::onCaptureVideoFrame(VideoFrame& videoFrame)
 
 bool UProcessVideoRawDataWidget::onRenderVideoFrame(const char* channelId, rtc::uid_t remoteUid, VideoFrame& videoFrame)
 {
+
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
-		if (RemoteRenderTexture == nullptr || !RemoteRenderTexture->IsValidLowLevel())
+		if (RemoteRenderTexture == nullptr || (RemoteRenderTexture != nullptr && !RemoteRenderTexture->IsValidLowLevel()))
 		{
 			RemoteRenderTexture = UTexture2D::CreateTransient(videoFrame.width, videoFrame.height, PF_R8G8B8A8);
 		}

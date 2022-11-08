@@ -72,6 +72,9 @@ void UEncryptionSampleWidget::OnLeaveButtonClick() {
 	UE_LOG(LogTemp, Warning, TEXT("UEncryptionSampleWidget OnLeaveButtonClick ======"));
 
 	RtcEngineProxy->leaveChannel();
+
+	localVideo->SetBrush(EmptyBrush);
+	remoteVideo->SetBrush(EmptyBrush);
 }
 
 #pragma region RtcEngineCallBack
@@ -153,8 +156,6 @@ void UEncryptionSampleWidget::onLeaveChannel(const agora::rtc::RtcStats& stats)
 		{
 			RtcEngineProxy->setupLocalVideo(videoCanvas);
 		}
-		localVideo->SetBrush(EmptyBrush);
-		remoteVideo->SetBrush(EmptyBrush);
 	});
 }
 #pragma endregion RtcEngineCallBack

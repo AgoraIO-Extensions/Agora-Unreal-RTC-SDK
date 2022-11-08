@@ -199,6 +199,10 @@ void UProcessAudioRawDataWidget::NativeDestruct() {
 
 	if (RtcEngineProxy != nullptr)
 	{
+		if (MediaEngine!=nullptr)
+		{
+			MediaEngine->registerAudioFrameObserver(nullptr);
+		}
 		RtcEngineProxy->release();
 		delete RtcEngineProxy;
 		RtcEngineProxy = nullptr;

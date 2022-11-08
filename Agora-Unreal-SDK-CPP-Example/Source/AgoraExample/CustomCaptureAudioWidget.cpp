@@ -72,9 +72,9 @@ void UCustomCaptureAudioWidget::JoinChannel() {
 void UCustomCaptureAudioWidget::onJoinChannelSuccess(const char* channel, agora::rtc::uid_t uid, int elapsed)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Blue, FString::Printf(TEXT("UCustomCaptureAudioWidget::JoinChannelSuccess uid: %u"), uid));
-		});
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Blue, FString::Printf(TEXT("UCustomCaptureAudioWidget::JoinChannelSuccess uid: %u"), uid));
+	});
 }
 
 void UCustomCaptureAudioWidget::StartPushAudio()

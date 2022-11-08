@@ -78,6 +78,8 @@ void UScreenShareWidget::OnLeaveButtonClick() {
 	RtcEngineProxy->stopScreenCapture();
 
 	RtcEngineProxy->leaveChannel();
+
+	LocalVideo->Brush = EmptyBrush;
 }
 
 void UScreenShareWidget::StartScreenShrareClick()
@@ -192,7 +194,6 @@ void UScreenShareWidget::onLeaveChannel(const agora::rtc::RtcStats& stats)
 		{
 			RtcEngineProxy->setupLocalVideo(videoCanvas);
 		}
-		LocalVideo->Brush = EmptyBrush;
 	});
 }
 
