@@ -29,8 +29,35 @@ enum class EINTERFACE_ID_TYPE : uint8 {
 	AGORA_IID_CLOUD_SPATIAL_AUDIO = 10,
 	AGORA_IID_LOCAL_SPATIAL_AUDIO = 11,
 	AGORA_IID_MEDIA_RECORDER = 12,
+	AGORA_IID_STATE_SYNC = 13,
+	AGORA_IID_METACHAT_SERVICE = 14,
+	AGORA_IID_MUSIC_CONTENT_CENTER = 15,
+};
+UENUM(BlueprintType)
+enum class ECOMPRESSION_PREFERENCE : uint8 {
+
+	PREFER_LOW_LATENCY = 0,
+
+	PREFER_QUALITY = 1,
 };
 
+UENUM(BlueprintType)
+enum class EENCODING_PREFERENCE : uint8 {
+
+	PREFER_AUTO = 0,
+
+	PREFER_SOFTWARE = 1,
+
+	PREFER_HARDWARE = 2,
+};
+
+USTRUCT(BlueprintType)
+struct FAdvanceOptions {
+
+	GENERATED_BODY()
+		UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|AdvanceOptions")
+		EENCODING_PREFERENCE encodingPreference = EENCODING_PREFERENCE::PREFER_AUTO;
+};
 USTRUCT(BlueprintType)
 struct FRtcImage
 {
@@ -280,6 +307,25 @@ enum class ESTREAM_FALLBACK_OPTIONS : uint8 {
 	STREAM_FALLBACK_OPTION_VIDEO_STREAM_LOW = 1,
 	STREAM_FALLBACK_OPTION_AUDIO_ONLY = 2,
 };
+UENUM(BlueprintType)
+enum class ELICENSE_ERROR_TYPE : uint8 {
+
+	LICENSE_ERR_NULL = 0,
+
+	LICENSE_ERR_INVALID = 1,
+
+	LICENSE_ERR_EXPIRE = 2,
+
+	LICENSE_ERR_MINUTES_EXCEED = 3,
+
+	LICENSE_ERR_LIMITED_PERIOD = 4,
+
+	LICENSE_ERR_DIFF_DEVICES = 5,
+
+	LICENSE_ERR_INTERNAL = 99,
+};
+
+
 
 UENUM(BlueprintType)
 enum class EAUDIO_SESSION_OPERATION_RESTRICTION : uint8 {
@@ -343,7 +389,25 @@ enum class EAUDIENCE_LATENCY_LEVEL_TYPE : uint8 {
 	AUDIENCE_LATENCY_LEVEL_LOW_LATENCY = 1,
 	AUDIENCE_LATENCY_LEVEL_ULTRA_LOW_LATENCY = 2,
 };
+USTRUCT(BlueprintType)
+struct FLogUploadServerInfo {
 
+	GENERATED_BODY()
+
+	FString serverDomain;
+
+	FString serverPath;
+
+	int serverPort = 0;
+
+	bool serverHttps =true;
+};
+USTRUCT(BlueprintType)
+struct FAdvancedConfigInfo {
+
+	GENERATED_BODY()
+	FLogUploadServerInfo logUploadServer;
+};
 
 UENUM(BlueprintType)
 enum class EVIDEO_CODEC_TYPE : uint8 {
@@ -468,6 +532,8 @@ struct FRtcEngineContext
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RtcEngineContext")
 	int64 context;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RtcEngineContext")
+	FString license;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RtcEngineContext")
 	ECHANNEL_PROFILE_TYPE channelProfile = ECHANNEL_PROFILE_TYPE::CHANNEL_PROFILE_LIVE_BROADCASTING;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RtcEngineContext")
 	EAUDIO_SCENARIO_TYPE audioScenario = EAUDIO_SCENARIO_TYPE::AUDIO_SCENARIO_DEFAULT;
@@ -483,6 +549,20 @@ struct FRtcEngineContext
 	bool useExternalEglContext;
 };
 
+USTRUCT(BlueprintType)
+struct FExtensionInfo {
+
+	GENERATED_BODY();
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ExtensionInfo")
+	EMEDIA_SOURCE_TYPE mediaSourceType = EMEDIA_SOURCE_TYPE::UNKNOWN_MEDIA_SOURCE;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ExtensionInfo")
+	int64 remoteUid = 0;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ExtensionInfo")
+	FString channelId;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ExtensionInfo")
+	int64 localUid = 0;
+};
 USTRUCT(BlueprintType)
 struct FChannelMediaOptions
 {
@@ -661,6 +741,10 @@ struct FVideoEncoderConfiguration
 	EDEGRADATION_PREFERENCE degradationPreference = EDEGRADATION_PREFERENCE::MAINTAIN_QUALITY;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|VideoEncoderConfiguration")
 	EVIDEO_MIRROR_MODE_TYPE mirrorMode = EVIDEO_MIRROR_MODE_TYPE::VIDEO_MIRROR_MODE_DISABLED;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|VideoEncoderConfiguration")
+	ECOMPRESSION_PREFERENCE compressionPreference = ECOMPRESSION_PREFERENCE::PREFER_LOW_LATENCY;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|VideoEncoderConfiguration")
+	FAdvanceOptions advanceOptions;
 };
 
 UENUM(BlueprintType)
@@ -1027,6 +1111,10 @@ struct FSpatialAudioParams
 	AGORAOPTIONAL speaker_attenuationValue;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|SpatialAudioParams")
 	float speaker_attenuation;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|SpatialAudioParams")
+	AGORAOPTIONAL enable_dopplerValue;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|SpatialAudioParams")
+	bool enable_doppler;
 };
 
 USTRUCT(BlueprintType)
@@ -1328,6 +1416,8 @@ struct FLocalTranscoderConfiguration
 	TArray<FTranscodingVideoStream> VideoInputStreams;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LocalTranscoderConfiguration")
 	FVideoEncoderConfiguration videoOutputConfiguration;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LocalTranscoderConfiguration")
+	bool syncWithPrimaryCamera=true;
 };
 
 
@@ -1842,6 +1932,8 @@ enum class ELOCAL_VIDEO_STREAM_ERROR : uint8 {
 	LOCAL_VIDEO_STREAM_ERROR_SCREEN_CAPTURE_WINDOW_CLOSED = 12,
 	LOCAL_VIDEO_STREAM_ERROR_SCREEN_CAPTURE_WINDOW_OCCLUDED = 13,
 	LOCAL_VIDEO_STREAM_ERROR_SCREEN_CAPTURE_WINDOW_NOT_SUPPORTED = 20,
+	LOCAL_VIDEO_STREAM_ERROR_SCREEN_CAPTURE_FAILURE = 21,
+	LOCAL_VIDEO_STREAM_ERROR_SCREEN_CAPTURE_NO_PERMISSION = 22,
 };
 UENUM(BlueprintType)
 enum class EREMOTE_VIDEO_STATE : uint8 {
@@ -2020,6 +2112,8 @@ struct FLocalVideoStats
 	TEnumAsByte<ECAPTURE_BRIGHTNESS_LEVEL_TYPE>  captureBrightnessLevel;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LocalVideoStats")
 	bool dualStreamEnabled;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LocalVideoStats")
+	int hwEncoderAccelerating;
 };
 
 
@@ -2298,6 +2392,17 @@ enum class ECONNECTION_CHANGED_REASON_TYPE : uint8
 	CONNECTION_CHANGED_SAME_UID_LOGIN = 19,
 
 	CONNECTION_CHANGED_TOO_MANY_BROADCASTERS = 20,
+
+	CONNECTION_CHANGED_LICENSE_VERIFY_FAILED = 21,
+};
+UENUM(BlueprintType)
+enum HEADPHONE_EQUALIZER_PRESET {
+
+	HEADPHONE_EQUALIZER_OFF = 0x00000000,
+
+	HEADPHONE_EQUALIZER_OVEREAR = 0x04000001,
+
+	HEADPHONE_EQUALIZER_INEAR = 0x04000002
 };
 
 UENUM(BlueprintType)
@@ -2424,6 +2529,8 @@ struct FRemoteVideoStats {
 	int publishDuration;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RemoteVideoStats")
 	int superResolutionType;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RemoteVideoStats")
+	int mosValue;
 };
 
 USTRUCT(BlueprintType)

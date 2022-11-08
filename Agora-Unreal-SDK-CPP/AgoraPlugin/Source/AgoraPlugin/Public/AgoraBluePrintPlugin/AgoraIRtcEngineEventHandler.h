@@ -72,7 +72,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnRemoteAudioStateChanged, int64,
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnActiveSpeaker, int64, userId);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnContentInspectResult, ECONTENT_INSPECT_RESULT, result);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_FiveParams(FOnSnapshotTaken, int64, uid, FString, filePath, int, width, int, height, int, errCode);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnClientRoleChanged, ECLIENT_ROLE_TYPE, oldRole, ECLIENT_ROLE_TYPE, newRole);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnClientRoleChanged, ECLIENT_ROLE_TYPE, oldRole, ECLIENT_ROLE_TYPE, newRole, FClientRoleOptions,roleoption);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnClientRoleChangeFailed, ECLIENT_ROLE_CHANGE_FAILED_REASON, reason, ECLIENT_ROLE_TYPE, currentRole);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnAudioDeviceVolumeChanged, EMEDIA_DEVICE_TYPE, deviceType, int, volume, bool, muted);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnRtmpStreamingStateChanged, FString, url, ERTMP_STREAM_PUBLISH_STATE, state, ERTMP_STREAM_PUBLISH_ERROR_TYPE, errCode);
@@ -390,8 +390,6 @@ public:
 
 	void onVideoDeviceStateChanged(const char* deviceId, int deviceType, int deviceState) override;
 
-	void onMediaDeviceChanged(int deviceType) override;
-
 	void onNetworkQuality(agora::rtc::uid_t uid, int txQuality, int rxQuality) override;
 
 	void onIntraRequestReceived() override;
@@ -484,7 +482,7 @@ public:
 
 	void onSnapshotTaken(agora::rtc::uid_t uid, const char* filePath, int width, int height, int errCode) override;
 
-	void onClientRoleChanged(agora::rtc::CLIENT_ROLE_TYPE oldRole, agora::rtc::CLIENT_ROLE_TYPE newRole) override;
+	void onClientRoleChanged(agora::rtc::CLIENT_ROLE_TYPE oldRole, agora::rtc::CLIENT_ROLE_TYPE newRole, const agora::rtc::ClientRoleOptions& newRoleOptions) override;
 
 	void onClientRoleChangeFailed(agora::rtc::CLIENT_ROLE_CHANGE_FAILED_REASON reason, agora::rtc::CLIENT_ROLE_TYPE currentRole) override;
 

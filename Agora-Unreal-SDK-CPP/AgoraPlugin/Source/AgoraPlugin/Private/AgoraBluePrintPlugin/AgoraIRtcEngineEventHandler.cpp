@@ -203,14 +203,7 @@ void AIRtcEngineEventHandler::onVideoDeviceStateChanged(const char* deviceId, in
 		OnVideoDeviceStateChanged.Broadcast(FString(deviceId), deviceType, deviceState);
 	});
 }
-void AIRtcEngineEventHandler::onMediaDeviceChanged(int deviceType)
-{
-	AsyncTask(ENamedThreads::GameThread, [=]()
-	{
-		OnMediaDeviceChanged.Broadcast(deviceType);
-	});
 
-}
 void AIRtcEngineEventHandler::onNetworkQuality(agora::rtc::uid_t uid, int txQuality, int rxQuality)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -631,11 +624,13 @@ void AIRtcEngineEventHandler::onSnapshotTaken(agora::rtc::uid_t uid, const char*
 		OnSnapshotTaken.Broadcast((int64)uid, FString(filePath), width, height, errCode);
 	});
 }
-void AIRtcEngineEventHandler::onClientRoleChanged(agora::rtc::CLIENT_ROLE_TYPE oldRole, agora::rtc::CLIENT_ROLE_TYPE newRole)
+void AIRtcEngineEventHandler::onClientRoleChanged(agora::rtc::CLIENT_ROLE_TYPE oldRole, agora::rtc::CLIENT_ROLE_TYPE newRole, const agora::rtc::ClientRoleOptions& newRoleOptions)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
-		OnClientRoleChanged.Broadcast((ECLIENT_ROLE_TYPE)oldRole, (ECLIENT_ROLE_TYPE)newRole);
+		FClientRoleOptions roleoptions;
+		roleoptions.audienceLatencyLevel = (EAUDIENCE_LATENCY_LEVEL_TYPE)newRoleOptions.audienceLatencyLevel;
+		OnClientRoleChanged.Broadcast((ECLIENT_ROLE_TYPE)oldRole, (ECLIENT_ROLE_TYPE)newRole, roleoptions);
 	});
 }
 void AIRtcEngineEventHandler::onClientRoleChangeFailed(agora::rtc::CLIENT_ROLE_CHANGE_FAILED_REASON reason, agora::rtc::CLIENT_ROLE_TYPE currentRole)

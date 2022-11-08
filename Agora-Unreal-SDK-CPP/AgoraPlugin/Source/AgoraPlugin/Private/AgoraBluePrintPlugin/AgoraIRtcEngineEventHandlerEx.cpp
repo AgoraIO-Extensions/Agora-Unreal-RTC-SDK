@@ -555,14 +555,17 @@ void AIRtcEngineEventHandlerEx::onActiveSpeaker(const agora::rtc::RtcConnection&
 		OnActiveSpeakerEx.Broadcast(rtcConnection, (int64)uid);
 	});
 }
-void AIRtcEngineEventHandlerEx::onClientRoleChanged(const agora::rtc::RtcConnection& connection, agora::rtc::CLIENT_ROLE_TYPE oldRole, agora::rtc::CLIENT_ROLE_TYPE newRole)
+void AIRtcEngineEventHandlerEx::onClientRoleChanged(const agora::rtc::RtcConnection& connection, agora::rtc::CLIENT_ROLE_TYPE oldRole, agora::rtc::CLIENT_ROLE_TYPE newRole, const agora::rtc::ClientRoleOptions& newRoleOptions)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
 		FRtcConnection rtcConnection;
 		rtcConnection.channelId=FString(connection.channelId);
 		rtcConnection.localUid=connection.localUid;
-		OnClientRoleChangedEx.Broadcast(rtcConnection, (ECLIENT_ROLE_TYPE)oldRole, (ECLIENT_ROLE_TYPE)newRole);
+
+		FClientRoleOptions options;
+		options.audienceLatencyLevel = (EAUDIENCE_LATENCY_LEVEL_TYPE)newRoleOptions.audienceLatencyLevel;
+		OnClientRoleChangedEx.Broadcast(rtcConnection, (ECLIENT_ROLE_TYPE)oldRole, (ECLIENT_ROLE_TYPE)newRole, options);
 	});
 }
 void AIRtcEngineEventHandlerEx::onClientRoleChangeFailed(const agora::rtc::RtcConnection& connection, agora::rtc::CLIENT_ROLE_CHANGE_FAILED_REASON reason, agora::rtc::CLIENT_ROLE_TYPE currentRole)

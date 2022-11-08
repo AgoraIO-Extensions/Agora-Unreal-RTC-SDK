@@ -21,6 +21,19 @@ bool AIAudioFrameObserver::onPlaybackAudioFrameBeforeMixing(const char* channelI
 	return true;
 }
 
+
+bool AIAudioFrameObserver::onEarMonitoringAudioFrame(AudioFrame& audioFrame)
+{
+	return true;
+}
+
+agora::media::IAudioFrameObserverBase::AudioParams AIAudioFrameObserver::getEarMonitoringAudioParams()
+{
+	AudioParams params;
+
+	return params;
+}
+
 void AIAudioSpectrumObserver::BeginPlay()
 {
 	Super::BeginPlay();
@@ -769,10 +782,7 @@ bool AIAudioFrameObserver::onMixedAudioFrame(const char* channelId, agora::media
 	});
 	return true;
 }
-bool AIAudioFrameObserver::onPlaybackAudioFrameBeforeMixing(const char* channelId,agora::media::base::user_id_t userId, agora::media::IAudioFrameObserverBase::AudioFrame& audioFrame)
-{
-	return true;
-}
+
 int AIAudioFrameObserver::getObservedAudioFramePosition()
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()

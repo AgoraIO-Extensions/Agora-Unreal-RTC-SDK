@@ -185,6 +185,8 @@ struct FEncodedVideoFrameInfo {
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|EncodedVideoFrameInfo")
 	int64 captureTimeMs;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|EncodedVideoFrameInfo")
+	int64 decodeTimeMs;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|EncodedVideoFrameInfo")
 	int64 uid;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|EncodedVideoFrameInfo")
 	EVIDEO_STREAM_TYPE streamType;
@@ -253,8 +255,6 @@ public:
 
 	bool onMixedAudioFrame(const char* channelId, agora::media::IAudioFrameObserverBase::AudioFrame& audioFrame) override;
 
-	bool onPlaybackAudioFrameBeforeMixing(const char* channelId, agora::media::base::user_id_t userId, agora::media::IAudioFrameObserverBase::AudioFrame& audioFrame) override;
-
 	int getObservedAudioFramePosition() override;
 
 	agora::media::IAudioFrameObserverBase::AudioParams getPlaybackAudioParams() override;
@@ -263,7 +263,13 @@ public:
 
 	agora::media::IAudioFrameObserverBase::AudioParams getMixedAudioParams() override;
 
-	bool onPlaybackAudioFrameBeforeMixing(const char* channelId, agora::rtc::uid_t uid, agora::media::IAudioFrameObserverBase::AudioFrame& audioFrame) override;
+
+	bool onPlaybackAudioFrameBeforeMixing(const char* channelId, agora::rtc::uid_t uid, AudioFrame& audioFrame) override;
+
+
+	bool onEarMonitoringAudioFrame(AudioFrame& audioFrame) override;
+
+	AudioParams getEarMonitoringAudioParams() override;
 
 };
 
@@ -287,6 +293,8 @@ public:
 	bool onRemoteAudioSpectrum(const agora::media::UserAudioSpectrumInfo* spectrums, unsigned int spectrumNumber) override;
 
 };
+
+
 
 
 
