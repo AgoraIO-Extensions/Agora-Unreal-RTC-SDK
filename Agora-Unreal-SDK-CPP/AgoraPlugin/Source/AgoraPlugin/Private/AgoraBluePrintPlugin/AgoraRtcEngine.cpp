@@ -3507,7 +3507,7 @@ int AAgoraRtcEngine::StartRtmpStreamWithTranscodingEx(FString url, const FLiveTr
 	std::string ChannelId = TCHAR_TO_ANSI(*connection.channelId);
 	rtcConnection.channelId = ChannelId.c_str();
 	rtcConnection.localUid = connection.localUid;
-	std::string Url = TCHAR_TO_ANSI(*url);
+	std::string streamUrl = TCHAR_TO_ANSI(*url);
 
 	agora::rtc::LiveTranscoding liveTranscoding;
 	liveTranscoding.width = transcoding.width;
@@ -3592,7 +3592,7 @@ int AAgoraRtcEngine::StartRtmpStreamWithTranscodingEx(FString url, const FLiveTr
 	liveTranscoding.advancedFeatures = feature;
 	liveTranscoding.advancedFeatureCount = transcoding.advancedFeatureCount;
 
-	int ret = RtcEngineProxy::startRtmpStreamWithTranscodingEx(Url.c_str(),liveTranscoding, rtcConnection);
+	int ret = RtcEngineProxy::startRtmpStreamWithTranscodingEx(streamUrl.c_str(),liveTranscoding, rtcConnection);
 	delete[] trans;
 	delete[] image;
 	delete[] bgImage;

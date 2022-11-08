@@ -263,9 +263,7 @@ public:
 
 	agora::media::IAudioFrameObserverBase::AudioParams getMixedAudioParams() override;
 
-
 	bool onPlaybackAudioFrameBeforeMixing(const char* channelId, agora::rtc::uid_t uid, AudioFrame& audioFrame) override;
-
 
 	bool onEarMonitoringAudioFrame(AudioFrame& audioFrame) override;
 
