@@ -345,7 +345,7 @@ namespace agora
 				return -ERROR_NULLPTR;
 			}
 
-			int RtcEngineProxy::setAudioProfile(AUDIO_PROFILE_TYPE profile, AUDIO_SCENARIO_TYPE scenario) __deprecated
+			int RtcEngineProxy::setAudioProfile(AUDIO_PROFILE_TYPE profile, AUDIO_SCENARIO_TYPE scenario) 
 			{
 				if (RtcEngine != nullptr) {
 					return RtcEngine->setAudioProfile(profile, scenario);
@@ -389,7 +389,7 @@ namespace agora
 				return -ERROR_NULLPTR;
 			}
 
-			int RtcEngineProxy::setDefaultMuteAllRemoteAudioStreams(bool mute) __deprecated
+			int RtcEngineProxy::setDefaultMuteAllRemoteAudioStreams(bool mute) 
 			{
 				if (RtcEngine != nullptr) {
 					return RtcEngine->setDefaultMuteAllRemoteAudioStreams(mute);
@@ -425,7 +425,7 @@ namespace agora
 				return -ERROR_NULLPTR;
 			}
 
-			int RtcEngineProxy::setDefaultMuteAllRemoteVideoStreams(bool mute) __deprecated
+			int RtcEngineProxy::setDefaultMuteAllRemoteVideoStreams(bool mute) 
 			{
 				if (RtcEngine != nullptr) {
 					return RtcEngine->setDefaultMuteAllRemoteVideoStreams(mute);
@@ -1689,7 +1689,7 @@ namespace agora
 				return -ERROR_NULLPTR;
 			}
 
-			int RtcEngineProxy::setEncryptionMode(char const* encryptionMode) __deprecated
+			int RtcEngineProxy::setEncryptionMode(char const* encryptionMode) 
 			{
 				if (RtcEngine != nullptr) {
 					return RtcEngine->setEncryptionMode(encryptionMode);
@@ -1697,7 +1697,7 @@ namespace agora
 				return -ERROR_NULLPTR;
 			}
 
-			int RtcEngineProxy::setEncryptionSecret(char const* secret) __deprecated
+			int RtcEngineProxy::setEncryptionSecret(char const* secret)
 			{
 				if (RtcEngine != nullptr) {
 					return RtcEngine->setEncryptionSecret(secret);
@@ -1754,7 +1754,7 @@ namespace agora
 				return -ERROR_NULLPTR;
 			}
 
-			int RtcEngineProxy::pauseAudio() __deprecated {
+			int RtcEngineProxy::pauseAudio(){
 				if (RtcEngine != nullptr) {
 					return RtcEngine->pauseAudio();
 				}
@@ -1762,7 +1762,7 @@ namespace agora
 			}
 
 
-			int RtcEngineProxy::resumeAudio() __deprecated {
+			int RtcEngineProxy::resumeAudio(){
 				if (RtcEngine != nullptr) {
 					return RtcEngine->resumeAudio();
 				}
@@ -1770,7 +1770,7 @@ namespace agora
 			}
 
 
-			int RtcEngineProxy::enableWebSdkInteroperability __deprecated(bool enabled) {
+			int RtcEngineProxy::enableWebSdkInteroperability (bool enabled) {
 				if (RtcEngine != nullptr) {
 					return RtcEngine->enableWebSdkInteroperability(enabled);
 				}
