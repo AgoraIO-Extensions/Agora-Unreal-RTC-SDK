@@ -117,11 +117,6 @@ public:
 
 	void InitAgoraWidget(FString APP_ID, FString TOKEN, FString CHANNEL_NAME) override;
 
-
-protected:
-
-	void NativeDestruct() override;
-
 private:
 
 	IRtcEngine* RtcEngineProxy;
@@ -153,6 +148,8 @@ private:
 	void CheckAndroidPermission();
 
 	void InitUI();
+
+	void NativeDestruct() override;
 
 	void onUserJoined(agora::rtc::uid_t uid, int elapsed) override;
 

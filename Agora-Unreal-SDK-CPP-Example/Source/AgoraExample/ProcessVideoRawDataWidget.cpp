@@ -46,7 +46,7 @@ void UProcessVideoRawDataWidget::SetUpUIEvent() {
 
 void UProcessVideoRawDataWidget::OnJoinButtonClick() {
 
-	UE_LOG(LogTemp, Warning, TEXT("UVideoWidget OnJoinButtonClick ======"));
+	UE_LOG(LogTemp, Warning, TEXT("UProcessVideoRawDataWidget OnJoinButtonClick ======"));
 	RtcEngineProxy->enableAudio();
 	RtcEngineProxy->enableVideo();
 	RtcEngineProxy->joinChannel(Token.c_str(), ChannelName.c_str(), "", 0);
@@ -72,11 +72,12 @@ void UProcessVideoRawDataWidget::CheckAndroidPermission()
 }
 
 void UProcessVideoRawDataWidget::OnLeaveButtonClick() {
-	UE_LOG(LogTemp, Warning, TEXT("UVideoWidget OnLeaveButtonClick ======"));
+	UE_LOG(LogTemp, Warning, TEXT("UProcessVideoRawDataWidget OnLeaveButtonClick ======"));
 
+	RtcEngineProxy->leaveChannel();
 	localVideo->SetBrush(EmptyBrush);
 	remoteVideo->SetBrush(EmptyBrush);
-	RtcEngineProxy->leaveChannel();
+
 }
 
 #pragma region RtcEngineCallBack
@@ -86,7 +87,7 @@ void UProcessVideoRawDataWidget::onUserOffline(agora::rtc::uid_t uid, agora::rtc
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
-		UE_LOG(LogTemp, Warning, TEXT("UVideoWidget::onUserOffline  uid: %u"), uid);
+		UE_LOG(LogTemp, Warning, TEXT("UProcessVideoRawDataWidget::onUserOffline  uid: %u"), uid);
 
 		remoteVideo->SetBrush(EmptyBrush);
 	});
@@ -98,7 +99,7 @@ void UProcessVideoRawDataWidget::onLeaveChannel(const agora::rtc::RtcStats& stat
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
-		UE_LOG(LogTemp, Warning, TEXT("UVideoWidget::onLeaveChannel"));
+		UE_LOG(LogTemp, Warning, TEXT("UProcessVideoRawDataWidget::onLeaveChannel"));
 
 	});
 }
@@ -131,10 +132,10 @@ void UProcessVideoRawDataWidget::NativeDestruct() {
 
 bool UProcessVideoRawDataWidget::onCaptureVideoFrame(VideoFrame& videoFrame)
 {
-	UE_LOG(LogTemp, Warning, TEXT("UProcessVideoRawDataWidget::onCaptureVideoFrame"));
+	//UE_LOG(LogTemp, Warning, TEXT("UProcessVideoRawDataWidget::onCaptureVideoFrame"));
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
-		if (LocalRenderTexture == nullptr || (LocalRenderTexture!=nullptr&& !LocalRenderTexture->IsValidLowLevel()))
+		if (LocalRenderTexture == nullptr || !LocalRenderTexture->IsValidLowLevel())
 		{
 			LocalRenderTexture = UTexture2D::CreateTransient(videoFrame.width, videoFrame.height, PF_R8G8B8A8);
 		}
@@ -156,10 +157,9 @@ bool UProcessVideoRawDataWidget::onCaptureVideoFrame(VideoFrame& videoFrame)
 
 bool UProcessVideoRawDataWidget::onRenderVideoFrame(const char* channelId, rtc::uid_t remoteUid, VideoFrame& videoFrame)
 {
-
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
-		if (RemoteRenderTexture == nullptr || (RemoteRenderTexture != nullptr && !RemoteRenderTexture->IsValidLowLevel()))
+		if (RemoteRenderTexture == nullptr || !RemoteRenderTexture->IsValidLowLevel())
 		{
 			RemoteRenderTexture = UTexture2D::CreateTransient(videoFrame.width, videoFrame.height, PF_R8G8B8A8);
 		}

@@ -45,8 +45,6 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget))
 	UComboBoxString* ProfileComboBox = nullptr;
 
-	void CheckAndroidPermission();
-
 	UFUNCTION(BlueprintCallable)
 	void OnJoinButtonClick();
 
@@ -60,16 +58,6 @@ public:
 	void OnConfirmButtonClick();
 
 	void InitAgoraWidget(FString APP_ID, FString TOKEN, FString CHANNEL_NAME) override;
-
-	void NativeDestruct() override;
-
-	void onUserJoined(agora::rtc::uid_t uid, int elapsed) override;
-
-	void InitUI();
-
-	void onJoinChannelSuccess(const char* channel, agora::rtc::uid_t uid, int elapsed);
-
-	void onAudioVolumeIndication(const agora::rtc::AudioVolumeInfo* speakers, unsigned int speakerNumber, int totalVolume) override;
 
 private:
 
@@ -90,4 +78,16 @@ private:
 	TMap<FString, CHANNEL_PROFILE_TYPE> AgoraChannelProfileEnumMap;
 
 	TMap<FString, AUDIO_SCENARIO_TYPE> AgoraAudioScenarioEnumMap;
+
+	void NativeDestruct() override;
+
+	void onUserJoined(agora::rtc::uid_t uid, int elapsed) override;
+
+	void CheckAndroidPermission();
+
+	void InitUI();
+
+	void onJoinChannelSuccess(const char* channel, agora::rtc::uid_t uid, int elapsed);
+
+	void onAudioVolumeIndication(const agora::rtc::AudioVolumeInfo* speakers, unsigned int speakerNumber, int totalVolume) override;
 };
