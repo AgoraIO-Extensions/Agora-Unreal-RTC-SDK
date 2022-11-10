@@ -11,6 +11,8 @@ void UAgoraAudioWidget::InitAgoraWidget(FString APP_ID, FString TOKEN, FString C
 	InitAgoraEngine(APP_ID, TOKEN, CHANNEL_NAME);
 
 	SetUpUIEvent();
+
+	InitUI();
 }
 
 
@@ -36,6 +38,7 @@ void UAgoraAudioWidget::SetUpUIEvent()
 {
 	JoinBtn->OnClicked.AddDynamic(this, &UAgoraAudioWidget::OnJoinButtonClick);
 	LeaveBtn->OnClicked.AddDynamic(this, &UAgoraAudioWidget::OnLeaveButtonClick);
+	ConfirmBtn->OnClicked.AddDynamic(this, &UAgoraAudioWidget::OnConfirmButtonClick);
 	VolumeIndicationBtn->OnClicked.AddDynamic(this, &UAgoraAudioWidget::OnVolumeIndicationClick);
 }
 
@@ -107,6 +110,42 @@ void UAgoraAudioWidget::onUserJoined(agora::rtc::uid_t uid, int elapsed) {
 
 }
 #pragma endregion RtcEngineCallBack
+
+void UAgoraAudioWidget::InitUI()
+{
+
+	ProfileComboBox->AddOption("Broadcaster");
+	ProfileComboBox->AddOption("Audience");
+
+	ProfileComboBox->SetSelectedOption(FString("Broadcaster"));
+
+	ScenarioComboBox->AddOption("DEFAULT");
+	ScenarioComboBox->AddOption("GAME_STREAMING");
+	ScenarioComboBox->AddOption("CHATROOM");
+	ScenarioComboBox->AddOption("CHORUS");
+	ScenarioComboBox->AddOption("MEETING");
+	ScenarioComboBox->AddOption("NUM");
+	ScenarioComboBox->SetSelectedOption(FString("DEFAULT"));
+
+	AgoraChannelProfileEnumMap.Add(FString("Broadcaster"), CHANNEL_PROFILE_TYPE::CHANNEL_PROFILE_LIVE_BROADCASTING);
+	AgoraChannelProfileEnumMap.Add(FString("Audience"), CHANNEL_PROFILE_TYPE::CHANNEL_PROFILE_COMMUNICATION);
+
+	AgoraAudioScenarioEnumMap.Add(FString("DEFAULT"), AUDIO_SCENARIO_TYPE::AUDIO_SCENARIO_DEFAULT);
+	AgoraAudioScenarioEnumMap.Add(FString("GAME_STREAMING"), AUDIO_SCENARIO_TYPE::AUDIO_SCENARIO_GAME_STREAMING);
+	AgoraAudioScenarioEnumMap.Add(FString("CHATROOM"), AUDIO_SCENARIO_TYPE::AUDIO_SCENARIO_CHATROOM);
+	AgoraAudioScenarioEnumMap.Add(FString("CHORUS"), AUDIO_SCENARIO_TYPE::AUDIO_SCENARIO_CHORUS);
+	AgoraAudioScenarioEnumMap.Add(FString("MEETING"), AUDIO_SCENARIO_TYPE::AUDIO_SCENARIO_MEETING);
+	AgoraAudioScenarioEnumMap.Add(FString("NUM"), AUDIO_SCENARIO_TYPE::AUDIO_SCENARIO_NUM);
+}
+
+void UAgoraAudioWidget::OnConfirmButtonClick()
+{
+	int ret = RtcEngineProxy->setChannelProfile(AgoraChannelProfileEnumMap[ProfileComboBox->GetSelectedOption()]);
+	UE_LOG(LogTemp, Warning, TEXT("UVideoWidget setChannelProfile ret: %d ChannelProfile : %s"), ret, *ProfileComboBox->GetSelectedOption());
+
+	ret = RtcEngineProxy->setAudioScenario(AgoraAudioScenarioEnumMap[ScenarioComboBox->GetSelectedOption()]);
+	UE_LOG(LogTemp, Warning, TEXT("UVideoWidget setAudioScenario ret: %d AudioScenario : %s"), ret, *ScenarioComboBox->GetSelectedOption());
+}
 
 void UAgoraAudioWidget::SetButtonClickAble(bool enable) {
 	JoinBtn->SetIsEnabled(enable);

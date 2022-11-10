@@ -158,9 +158,9 @@ uint32 FAgoraCaptureRunnable::Run()
 				}
 				if (sendByte==nullptr)
 				{
-					sendByte = new uint8[SAMPLE_RATE / PUSH_FREQ_PER_SEC * agora::rtc::BYTES_PER_SAMPLE::TWO_BYTES_PER_SAMPLE * CHANNEL];
+					sendByte = FMemory::Malloc(SAMPLE_RATE / PUSH_FREQ_PER_SEC * agora::rtc::BYTES_PER_SAMPLE::TWO_BYTES_PER_SAMPLE * CHANNEL);
 				}
-				FMemory::Memcpy(sendByte, Ptr, SAMPLE_RATE / PUSH_FREQ_PER_SEC * agora::rtc::BYTES_PER_SAMPLE::TWO_BYTES_PER_SAMPLE * CHANNEL *sizeof(uint8));
+				FMemory::Memcpy(sendByte, Ptr, SAMPLE_RATE / PUSH_FREQ_PER_SEC * agora::rtc::BYTES_PER_SAMPLE::TWO_BYTES_PER_SAMPLE * CHANNEL);
 				agora::media::IAudioFrameObserverBase::AudioFrame externalAudioFrame;
 				externalAudioFrame.bytesPerSample = agora::rtc::BYTES_PER_SAMPLE::TWO_BYTES_PER_SAMPLE;
 				externalAudioFrame.type = agora::media::IAudioFrameObserver::FRAME_TYPE_PCM16;
@@ -187,6 +187,7 @@ void FAgoraCaptureRunnable::Stop()
 	sendByte = nullptr;
 
 	bStopThread = true;
+
 }
 
 void FAgoraCaptureRunnable::Exit()
@@ -194,6 +195,8 @@ void FAgoraCaptureRunnable::Exit()
 	sendByte = nullptr;
 
 	bStopThread = true;
+
+	FMemory::Free(sendByte);
 }
 
 std::time_t FAgoraCaptureRunnable::getTimeStamp()

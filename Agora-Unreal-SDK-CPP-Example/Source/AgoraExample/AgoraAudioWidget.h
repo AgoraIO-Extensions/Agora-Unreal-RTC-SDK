@@ -11,8 +11,10 @@
 #if PLATFORM_ANDROID
 #include "AndroidPermission/Classes/AndroidPermissionFunctionLibrary.h"
 #endif
+#include "Components/ComboBoxString.h"
 #include "AgoraAudioWidget.generated.h"
-
+using namespace agora::rtc;
+using namespace agora;
 /**
  * 
  */
@@ -34,6 +36,15 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
 	UButton* BackHomeBtn = nullptr;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	UButton* ConfirmBtn = nullptr;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget))
+	UComboBoxString* ScenarioComboBox = nullptr;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget))
+	UComboBoxString* ProfileComboBox = nullptr;
+
 	void CheckAndroidPermission();
 
 	UFUNCTION(BlueprintCallable)
@@ -45,11 +56,16 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void OnVolumeIndicationClick();
 
+	UFUNCTION(BlueprintCallable)
+	void OnConfirmButtonClick();
+
 	void InitAgoraWidget(FString APP_ID, FString TOKEN, FString CHANNEL_NAME) override;
 
 	void NativeDestruct() override;
 
 	void onUserJoined(agora::rtc::uid_t uid, int elapsed) override;
+
+	void InitUI();
 
 	void onJoinChannelSuccess(const char* channel, agora::rtc::uid_t uid, int elapsed);
 
@@ -70,4 +86,8 @@ private:
 	void InitAgoraEngine(FString APP_ID, FString TOKEN, FString CHANNEL_NAME);
 
 	void SetUpUIEvent();
+
+	TMap<FString, CHANNEL_PROFILE_TYPE> AgoraChannelProfileEnumMap;
+
+	TMap<FString, AUDIO_SCENARIO_TYPE> AgoraAudioScenarioEnumMap;
 };

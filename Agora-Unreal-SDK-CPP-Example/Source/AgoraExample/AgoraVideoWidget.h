@@ -14,9 +14,43 @@
 #endif
 #include <iostream>
 #include <string.h>
+#include "Components/ComboBoxString.h"
+#include "Components/EditableTextBox.h"
 #include "AgoraVideoWidget.generated.h"
 using namespace agora::rtc;
 using namespace agora;
+
+struct UserImageData
+{
+	UImage* image;
+
+	uid_t uid;
+
+	UserImageData(UImage* image, uid_t uid)
+	{
+		this->image = image;
+		this->uid = uid;
+	}
+
+	UserImageData()
+	{
+		this->image = nullptr;
+		this->uid = 0;
+	}
+	bool operator==(const UserImageData& s)
+	{
+		if (this->image == s.image)
+		{
+			if (this->uid == s.uid)
+			{
+				return true;
+			}
+			return false;
+		}
+		return false;
+	}
+};
+
 /**
  * 
  */
@@ -25,9 +59,19 @@ class AGORAEXAMPLE_API UAgoraVideoWidget : public UBaseAgoraUserWidget, public a
 {
 	GENERATED_BODY()
 public:
-
+			
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
-	UImage* remoteVideo = nullptr;
+	UImage* remoteVideoUser1 = nullptr;
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	UImage* remoteVideoUser2 = nullptr;
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	UImage* remoteVideoUser3 = nullptr;
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	UImage* remoteVideoUser4 = nullptr;
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	UImage* remoteVideoUser5 = nullptr;
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	UImage* remoteVideoUser6 = nullptr;
 
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	UImage* localVideo = nullptr;
@@ -38,14 +82,29 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget))
 	UButton* LeaveBtn = nullptr;										
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget))
-	UButton* PreviousBtn = nullptr;										/* If there are multiple remote users, use this button to switch */
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget))
-	UButton* NextBtn = nullptr;											/* If there are multiple remote users, use this button to switch */
-
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
 	UButton* BackHomeBtn = nullptr;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	UButton* ConfirmBtn = nullptr;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget))
+	UComboBoxString* ScenarioComboBox = nullptr;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget))
+	UComboBoxString* ProfileComboBox = nullptr;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget))
+	UComboBoxString* FPSComboBox = nullptr;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	UEditableTextBox* WidthTextBox = nullptr;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	UEditableTextBox* HeightTextBox = nullptr;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	UEditableTextBox* BitRateTextBox = nullptr;
 
 	UFUNCTION(BlueprintCallable)
 	void OnLeaveButtonClick();
@@ -54,16 +113,11 @@ public:
 	void OnJoinButtonClick();
 
 	UFUNCTION(BlueprintCallable)
-	void OnPreviousButtonClick();
-
-	UFUNCTION(BlueprintCallable)
-	void OnNextButtonClick();
-
-	void CheckAndroidPermission();
+	void OnConfirmButtonClick();
 
 	void InitAgoraWidget(FString APP_ID, FString TOKEN, FString CHANNEL_NAME) override;
 
-	void SetResolution(int width, int height);
+
 protected:
 
 	void NativeDestruct() override;
@@ -78,9 +132,17 @@ private:
 
 	std::string ChannelName;
 
-	TArray<unsigned int> RemoteUserIdArray;
+	TArray<UserImageData> NotUseArray;
 
-	unsigned int CurrentRemoteIndex = 0;
+	TArray<UserImageData> UsedArray;
+
+	UserImageData GetUImageNoData(agora::rtc::uid_t uid);
+
+	UserImageData RemoveUImageData(agora::rtc::uid_t uid);
+
+	TMap<FString, CHANNEL_PROFILE_TYPE> AgoraChannelProfileEnumMap;
+
+	TMap<FString, AUDIO_SCENARIO_TYPE> AgoraAudioScenarioEnumMap;
 
 	FSlateBrush EmptyBrush;
 
@@ -88,7 +150,9 @@ private:
 
 	void SetUpUIEvent();
 
-	void SetRemoteView(UImage* remoteview, agora::rtc::uid_t uid);
+	void CheckAndroidPermission();
+
+	void InitUI();
 
 	void onUserJoined(agora::rtc::uid_t uid, int elapsed) override;
 

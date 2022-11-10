@@ -114,7 +114,7 @@ protected:
 
 	std::time_t getTimeStamp();
 
-	uint8* sendByte;
+	void* sendByte;
 };
 
 #pragma endregion
