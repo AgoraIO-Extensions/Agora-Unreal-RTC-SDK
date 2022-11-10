@@ -12,6 +12,10 @@ This is a demo program to show how to call API of Agora Unreal SDK.
 - ScreenShare
 - SendMultiCameraStream
 - SpatialAudio
+- StartRtmpStreamWithTranscoding
+- StreamMessage
+- SetEncryption
+
 
 #### case levels
 
