@@ -107,7 +107,7 @@ bool VideoObserverInternal::getRotationApplied()
 
 bool VideoObserverInternal::getMirrorApplied()
 {
-    return false;
+    return true;
 }
 
 uint32_t VideoObserverInternal::getObservedFramePosition()
