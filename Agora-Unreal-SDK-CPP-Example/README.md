@@ -29,6 +29,14 @@ This project contains different scenes on how to integrate the Agora SDK APIs in
 - ScreenShare
 - SendMultiCameraStream
 - SpatialAudio
+- CustomCaptureAudio
+- CustomCaptureVideo
+- CustomRenderAudio
+- ProcessAudioRawData
+- ProcessVideoRawData
+- SetEncryption
+- StartRtmpStreamWithTranscoding
+- StreamMessage
 
 
 ## Run Project
@@ -54,7 +62,7 @@ Before you can build and run any Agora project, you will need to add your AppID 
 You may run the demos at a high level loader or at any level of the individual API samples.
 **1)  Running at a high level**
 Compile the project and then hit the Play button on the UE Editor.  You should get a main  screen like the following:
-![AgoraExample_-_Unreal_Editor](https://user-images.githubusercontent.com/1261195/186287084-9d462257-93eb-4913-b6fa-cba892de004e.png)
+![AgoraExample_-_Unreal_Editor](https://github.com/AgoraIO-Extensions/Agora-Unreal-RTC-SDK/raw/dev/xidongarrange/ReadmePicture/LevelImage.jpg)
 
 Fill in your App ID, Channel Name and optionally the token if you set up the application with certificate enabled.  You can now press a button to navigate to any of the API sample level.
 
@@ -133,6 +141,14 @@ To add the above permissions to the info.plist, you can enter them in the UE Edi
 
 Finally, you can package the iOS project (*File->Package Project->iOS*).
 
+Also IOS should Add this Code to your target 
+![unrealMacPlugins](https://raw.githubusercontent.com/AgoraIO-Extensions/Agora-Unreal-RTC-SDK/dev/xidongarrange/ReadmePicture/iospackage2.jpg)
+
+On the iOS platform, Unreal Engine uses the built-in Binned memory allocator by default. For related source code, please refer to FApplePlatformMemory::BaseAllocator().
+Here, the global macro definition setting engine uses the standard C memory allocation method on the iOS platform, that is, directly calling malloc, free, realloc and other functions, so as to avoid some abnormal memory release problems when using the TRTC plug-in on the iOS platform;
+
+Regarding the performance difference between Ansi and Binned memory allocation: Binned's optimization of small memory usage is better than that of Ansi, but the overall memory usage will be higher, and the overall performance difference between the two is not obvious on mid-to-high-end iOS devices.
+
 ### Android Packaging
 Build Android via "File -> Package Project -> Android".  Note **ASTC** is a more common target for modern Android devices.
 
@@ -209,9 +225,6 @@ Try deleting the [Binaries] folder in your project
 
 Make sure you have accepted or added "Screen Recording" permission for the App (and the UE Editor) in your Mac Security and Privacy setting.
 
-### Why the value of X Scale is -1 for the UImage in WidgetBlueprint?
-
-This is a trick to do quick mirroring effect.
 
 # Connect With Us
 - If you have any questions, create an issue [here](https://github.com/AgoraIO-Extensions/Agora-Unreal-SDK-CPP-NG/issues).
