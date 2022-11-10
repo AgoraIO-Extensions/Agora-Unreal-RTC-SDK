@@ -67,11 +67,27 @@ void USpatialAudioWidget::OnJoinButtonClick()
 	RtcEngineProxy->joinChannel(TCHAR_TO_ANSI(*Token), TCHAR_TO_ANSI(*ChannelName), "", 0);
 
 	RtcEngineProxy->setClientRole(agora::rtc::CLIENT_ROLE_TYPE::CLIENT_ROLE_BROADCASTER);
+
+
+	agora::rtc::ChannelMediaOptions options;
+	options.autoSubscribeAudio = false;
+	options.autoSubscribeVideo = false;
+	options.publishCameraTrack = false;
+	options.publishMicrophoneTrack = true;
+#if PLATFORM_WINDOWS || PLATFORM_MAC
+	options.publishScreenTrack = false;
+#elif PLATFORM_ANDROID
+	options.publishScreenCaptureAudio = false;
+	options.publishScreenCaptureVideo = false;
+#endif
+	options.enableAudioRecordingOrPlayout = true;
+	options.clientRoleType = agora::rtc::CLIENT_ROLE_TYPE::CLIENT_ROLE_BROADCASTER;
+
+	RtcEngineProxy->updateChannelMediaOptions(options);
 }
 
-
 void USpatialAudioWidget::RightMoveButtonClick()
-{
+{	
 	RemoteVoicePositionInfo remoteVoicePos{ { 0.0f, 1.0f, 0.0f }, { 0.0f, 0.0f, 0.0f } };
 
 	auto ret = LocalSpatialAudioEngine->updateRemotePosition(RemoteUid, remoteVoicePos);
