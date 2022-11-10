@@ -142,6 +142,7 @@ To add the above permissions to the info.plist, you can enter them in the UE Edi
 Finally, you can package the iOS project (*File->Package Project->iOS*).
 
 Also IOS should Add this Code to your target 
+
 ![unrealMacPlugins](https://raw.githubusercontent.com/AgoraIO-Extensions/Agora-Unreal-RTC-SDK/dev/xidongarrange/ReadmePicture/iospackage2.jpg)
 
 On the iOS platform, Unreal Engine uses the built-in Binned memory allocator by default. For related source code, please refer to FApplePlatformMemory::BaseAllocator().
