@@ -54,6 +54,7 @@ Before you can build and run any Agora project, you will need to add your AppID 
 1. Download the SDK and its from [the Release area](https://github.com/AgoraIO-Extensions/Agora-Unreal-RTC-SDK-NG/releases).
 2. Create a folder named *Plugins* in your project's root directory.  
 3. Unzip the SDK files to *Plugins*
+
  ![plugins](https://user-images.githubusercontent.com/1261195/186286865-24d40426-4329-4ba1-b943-2626ce50d1b0.png)
 
 
