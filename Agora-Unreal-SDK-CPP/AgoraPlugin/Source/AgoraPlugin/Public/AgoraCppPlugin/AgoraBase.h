@@ -91,17 +91,6 @@ class JsonWrapper;
 
 typedef commons::cjson::JsonWrapper any_document_t;
 
-namespace base {
-class IEngineBase;
-
-class IParameterEngine {
- public:
-  virtual int setParameters(const char* parameters) = 0;
-  virtual int getParameters(const char* key, any_document_t& result) = 0;
-  virtual ~IParameterEngine() {}
-};
-}  // namespace base
-
 namespace util {
 
 template <class T>
@@ -1627,7 +1616,7 @@ struct EncodedVideoFrameInfo {
 
 };
 /**
-* Video Compression Preference.
+* Video compression preference.
 */
 enum COMPRESSION_PREFERENCE {
   /**
@@ -1662,15 +1651,30 @@ enum ENCODING_PREFERENCE {
  * The definition of the AdvanceOptions struct.
  */
 struct AdvanceOptions {
+
   /**
    * The video encoder type preference..
    */
   ENCODING_PREFERENCE encodingPreference;
-  AdvanceOptions() : encodingPreference(PREFER_AUTO) {}
-  AdvanceOptions(ENCODING_PREFERENCE encoding_preference) : encodingPreference(encoding_preference) {}
+
+  /**
+  * Video compression preference.
+  */
+  COMPRESSION_PREFERENCE compressionPreference;
+
+  AdvanceOptions() : encodingPreference(PREFER_AUTO), 
+                     compressionPreference(PREFER_LOW_LATENCY) {}
+
+  AdvanceOptions(ENCODING_PREFERENCE encoding_preference, 
+                 COMPRESSION_PREFERENCE compression_preference) : 
+                 encodingPreference(encoding_preference),
+                 compressionPreference(compression_preference) {}
+
   bool operator==(const AdvanceOptions& rhs) const {
-    return encodingPreference == rhs.encodingPreference;
+    return encodingPreference == rhs.encodingPreference && 
+           compressionPreference == rhs.compressionPreference;
   }
+
 };
 
 /**
@@ -1792,17 +1796,13 @@ struct VideoEncoderConfiguration {
    * If mirror_type is set to VIDEO_MIRROR_MODE_ENABLED, then the video frame would be mirrored before encoding.
    */
   VIDEO_MIRROR_MODE_TYPE mirrorMode;
-  /**
-   * The video compressionPreference: #compressionPreference.
-   */
-  COMPRESSION_PREFERENCE compressionPreference;
 
   /**
-   * The video encoder hw: #.hardwareEncoding
+   * The advanced options for the video encoder configuration. See AdvanceOptions.
    */
   AdvanceOptions advanceOptions;
 
-  VideoEncoderConfiguration(const VideoDimensions& d, int f, int b, ORIENTATION_MODE m, VIDEO_MIRROR_MODE_TYPE mirror = VIDEO_MIRROR_MODE_DISABLED, COMPRESSION_PREFERENCE compressionPreference = PREFER_LOW_LATENCY)
+  VideoEncoderConfiguration(const VideoDimensions& d, int f, int b, ORIENTATION_MODE m, VIDEO_MIRROR_MODE_TYPE mirror = VIDEO_MIRROR_MODE_DISABLED)
     : codecType(VIDEO_CODEC_H264),
       dimensions(d),
       frameRate(f),
@@ -1811,9 +1811,8 @@ struct VideoEncoderConfiguration {
       orientationMode(m),
       degradationPreference(MAINTAIN_QUALITY),
       mirrorMode(mirror),
-      compressionPreference(compressionPreference),
-      advanceOptions(PREFER_AUTO) {}
-  VideoEncoderConfiguration(int width, int height, int f, int b, ORIENTATION_MODE m, VIDEO_MIRROR_MODE_TYPE mirror = VIDEO_MIRROR_MODE_DISABLED, COMPRESSION_PREFERENCE compressionPreference = PREFER_LOW_LATENCY)
+      advanceOptions(PREFER_AUTO, PREFER_LOW_LATENCY) {}
+  VideoEncoderConfiguration(int width, int height, int f, int b, ORIENTATION_MODE m, VIDEO_MIRROR_MODE_TYPE mirror = VIDEO_MIRROR_MODE_DISABLED)
     : codecType(VIDEO_CODEC_H264),
       dimensions(width, height),
       frameRate(f),
@@ -1822,8 +1821,7 @@ struct VideoEncoderConfiguration {
       orientationMode(m),
       degradationPreference(MAINTAIN_QUALITY),
       mirrorMode(mirror),
-      compressionPreference(compressionPreference),
-      advanceOptions(PREFER_AUTO) {}
+      advanceOptions(PREFER_AUTO, PREFER_LOW_LATENCY) {}
   VideoEncoderConfiguration(const VideoEncoderConfiguration& config)
     : codecType(config.codecType),
       dimensions(config.dimensions),
@@ -1833,7 +1831,6 @@ struct VideoEncoderConfiguration {
       orientationMode(config.orientationMode),
       degradationPreference(config.degradationPreference),
       mirrorMode(config.mirrorMode),
-      compressionPreference(config.compressionPreference),
       advanceOptions(config.advanceOptions) {}
   VideoEncoderConfiguration()
     : codecType(VIDEO_CODEC_H264),
@@ -1844,8 +1841,7 @@ struct VideoEncoderConfiguration {
       orientationMode(ORIENTATION_MODE_ADAPTIVE),
       degradationPreference(MAINTAIN_QUALITY),
       mirrorMode(VIDEO_MIRROR_MODE_DISABLED),
-      compressionPreference(PREFER_LOW_LATENCY),
-      advanceOptions(PREFER_AUTO) {}
+      advanceOptions(PREFER_AUTO, PREFER_LOW_LATENCY) {}
 
   VideoEncoderConfiguration& operator=(const VideoEncoderConfiguration& rhs) {
     if (this == &rhs) return *this;
@@ -1857,7 +1853,6 @@ struct VideoEncoderConfiguration {
     orientationMode = rhs.orientationMode;
     degradationPreference = rhs.degradationPreference;
     mirrorMode = rhs.mirrorMode;
-    compressionPreference = rhs.compressionPreference;
     advanceOptions = rhs.advanceOptions;
     return *this;
   }

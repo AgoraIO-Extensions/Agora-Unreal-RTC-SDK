@@ -6577,8 +6577,8 @@ class IRtcEngine : public agora::base::IEngineBase {
 #if defined(_WIN32) || (defined(__APPLE__) && TARGET_OS_MAC && !TARGET_OS_IPHONE)
   /** Get \ref ScreenCaptureSourceInfo list including available windows and screens.
     *
-    * @param thumbSize Set expected size for thumb, image will be scaled accordingly.
-    * @param iconSize Set expected size for icon, image will be scaled accordingly.
+    * @param thumbSize Set expected size for thumb, image will be scaled accordingly. For windows, SIZE is defined in windef.h.
+    * @param iconSize Set expected size for icon, image will be scaled accordingly. For windows, SIZE is defined in windef.h.
     * @param includeScreen Determines whether to include screens info.
     * - true: sources will have screens info
     * - false: source will only have windows info

@@ -215,9 +215,9 @@ struct MusicContentCenterConfiguration {
      */
     const char *appId;
     /**
-     * music content center need rtmToken to connect with server
+     * music content center need token to connect with server
      */
-    const char *rtmToken;
+    const char *token;
     /**
      * The user ID when using music content center. It can be different from that of the rtc product.
      */
@@ -226,9 +226,9 @@ struct MusicContentCenterConfiguration {
      * event handler to get callback result.
      */
     IMusicContentCenterEventHandler* eventHandler;
-    MusicContentCenterConfiguration():appId(nullptr),rtmToken(nullptr),eventHandler(nullptr),mccUid(0){}
+    MusicContentCenterConfiguration():appId(nullptr),token(nullptr),eventHandler(nullptr),mccUid(0){}
     MusicContentCenterConfiguration(const char*appid,const char* token,int64_t id,IMusicContentCenterEventHandler* handler):
-        appId(appid),rtmToken(token),mccUid(id),eventHandler(handler){}
+        appId(appid),token(token),mccUid(id),eventHandler(handler){}
 };
 
 class IMusicPlayer : public IMediaPlayer {
