@@ -78,7 +78,7 @@ In case you are focusing on one API sample, you may run the individual code the 
 
 
 
-## Making a Build (Project Packaging):
+## Making a Build (Project Packaging)
 
 
 ### Windows Packaging
