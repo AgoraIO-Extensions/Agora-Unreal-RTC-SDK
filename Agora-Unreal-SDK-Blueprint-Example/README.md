@@ -144,7 +144,7 @@ To add the above permissions to the info.plist, you can enter them in the UE Edi
 
 Finally, you can package the iOS project (*File->Package Project->iOS*).
 
-Also IOS should Add this Code to your target 
+Also iOS should add this Code to your target 
 
 ![unrealMacPlugins](../ReadmePicture/iospackage2.jpg)
 
