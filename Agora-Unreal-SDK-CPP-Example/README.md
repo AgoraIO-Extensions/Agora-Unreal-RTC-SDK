@@ -46,6 +46,7 @@ This project contains different scenes on how to integrate the Agora SDK APIs in
 Before you can build and run any Agora project, you will need to add your AppID to the configuration. Go to your  [developer account’s project console](https://console.agora.io/projects), create a new AppId or copy the AppId from an existing project.
 
 **Note**  it is important that for a production ready project, you should always use an AppId with token enabled. However, in testing a demo, you will skip this part. Using a testing mode AppId can save time for POC integration.
+
  ![Test Mode APPID](https://user-images.githubusercontent.com/1261195/110023464-11eb0480-7ce2-11eb-99d6-031af60715ab.png)
 
 ### Integrating the SDK
@@ -53,6 +54,7 @@ Before you can build and run any Agora project, you will need to add your AppID 
 1. Download the SDK and its from [the Release area](https://github.com/AgoraIO-Extensions/Agora-Unreal-RTC-SDK-NG/releases).
 2. Create a folder named *Plugins* in your project's root directory.  
 3. Unzip the SDK files to *Plugins*
+
  ![plugins](https://user-images.githubusercontent.com/1261195/186286865-24d40426-4329-4ba1-b943-2626ce50d1b0.png)
 
 
@@ -62,7 +64,7 @@ Before you can build and run any Agora project, you will need to add your AppID 
 You may run the demos at a high level loader or at any level of the individual API samples.
 **1)  Running at a high level**
 Compile the project and then hit the Play button on the UE Editor.  You should get a main  screen like the following:
-![AgoraExample_-_Unreal_Editor](https://github.com/AgoraIO-Extensions/Agora-Unreal-RTC-SDK/raw/dev/xidongarrange/ReadmePicture/LevelImage.jpg)
+![AgoraExample_-_Unreal_Editor](../ReadmePicture/LevelImage.jpg)
 
 Fill in your App ID, Channel Name and optionally the token if you set up the application with certificate enabled.  You can now press a button to navigate to any of the API sample level.
 
@@ -76,7 +78,7 @@ In case you are focusing on one API sample, you may run the individual code the 
 
 
 
-## Making a Build (Project Packaging):
+## Making a Build (Project Packaging)
 
 
 ### Windows Packaging
@@ -142,10 +144,11 @@ To add the above permissions to the info.plist, you can enter them in the UE Edi
 Finally, you can package the iOS project (*File->Package Project->iOS*).
 
 Also IOS should Add this Code to your target 
-![unrealMacPlugins](https://raw.githubusercontent.com/AgoraIO-Extensions/Agora-Unreal-RTC-SDK/dev/xidongarrange/ReadmePicture/iospackage2.jpg)
+
+![unrealMacPlugins](../ReadmePicture/iospackage2.jpg)
 
 On the iOS platform, Unreal Engine uses the built-in Binned memory allocator by default. For related source code, please refer to FApplePlatformMemory::BaseAllocator().
-Here, the global macro definition setting engine uses the standard C memory allocation method on the iOS platform, that is, directly calling malloc, free, realloc and other functions, so as to avoid some abnormal memory release problems when using the TRTC plug-in on the iOS platform;
+Here, the global macro definition setting engine uses the standard C memory allocation method on the iOS platform, that is, directly calling malloc, free, realloc and other functions, so as to avoid some abnormal memory release problems when using the Agora plug-in on the iOS platform;
 
 Regarding the performance difference between Ansi and Binned memory allocation: Binned's optimization of small memory usage is better than that of Ansi, but the overall memory usage will be higher, and the overall performance difference between the two is not obvious on mid-to-high-end iOS devices.
 
