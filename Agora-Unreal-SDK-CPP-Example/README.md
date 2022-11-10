@@ -146,7 +146,7 @@ Also IOS should Add this Code to your target
 ![unrealMacPlugins](https://raw.githubusercontent.com/AgoraIO-Extensions/Agora-Unreal-RTC-SDK/dev/xidongarrange/ReadmePicture/iospackage2.jpg)
 
 On the iOS platform, Unreal Engine uses the built-in Binned memory allocator by default. For related source code, please refer to FApplePlatformMemory::BaseAllocator().
-Here, the global macro definition setting engine uses the standard C memory allocation method on the iOS platform, that is, directly calling malloc, free, realloc and other functions, so as to avoid some abnormal memory release problems when using the TRTC plug-in on the iOS platform;
+Here, the global macro definition setting engine uses the standard C memory allocation method on the iOS platform, that is, directly calling malloc, free, realloc and other functions, so as to avoid some abnormal memory release problems when using the Agora plug-in on the iOS platform;
 
 Regarding the performance difference between Ansi and Binned memory allocation: Binned's optimization of small memory usage is better than that of Ansi, but the overall memory usage will be higher, and the overall performance difference between the two is not obvious on mid-to-high-end iOS devices.
 
