@@ -8,11 +8,11 @@ buildUtils = new agora.build.BuildUtils()
 compileConfig = [
     "sourceDir": "agora-unreal-sdk-cpp-ng",
     "non-publish": [
-        "command": "./.github/ci/build_examplemac.sh",
+        "command": "./.github/ci/build/build_examplemac.sh",
         "extraArgs": "",
     ],
     "publish": [
-        "command": "./.github/ci/build_examplemac.sh",
+        "command": "./.github/ci/build/build_examplemac.sh",
         "extraArgs": "",
     ]
 ]

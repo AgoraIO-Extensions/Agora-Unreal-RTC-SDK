@@ -8,11 +8,11 @@ buildUtils = new agora.build.BuildUtils()
 compileConfig = [
     "sourceDir": "agora-unreal-sdk-cpp-ng",
     "non-publish": [
-        "command": "./.github/ci/build_exampleWindows.bat",
+        "command": "./.github/ci/build/build_exampleWindows.bat",
         "extraArgs": "",
     ],
     "publish": [
-        "command": "./.github/ci/build_exampleWindows.bat",
+        "command": "./.github/ci/build/build_exampleWindows.bat",
         "extraArgs": "",
     ]
 ]
