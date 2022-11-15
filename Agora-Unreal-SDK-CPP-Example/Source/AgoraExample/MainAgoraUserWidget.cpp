@@ -2,11 +2,16 @@
 
 
 #include "MainAgoraUserWidget.h"
-
+#include "GameFramework/GameUserSettings.h"
 
 void UMainAgoraUserWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
+#if PLATFORM_IOS
+	GEngine->GetGameUserSettings()->SetFullscreenMode(EWindowMode::Windowed);
+	GEngine->GetGameUserSettings()->SetScreenResolution(FIntPoint(1920, 1080));
+	GEngine->GetGameUserSettings()->ApplySettings(true);
+#endif
 
 	if (UAgoraConfig* LoadedGame = Cast<UAgoraConfig>(UGameplayStatics::LoadGameFromSlot(FString("AgoraSave"), 0)))
 	{
