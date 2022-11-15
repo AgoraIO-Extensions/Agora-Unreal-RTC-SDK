@@ -10,7 +10,7 @@ public class AgoraPluginLibrary : ModuleRules
 {
 
     private string soFormatStr = "		<copyFile src=\"$S(PluginDir)/$S(Architecture)/{0}\" dst=\"$S(BuildDir)/libs/$S(Architecture)/{0}\"/>";
-
+    private string soFormatStr1 = "				<loadLibrary name=\"{0}\" failmsg=\"Failed to load {0}\" />";
 
     public AgoraPluginLibrary(ReadOnlyTargetRules Target) : base(Target)
     {
@@ -74,7 +74,8 @@ public class AgoraPluginLibrary : ModuleRules
     {
         string xmlTemplateData = File.ReadAllText(Path.Combine(librarypath, "APL_armv7Template.xml"));
         string[] Architectures = { "armeabi-v7a", "arm64-v8a" };
-        string sopathwrite = "";
+        string sopathwritedependence = "";
+        string sopathwriteCopy = "";
         for (int i = 0; i < Architectures.Length; i++)
         {
             string architecturespath = Path.Combine(librarypath, Architectures[i]);
@@ -83,24 +84,39 @@ public class AgoraPluginLibrary : ModuleRules
             {
                 string filename = fileNames[j];
                 string extension = Path.GetExtension(filename);
+                string fileNameNoExtension = Path.GetFileNameWithoutExtension(filename);
                 if (extension == ".so")
                 {
                     string sopath = string.Format(soFormatStr, filename);
-                    if(!sopathwrite.Contains(sopath))
+                    if(!sopathwritedependence.Contains(sopath))
                     {
-                        sopathwrite += sopath + "\r\n";
+                        sopathwritedependence += sopath + "\r\n";
                     }
-                    PublicAdditionalLibraries.Add(Path.Combine(architecturespath, filename));
-                    Console.WriteLine("PublicAdditionalLibraries " + filename);
+                    string sopath1 = string.Format(soFormatStr1, fileNameNoExtension);
+                    if (!sopathwriteCopy.Contains(sopath1))
+                    {
+                        sopathwriteCopy += sopath1 + "\r\n";
+                    }
+                    if (!filename.Contains("extension"))
+                    {
+                        PublicAdditionalLibraries.Add(Path.Combine(architecturespath, filename));
+                        Console.WriteLine("PublicAdditionalLibraries " + filename);
+                    }
+                    else
+                    {
+                        Console.WriteLine("UnPublicAdditionalLibraries " + filename);
+                    }
+
                 }
             }
         }
-        sopathwrite += "		<copyFile src=\"$S(PluginDir)/agora-rtc-sdk.jar\" dst=\"$S(BuildDir)/libs/agora-rtc-sdk.jar\" />" + "\r\n";
-        sopathwrite += "		<copyFile src=\"$S(PluginDir)/agora-rtc-sdk-javadoc.jar\" dst=\"$S(BuildDir)/libs/agora-rtc-sdk-javadoc.jar\" />" + "\r\n";
-        sopathwrite += "		<copyFile src=\"$S(PluginDir)/AgoraScreenShareExtension.aar\" dst=\"$S(BuildDir)/libs/AgoraScreenShareExtension.aar\" />";
-        xmlTemplateData = xmlTemplateData.Replace("<!-- AgoraInsert -->", sopathwrite);
+        sopathwritedependence += "		<copyFile src=\"$S(PluginDir)/agora-rtc-sdk.jar\" dst=\"$S(BuildDir)/libs/agora-rtc-sdk.jar\" />" + "\r\n";
+        //sopathwrite += "		<copyFile src=\"$S(PluginDir)/agora-rtc-sdk-javadoc.jar\" dst=\"$S(BuildDir)/libs/agora-rtc-sdk-javadoc.jar\" />" + "\r\n";
+        sopathwritedependence += "		<copyFile src=\"$S(PluginDir)/AgoraScreenShareExtension.aar\" dst=\"$S(BuildDir)/libs/AgoraScreenShareExtension.aar\" />";
+        xmlTemplateData = xmlTemplateData.Replace("<!-- AgoraInsertResourceCopies -->", sopathwritedependence);
+        xmlTemplateData = xmlTemplateData.Replace("<!-- AgoraInsertLoadbrary -->", sopathwriteCopy);
         File.WriteAllText(Path.Combine(librarypath, "APL_armv7.xml"), xmlTemplateData);
-        AdditionalPropertiesForReceipt.Add("AndroidPlugin", Path.Combine(librarypath, "APL_armv7.xml"));
+        AdditionalPropertiesForReceipt.Add("AndroidPlugin", Path.Combine(librarypath, "APL_armv7.xml")); 
     }
 
     public void LoadWindowsLibrary(string librarypath)
