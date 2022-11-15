@@ -88,28 +88,28 @@ void UAgoraAudioWidget::OnVolumeIndicationClick()
 void UAgoraAudioWidget::onJoinChannelSuccess(const char* channel, agora::rtc::uid_t uid, int elapsed)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Blue, FString::Printf(TEXT("UAgoraAudioWidget::JoinChannelSuccess uid: %u"), uid));
-		});
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Blue, FString::Printf(TEXT("UAgoraAudioWidget::JoinChannelSuccess uid: %u"), uid));
+	});
 }
 
 void UAgoraAudioWidget::onAudioVolumeIndication(const agora::rtc::AudioVolumeInfo* speakers, unsigned int speakerNumber, int totalVolume)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
+	{
+		for (unsigned int i = 0; i < speakerNumber; i++)
 		{
-			for (unsigned int i = 0; i < speakerNumber; i++)
-			{
-				GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, FString::Printf(TEXT("onAudioVolumeIndication uid:%lld,vad:%d,voicepatch:%d,volume %d,totalvolume:%d"), speakers[i].uid, speakers[i].vad, speakers[i].voicePitch, speakers[i].volume, totalVolume));
-			}
-		});
+			GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, FString::Printf(TEXT("onAudioVolumeIndication uid:%lld,vad:%d,voicepatch:%d,volume %d,totalvolume:%d"), speakers[i].uid, speakers[i].vad, speakers[i].voicePitch, speakers[i].volume, totalVolume));
+		}
+	});
 }
 
 void UAgoraAudioWidget::onUserJoined(agora::rtc::uid_t uid, int elapsed) 
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Blue, FString::Printf(TEXT("UAgoraAudioWidget::onUserJoined uid: %u"), uid));
-		});
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Blue, FString::Printf(TEXT("UAgoraAudioWidget::onUserJoined uid: %u"), uid));
+	});
 
 }
 #pragma endregion RtcEngineCallBack
