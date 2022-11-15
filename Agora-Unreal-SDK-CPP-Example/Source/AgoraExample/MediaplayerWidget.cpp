@@ -266,6 +266,7 @@ void UMediaplayerWidget::NativeDestruct()
 	Super::NativeDestruct();
 	if (RtcEngineProxy != nullptr)
 	{
+		MediaPlayer->unregisterPlayerSourceObserver(handler);
 		RtcEngineProxy->destroyMediaPlayer(MediaPlayer);
 		MediaPlayer.reset();
 		if (handler != nullptr)
@@ -273,6 +274,7 @@ void UMediaplayerWidget::NativeDestruct()
 			delete handler;
 			handler = nullptr;
 		}
+		RtcEngineProxy->unregisterEventHandler(this);
 		RtcEngineProxy->release();
 		delete RtcEngineProxy;
 		RtcEngineProxy = nullptr;

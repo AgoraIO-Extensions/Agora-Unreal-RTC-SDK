@@ -260,6 +260,7 @@ void UScreenShareWidget::NativeDestruct()
 	Super::NativeDestruct();
 	if (RtcEngineProxy!=nullptr)
 	{
+		RtcEngineProxy->unregisterEventHandler(this);
 		RtcEngineProxy->release();
 		delete RtcEngineProxy;
 		RtcEngineProxy = nullptr;

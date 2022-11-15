@@ -203,6 +203,7 @@ void UProcessAudioRawDataWidget::NativeDestruct() {
 		{
 			MediaEngine->registerAudioFrameObserver(nullptr);
 		}
+		((agora::rtc::IRtcEngineEx*)RtcEngineProxy)->unregisterEventHandler(this);
 		RtcEngineProxy->release();
 		delete RtcEngineProxy;
 		RtcEngineProxy = nullptr;

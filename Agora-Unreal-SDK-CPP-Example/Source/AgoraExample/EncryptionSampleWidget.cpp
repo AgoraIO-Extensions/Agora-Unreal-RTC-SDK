@@ -181,6 +181,7 @@ void UEncryptionSampleWidget::NativeDestruct() {
 
 	if (RtcEngineProxy != nullptr)
 	{
+		RtcEngineProxy->unregisterEventHandler(this);
 		RtcEngineProxy->release();
 		delete RtcEngineProxy;
 		RtcEngineProxy = nullptr;

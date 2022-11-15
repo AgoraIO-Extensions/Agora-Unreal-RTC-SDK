@@ -305,6 +305,7 @@ void UJoinMultipleChannelWidget::NativeDestruct()
 
 	if (RtcEngineProxy!=nullptr)
 	{
+		((agora::rtc::IRtcEngineEx*)RtcEngineProxy)->unregisterEventHandler(this);
 #if !PLATFORM_IOS
 		RtcEngineProxy->stopScreenCapture();
 #endif

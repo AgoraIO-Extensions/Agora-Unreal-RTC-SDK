@@ -73,6 +73,7 @@ void UCustomCaptureVideoScene::NativeDestruct()
 	FSlateApplication::Get().GetRenderer()->OnBackBufferReadyToPresent().Remove(eventId);
 	if (RtcEngineProxy != nullptr)
 	{
+		RtcEngineProxy->unregisterEventHandler(this);
 		RtcEngineProxy->release();
 		delete RtcEngineProxy;
 		RtcEngineProxy = nullptr;

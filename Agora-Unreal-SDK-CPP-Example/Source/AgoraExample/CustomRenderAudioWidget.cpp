@@ -115,6 +115,7 @@ void UCustomRenderAudioWidget::NativeDestruct()
 	}
 	if (RtcEngineProxy != nullptr)
 	{
+		RtcEngineProxy->unregisterEventHandler(this);
 		RtcEngineProxy->release();
 		delete RtcEngineProxy;
 		RtcEngineProxy = nullptr;

@@ -120,6 +120,7 @@ void UProcessVideoRawDataWidget::NativeDestruct() {
 		{
 			MediaEngine->registerVideoFrameObserver(nullptr);
 		}
+		RtcEngineProxy->unregisterEventHandler(this);
 		RtcEngineProxy->release();
 		delete RtcEngineProxy;
 		RtcEngineProxy = nullptr;

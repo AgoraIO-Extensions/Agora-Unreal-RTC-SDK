@@ -300,6 +300,7 @@ void USendMultiCameraStreamWidget::NativeDestruct()
 	Super::NativeDestruct();
 	if (RtcEngineProxy != nullptr)
 	{
+		((agora::rtc::IRtcEngineEx*)RtcEngineProxy)->unregisterEventHandler(this);
 		RtcEngineProxy->release();
 		delete RtcEngineProxy;
 		RtcEngineProxy = nullptr;
