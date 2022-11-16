@@ -77,6 +77,7 @@ void UCustomCaptureVideoScene::NativeDestruct()
 		RtcEngineProxy->release();
 		delete RtcEngineProxy;
 		RtcEngineProxy = nullptr;
+		MediaEngineManager = nullptr;
 	}
 }
 

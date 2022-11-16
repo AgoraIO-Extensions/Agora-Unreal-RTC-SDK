@@ -68,7 +68,6 @@ void USpatialAudioWidget::OnJoinButtonClick()
 
 	RtcEngineProxy->setClientRole(agora::rtc::CLIENT_ROLE_TYPE::CLIENT_ROLE_BROADCASTER);
 
-
 	agora::rtc::ChannelMediaOptions options;
 	options.autoSubscribeAudio = false;
 	options.autoSubscribeVideo = false;
