@@ -7,7 +7,7 @@
 void UMainAgoraUserWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
-#if PLATFORM_IOS
+#if PLATFORM_MAC
 	GEngine->GetGameUserSettings()->SetFullscreenMode(EWindowMode::Windowed);
 	GEngine->GetGameUserSettings()->SetScreenResolution(FIntPoint(1920, 1080));
 	GEngine->GetGameUserSettings()->ApplySettings(true);
