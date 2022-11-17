@@ -169,7 +169,7 @@ void URtmpStreamWithTranscodingWidget::onUserJoined(agora::rtc::uid_t uid, int e
 
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
-		UE_LOG(LogTemp, Warning, TEXT("URtmpStreamWithTranscodingWidget::onUserJoined  uid: %u"), uid);
+		UE_LOG(LogTemp, Warning, TEXT("URtmpStreamWithTranscodingWidget::onUserJoined  uid: %d"), (int64)uid);
 		agora::rtc::VideoCanvas videoCanvas;
 		videoCanvas.view = remoteVideo;
 		videoCanvas.uid = uid;
@@ -186,7 +186,7 @@ void URtmpStreamWithTranscodingWidget::onUserOffline(agora::rtc::uid_t uid, agor
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
-		UE_LOG(LogTemp, Warning, TEXT("URtmpStreamWithTranscodingWidget::onUserOffline  uid: %u"), uid);
+		UE_LOG(LogTemp, Warning, TEXT("URtmpStreamWithTranscodingWidget::onUserOffline  uid: %d"), (int64)uid);
 		agora::rtc::VideoCanvas videoCanvas;
 		videoCanvas.view = nullptr;
 		videoCanvas.uid = uid;

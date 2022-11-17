@@ -45,7 +45,7 @@ void USpatialAudioWidget::onJoinChannelSuccess(const char* channel, uid_t uid, i
 	float f2[3] = { 1.0f, 0.0f, 0.0f };
 	float f3[3] = { 0.0f, 1.0f, 0.0f };
 	float f4[3] = { 0.0f, 0.0f, 1.0f };
-	GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Black, FString::Printf(TEXT("OnJoinChannelSuccess channelName: %s, uid: %d, elapsed: %d"), UTF8_TO_TCHAR(channel), uid, elapsed));
+	GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Black, FString::Printf(TEXT("OnJoinChannelSuccess channelName: %s, uid: %d, elapsed: %d"), UTF8_TO_TCHAR(channel), (int64)uid, elapsed));
 	if (LocalSpatialAudioEngine)
 	{
 		LocalSpatialAudioEngine->updateSelfPosition(f1, f2, f3, f4);
@@ -54,7 +54,7 @@ void USpatialAudioWidget::onJoinChannelSuccess(const char* channel, uid_t uid, i
 
 void USpatialAudioWidget::onUserJoined(uid_t uid, int elapsed)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Black, FString::Printf(TEXT("OnUserJoined uid: %d elapsed: %d"), uid, elapsed));
+	GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Black, FString::Printf(TEXT("OnUserJoined uid: %d elapsed: %d"), (int64)uid, elapsed));
 
 	RemoteUid = uid;
 }

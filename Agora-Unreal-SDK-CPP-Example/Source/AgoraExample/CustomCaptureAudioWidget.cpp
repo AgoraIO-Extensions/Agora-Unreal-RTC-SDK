@@ -73,7 +73,7 @@ void UCustomCaptureAudioWidget::onJoinChannelSuccess(const char* channel, agora:
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Blue, FString::Printf(TEXT("UCustomCaptureAudioWidget::JoinChannelSuccess uid: %u"), uid));
+		GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Blue, FString::Printf(TEXT("UCustomCaptureAudioWidget::JoinChannelSuccess uid: %d"), (int64)uid));
 	});
 }
 
@@ -90,7 +90,7 @@ void UCustomCaptureAudioWidget::onUserJoined(agora::rtc::uid_t uid, int elapsed)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Blue, FString::Printf(TEXT("UCustomCaptureAudioWidget::onUserJoined uid: %u"), uid));
+			GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Blue, FString::Printf(TEXT("UCustomCaptureAudioWidget::onUserJoined uid: %d"), (int64)uid));
 		});
 }
 #pragma endregion RtcEngineCallBack

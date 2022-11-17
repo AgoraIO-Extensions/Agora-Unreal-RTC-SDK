@@ -82,7 +82,7 @@ void UEncryptionSampleWidget::onJoinChannelSuccess(const char* channel, agora::r
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
-		UE_LOG(LogTemp, Warning, TEXT("JoinChannelSuccess"));
+		UE_LOG(LogTemp, Warning, TEXT("JoinChannelSuccess uid:%d"), (int64)uid);
 		agora::rtc::VideoCanvas videoCanvas;
 		videoCanvas.view = localVideo;
 		videoCanvas.uid = 0;
@@ -95,7 +95,7 @@ void UEncryptionSampleWidget::onUserJoined(agora::rtc::uid_t uid, int elapsed) {
 
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
-		UE_LOG(LogTemp, Warning, TEXT("UEncryptionSampleWidget::onUserJoined  uid: %u"), uid);
+		UE_LOG(LogTemp, Warning, TEXT("UEncryptionSampleWidget::onUserJoined  uid: %d"), (int64)uid);
 		agora::rtc::VideoCanvas videoCanvas;
 		videoCanvas.view = remoteVideo;
 		videoCanvas.uid = uid;
@@ -112,7 +112,7 @@ void UEncryptionSampleWidget::onUserOffline(agora::rtc::uid_t uid, agora::rtc::U
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
-		UE_LOG(LogTemp, Warning, TEXT("UEncryptionSampleWidget::onUserOffline  uid: %u"), uid);
+		UE_LOG(LogTemp, Warning, TEXT("UEncryptionSampleWidget::onUserOffline  uid: %d"), (int64)uid);
 		agora::rtc::VideoCanvas videoCanvas;
 		videoCanvas.view = nullptr;
 		videoCanvas.uid = uid;

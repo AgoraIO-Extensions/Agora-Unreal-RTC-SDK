@@ -191,7 +191,7 @@ void USendMultiCameraStreamWidget::onUserOffline(const RtcConnection& connection
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Red, FString::Printf(TEXT("OnUserJoined uid: %d, reason: %d"), remoteUid,(int)reason));
+		GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Red, FString::Printf(TEXT("OnUserJoined uid: %d, reason: %d"), (int64)remoteUid,(int)reason));
 
 		if (remoteUid != Uid1 && remoteUid != Uid2)
 		{

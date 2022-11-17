@@ -37,7 +37,7 @@ void UProcessAudioRawDataWidget::InitAgoraEngine(FString APP_ID, FString TOKEN, 
 
 	MediaEngine->registerAudioFrameObserver(this);
 
-	RtcEngineProxy->setPlaybackAudioFrameParameters(SAMPLE_RATE, 1, agora::rtc::RAW_AUDIO_FRAME_OP_MODE_TYPE::RAW_AUDIO_FRAME_OP_MODE_READ_ONLY, 1024);
+	RtcEngineProxy->setPlaybackAudioFrameParameters(SAMPLE_RATE, 1, agora::rtc::RAW_AUDIO_FRAME_OP_MODE_TYPE::RAW_AUDIO_FRAME_OP_MODE_READ_WRITE, 1024);
 }
 
 void UProcessAudioRawDataWidget::InitConfig()
@@ -113,7 +113,7 @@ void UProcessAudioRawDataWidget::onJoinChannelSuccess(const RtcConnection& conne
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Blue, FString::Printf(TEXT("UProcessAudioRawDataWidget::JoinChannelSuccess uid: %u"), connection.localUid));
+		GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Blue, FString::Printf(TEXT("UProcessAudioRawDataWidget::JoinChannelSuccess uid: %d"), (int64)connection.localUid));
 	});
 }
 
@@ -121,7 +121,7 @@ void UProcessAudioRawDataWidget::onUserJoined(const RtcConnection& connection, u
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Blue, FString::Printf(TEXT("UProcessAudioRawDataWidget::onUserJoined uid: %u"), remoteUid));
+		GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Blue, FString::Printf(TEXT("UProcessAudioRawDataWidget::onUserJoined uid: %d"), (int64)remoteUid));
 	});
 }
 

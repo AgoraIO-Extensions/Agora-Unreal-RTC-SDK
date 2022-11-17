@@ -110,7 +110,7 @@ void UStreamMessageWidget::onJoinChannelSuccess(const char* channel, agora::rtc:
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Blue, FString::Printf(TEXT("UStreamMessageWidget::JoinChannelSuccess uid: %u"), uid));
+		GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Blue, FString::Printf(TEXT("UStreamMessageWidget::JoinChannelSuccess uid: %u"), (int64)uid));
 	});
 }
 
@@ -123,7 +123,7 @@ void UStreamMessageWidget::onStreamMessage(uid_t userId, int streamId, const cha
 	delete[] tempdata;
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Blue, FString::Printf(TEXT("UStreamMessageWidget::onStreamMessage uid: %u,streamId %d,data %s,length %d,sentTs %d"), userId,streamId, *FString(UTF8_TO_TCHAR(temp.c_str())),length,sentTs));
+		GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Blue, FString::Printf(TEXT("UStreamMessageWidget::onStreamMessage uid: %u,streamId %d,data %s,length %d,sentTs %d"), (int64)userId, streamId, *FString(UTF8_TO_TCHAR(temp.c_str())),length,sentTs));
 	});
 
 }
@@ -132,7 +132,7 @@ void UStreamMessageWidget::onStreamMessageError(uid_t userId, int streamId, int 
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Blue, FString::Printf(TEXT("UStreamMessageWidget::onStreamMessage uid: %u,streamId %d,code %d,missed %d,cached %d"), userId, streamId, code, missed, cached));
+		GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Blue, FString::Printf(TEXT("UStreamMessageWidget::onStreamMessage uid: %u,streamId %d,code %d,missed %d,cached %d"), (int64)userId, streamId, code, missed, cached));
 	});
 }
 
