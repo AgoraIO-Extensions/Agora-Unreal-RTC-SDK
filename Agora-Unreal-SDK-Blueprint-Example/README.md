@@ -74,9 +74,18 @@ Before you can build and run any Agora project, you will need to add your AppID 
 
  ![plugins](https://user-images.githubusercontent.com/1261195/186286865-24d40426-4329-4ba1-b943-2626ce50d1b0.png)
 
-### Compile and run demo. 
+### Compile and Run the Demo
+You may run the demos at a high level loader or at any level of the individual API samples.
 
-Open any level blueprint, for example Basic/joinChannelAudio/BasicAudioCall/ enter your appid and channelname in the position below.
+**1)  Running at a high level**
+Compile the project and then hit the Play button on the UE Editor.  You should get a main  screen like the following:
+
+![AgoraExample_-_Unreal_Editor](../ReadmePicture/MainLevelPos.png)
+![AgoraExample_-_Unreal_Editor](../ReadmePicture/LevelImage.jpg)
+
+Fill in your App ID, Channel Name and optionally the token if you set up the application with certificate enabled.  You can now press a button to navigate to any of the API sample level.
+
+2)  Open any level blueprint, for example Basic/joinChannelAudio/BasicAudioCall/ enter your appid and channelname in the position below.
   
 ![appid](../ReadmePicture/appidBP.jpg)
 
