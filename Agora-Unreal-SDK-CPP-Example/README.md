@@ -64,6 +64,8 @@ Before you can build and run any Agora project, you will need to add your AppID 
 You may run the demos at a high level loader or at any level of the individual API samples.
 **1)  Running at a high level**
 Compile the project and then hit the Play button on the UE Editor.  You should get a main  screen like the following:
+
+![AgoraExample_-_Unreal_Editor](../ReadmePicture/MainLevelPos.png)
 ![AgoraExample_-_Unreal_Editor](../ReadmePicture/LevelImage.jpg)
 
 Fill in your App ID, Channel Name and optionally the token if you set up the application with certificate enabled.  You can now press a button to navigate to any of the API sample level.
