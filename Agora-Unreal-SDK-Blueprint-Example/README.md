@@ -81,7 +81,7 @@ You may run the demos at a high level loader or at any level of the individual A
 Compile the project and then hit the Play button on the UE Editor.  You should get a main  screen like the following:
 
 ![AgoraExample_-_Unreal_Editor](../ReadmePicture/MainLevelPos.png)
-![AgoraExample_-_Unreal_Editor](../ReadmePicture/LevelImage.jpg)
+![LevelImage](https://user-images.githubusercontent.com/47908151/202615260-35839bad-cd59-4f5e-a3de-4824a35640f1.jpg)
 
 Fill in your App ID, Channel Name and optionally the token if you set up the application with certificate enabled.  You can now press a button to navigate to any of the API sample level.
 
