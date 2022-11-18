@@ -87,7 +87,7 @@ Fill in your App ID, Channel Name and optionally the token if you set up the app
 
 2)  Open any level blueprint, for example Basic/joinChannelAudio/BasicAudioCall/ enter your appid and channelname in the position below.
   
-![appid](../ReadmePicture/appidBP.jpg)
+![code_16613129312915](https://user-images.githubusercontent.com/47908151/202614467-6aa8bd6a-f9e6-4053-ba07-53c5fd2e5c8d.jpg)
 
 ## Making a Build (Project Packaging)
 
