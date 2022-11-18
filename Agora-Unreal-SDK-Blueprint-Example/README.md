@@ -173,24 +173,8 @@ On Android, the following permissions need to be applied.
 
 The API-Examples provides sample code in doing so.  
 
-For instance, in AgoraVideoWidget.cpp, the following function is called to enable the permissions.
-```cpp
-void UAgoraVideoWidget::CheckAndroidPermission()
-{
-#if PLATFORM_ANDROID
-	FString pathfromName = UGameplayStatics::GetPlatformName();
-	if (pathfromName == "Android")
-	{
-		TArray<FString> AndroidPermission;
-		AndroidPermission.Add(FString("android.permission.CAMERA"));
-		AndroidPermission.Add(FString("android.permission.RECORD_AUDIO"));
-		AndroidPermission.Add(FString("android.permission.READ_PHONE_STATE"));
-		AndroidPermission.Add(FString("android.permission.WRITE_EXTERNAL_STORAGE"));
-		UAndroidPermissionFunctionLibrary::AcquirePermissions(AndroidPermission);
-	}
-#endif
-}
-```
+the blueprint function is called to enable the permissions.
+![code_16613129312915](https://user-images.githubusercontent.com/47908151/202613751-0e140839-3446-4d1b-bd56-48c4ceda5de8.jpg)
 
 
 
