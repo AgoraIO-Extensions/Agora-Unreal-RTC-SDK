@@ -12,7 +12,6 @@ void UAgoraVideoWidget::InitAgoraWidget(FString APP_ID, FString TOKEN, FString C
 	SetUpUIEvent();
 
 	InitUI();
-
 }
 
 
@@ -113,7 +112,7 @@ void UAgoraVideoWidget::OnLeaveButtonClick() {
 void UAgoraVideoWidget::onJoinChannelSuccess(const char* channel, agora::rtc::uid_t uid, int elapsed) {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
-		UE_LOG(LogTemp, Warning, TEXT("JoinChannelSuccess uid: %d"), uid);
+		UE_LOG(LogTemp, Warning, TEXT("JoinChannelSuccess uid: %d"), (int64)uid);
 		agora::rtc::VideoCanvas videoCanvas;
 		videoCanvas.view = localVideo;
 		videoCanvas.uid = 0;
@@ -126,7 +125,7 @@ void UAgoraVideoWidget::onUserJoined(agora::rtc::uid_t uid, int elapsed) {
 
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
-		UE_LOG(LogTemp, Warning, TEXT("UVideoWidget::onUserJoined  uid: %d"), uid);
+		UE_LOG(LogTemp, Warning, TEXT("UVideoWidget::onUserJoined  uid: %d"), (int64)uid);
 		UserImageData ImageData = GetUImageNoData(uid);
 		if (ImageData.image ==nullptr)
 		{
