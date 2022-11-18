@@ -140,7 +140,15 @@ int AAgoraRtcEngine::Initialize(FRtcEngineContext& context)
 	rtcEngineContext.context = (void*)context.context;
 	rtcEngineContext.channelProfile = (agora::CHANNEL_PROFILE_TYPE)context.channelProfile;
 	rtcEngineContext.audioScenario = (agora::rtc::AUDIO_SCENARIO_TYPE)context.audioScenario;
-	rtcEngineContext.areaCode = (unsigned int)context.areaCode;
+	if ((unsigned int)context.areaCode == 0)
+	{
+		rtcEngineContext.areaCode = (0xFFFFFFFF);
+	}
+	else
+	{
+		rtcEngineContext.areaCode = (unsigned int)context.areaCode;
+	}
+
 
 	agora::commons::LogConfig log;
 	std::string FilePath = TCHAR_TO_UTF8(*context.logConfig.filePath);
