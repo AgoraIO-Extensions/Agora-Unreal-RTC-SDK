@@ -95,7 +95,7 @@ Fill in your App ID, Channel Name and optionally the token if you set up the app
 
 File->Package Project->Windows->Windows(64-bit)
 
-![Windowspackages](../ReadmePicture/windowspackage.jpg)
+![windowspackage](https://user-images.githubusercontent.com/47908151/202615706-41df9c3e-0463-43eb-8fef-a8d154745976.jpg)
 
 #### 32bit Windows
 Since UE5 does not support 32-bit Windows, our plugin leave out the 32-bit implementation by default; otherwise, the compilation will result in error for UE5.  If you want to use the 32-bit build in UE4, please uncomment the win32 related code in AgoraPluginLibrary.Build.cs.  See this screenshot:
