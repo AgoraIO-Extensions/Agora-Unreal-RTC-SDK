@@ -155,7 +155,7 @@ Finally, you can package the iOS project (*File->Package Project->iOS*).
 
 Also iOS should add this Code to your target 
 
-![unrealMacPlugins](../ReadmePicture/iospackage2.jpg)
+![iospackage2](https://user-images.githubusercontent.com/47908151/202614986-e641ac9b-de6a-40a6-b4e3-517651899c0a.jpg)
 
 On the iOS platform, Unreal Engine uses the built-in Binned memory allocator by default. For related source code, please refer to FApplePlatformMemory::BaseAllocator().
 Here, the global macro definition setting engine uses the standard C memory allocation method on the iOS platform, that is, directly calling malloc, free, realloc and other functions, so as to avoid some abnormal memory release problems when using the Agora plug-in on the iOS platform;
