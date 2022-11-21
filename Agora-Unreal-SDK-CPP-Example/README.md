@@ -4,9 +4,9 @@
 This project contains different scenes on how to integrate the Agora SDK APIs into your project.  You may run the project from the high level or go into a particular level to experience a single API example.
 
 ## Prerequisites
- 1. Agora Developer Account
- 2. Unreal Engine 4.27 or above (including UE5)
- 3. Platform support
+- An Agora [account](https://docs.agora.io/en/video-calling/reference/manage-agora-account#create-an-agora-account) and [project](https://docs.agora.io/en/video-calling/reference/manage-agora-account#create-an-agora-project).
+- Unreal Engine 4.27 or above (including UE5)
+- Platform support
 
 | Platform | IDE  | OS | Architecture|Note|
 |--|--|--|--|--|
@@ -29,58 +29,56 @@ This project contains different scenes on how to integrate the Agora SDK APIs in
 - ScreenShare
 - SendMultiCameraStream
 - SpatialAudio
-- CustomCaptureAudio
-- CustomCaptureVideo
-- CustomRenderAudio
-- ProcessAudioRawData
-- ProcessVideoRawData
-- SetEncryption
-- StartRtmpStreamWithTranscoding
-- StreamMessage
 
 
-## Run Project
+## Project setup
 
-### Obtain an App ID
+### Get the App ID
 
-Before you can build and run any Agora project, you will need to add your AppID to the configuration. Go to your  [developer account’s project console](https://console.agora.io/projects), create a new AppId or copy the AppId from an existing project.
+Before you build and run your project, you need to get the App ID. To copy this App ID, find your project on the [Project Management](https://console.agora.io/projects) page in Agora Console, and click the copy icon in the App ID column.
 
-**Note**  it is important that for a production ready project, you should always use an AppId with token enabled. However, in testing a demo, you will skip this part. Using a testing mode AppId can save time for POC integration.
+Get the App Certificate
+When generating a token on your app server, you need to fill in parameters such as the App ID, channel name, user ID, and App Certificate.
 
- ![Test Mode APPID](https://user-images.githubusercontent.com/1261195/110023464-11eb0480-7ce2-11eb-99d6-031af60715ab.png)
+To get an App Certificate, do the following:  
 
+1. On the [Project Management](https://console.agora.io/projects) page, click **Config** for the project you want to use.  
+2. Click the copy icon under Primary Certificate.   
+	
+### Generate a temporary token
+When a user attempts to join a channel, your app passes an encrypted authentication token to Agora SD-RTN™. This token is unique for each channel. It is generated using the App ID of your project and the channel name. In a test or production environment, your app retrieves the token from a token server. However, for local testing, you can generate a temporary token in Agora Console.
+
+1. In Agora Console, open [Project Management](https://console.agora.io/projects), select your project, and click **Config**.  
+2. Under Features, click **Generate temp Video SDK token**.  
+3. Type the channel name, then click **Generate**.  
+   Agora Console generates a token valid to join that channel only.
+4. Click Copy.  
+   The temporary token is added to the clipboard of your development machine.
+
+	
 ### Integrating the SDK
 
-1. Download the SDK and its from [the Release area](https://github.com/AgoraIO-Extensions/Agora-Unreal-RTC-SDK-NG/releases).
-2. Create a folder named *Plugins* in your project's root directory.  
+1. Download the [SDK](https://github.com/AgoraIO-Extensions/Agora-Unreal-RTC-SDK-NG/releases).  
+2. Create a folder named Plugins in the root directory of your project.  
 3. Unzip the SDK files to *Plugins*
 
  ![plugins](https://user-images.githubusercontent.com/1261195/186286865-24d40426-4329-4ba1-b943-2626ce50d1b0.png)
 
 
+### Compile and Run the Demo  
+1.Compile and run the project in the main level, and then click the Play button on the UE Editor. You see the main screen as shown in the following image:
 
+![AgoraExample_-_Unreal_Editor](https://user-images.githubusercontent.com/1261195/186287084-9d462257-93eb-4913-b6fa-cba892de004e.png)
 
-### Compile and Run the Demo
-You may run the demos at a high level loader or at any level of the individual API samples.
-**1)  Running at a high level**
-Compile the project and then hit the Play button on the UE Editor.  You should get a main  screen like the following:
-
-![MainLevelPos](https://user-images.githubusercontent.com/47908151/202615511-b4ad613d-1bc8-45bf-b149-fdb00133adff.png)
-![LevelImage](https://user-images.githubusercontent.com/47908151/202615260-35839bad-cd59-4f5e-a3de-4824a35640f1.jpg)
-
-Fill in your App ID, Channel Name and optionally the token if you set up the application with certificate enabled.  You can now press a button to navigate to any of the API sample level.
-
-**2) Running at individual level**
-In case you are focusing on one API sample, you may run the individual code the following way, using *Basic/joinChannelAudio/BasicAudioCall/* as an example:
-	- Find a blueprint named **BP_Agoractor** in the **WorldOutliner**
-	- enter your AppID and Channel Name in the position below
+Fill in your App ID, channel name, and token (optional). You can now click a button on the left to navigate to a particular level of the API examples.  
+2.Run in a particular level if you want experience an API example. Take *Basic/joinChannelAudio/BasicAudioCall/* as an example:
+ 1. Find a blueprint named BP_Agoractor in the World outliner.
+ 2. Fill in your App ID and channel name below the BP_Agoractor.
 
 ![Sample-PlayAudio](https://user-images.githubusercontent.com/1261195/186288166-50bb7c3f-66e2-4b88-a0de-df2ab2ac19af.gif)
 
+## Project Packaging
 
-
-
-## Making a Build (Project Packaging)
 
 
 ### Windows Packaging
