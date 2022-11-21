@@ -75,6 +75,7 @@ When a user attempts to join a channel, your app passes an encrypted authenticat
 
 ### Compile and run the demo
 You can run the demos in a main level or in any level of the API examples.  
+![MainLevelPos](https://user-images.githubusercontent.com/47908151/202615511-b4ad613d-1bc8-45bf-b149-fdb00133adff.png)
 1.Compile and run the project in the main level, and then click the Play button on the UE Editor. You see the main screen as shown in the following image:
 
 ![AgoraExample_-_Unreal_Editor](https://user-images.githubusercontent.com/1261195/186287084-9d462257-93eb-4913-b6fa-cba892de004e.png)
