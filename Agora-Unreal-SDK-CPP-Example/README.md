@@ -84,7 +84,7 @@ Fill in your App ID, channel name, and token (optional). You can now click a but
  1. Find a blueprint named BP_Agoractor in the World outliner.
  2. Fill in your App ID and channel name below the BP_Agoractor.
 
-![Sample-PlayAudio](https://user-images.githubusercontent.com/1261195/186288166-50bb7c3f-66e2-4b88-a0de-df2ab2ac19af.gif)
+![Sample-PlayAudio](https://user-images.githubusercontent.com/47908151/202999790-cfe614c8-9b6e-4550-8741-0ac4be26a171.gif)
 
 ## Project Packaging
 
