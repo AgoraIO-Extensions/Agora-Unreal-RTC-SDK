@@ -1,20 +1,20 @@
 # Agora Unreal C++ SDK API-Example
 ## Overview
 
-This project contains different scenes on how to integrate the Agora SDK APIs into your project.  You may run the project from the high level or go into a particular level to experience a single API example.
+This project contains different ways for integrating the Agora Unreal SDK APIs into your project. You can run the project in the main level to experience the major features or in a particular level to experience a specific API example.
 
 ## Prerequisites
 - An Agora [account](https://docs.agora.io/en/video-calling/reference/manage-agora-account#create-an-agora-account) and [project](https://docs.agora.io/en/video-calling/reference/manage-agora-account#create-an-agora-project).
-- Unreal Engine 4.27 or above (including UE5)
-- Platform support
+- Unreal Engine 4.27 or later (including UE5)
+- The supported platforms and their requirements are as follows:
 
 | Platform | IDE  | OS | Architecture|Note|
 |--|--|--|--|--|
-|  Android|  Android Studio 3.5.3 or above| [see Unreal Android requirement](https://docs.unrealengine.com/4.27/en-US/SharingAndReleasing/Mobile/Android/AndroidSDKRequirements/)|arm64-v8a, arneabi-v7a|Real devices only (not working on emulators); NDK version 21
-|iOS|XCode 11.0 or above|[see Unreal IOS requirement](https://docs.unrealengine.com/4.27/en-US/SharingAndReleasing/Mobile/iOS/DeviceCompatibility/)|--|Valid Apple developer signature required
-|MacOS|XCode 11.0 or above|OS X 10.11 or above|Intel, M1|same as above
-|Windows 64bit|Visual Studio 2019|Windows 7 SP1 or above|Intel|Disk space: at least 1.64 GB of space after the IDE and relevant tools are installed
-|Windows 32bit|Visual Studio 2019|Windows 7 SP1 or above|Intel|Unreal5 does not support it, so it is disabled by default in AgoraPluginLibrary.Build.cs, if you want to use, please uncomment it|
+|  Android|  Android Studio 3.5.3 or above| see [the Unreal Engine Android Development Requirements.](https://docs.unrealengine.com/4.27/en-US/SharingAndReleasing/Mobile/Android/AndroidSDKRequirements/)|arm64-v8a, arneabi-v7a|Real devices only (not working on emulators); NDK version 21
+|iOS|XCode 11.0 or above|see [the Unreal Engine iOS and tvOS Development Requirements.](https://docs.unrealengine.com/4.27/en-US/SharingAndReleasing/Mobile/iOS/DeviceCompatibility/)|--|Valid Apple developer signature required
+|MacOS|XCode 11.0 or above|OS X 10.11 or above|Intel, M1|A valid Apple developer signature.
+|Windows (64bit)|Visual Studio 2019|Windows 7 SP1 or above|Intel|At least 1.65 GB of disk space after the IDE and relevant tools are installed.
+|Windows (32bit)|Visual Studio 2019|Windows 7 SP1 or above|Intel|Unreal5 does not support it, so it is disabled by default in AgoraPluginLibrary.Build.cs, if you want to use, please uncomment it|
 
 
 ## Example Case
@@ -45,7 +45,7 @@ This project contains different scenes on how to integrate the Agora SDK APIs in
 
 Before you build and run your project, you need to get the App ID. To copy this App ID, find your project on the [Project Management](https://console.agora.io/projects) page in Agora Console, and click the copy icon in the App ID column.
 
-Get the App Certificate
+###Get the App Certificate
 When generating a token on your app server, you need to fill in parameters such as the App ID, channel name, user ID, and App Certificate.
 
 To get an App Certificate, do the following:  
@@ -68,12 +68,13 @@ When a user attempts to join a channel, your app passes an encrypted authenticat
 
 1. Download the [SDK](https://github.com/AgoraIO-Extensions/Agora-Unreal-RTC-SDK-NG/releases).  
 2. Create a folder named Plugins in the root directory of your project.  
-3. Unzip the SDK files to *Plugins*
+3. Unzip the SDK files to *Plugins* folder
 
  ![plugins](https://user-images.githubusercontent.com/1261195/186286865-24d40426-4329-4ba1-b943-2626ce50d1b0.png)
 
 
-### Compile and Run the Demo  
+### Compile and run the demo
+You can run the demos in a main level or in any level of the API examples.  
 1.Compile and run the project in the main level, and then click the Play button on the UE Editor. You see the main screen as shown in the following image:
 
 ![AgoraExample_-_Unreal_Editor](https://user-images.githubusercontent.com/1261195/186287084-9d462257-93eb-4913-b6fa-cba892de004e.png)
@@ -87,11 +88,9 @@ Fill in your App ID, channel name, and token (optional). You can now click a but
 
 ## Project Packaging
 
-
-
 ### Windows Packaging
 
-File->Package Project->Windows->Windows(64-bit)
+Click File > Package Project > Windows > Windows(64-bit).
 
 ![windowspackage](https://user-images.githubusercontent.com/47908151/202615706-41df9c3e-0463-43eb-8fef-a8d154745976.jpg)
 
@@ -105,11 +104,11 @@ Since UE5 does not support 32-bit Windows, the Agora plugin omits the 32-bit imp
 
 2. Add device permissions to plist.info
 
-	a. Right click the compiled xxx.app File - select "Show Package Contents"
+	a. Right click the compiled xxx.app file, and select **Show Package Contents**.
 
 ![contextMenu_and_MacNoEditor](https://user-images.githubusercontent.com/1261195/186290440-ab80de0e-b87c-4a3a-a589-cc68960b6397.png)
 
-b. Edit Contents/Info.plist (Double-click to open it in XCode,  then see Step 3 next; or Step 3b if using your favorite text editor).
+        b. Edit Contents/Info.plist (Double-click to open it in XCode,  then see Step 3 next; or Step 3b if using your favorite text editor).
 
 3. Add permissions.
 
