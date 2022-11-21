@@ -1,23 +1,23 @@
 # API-Blueprint-Example
 ## Overview
 
-This project contains different scenes on how to integrate the Agora SDK APIs into your project.  You may run the project from the high level or go into a particular level to experience a single API example.
+This project contains different ways for integrating the Agora Unreal SDK APIs into your project. You can run the project in the main level to experience the major features or in a particular level to experience a specific API example.
 
 ## Prerequisites
- 1. Agora Developer Account
- 2. Unreal Engine 4.27 or above (including UE5)
- 3. Platform support
+- An Agora [account](https://docs.agora.io/en/video-calling/reference/manage-agora-account#create-an-agora-account) and [project](https://docs.agora.io/en/video-calling/reference/manage-agora-account#create-an-agora-project).
+- Unreal Engine 4.27 or later (including UE5)
+- The supported platforms and their requirements are as follows:
 
 | Platform | IDE  | OS | Architecture|Note|
 |--|--|--|--|--|
-|  Android|  Android Studio 3.5.3 or above| [see Unreal Android requirement](https://docs.unrealengine.com/4.27/en-US/SharingAndReleasing/Mobile/Android/AndroidSDKRequirements/)|arm64-v8a, arneabi-v7a|Real devices only (not working on emulators); NDK version 21
-|iOS|XCode 11.0 or above|[see Unreal IOS requirement](https://docs.unrealengine.com/4.27/en-US/SharingAndReleasing/Mobile/iOS/DeviceCompatibility/)|--|Valid Apple developer signature required
-|MacOS|XCode 11.0 or above|OS X 10.11 or above|Intel, M1|same as above
-|Windows 64bit|Visual Studio 2019|Windows 7 SP1 or above|Intel|Disk space: at least 1.64 GB of space after the IDE and relevant tools are installed
-|Windows 32bit|Visual Studio 2019|Windows 7 SP1 or above|Intel|Unreal5 does not support it, so it is disabled by default in AgoraPluginLibrary.Build.cs, if you want to use, please uncomment it|
+|  Android|  Android Studio 3.5.3 or above| see [the Unreal Engine Android Development Requirements.](https://docs.unrealengine.com/4.27/en-US/SharingAndReleasing/Mobile/Android/AndroidSDKRequirements/)|arm64-v8a, arneabi-v7a|Real devices only (not working on emulators); NDK version 21
+|iOS|XCode 11.0 or above|see [the Unreal Engine iOS and tvOS Development Requirements.](https://docs.unrealengine.com/4.27/en-US/SharingAndReleasing/Mobile/iOS/DeviceCompatibility/)|--|A valid Apple developer signature.
+|MacOS|XCode 11.0 or above|OS X 10.11 or above|Intel, M1|A valid Apple developer signature.
+|Windows (64bit)|Visual Studio 2019|Windows 7 SP1 or above|Intel|At least 1.65 GB of disk space after the IDE and relevant tools are installed.
+|Windows (32bit)|Visual Studio 2019|Windows 7 SP1 or above|Intel|Unreal Engine 5 (UE5) is not supported on 32-bit Windows. If you want to use Unreal Engine 4 (UE4) with 32-bit Windows, uncomment the code relating to Win32 in the *AgoraPluginLibrary.Build.cs* file.
 
 
-## Example Case
+## Case examples
 
 ### Basic Case
 - JoinChannelAudio
@@ -39,53 +39,51 @@ This project contains different scenes on how to integrate the Agora SDK APIs in
 - ProcessVideoRawData(case only cpp)
 
 
+## Project setup
 
-## Environment Requirements
-- Unreal Engine 4.27.2 or above (Contain Unreal5)
-- **Developing for Android:**
-  - Android Studio 3.5.3 or above
-  - Visual Studio 2017 15.6 or above
-  - A real device for testing
-- **Developing for iOS and macOS:**
-  - Xcode 11.0 or above
-  - OS X 10.11 or above
-  - A valid developer signature for your project
-- **Developing for Windows:**
-    - OS: Windows 7 SP1 or above (64-bit based on x86-64)
-    - Disk space: at least 1.64 GB of space after the IDE and relevant tools are installed
-    - [Visual Studio 2019](https://visualstudio.microsoft.com/zh-hans/downloads/)
+### Get the App ID
 
+Before you build and run your project, you need to get the App ID. To copy this App ID, find your project on the [Project Management](https://console.agora.io/projects) page in Agora Console, and click the copy icon in the App ID column.
 
-## Run Project
+### Get the App Certificate
+When generating a token on your app server, you need to fill in parameters such as the App ID, channel name, user ID, and App Certificate.
 
-### Obtain an App ID
+To get an App Certificate, do the following:  
 
-Before you can build and run any Agora project, you will need to add your AppID to the configuration. Go to your  [developer account’s project console](https://console.agora.io/projects), create a new AppId or copy the AppId from an existing project.
+1. On the [Project Management](https://console.agora.io/projects) page, click **Config** for the project you want to use.  
+2. Click the copy icon under Primary Certificate.   
+	
+### Generate a temporary token
+When a user attempts to join a channel, your app passes an encrypted authentication token to Agora SD-RTN™. This token is unique for each channel. It is generated using the App ID of your project and the channel name. In a test or production environment, your app retrieves the token from a token server. However, for local testing, you can generate a temporary token in Agora Console.
 
-**Note**  it is important that for a production ready project, you should always use an AppId with token enabled. However, in testing a demo, you will skip this part. Using a testing mode AppId can save time for POC integration.
+1. In Agora Console, open [Project Management](https://console.agora.io/projects), select your project, and click **Config**.  
+2. Under Features, click **Generate temp Video SDK token**.  
+3. Type the channel name, then click **Generate**.  
+   Agora Console generates a token valid to join that channel only.
+4. Click Copy.  
+   The temporary token is added to the clipboard of your development machine.
 
- ![Test Mode APPID](https://user-images.githubusercontent.com/1261195/110023464-11eb0480-7ce2-11eb-99d6-031af60715ab.png)
-
+	
 ### Integrating the SDK
 
-1. Download the SDK and its from [the Release area](https://github.com/AgoraIO-Extensions/Agora-Unreal-RTC-SDK-NG/releases).
-2. Create a folder named *Plugins* in your project's root directory.  
-3. Unzip the SDK files to *Plugins*
+1. Download the [SDK](https://github.com/AgoraIO-Extensions/Agora-Unreal-RTC-SDK-NG/releases).  
+2. Create a folder named Plugins in the root directory of your project.  
+3. Unzip the SDK files to *Plugins* folder
 
  ![plugins](https://user-images.githubusercontent.com/1261195/186286865-24d40426-4329-4ba1-b943-2626ce50d1b0.png)
 
-### Compile and Run the Demo
-You may run the demos at a high level loader or at any level of the individual API samples.
 
-**1)  Running at a high level**
-Compile the project and then hit the Play button on the UE Editor.  You should get a main  screen like the following:
+### Compile and run the demo
+You can run the demos in a main level or in any level of the API examples.  
+1.Compile and run the project in the main level, and then click the Play button on the UE Editor. You see the main screen as shown in the following image:
 
-![MainLevelPos](https://user-images.githubusercontent.com/47908151/202615511-b4ad613d-1bc8-45bf-b149-fdb00133adff.png)
-![LevelImage](https://user-images.githubusercontent.com/47908151/202615260-35839bad-cd59-4f5e-a3de-4824a35640f1.jpg)
+![AgoraExample_-_Unreal_Editor](https://user-images.githubusercontent.com/1261195/186287084-9d462257-93eb-4913-b6fa-cba892de004e.png)
 
-Fill in your App ID, Channel Name and optionally the token if you set up the application with certificate enabled.  You can now press a button to navigate to any of the API sample level.
+Fill in your App ID, channel name, and token (optional). You can now click a button on the left to navigate to a particular level of the API examples.  
+2.Run in a particular level if you want experience an API example. Take *Basic/joinChannelAudio/BasicAudioCall/* as an example:
+ 1. Find a blueprint named BP_Agoractor in the World outliner.
 
-2)  Open any level blueprint, for example Basic/joinChannelAudio/BasicAudioCall/ enter your appid and channelname in the position below.
+ 2. Open any level blueprint, for example Basic/joinChannelAudio/BasicAudioCall/ enter your appid and channelname in the position below.
   
 ![code_16613129312915](https://user-images.githubusercontent.com/47908151/202614467-6aa8bd6a-f9e6-4053-ba07-53c5fd2e5c8d.jpg)
 
