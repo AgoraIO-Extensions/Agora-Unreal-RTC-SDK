@@ -218,11 +218,11 @@ enum AUDIO_REVERB_TYPE {
 };
 
 enum STREAM_FALLBACK_OPTIONS {
-  /** 0: (Default) No fallback operation for the stream when the network
+  /** 0: No fallback operation for the stream when the network
      condition is poor. The stream quality cannot be guaranteed. */
 
   STREAM_FALLBACK_OPTION_DISABLED = 0,
-  /** 1: Under poor network conditions, the SDK will send or receive
+  /** 1: (Default) Under poor network conditions, the SDK will send or receive
      agora::rtc::VIDEO_STREAM_LOW. You can only set this option in
      RtcEngineParameters::setRemoteSubscribeFallbackOption. Nothing happens when
      you set this in RtcEngineParameters::setLocalPublishFallbackOption. */
