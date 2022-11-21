@@ -87,39 +87,40 @@ Fill in your App ID, channel name, and token (optional). You can now click a but
   
 ![code_16613129312915](https://user-images.githubusercontent.com/47908151/202614467-6aa8bd6a-f9e6-4053-ba07-53c5fd2e5c8d.jpg)
 
-## Making a Build (Project Packaging)
+## Project Packaging
 
 ### Windows Packaging
 
-File->Package Project->Windows->Windows(64-bit)
+Click File > Package Project > Windows > Windows(64-bit).
 
 ![windowspackage](https://user-images.githubusercontent.com/47908151/202615706-41df9c3e-0463-43eb-8fef-a8d154745976.jpg)
 
-#### 32bit Windows
-Since UE5 does not support 32-bit Windows, our plugin leave out the 32-bit implementation by default; otherwise, the compilation will result in error for UE5.  If you want to use the 32-bit build in UE4, please uncomment the win32 related code in AgoraPluginLibrary.Build.cs.  See this screenshot:
+Since UE5 does not support 32-bit Windows, the Agora plugin omits the 32-bit implementation by default. If you want to use 32-bit Windows with UE4, uncomment the code relating to Win32 in the **AgoraPluginLibrary.Build.cs** file, as shown in the red box in the following image:
 
 ![code_16613129312915](https://user-images.githubusercontent.com/1261195/186325436-d8bf6543-5aea-4adc-a903-0199519339eb.png)
 
 ### MacOS Packaging
 
-File -> Package Project -> Mac
+1. Click File > Package Project > Mac.
 
-#### Add device permissions to plist.info:
+2. Add device permissions to plist.info
 
-1. Right click the compiled xxx.app File - select "Show Package Contents"
+	a. Right click the compiled xxx.app file, and select **Show Package Contents**.
 
 ![contextMenu_and_MacNoEditor](https://user-images.githubusercontent.com/1261195/186290440-ab80de0e-b87c-4a3a-a589-cc68960b6397.png)
 
-2. Edit Contents/Info.plist (Double-click to open it in XCode,  then see Step 3 next; or Step 3b if using your favorite text editor).
+        b. Edit Contents/Info.plist (Double-click to open it in XCode,  then see Step 3 next; or Step 3b if using your favorite text editor).
 
-3. Select "Information Property List" and add the following two permissions:
+3. Add permissions.
+
+Double click to open *Contents/Info.plist* in XCode, then click **Information Property List** to add the following permissions:
 
 - Privacy - Camera Usage Description
 - Privacy - Microphone Usage Description
 
 ![privacy_plist](https://user-images.githubusercontent.com/1261195/186293374-d550e36c-cd87-4feb-b79d-8344945af827.gif)
 
-3b. Equivalent of editing with Xcode, you may just open the plist file with a text editor and paste the following XML snippet into it:
+If you are editing with Xcode, you can just open the plist file with a text editor and paste the following XML snippet into it:
 ```xml
 	<key>NSCameraUsageDescription</key>
 	<string>Use camera</string>
@@ -127,7 +128,7 @@ File -> Package Project -> Mac
 	<string>Use mic</string>
 ```
 
-#### Add the SDK frameworks
+4. Add the SDK frameworks.
 
 Copy ***.framework** from ***Plugs/AgoraPlugin/Source/ ThirdParty/Agora/MAC/Release*** to ***MacNoEditor/xxx/Contents/MacOS/*** .
 ![unrealMacPlugins](https://user-images.githubusercontent.com/1261195/186295172-9fea300b-77fc-4bfe-bb15-41f5727044a3.png)
@@ -139,19 +140,19 @@ The following permissions are also required on iOS:
 - Privacy - Microphone Usage Description
 
 To add the above permissions to the info.plist, you can enter them in the UE Editor.
-1. **Copy the following single line text:**
+1. Copy the following single line text:
 
 ```xml
 <key>NSCameraUsageDescription</key><string>AgoraVideoCall</string><key>NSMicrophoneUsageDescription</key><string>AgoraVideoCall</string>
 ```
-2. Open the screen at **Edit-> Project Settings->Platforms: iOS**
+2. Click Edit > Project Settings >Platforms > iOS.
 3. Enter the text to the "**additional plist data**" field:
 <img width="936" alt="iOS_add_permission" src="https://user-images.githubusercontent.com/1261195/186298955-19949598-fcf8-46ac-8d8a-d0d0e320917c.png">
 
 
-Finally, you can package the iOS project (*File->Package Project->iOS*).
+You can package the iOS project (File > Package Project > iOS).
 
-Also iOS should add this Code to your target 
+iOS should add the following code to your target as well:
 
 ![iospackage2](https://user-images.githubusercontent.com/47908151/202614986-e641ac9b-de6a-40a6-b4e3-517651899c0a.jpg)
 
@@ -161,15 +162,14 @@ Here, the global macro definition setting engine uses the standard C memory allo
 Regarding the performance difference between Ansi and Binned memory allocation: Binned's optimization of small memory usage is better than that of Ansi, but the overall memory usage will be higher, and the overall performance difference between the two is not obvious on mid-to-high-end iOS devices.
 
 ### Android Packaging
-Build Android via "File -> Package Project -> Android".  Note **ASTC** is a more common target for modern Android devices.
+Build Android via File > Package Project > Android. Note that ASTC is a more common target for modern Android devices.
 
-On Android, the following permissions need to be applied.
-1. android.permission.RECORD_AUDIO
-2. android.permission.CAMERA
-3. android.permission.READ_PHONE_STATE
-4. android.permission.WRITE_EXTERNAL_STORAGE
+On Android, the following permissions need to be applied:
 
-The API-Examples provides sample code in doing so.  
+- android.permission.RECORD_AUDIO
+- android.permission.CAMERA
+- android.permission.READ_PHONE_STATE
+- android.permission.WRITE_EXTERNAL_STORAGE
 
 the blueprint function is called to enable the permissions.
 ![code_16613129312915](https://user-images.githubusercontent.com/47908151/202613751-0e140839-3446-4d1b-bd56-48c4ceda5de8.jpg)
