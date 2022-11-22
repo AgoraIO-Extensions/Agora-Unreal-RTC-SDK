@@ -82,8 +82,7 @@ You can run the demos in a main level or in any level of the API examples.
 
 Fill in your App ID, channel name, and token (optional). You can now click a button on the left to navigate to a particular level of the API examples.  
 2.Run in a particular level if you want experience an API example. Take *Basic/joinChannelAudio/BasicAudioCall/* as an example:
-
- 1. Open any level blueprint, for example Basic/joinChannelAudio/BasicAudioCall/ enter your appid and channelname in the position below.
+- Open any level blueprint, for example Basic/joinChannelAudio/BasicAudioCall/ enter your appid and channelname in the position below.
   
 ![code_16613129312915](https://user-images.githubusercontent.com/47908151/202614467-6aa8bd6a-f9e6-4053-ba07-53c5fd2e5c8d.jpg)
 
