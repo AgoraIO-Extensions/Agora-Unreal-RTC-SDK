@@ -32,7 +32,7 @@ namespace agora
 				}
 #endif
 				RtcEngine = ::createAgoraRtcEngine();
-				VideoRenderMgr = std::make_unique<VideoRenderManager>();
+				VideoRenderMgr = MakeShareable(new VideoRenderManager());
 			}
 
 			void RtcEngineProxy::release(bool sync) {
@@ -58,7 +58,7 @@ namespace agora
 					sprintf(parametersDataOutput, "{\"che.video.android_camera_output_type\":0}");
 					apm->setParameters(parametersDataOutput);
 #endif
-					MediaProxy = std::make_unique<MediaEngineProxy>(RtcEngine);
+					MediaProxy = MakeShareable(new MediaEngineProxy(RtcEngine));
 					return ret;
 				}
 				else if(RtcEngine != nullptr && ret != 0)
@@ -71,7 +71,7 @@ namespace agora
 				if (RtcEngine != nullptr) {
 					if (iid == INTERFACE_ID_TYPE::AGORA_IID_MEDIA_ENGINE)
 					{
-						*inter = (void*)(MediaProxy.get());
+						*inter = (void*)(MediaProxy.Get());
 						if (*inter == nullptr)
 						{
 							return -ERROR_NULLPTR;

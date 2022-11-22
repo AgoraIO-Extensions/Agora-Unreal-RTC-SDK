@@ -9,6 +9,7 @@
 #include "Android/AndroidJni.h"
 #endif
 #include <memory>
+#include "Templates/SharedPointer.h"
 
 namespace agora
 {
@@ -22,8 +23,8 @@ namespace agora
 			protected:
 
 				IRtcEngine* RtcEngine;
-				std::unique_ptr<MediaEngineProxy> MediaProxy;
-				std::unique_ptr<VideoRenderManager> VideoRenderMgr;
+				TSharedPtr<class MediaEngineProxy> MediaProxy;
+				TSharedPtr<class VideoRenderManager> VideoRenderMgr;
 
 			public:
 

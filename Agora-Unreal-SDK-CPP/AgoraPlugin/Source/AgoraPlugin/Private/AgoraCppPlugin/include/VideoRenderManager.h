@@ -10,6 +10,7 @@
 #include "VideoObserverInternal.h"
 #include <memory>
 #include <map>
+#include "Templates/SharedPointer.h"
 /**
  *
  */
@@ -46,9 +47,9 @@ namespace agora {
             private:
                 std::mutex VideoRenderMutex;
 
-                std::map<VideoFrameIdentity, std::shared_ptr<VideoRender>> VideoRenderMap;
+                std::map<VideoFrameIdentity, TSharedPtr<class VideoRender>> VideoRenderMap;
 
-                std::map<VideoFrameIdentity, std::shared_ptr<VideoRender>>::iterator VideoRenderIter;
+                std::map<VideoFrameIdentity, TSharedPtr<class VideoRender>>::iterator VideoRenderIter;
             };
 
         }

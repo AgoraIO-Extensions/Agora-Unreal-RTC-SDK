@@ -32,7 +32,7 @@ namespace agora {
                 std::lock_guard<std::mutex> lock(VideoRenderMutex);
                 auto it = VideoRenderMap.find(VideoFrameId);
                 if (it == VideoRenderMap.end()) {
-                    std::shared_ptr<VideoRender> videoRender = std::make_shared<VideoRender>(DataManager::getInstance()->getCacheManager());
+                    TSharedPtr<VideoRender> videoRender = MakeShareable(new VideoRender(DataManager::getInstance()->getCacheManager()));
                     VideoRenderMap[VideoFrameId] = videoRender;
                     videoRender->enableVideoFrameIdentity(RenderImage, VideoFrameId);
                 }
@@ -47,7 +47,7 @@ namespace agora {
                 std::lock_guard<std::mutex> lock(VideoRenderMutex);
                 auto it = VideoRenderMap.find(VideoFrameId);
                 if (it != VideoRenderMap.end()) {
-                    VideoRenderMap[VideoFrameId].reset();
+                    VideoRenderMap[VideoFrameId].Reset();
                     VideoRenderMap.erase(it);
                 }
             }
