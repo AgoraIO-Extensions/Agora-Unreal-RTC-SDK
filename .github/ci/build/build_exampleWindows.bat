@@ -78,3 +78,68 @@ echo build_time: %build_time%
 echo release_version: %release_version%
 echo short_version: %short_version%
 echo pwd: %cd%
+
+
+set CUR_DIR=%cd%
+echo %CUR_DIR%
+mkdir %cd%/AgoraFullPlugins
+mkdir %cd%/AgoraFullPlugins
+mkdir %cd%/Agora-Unreal-SDK-CPP-Example/Plugins
+mkdir %cd%/Agora-Unreal-SDK-Blueprint-Example/Plugins
+::--------------------------------------
+:: Download Package
+::--------------------------------------
+echo "[Unreal CI] Download package"
+python3 ${WORKSPACE}/artifactory_utils.py --action=%cd%/AgoraFullPlugins/FullPlugin.zip --file=www.baidu.com
+python3 ${WORKSPACE}/artifactory_utils.py --action=%cd%/AgoraVoicePlugins/VoicePlugin.zip --file=www.baidu.com
+::--------------------------------------
+:: Package full Cpp
+::--------------------------------------
+echo "[Unreal CI] Start package Full CppPackage"
+copy %cd%/AgoraFullPlugins/FullPlugin.zip %cd%/Agora-Unreal-SDK-CPP-Example/Plugins/FullPlugin.zip
+cd %cd%/Agora-Unreal-SDK-CPP-Example/Plugins
+unzip FullPlugin.zip
+del FullPlugin.zip
+"E:\Epic Games\UE_4.27\Engine\Build\BatchFiles\RunUAT.bat" -ScriptsForProject=D:/UEproject/Agora-Unreal-SDK-CPP-NG/Agora-Unreal-SDK-Blueprint-Example/AgoraBPExample.uproject BuildCookRun -nocompileeditor -installed -nop4 -project=D:/UEproject/Agora-Unreal-SDK-CPP-NG/Agora-Unreal-SDK-Blueprint-Example/AgoraBPExample.uproject -cook -stage -archive -archivedirectory=%CUR_DIR%/packages/Cpp/Full/Windows -package -ue4exe="E:\Epic Games\UE_4.27\Engine\Binaries\Win64\UE4Editor-Cmd.exe" -compressed -ddc=InstalledDerivedDataBackendGraph -pak -prereqs -nodebuginfo -targetplatform=Win64 -build -target=AgoraBPExample -clientconfig=Development -utf8output
+"E:\Epic Games\UE_4.27\Engine\Build\BatchFiles\RunUAT.bat" -ScriptsForProject=D:/UEproject/Agora-Unreal-SDK-CPP-NG/Agora-Unreal-SDK-Blueprint-Example/AgoraBPExample.uproject BuildCookRun -nocompileeditor -installed -nop4 -project=D:/UEproject/Agora-Unreal-SDK-CPP-NG/Agora-Unreal-SDK-Blueprint-Example/AgoraBPExample.uproject -cook -stage -archive -archivedirectory=%CUR_DIR%/packages/Cpp/Full/Android -package -ue4exe="E:\Epic Games\UE_4.27\Engine\Binaries\Win64\UE4Editor-Cmd.exe" -compressed -ddc=InstalledDerivedDataBackendGraph -pak -prereqs -nodebuginfo -targetplatform=Android -cookflavor=Multi -build -target=AgoraBPExample -clientconfig=Development -utf8output
+::--------------------------------------
+:: Package full blueprint
+::--------------------------------------
+echo "[Unreal CI] Start package Full BlueprintPackage"
+copy %cd%/AgoraFullPlugins/FullPlugin.zip %cd%/Agora-Unreal-SDK-Blueprint-Example/FullPlugin.zip
+cd %cd%/Agora-Unreal-SDK-Blueprint-Example/Plugins
+unzip FullPlugin.zip
+del FullPlugin.zip
+"E:\Epic Games\UE_4.27\Engine\Build\BatchFiles\RunUAT.bat" -ScriptsForProject=D:/UEproject/Agora-Unreal-SDK-CPP-NG/Agora-Unreal-SDK-Blueprint-Example/AgoraBPExample.uproject BuildCookRun -nocompileeditor -installed -nop4 -project=D:/UEproject/Agora-Unreal-SDK-CPP-NG/Agora-Unreal-SDK-Blueprint-Example/AgoraBPExample.uproject -cook -stage -archive -archivedirectory=%CUR_DIR%/packages/Blueprint/Full/Windows -package -ue4exe="E:\Epic Games\UE_4.27\Engine\Binaries\Win64\UE4Editor-Cmd.exe" -compressed -ddc=InstalledDerivedDataBackendGraph -pak -prereqs -nodebuginfo -targetplatform=Win64 -build -target=AgoraBPExample -clientconfig=Development -utf8output
+"E:\Epic Games\UE_4.27\Engine\Build\BatchFiles\RunUAT.bat" -ScriptsForProject=D:/UEproject/Agora-Unreal-SDK-CPP-NG/Agora-Unreal-SDK-Blueprint-Example/AgoraBPExample.uproject BuildCookRun -nocompileeditor -installed -nop4 -project=D:/UEproject/Agora-Unreal-SDK-CPP-NG/Agora-Unreal-SDK-Blueprint-Example/AgoraBPExample.uproject -cook -stage -archive -archivedirectory=%CUR_DIR%/packages/Blueprint/Full/Android -package -ue4exe="E:\Epic Games\UE_4.27\Engine\Binaries\Win64\UE4Editor-Cmd.exe" -compressed -ddc=InstalledDerivedDataBackendGraph -pak -prereqs -nodebuginfo -targetplatform=Android -cookflavor=Multi -build -target=AgoraBPExample -clientconfig=Development -utf8output
+::--------------------------------------
+:: Package voice cpp
+::--------------------------------------
+del %cd%/Agora-Unreal-SDK-CPP-Example/Plugins
+mkdir %cd%/Agora-Unreal-SDK-CPP-Example/Plugins
+copy %cd%/AgoraVoicePlugins/VoicePlugin.zip %cd%/Agora-Unreal-SDK-CPP-Example/Plugins/VoicePlugin.zip
+cd %cd%/Agora-Unreal-SDK-CPP-Example/Plugins
+unzip VoicePlugin.zip
+del VoicePlugin.zip
+"E:\Epic Games\UE_4.27\Engine\Build\BatchFiles\RunUAT.bat" -ScriptsForProject=D:/UEproject/Agora-Unreal-SDK-CPP-NG/Agora-Unreal-SDK-Blueprint-Example/AgoraBPExample.uproject BuildCookRun -nocompileeditor -installed -nop4 -project=D:/UEproject/Agora-Unreal-SDK-CPP-NG/Agora-Unreal-SDK-Blueprint-Example/AgoraBPExample.uproject -cook -stage -archive -archivedirectory=%CUR_DIR%/packages/Cpp/Voice/Android -package -ue4exe="E:\Epic Games\UE_4.27\Engine\Binaries\Win64\UE4Editor-Cmd.exe" -compressed -ddc=InstalledDerivedDataBackendGraph -pak -prereqs -nodebuginfo -targetplatform=Android -cookflavor=Multi -build -target=AgoraBPExample -clientconfig=Development -utf8output
+::--------------------------------------
+:: Package voice blueprint
+::--------------------------------------
+del %cd%/Agora-Unreal-SDK-Blueprint-Example/Plugins
+mkdir %cd%/Agora-Unreal-SDK-Blueprint-Example/Plugins
+copy %cd%/AgoraVoicePlugins/VoicePlugin.zip %cd%/Agora-Unreal-SDK-Blueprint-Example/Plugins/VoicePlugin.zip
+cd %cd%/Agora-Unreal-SDK-Blueprint-Example/Plugins
+unzip VoicePlugin.zip
+del VoicePlugin.zip
+"E:\Epic Games\UE_4.27\Engine\Build\BatchFiles\RunUAT.bat" -ScriptsForProject=D:/UEproject/Agora-Unreal-SDK-CPP-NG/Agora-Unreal-SDK-Blueprint-Example/AgoraBPExample.uproject BuildCookRun -nocompileeditor -installed -nop4 -project=D:/UEproject/Agora-Unreal-SDK-CPP-NG/Agora-Unreal-SDK-Blueprint-Example/AgoraBPExample.uproject -cook -stage -archive -archivedirectory=%CUR_DIR%/packages/Blueprint/Voice/Android -package -ue4exe="E:\Epic Games\UE_4.27\Engine\Binaries\Win64\UE4Editor-Cmd.exe" -compressed -ddc=InstalledDerivedDataBackendGraph -pak -prereqs -nodebuginfo -targetplatform=Android -cookflavor=Multi -build -target=AgoraBPExample -clientconfig=Development -utf8output
+
+::--------------------------------------
+:: Zip Package
+::--------------------------------------
+cd %CUR_DIR%
+
+zip -r "package".zip %CUR_DIR%/packages
+
+cp package.zip "$WORKSPACE" || exit 1
+
+exit 0;
