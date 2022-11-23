@@ -45,7 +45,7 @@ void UProcessAudioRawDataWidget::InitConfig()
 	audioParams.channels = 2;
 	audioParams.sample_rate = 16000;
 	audioParams.channels = 2;
-	audioParams.mode = agora::rtc::RAW_AUDIO_FRAME_OP_MODE_TYPE::RAW_AUDIO_FRAME_OP_MODE_READ_ONLY;
+	audioParams.mode = agora::rtc::RAW_AUDIO_FRAME_OP_MODE_TYPE::RAW_AUDIO_FRAME_OP_MODE_READ_WRITE;
 	audioParams.samples_per_call = 1024;
 
 	if (AgoraSoundWaveProcedural == nullptr)
@@ -97,6 +97,7 @@ void UProcessAudioRawDataWidget::OnJoinButtonClick() {
 
 	RtcEngineProxy->joinChannel(TCHAR_TO_ANSI(*Token), TCHAR_TO_ANSI(*ChannelName), "", 0);
 	RtcEngineProxy->setClientRole(agora::rtc::CLIENT_ROLE_TYPE::CLIENT_ROLE_BROADCASTER);
+
 }
 
 void UProcessAudioRawDataWidget::OnLeaveButtonClick() {
@@ -141,6 +142,8 @@ bool UProcessAudioRawDataWidget::onRecordAudioFrame(const char* channelId, Audio
 bool UProcessAudioRawDataWidget::onPlaybackAudioFrame(const char* channelId, AudioFrame& audioFrame)
 {
 	AgoraSoundWaveProcedural->AddToFrames(audioFrame);
+
+	FMemory::Memset((void*)audioFrame.buffer, 0 ,audioFrame.bytesPerSample * audioFrame.samplesPerChannel * audioFrame.channels);
 
 	return false;
 }
