@@ -41,6 +41,7 @@ bool VideoObserverInternal::onSecondaryCameraCaptureVideoFrame(VideoFrame& video
 {
     VideoFrameIdentity config{VIDEO_SOURCE_CAMERA_SECONDARY, 0, ""};
     setVideoFrame(&config, &videoFrame);
+    if (UserObserver != nullptr) UserObserver->onSecondaryCameraCaptureVideoFrame(videoFrame);
     return true; 
 }
 
@@ -53,6 +54,7 @@ bool VideoObserverInternal::onScreenCaptureVideoFrame(VideoFrame& videoFrame)
 {
     VideoFrameIdentity config{VIDEO_SOURCE_SCREEN_PRIMARY, 0, ""};
     setVideoFrame(&config, &videoFrame);
+    if (UserObserver != nullptr) UserObserver->onScreenCaptureVideoFrame(videoFrame);
     return true; 
 }
 
@@ -67,6 +69,7 @@ bool VideoObserverInternal::onMediaPlayerVideoFrame(VideoFrame& videoFrame, int 
 
     VideoFrameIdentity config{VIDEO_SOURCE_MEDIA_PLAYER,MediaplayId, ""};
     setVideoFrame(&config, &videoFrame);
+    if (UserObserver != nullptr) UserObserver->onMediaPlayerVideoFrame(videoFrame, mediaPlayerId);
     return true; 
 }
 
@@ -74,6 +77,7 @@ bool VideoObserverInternal::onSecondaryScreenCaptureVideoFrame(VideoFrame& video
 {
     VideoFrameIdentity config{VIDEO_SOURCE_SCREEN_SECONDARY, 0, ""};
     setVideoFrame(&config, &videoFrame);
+    if (UserObserver != nullptr) UserObserver->onSecondaryScreenCaptureVideoFrame(videoFrame);
     return true; 
 }
 
@@ -87,6 +91,7 @@ bool VideoObserverInternal::onTranscodedVideoFrame(VideoFrame& videoFrame)
     VideoFrameIdentity config{VIDEO_SOURCE_TRANSCODED, 0, ""};
     
     setVideoFrame(&config, &videoFrame);
+    if (UserObserver != nullptr) UserObserver->onTranscodedVideoFrame(videoFrame);
     return true; 
 }
 
