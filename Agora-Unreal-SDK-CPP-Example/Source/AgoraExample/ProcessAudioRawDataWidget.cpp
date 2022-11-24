@@ -143,8 +143,8 @@ bool UProcessAudioRawDataWidget::onPlaybackAudioFrame(const char* channelId, Aud
 {
 	AgoraSoundWaveProcedural->AddToFrames(audioFrame);
 
-	FMemory::Memset((void*)audioFrame.buffer, 0 ,audioFrame.bytesPerSample * audioFrame.samplesPerChannel * audioFrame.channels);
-
+	FMemory::Memset(audioFrame.buffer, 0 ,audioFrame.bytesPerSample * audioFrame.samplesPerChannel * audioFrame.channels);
+	
 	return false;
 }
 
