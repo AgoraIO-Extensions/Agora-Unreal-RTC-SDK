@@ -43,7 +43,7 @@
 	<!-- optional files or directories to copy to Intermediate/Android/APK -->
 	<resourceCopies>
 		<log text="PluginDir: $S(PluginDir)"/>
-<!-- AgoraInsertResourceCopies -->
+<!-- AgoraInsert -->
 	</resourceCopies>
 	<androidManifestUpdates>
 		<addPermission android:name="android.permission.INTERNET"/>
@@ -54,13 +54,4 @@
 		<addPermission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 		<addPermission android:name="android.permission.BLUETOOTH"/>
 	</androidManifestUpdates>
-
-	<!-- optional libraries to load in GameActivity.java before libUE4.so -->
-	<soLoadLibrary>
-		<if condition="bSupported">
-			<true>
-<!-- AgoraInsertLoadbrary -->
-			</true>
-		</if>
-	</soLoadLibrary>
 </root>
