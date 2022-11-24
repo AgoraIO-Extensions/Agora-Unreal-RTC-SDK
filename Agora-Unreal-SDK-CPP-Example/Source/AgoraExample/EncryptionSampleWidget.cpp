@@ -9,7 +9,7 @@ void UEncryptionSampleWidget::InitAgoraWidget(FString APP_ID, FString TOKEN, FSt
 
 	InitAgoraEngine(APP_ID, TOKEN, CHANNEL_NAME);
 
-	SetEncryption();
+
 
 	SetUpUIEvent();
 }
@@ -42,12 +42,13 @@ void UEncryptionSampleWidget::SetUpUIEvent() {
 
 void UEncryptionSampleWidget::OnJoinButtonClick() {
 
+	SetEncryption();
+
 	UE_LOG(LogTemp, Warning, TEXT("UEncryptionSampleWidget OnJoinButtonClick ======"));
 	RtcEngineProxy->enableAudio();
 	RtcEngineProxy->enableVideo();
 	RtcEngineProxy->joinChannel(Token.c_str(), ChannelName.c_str(), "", 0);
 	RtcEngineProxy->setClientRole(agora::rtc::CLIENT_ROLE_TYPE::CLIENT_ROLE_BROADCASTER);
-
 }
 
 
@@ -137,6 +138,7 @@ void UEncryptionSampleWidget::SetEncryption()
 	config.encryptionMode = EncrytionMode;
 	config.encryptionKey = TCHAR_TO_ANSI(*RoomPasswordTextBox->GetText().ToString());
 	FMemory::Memcpy(config.encryptionKdfSalt, deviceName, 32);
+
 	int ret = RtcEngineProxy->enableEncryption(true, config);
 
 	UE_LOG(LogTemp, Warning, TEXT("UEncryptionSampleWidget::SetEncryption %d"), ret);

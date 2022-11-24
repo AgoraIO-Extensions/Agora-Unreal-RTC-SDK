@@ -87,7 +87,7 @@ void USpatialAudioWidget::OnJoinButtonClick()
 
 void USpatialAudioWidget::RightMoveButtonClick()
 {	
-	RemoteVoicePositionInfo remoteVoicePos{ { 0.0f, 1.0f, 0.0f }, { 0.0f, 0.0f, 0.0f } };
+	RemoteVoicePositionInfo remoteVoicePos{ { 0.0f, -1.0f, 0.0f }, { 0.0f, 0.0f, 0.0f } };
 
 	auto ret = LocalSpatialAudioEngine->updateRemotePosition(RemoteUid, remoteVoicePos);
 
@@ -96,7 +96,7 @@ void USpatialAudioWidget::RightMoveButtonClick()
 
 void USpatialAudioWidget::LeftMoveButtonClick()
 {
-	RemoteVoicePositionInfo remoteVoicePos{ { 0.0f, -1.0f, 0.0f }, { 0.0f, 0.0f, 0.0f } };
+	RemoteVoicePositionInfo remoteVoicePos{ { 0.0f, 1.0f, 0.0f }, { 0.0f, 0.0f, 0.0f } };
 
 	auto ret = LocalSpatialAudioEngine->updateRemotePosition(RemoteUid, remoteVoicePos);
 
