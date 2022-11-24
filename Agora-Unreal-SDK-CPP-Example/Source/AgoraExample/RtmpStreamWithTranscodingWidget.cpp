@@ -155,6 +155,10 @@ void URtmpStreamWithTranscodingWidget::onJoinChannelSuccess(const char* channel,
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
+		if (!bInitialized)
+		{
+			return;
+		}
 		UE_LOG(LogTemp, Warning, TEXT("JoinChannelSuccess"));
 		agora::rtc::VideoCanvas videoCanvas;
 		videoCanvas.view = localVideo;
@@ -169,6 +173,10 @@ void URtmpStreamWithTranscodingWidget::onUserJoined(agora::rtc::uid_t uid, int e
 
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
+		if (!bInitialized)
+		{
+			return;
+		}
 		UE_LOG(LogTemp, Warning, TEXT("URtmpStreamWithTranscodingWidget::onUserJoined  uid: %d"), (int64)uid);
 		agora::rtc::VideoCanvas videoCanvas;
 		videoCanvas.view = remoteVideo;
@@ -186,6 +194,10 @@ void URtmpStreamWithTranscodingWidget::onUserOffline(agora::rtc::uid_t uid, agor
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
+		if (!bInitialized)
+		{
+			return;
+		}
 		UE_LOG(LogTemp, Warning, TEXT("URtmpStreamWithTranscodingWidget::onUserOffline  uid: %d"), (int64)uid);
 		agora::rtc::VideoCanvas videoCanvas;
 		videoCanvas.view = nullptr;
@@ -209,6 +221,10 @@ void URtmpStreamWithTranscodingWidget::onLeaveChannel(const agora::rtc::RtcStats
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
+		if (!bInitialized)
+		{
+			return;
+		}
 		UE_LOG(LogTemp, Warning, TEXT("URtmpStreamWithTranscodingWidget::onLeaveChannel"));
 		agora::rtc::VideoCanvas videoCanvas;
 		videoCanvas.view = nullptr;

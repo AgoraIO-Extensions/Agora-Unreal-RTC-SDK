@@ -20,6 +20,11 @@ void UMediaplayerWidget::InitAgoraWidget(FString APP_ID, FString TOKEN, FString 
 	bURLOpen = true;
 }
 
+bool UMediaplayerWidget::GetInitlize()
+{
+	return bInitialized;
+}
+
 void UMediaplayerWidget::onVideoSizeChanged(VIDEO_SOURCE_TYPE sourceType, uid_t uid, int width, int height, int rotation)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -183,6 +188,11 @@ void MpkEventHandler::onPlayerSourceStateChanged(media::base::MEDIA_PLAYER_STATE
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
+		if (!MediaplayerWidget->GetInitlize())
+		{
+			return;
+		}
+
 		GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Black, FString::Printf(TEXT("OnPlayerSourceStateChanged playId: %d"),MediaplayerWidget->MediaPlayer->getMediaPlayerId()));
 
 		UE_LOG(LogTemp, Warning, TEXT("OnPlayerSourceStateChanged"));

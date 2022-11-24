@@ -190,6 +190,10 @@ void UScreenShareWidget::onJoinChannelSuccess(const char* channel, agora::rtc::u
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
+		if (!bInitialized)
+		{
+			return;
+		}
 		UE_LOG(LogTemp, Warning, TEXT("JoinChannelSuccess"));
 		agora::rtc::VideoCanvas videoCanvas;
 		videoCanvas.view = LocalVideo;
@@ -203,6 +207,10 @@ void UScreenShareWidget::onLeaveChannel(const agora::rtc::RtcStats& stats)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
+		if (!bInitialized)
+		{
+			return;
+		}
 		agora::rtc::VideoCanvas videoCanvas;
 		videoCanvas.view = nullptr;
 		videoCanvas.uid = 0;
@@ -218,6 +226,10 @@ void UScreenShareWidget::onUserJoined(agora::rtc::uid_t uid, int elapsed) {
 
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
+		if (!bInitialized)
+		{
+			return;
+		}
 		UE_LOG(LogTemp, Warning, TEXT("UVideoWidget::onUserJoined  uid: %u"), uid);
 		UserImageData ImageData = GetUImageNoData(uid);
 
@@ -237,6 +249,10 @@ void UScreenShareWidget::onUserOffline(agora::rtc::uid_t uid, agora::rtc::USER_O
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
+		if (!bInitialized)
+		{
+			return;
+		}
 		UE_LOG(LogTemp, Warning, TEXT("UVideoWidget::onUserOffline  uid: %u"), uid);
 		UserImageData ImageData = RemoveUImageData(uid);
 		ImageData.image->SetBrush(EmptyBrush);

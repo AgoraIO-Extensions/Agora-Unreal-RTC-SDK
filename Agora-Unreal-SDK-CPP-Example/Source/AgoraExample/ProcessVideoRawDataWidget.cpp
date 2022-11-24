@@ -87,6 +87,11 @@ void UProcessVideoRawDataWidget::onUserOffline(agora::rtc::uid_t uid, agora::rtc
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
+		if (!bInitialized)
+		{
+			return;
+		}
+
 		UE_LOG(LogTemp, Warning, TEXT("UProcessVideoRawDataWidget::onUserOffline  uid: %u"), uid);
 
 		remoteVideo->SetBrush(EmptyBrush);
@@ -100,7 +105,6 @@ void UProcessVideoRawDataWidget::onLeaveChannel(const agora::rtc::RtcStats& stat
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
 		UE_LOG(LogTemp, Warning, TEXT("UProcessVideoRawDataWidget::onLeaveChannel"));
-
 	});
 }
 #pragma endregion RtcEngineCallBack

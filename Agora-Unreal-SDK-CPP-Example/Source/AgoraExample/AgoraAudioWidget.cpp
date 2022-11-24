@@ -117,10 +117,10 @@ void UAgoraAudioWidget::onUserJoined(agora::rtc::uid_t uid, int elapsed)
 void UAgoraAudioWidget::InitUI()
 {
 
-	ProfileComboBox->AddOption("Broadcaster");
-	ProfileComboBox->AddOption("Audience");
+	ProfileComboBox->AddOption("BROADCASTING");
+	ProfileComboBox->AddOption("COMMUNICATION");
 
-	ProfileComboBox->SetSelectedOption(FString("Broadcaster"));
+	ProfileComboBox->SetSelectedOption(FString("BROADCASTING"));
 
 	ScenarioComboBox->AddOption("DEFAULT");
 	ScenarioComboBox->AddOption("GAME_STREAMING");
@@ -130,8 +130,8 @@ void UAgoraAudioWidget::InitUI()
 	ScenarioComboBox->AddOption("NUM");
 	ScenarioComboBox->SetSelectedOption(FString("DEFAULT"));
 
-	AgoraChannelProfileEnumMap.Add(FString("Broadcaster"), CHANNEL_PROFILE_TYPE::CHANNEL_PROFILE_LIVE_BROADCASTING);
-	AgoraChannelProfileEnumMap.Add(FString("Audience"), CHANNEL_PROFILE_TYPE::CHANNEL_PROFILE_COMMUNICATION);
+	AgoraChannelProfileEnumMap.Add(FString("BROADCASTING"), CHANNEL_PROFILE_TYPE::CHANNEL_PROFILE_LIVE_BROADCASTING);
+	AgoraChannelProfileEnumMap.Add(FString("COMMUNICATION"), CHANNEL_PROFILE_TYPE::CHANNEL_PROFILE_COMMUNICATION);
 
 	AgoraAudioScenarioEnumMap.Add(FString("DEFAULT"), AUDIO_SCENARIO_TYPE::AUDIO_SCENARIO_DEFAULT);
 	AgoraAudioScenarioEnumMap.Add(FString("GAME_STREAMING"), AUDIO_SCENARIO_TYPE::AUDIO_SCENARIO_GAME_STREAMING);

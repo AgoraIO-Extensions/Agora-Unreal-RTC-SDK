@@ -216,8 +216,6 @@ void USendMultiCameraStreamWidget::onJoinChannelSuccess(const RtcConnection& con
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
-		bIsChannelJoined = true;
-
 		GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Red, FString::Printf(TEXT("OnJoinChannelSuccess uid: %d,ChannelName: %s, elapsed: %d"), connection.localUid, *FString(connection.channelId),elapsed));
 
 		if (connection.localUid == Uid1)
@@ -249,8 +247,6 @@ void USendMultiCameraStreamWidget::onLeaveChannel(const RtcConnection& connectio
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
-		bIsChannelJoined = false;
-
 		GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Red, FString::Printf(TEXT("OnLeaveChannel")));
 
 		if (connection.localUid == Uid1)
@@ -260,7 +256,7 @@ void USendMultiCameraStreamWidget::onLeaveChannel(const RtcConnection& connectio
 			videoCanvas.uid = Uid1;
 			videoCanvas.sourceType = agora::rtc::VIDEO_SOURCE_TYPE::VIDEO_SOURCE_CAMERA;
 			RtcEngineProxy->setupLocalVideo(videoCanvas);
-			//PrimaryVideo->Brush = EmptyBrush;
+			PrimaryVideo->Brush = EmptyBrush;
 		}
 
 		if (connection.localUid == Uid2)
@@ -270,7 +266,6 @@ void USendMultiCameraStreamWidget::onLeaveChannel(const RtcConnection& connectio
 			videoCanvas.uid = Uid2;
 			videoCanvas.sourceType = agora::rtc::VIDEO_SOURCE_TYPE::VIDEO_SOURCE_CAMERA;
 			RtcEngineProxy->setupLocalVideo(videoCanvas);
-			SecondVideo->Brush = EmptyBrush;
 		}
 	});
 }

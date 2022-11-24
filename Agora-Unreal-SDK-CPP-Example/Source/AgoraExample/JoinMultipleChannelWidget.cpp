@@ -213,6 +213,10 @@ void UJoinMultipleChannelWidget::onJoinChannelSuccess(const RtcConnection& conne
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
+		if (!bInitialized)
+		{
+			return;
+		}
 		if (connection.localUid == Uid1)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("JoinChannelSuccess Video"));
@@ -239,6 +243,10 @@ void UJoinMultipleChannelWidget::onLeaveChannel(const RtcConnection& connection,
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
+		if (!bInitialized)
+		{
+			return;
+		}
 		if (connection.localUid == Uid1)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("JoinChannelSuccess Video"));
@@ -264,6 +272,10 @@ void UJoinMultipleChannelWidget::onUserJoined(const RtcConnection& connection, u
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
+		if (!bInitialized)
+		{
+			return;
+		}
 		if (remoteUid != Uid1 && remoteUid != Uid2)
 		{
 			agora::rtc::VideoCanvas videoCanvas;
@@ -283,6 +295,10 @@ void UJoinMultipleChannelWidget::onUserOffline(const RtcConnection& connection, 
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
+		if (!bInitialized)
+		{
+			return;
+		}
 		UE_LOG(LogTemp, Warning, TEXT("UVideoWidget::onUserOffline  uid: %d"), (int64)remoteUid);
 		agora::rtc::VideoCanvas videoCanvas;
 		videoCanvas.view = nullptr;

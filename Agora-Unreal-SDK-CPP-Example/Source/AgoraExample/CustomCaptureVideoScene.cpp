@@ -10,8 +10,6 @@
 #include "RHIDefinitions.h"
 
 
-
-
 void UCustomCaptureVideoScene::InitAgoraWidget(FString APP_ID, FString TOKEN, FString CHANNEL_NAME)
 {
 	CheckAndroidPermission();

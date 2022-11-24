@@ -9,8 +9,6 @@ void UEncryptionSampleWidget::InitAgoraWidget(FString APP_ID, FString TOKEN, FSt
 
 	InitAgoraEngine(APP_ID, TOKEN, CHANNEL_NAME);
 
-
-
 	SetUpUIEvent();
 }
 
@@ -83,6 +81,10 @@ void UEncryptionSampleWidget::onJoinChannelSuccess(const char* channel, agora::r
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
+		if (!bInitialized)
+		{
+			return;
+		}
 		UE_LOG(LogTemp, Warning, TEXT("JoinChannelSuccess uid:%d"), (int64)uid);
 		agora::rtc::VideoCanvas videoCanvas;
 		videoCanvas.view = localVideo;
@@ -96,6 +98,10 @@ void UEncryptionSampleWidget::onUserJoined(agora::rtc::uid_t uid, int elapsed) {
 
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
+		if (!bInitialized)
+		{
+			return;
+		}
 		UE_LOG(LogTemp, Warning, TEXT("UEncryptionSampleWidget::onUserJoined  uid: %d"), (int64)uid);
 		agora::rtc::VideoCanvas videoCanvas;
 		videoCanvas.view = remoteVideo;
@@ -113,6 +119,10 @@ void UEncryptionSampleWidget::onUserOffline(agora::rtc::uid_t uid, agora::rtc::U
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
+		if (!bInitialized)
+		{
+			return;
+		}
 		UE_LOG(LogTemp, Warning, TEXT("UEncryptionSampleWidget::onUserOffline  uid: %d"), (int64)uid);
 		agora::rtc::VideoCanvas videoCanvas;
 		videoCanvas.view = nullptr;
@@ -130,25 +140,15 @@ void UEncryptionSampleWidget::onUserOffline(agora::rtc::uid_t uid, agora::rtc::U
 	});
 }
 
-void UEncryptionSampleWidget::SetEncryption()
-{
-	char deviceName[32] = "EncryptionKdfSaltInBase64String";
-
-	EncryptionConfig config;
-	config.encryptionMode = EncrytionMode;
-	config.encryptionKey = TCHAR_TO_ANSI(*RoomPasswordTextBox->GetText().ToString());
-	FMemory::Memcpy(config.encryptionKdfSalt, deviceName, 32);
-
-	int ret = RtcEngineProxy->enableEncryption(true, config);
-
-	UE_LOG(LogTemp, Warning, TEXT("UEncryptionSampleWidget::SetEncryption %d"), ret);
-}
-
 
 void UEncryptionSampleWidget::onLeaveChannel(const agora::rtc::RtcStats& stats)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
+		if (!bInitialized)
+		{
+			return;
+		}
 		UE_LOG(LogTemp, Warning, TEXT("UEncryptionSampleWidget::onLeaveChannel"));
 		agora::rtc::VideoCanvas videoCanvas;
 		videoCanvas.view = nullptr;
@@ -162,6 +162,19 @@ void UEncryptionSampleWidget::onLeaveChannel(const agora::rtc::RtcStats& stats)
 }
 #pragma endregion RtcEngineCallBack
 
+void UEncryptionSampleWidget::SetEncryption()
+{
+	char deviceName[32] = "EncryptionKdfSaltInBase64String";
+
+	EncryptionConfig config;
+	config.encryptionMode = EncrytionMode;
+	config.encryptionKey = TCHAR_TO_ANSI(*RoomPasswordTextBox->GetText().ToString());
+	FMemory::Memcpy(config.encryptionKdfSalt, deviceName, 32);
+
+	int ret = RtcEngineProxy->enableEncryption(true, config);
+
+	UE_LOG(LogTemp, Warning, TEXT("UEncryptionSampleWidget::SetEncryption %d"), ret);
+}
 
 void UEncryptionSampleWidget::SetRemoteView(UImage* remoteview, uid_t uid)
 {

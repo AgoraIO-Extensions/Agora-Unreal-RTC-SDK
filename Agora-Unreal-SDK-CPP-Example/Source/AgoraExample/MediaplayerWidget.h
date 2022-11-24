@@ -71,6 +71,8 @@ public:
 
 	void InitAgoraWidget(FString APP_ID, FString TOKEN, FString CHANNEL_NAME) override;
 
+	bool GetInitlize();
+
 	IRtcEngine* RtcEngineProxy;
 
 	agora_refptr<IMediaPlayer> MediaPlayer;

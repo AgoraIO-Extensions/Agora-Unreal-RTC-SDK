@@ -66,7 +66,14 @@ void UCustomCaptureAudioWidget::JoinChannel() {
 	RtcEngineProxy->setClientRole(agora::rtc::CLIENT_ROLE_TYPE::CLIENT_ROLE_BROADCASTER);
 	RtcEngineProxy->joinChannel(TCHAR_TO_ANSI(*Token), TCHAR_TO_ANSI(*ChannelName), "", 0);
 }
-
+void UCustomCaptureAudioWidget::StartPushAudio()
+{
+	FString LoadDir = FPaths::ProjectContentDir() / TEXT("Audio/Agora.io-Interactions.wav");  //文件路径
+	TArray<uint8> result;
+	FFileHelper::LoadFileToArray(result, *LoadDir, 0);
+	Runnable = new FAgoraCaptureRunnable(MediaEngine, result.GetData(), result.Num() * sizeof(uint8));
+	FRunnableThread* RunnableThread = FRunnableThread::Create(Runnable, TEXT("Agora"));
+}
 
 #pragma region RtcEngineCallBack
 void UCustomCaptureAudioWidget::onJoinChannelSuccess(const char* channel, agora::rtc::uid_t uid, int elapsed)
@@ -77,21 +84,12 @@ void UCustomCaptureAudioWidget::onJoinChannelSuccess(const char* channel, agora:
 	});
 }
 
-void UCustomCaptureAudioWidget::StartPushAudio()
-{
-	FString LoadDir = FPaths::ProjectContentDir() / TEXT("Audio/Agora.io-Interactions.wav");  //文件路径
-	TArray<uint8> result;
-	FFileHelper::LoadFileToArray(result, *LoadDir, 0);
-	Runnable = new FAgoraCaptureRunnable(MediaEngine, result.GetData(), result.Num() * sizeof(uint8));
-	FRunnableThread* RunnableThread = FRunnableThread::Create(Runnable, TEXT("Agora"));
-}
-
 void UCustomCaptureAudioWidget::onUserJoined(agora::rtc::uid_t uid, int elapsed)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Blue, FString::Printf(TEXT("UCustomCaptureAudioWidget::onUserJoined uid: %d"), (int64)uid));
-		});
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Blue, FString::Printf(TEXT("UCustomCaptureAudioWidget::onUserJoined uid: %d"), (int64)uid));
+	});
 }
 #pragma endregion RtcEngineCallBack
 

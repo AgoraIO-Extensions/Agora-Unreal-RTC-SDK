@@ -112,6 +112,10 @@ void UAgoraVideoWidget::OnLeaveButtonClick() {
 void UAgoraVideoWidget::onJoinChannelSuccess(const char* channel, agora::rtc::uid_t uid, int elapsed) {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
+		if (!bInitialized)
+		{
+			return;
+		}
 		UE_LOG(LogTemp, Warning, TEXT("JoinChannelSuccess uid: %d"), (int64)uid);
 		agora::rtc::VideoCanvas videoCanvas;
 		videoCanvas.view = localVideo;
@@ -125,6 +129,10 @@ void UAgoraVideoWidget::onUserJoined(agora::rtc::uid_t uid, int elapsed) {
 
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
+		if (!bInitialized)
+		{
+			return;
+		}
 		UE_LOG(LogTemp, Warning, TEXT("UVideoWidget::onUserJoined  uid: %d"), (int64)uid);
 		UserImageData ImageData = GetUImageNoData(uid);
 		if (ImageData.image ==nullptr)
@@ -146,6 +154,10 @@ void UAgoraVideoWidget::onUserJoined(agora::rtc::uid_t uid, int elapsed) {
 void UAgoraVideoWidget::onUserOffline(agora::rtc::uid_t uid, agora::rtc::USER_OFFLINE_REASON_TYPE reason) {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
+		if (!bInitialized)
+		{
+			return;
+		}
 		UE_LOG(LogTemp, Warning, TEXT("UVideoWidget::onUserOffline  uid: %d"), (int64)uid);
 		UserImageData ImageData = RemoveUImageData(uid);
 
@@ -171,6 +183,10 @@ void UAgoraVideoWidget::onUserOffline(agora::rtc::uid_t uid, agora::rtc::USER_OF
 void UAgoraVideoWidget::onLeaveChannel(const agora::rtc::RtcStats& stats) {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
+		if (!bInitialized)
+		{
+			return;
+		}
 		UE_LOG(LogTemp, Warning, TEXT("UVideoWidget::onLeaveChannel"));
 		agora::rtc::VideoCanvas videoCanvas;
 		videoCanvas.view = nullptr;
@@ -252,10 +268,10 @@ void UAgoraVideoWidget::InitUI()
 
 	UsedArray.Empty();
 
-	ProfileComboBox->AddOption("Broadcaster");
-	ProfileComboBox->AddOption("Audience");
+	ProfileComboBox->AddOption("BROADCASTING");
+	ProfileComboBox->AddOption("COMMUNICATION");
 
-	ProfileComboBox->SetSelectedOption(FString("Broadcaster"));
+	ProfileComboBox->SetSelectedOption(FString("BROADCASTING"));
 
 	ScenarioComboBox->AddOption("DEFAULT");
 	ScenarioComboBox->AddOption("GAME_STREAMING");
@@ -273,8 +289,8 @@ void UAgoraVideoWidget::InitUI()
 	FPSComboBox->AddOption("60");
 	FPSComboBox->SetSelectedOption(FString("15"));
 
-	AgoraChannelProfileEnumMap.Add(FString("Broadcaster"), CHANNEL_PROFILE_TYPE::CHANNEL_PROFILE_LIVE_BROADCASTING);
-	AgoraChannelProfileEnumMap.Add(FString("Audience"), CHANNEL_PROFILE_TYPE::CHANNEL_PROFILE_COMMUNICATION);
+	AgoraChannelProfileEnumMap.Add(FString("BROADCASTING"), CHANNEL_PROFILE_TYPE::CHANNEL_PROFILE_LIVE_BROADCASTING);
+	AgoraChannelProfileEnumMap.Add(FString("COMMUNICATION"), CHANNEL_PROFILE_TYPE::CHANNEL_PROFILE_COMMUNICATION);
 
 	AgoraAudioScenarioEnumMap.Add(FString("DEFAULT"), AUDIO_SCENARIO_TYPE::AUDIO_SCENARIO_DEFAULT);
 	AgoraAudioScenarioEnumMap.Add(FString("GAME_STREAMING"), AUDIO_SCENARIO_TYPE::AUDIO_SCENARIO_GAME_STREAMING);
@@ -291,7 +307,7 @@ void UAgoraVideoWidget::InitUI()
 void UAgoraVideoWidget::NativeDestruct() {
 
 	Super::NativeDestruct();
-
+	UE_LOG(LogTemp, Warning, TEXT("UVideoWidget::NativeDestruct"));
 	if (RtcEngineProxy != nullptr)
 	{
 		RtcEngineProxy->unregisterEventHandler(this);
