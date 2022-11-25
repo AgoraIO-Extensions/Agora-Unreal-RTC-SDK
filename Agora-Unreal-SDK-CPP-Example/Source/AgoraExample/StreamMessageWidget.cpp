@@ -56,6 +56,7 @@ void UStreamMessageWidget::onSendButtonClick()
 	else
 	{
 		SendStreamMessage(streamId, TCHAR_TO_UTF8(*sendMessage));
+
 		SendTextBox->SetText(FText::GetEmpty());
 	}
 }
@@ -76,8 +77,8 @@ int UStreamMessageWidget::CreateDataStreamId()
 
 void UStreamMessageWidget::SendStreamMessage(int streamId, const char* message)
 {
-	int ret = RtcEngineProxy->sendStreamMessage(streamId, message, strlen(message));
-
+	int ret = RtcEngineProxy->sendStreamMessage(streamId, message, strlen(message)+1);
+	UE_LOG(LogTemp, Warning, TEXT("sendStreamMessage: message %s,length %d"), UTF8_TO_TCHAR(message), strlen(message));
 	UE_LOG(LogTemp, Warning, TEXT("SendStreamMessage: ret %d"), ret);
 }
 
@@ -118,12 +119,13 @@ void UStreamMessageWidget::onJoinChannelSuccess(const char* channel, agora::rtc:
 void UStreamMessageWidget::onStreamMessage(uid_t userId, int streamId, const char* data, size_t length, uint64_t sentTs)
 {
 	char* tempdata = new char[length];
-	FMemory::Memcpy(tempdata, data, length);
-	std::string temp(tempdata);
+	FMemory::Memcpy(tempdata, data, length*sizeof(char));
+	FString temp = FString(UTF8_TO_TCHAR(tempdata));
+	//std::string temp(tempdata);
 	delete[] tempdata;
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Blue, FString::Printf(TEXT("UStreamMessageWidget::onStreamMessage uid: %u,streamId %d,data %s,length %d,sentTs %d"), (int64)userId, streamId, *FString(UTF8_TO_TCHAR(temp.c_str())),length,sentTs));
+		GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Blue, FString::Printf(TEXT("UStreamMessageWidget::onStreamMessage uid: %u,streamId %d,data %s,length %d,sentTs %d"), (int64)userId, streamId, *temp,length,sentTs));
 	});
 
 }
