@@ -61,15 +61,20 @@ void UMainAgoraUserWidget::InitLevelArray()
 {
 	LevelArray.Add(FString("BasicAudioCallScene"));
 	LevelArray.Add(FString("BasicVideoCallScene"));
-#if PLATFORM_MAC&&!PLATFORM_WINDOWS
+#if PLATFORM_MAC&&PLATFORM_WINDOWS
 	LevelArray.Add(FString("DeviceManager"));
 	LevelArray.Add(FString("SendMultiCameraStream"));
 #endif
+#if !PLATFORM_IOS
 	LevelArray.Add(FString("JoinMultipleChannel"));
+#endif
 	LevelArray.Add(FString("MediaPlayer"));
+#if !PLATFORM_IOS
 	LevelArray.Add(FString("ScreenShare"));
+#endif
 	LevelArray.Add(FString("SpatialAudio"));
 	LevelArray.Add(FString("SetEncryptionScene"));
+	LevelArray.Add(FString("SendMultiCameraStream"));
 	LevelArray.Add(FString("StreamMessageScene"));
 	LevelArray.Add(FString("StartRtmpStreamWithTranscoding"));
 	LevelArray.Add(FString("CustomCaptureAudio"));
