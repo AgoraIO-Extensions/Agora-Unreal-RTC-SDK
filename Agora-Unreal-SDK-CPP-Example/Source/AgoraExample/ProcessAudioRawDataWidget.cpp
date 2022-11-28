@@ -6,13 +6,13 @@
 
 void UProcessAudioRawDataWidget::InitAgoraWidget(FString APP_ID, FString TOKEN, FString CHANNEL_NAME)
 {
+	InitConfig();
+
 	CheckAndroidPermission();
 
 	InitAgoraEngine(APP_ID, TOKEN, CHANNEL_NAME);
 
 	SetUpUIEvent();
-
-	InitConfig();
 }
 
 
