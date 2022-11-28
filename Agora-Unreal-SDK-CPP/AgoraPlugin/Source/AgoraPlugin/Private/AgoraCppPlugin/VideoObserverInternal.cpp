@@ -110,11 +110,6 @@ bool VideoObserverInternal::getRotationApplied()
     return true;
 }
 
-bool VideoObserverInternal::getMirrorApplied()
-{
-    return true;
-}
-
 uint32_t VideoObserverInternal::getObservedFramePosition()
 {
     return agora::media::base::POSITION_POST_CAPTURER | agora::media::base::POSITION_PRE_RENDERER;

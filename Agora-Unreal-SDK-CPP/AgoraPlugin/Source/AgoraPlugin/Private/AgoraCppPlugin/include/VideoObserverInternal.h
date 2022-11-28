@@ -52,9 +52,7 @@ public:
     virtual agora::media::base::VIDEO_PIXEL_FORMAT getVideoFormatPreference()  override;
 
     virtual bool getRotationApplied() override;
-
-    virtual bool getMirrorApplied() override;
-
+    
     virtual uint32_t getObservedFramePosition() override;
 
     virtual bool isExternal() override;
