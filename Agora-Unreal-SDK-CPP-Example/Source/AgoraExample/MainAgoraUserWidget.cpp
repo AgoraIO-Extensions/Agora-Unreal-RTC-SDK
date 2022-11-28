@@ -67,11 +67,9 @@ void UMainAgoraUserWidget::InitLevelArray()
 #endif
 #if !PLATFORM_IOS
 	LevelArray.Add(FString("JoinMultipleChannel"));
-#endif
-	LevelArray.Add(FString("MediaPlayer"));
-#if !PLATFORM_IOS
 	LevelArray.Add(FString("ScreenShare"));
 #endif
+	LevelArray.Add(FString("MediaPlayer"));
 	LevelArray.Add(FString("SpatialAudio"));
 	LevelArray.Add(FString("SetEncryptionScene"));
 	LevelArray.Add(FString("SendMultiCameraStream"));

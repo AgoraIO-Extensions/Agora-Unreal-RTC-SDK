@@ -140,6 +140,10 @@ bool UProcessVideoRawDataWidget::onCaptureVideoFrame(VideoFrame& videoFrame)
 	//UE_LOG(LogTemp, Warning, TEXT("UProcessVideoRawDataWidget::onCaptureVideoFrame"));
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
+		if (!bInitialized)
+		{
+			return;
+		}
 		if (LocalRenderTexture == nullptr || !LocalRenderTexture->IsValidLowLevel())
 		{
 			LocalRenderTexture = UTexture2D::CreateTransient(videoFrame.width, videoFrame.height, PF_R8G8B8A8);
@@ -164,6 +168,10 @@ bool UProcessVideoRawDataWidget::onRenderVideoFrame(const char* channelId, rtc::
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
+		if (!bInitialized)
+		{
+			return;
+		}
 		if (RemoteRenderTexture == nullptr || !RemoteRenderTexture->IsValidLowLevel())
 		{
 			RemoteRenderTexture = UTexture2D::CreateTransient(videoFrame.width, videoFrame.height, PF_R8G8B8A8);
