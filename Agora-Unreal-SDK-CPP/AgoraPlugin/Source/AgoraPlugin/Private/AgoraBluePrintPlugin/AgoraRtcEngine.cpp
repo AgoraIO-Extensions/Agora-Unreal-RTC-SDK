@@ -2117,7 +2117,7 @@ int AAgoraRtcEngine::EnableEncryption(bool enabled, FEncryptionConfig& config)
 	std::string EncryptionKey = TCHAR_TO_ANSI(*config.encryptionKey);
 	encryptionConfig.encryptionKey = EncryptionKey.c_str();
 	std::string encryptionKdfSalt = TCHAR_TO_ANSI(*config.encryptionKdfSalt);
-	FMemory::Memcpy(encryptionConfig.encryptionKdfSalt, encryptionKdfSalt.c_str(), 32);
+	FMemory::Memcpy(encryptionConfig.encryptionKdfSalt, encryptionKdfSalt.c_str(), strlen(encryptionKdfSalt.c_str())+1);
 	int ret = RtcEngineProxy::enableEncryption(enabled, encryptionConfig);
 	return ret;
 }
@@ -2132,7 +2132,7 @@ int AAgoraRtcEngine::SendStreamMessage(int streamId, FString data)
 {
 	const char* Data = TCHAR_TO_UTF8(*data);
 
-	return RtcEngineProxy::sendStreamMessage(streamId, Data, strlen(Data)+1);
+	return RtcEngineProxy::sendStreamMessage(streamId, Data, strlen(Data));
 }
 int AAgoraRtcEngine::AddVideoWatermark(FString watermarkUrl, FWatermarkOptions& options)
 {
