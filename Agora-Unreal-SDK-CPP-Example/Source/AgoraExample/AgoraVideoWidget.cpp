@@ -243,7 +243,7 @@ UserImageData UAgoraVideoWidget::RemoveUImageData(agora::rtc::uid_t uid) {
 		{
 			data = UsedArray[i];
 
-			UsedArray[i].uid = 0;
+			data.uid = 0;
 
 			NotUseArray.Add(data);
 

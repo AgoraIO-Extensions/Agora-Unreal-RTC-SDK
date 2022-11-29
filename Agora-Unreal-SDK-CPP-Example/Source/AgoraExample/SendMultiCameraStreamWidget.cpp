@@ -123,6 +123,7 @@ void USendMultiCameraStreamWidget::MainCameraJoinChannel()
 	options.autoSubscribeVideo = true;
 	options.publishCameraTrack = true;
 	options.publishScreenTrack = false;
+	options.enableAudioRecordingOrPlayout = true;
 	options.clientRoleType = agora::rtc::CLIENT_ROLE_TYPE::CLIENT_ROLE_BROADCASTER;
 #endif
 	ret =  ((agora::rtc::IRtcEngineEx*)RtcEngineProxy)->joinChannelEx(Token.c_str(), connection, options, nullptr);
