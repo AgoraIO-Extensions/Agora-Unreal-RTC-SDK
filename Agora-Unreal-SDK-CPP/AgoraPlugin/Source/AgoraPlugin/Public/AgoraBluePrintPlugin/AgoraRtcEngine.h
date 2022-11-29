@@ -621,7 +621,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
 	int ResumeAllChannelMediaRelayEx(const FRtcConnection& connection);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
-	int SetParameters(FString parameters) override;
+	int SetParameters(FString parameters);
 
 	private:
 		UIVideoDeviceManager* videoDeviceManager;
