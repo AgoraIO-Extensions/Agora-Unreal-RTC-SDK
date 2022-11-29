@@ -4636,7 +4636,7 @@ class IRtcEngine : public agora::base::IEngineBase {
   /** register encoded audio frame observer
    @return
   - 0: Success.
-  - < 0: Failure.
+  - < 0: Failure.p
    */
   virtual int registerAudioEncodedFrameObserver(const AudioEncodedFrameObserverConfig& config,  IAudioEncodedFrameObserver *observer) = 0;
 
@@ -4649,6 +4649,7 @@ class IRtcEngine : public agora::base::IEngineBase {
   - < 0: Failure.
   */
   virtual int stopAudioRecording() = 0;
+
   /**
    * Creates a media player source object and return its pointer. If full featured
    * media player source is supported, it will create it, or it will create a simple
@@ -7928,6 +7929,16 @@ class IRtcEngine : public agora::base::IEngineBase {
   */
 
   virtual int getNetworkType() = 0;
+
+  /** Provides the technical preview functionalities or special customizations by configuring the SDK with JSON options.
+
+   @param parameters Pointer to the set parameters in a JSON string.
+
+   @return
+   - 0: Success.
+   - < 0: Failure.
+   */
+  virtual int setParameters(const char* parameters) = 0;
 };
 
 class AAudioDeviceManager : public agora::util::AutoPtr<IAudioDeviceManager> {

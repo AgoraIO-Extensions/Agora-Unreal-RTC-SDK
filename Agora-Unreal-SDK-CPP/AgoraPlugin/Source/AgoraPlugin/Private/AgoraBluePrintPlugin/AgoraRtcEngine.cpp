@@ -3808,6 +3808,14 @@ int AAgoraRtcEngine::ResumeAllChannelMediaRelayEx(const FRtcConnection& connecti
 	return RtcEngineProxy::resumeAllChannelMediaRelayEx(rtcConnection);
 }
 
+
+int AAgoraRtcEngine::setParameters(FString parameters)
+{
+	std::string parameterstr = TCHAR_TO_ANSI(*parameters);
+
+	return RtcEngineProxy::setParameters(parameterstr.c_str());
+}
+
 int64 UIScreenCaptureSourceList::GetCount()
 {
 #if defined(_WIN32) || (defined(__APPLE__) && TARGET_OS_MAC && !TARGET_OS_IPHONE)

@@ -361,6 +361,15 @@ namespace agora
 				return -ERROR_NULLPTR;
 			}
 
+
+			int RtcEngineProxy::setParameters(const char* parameters)
+			{
+				if (RtcEngine != nullptr) {
+					return RtcEngine->setParameters(parameters);
+				}
+				return -ERROR_NULLPTR;
+			}
+
 			int RtcEngineProxy::setAudioScenario(agora::rtc::AUDIO_SCENARIO_TYPE scenario) {
 				if (RtcEngine != nullptr) {
 					return RtcEngine->setAudioScenario(scenario);
@@ -1784,7 +1793,6 @@ namespace agora
 				}
 				return -ERROR_NULLPTR;
 			}
-
 
 			int RtcEngineProxy::getNetworkType()
 			{

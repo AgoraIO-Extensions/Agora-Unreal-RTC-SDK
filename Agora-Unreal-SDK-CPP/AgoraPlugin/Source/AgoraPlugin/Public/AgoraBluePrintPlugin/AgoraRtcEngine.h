@@ -620,6 +620,9 @@ public:
 	int PauseAllChannelMediaRelayEx(const FRtcConnection& connection);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
 	int ResumeAllChannelMediaRelayEx(const FRtcConnection& connection);
+	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
+	int setParameters(FString parameters) override;
+
 	private:
 		UIVideoDeviceManager* videoDeviceManager;
 		UIAudioDeviceManager* audioDeviceManager;

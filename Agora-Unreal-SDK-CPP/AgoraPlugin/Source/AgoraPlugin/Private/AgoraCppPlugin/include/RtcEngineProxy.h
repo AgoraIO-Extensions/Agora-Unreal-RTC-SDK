@@ -376,7 +376,9 @@ namespace agora
 				virtual int setDualStreamModeEx(SIMULCAST_STREAM_MODE mode, const SimulcastStreamConfig& streamConfig, const RtcConnection& connection) override;
 				virtual int enableWirelessAccelerate(bool enabled) override;
 				virtual int getNetworkType() override;
+				virtual int setParameters(const char* parameters) override;
 				virtual int takeSnapshotEx(const RtcConnection& connection, uid_t uid, const char* filePath) override;
+
 
 			};
 		};
