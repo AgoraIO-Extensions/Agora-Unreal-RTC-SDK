@@ -2132,7 +2132,7 @@ int AAgoraRtcEngine::SendStreamMessage(int streamId, FString data)
 {
 	const char* Data = TCHAR_TO_UTF8(*data);
 
-	return RtcEngineProxy::sendStreamMessage(streamId, Data, strlen(Data));
+	return RtcEngineProxy::sendStreamMessage(streamId, Data, strlen(Data)+1);
 }
 int AAgoraRtcEngine::AddVideoWatermark(FString watermarkUrl, FWatermarkOptions& options)
 {
