@@ -3809,7 +3809,7 @@ int AAgoraRtcEngine::ResumeAllChannelMediaRelayEx(const FRtcConnection& connecti
 }
 
 
-int AAgoraRtcEngine::setParameters(FString parameters)
+int AAgoraRtcEngine::SetParameters(FString parameters)
 {
 	std::string parameterstr = TCHAR_TO_ANSI(*parameters);
 
