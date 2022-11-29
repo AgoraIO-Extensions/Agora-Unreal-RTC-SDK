@@ -115,16 +115,19 @@ void USendMultiCameraStreamWidget::MainCameraJoinChannel()
 
 
 	auto ret = RtcEngineProxy->startPrimaryCameraCapture(ConfigPrimary);
+
+	UE_LOG(LogTemp, Warning, TEXT("MainCameraJoinChannel returns: %d"), ret);
 	agora::rtc::ChannelMediaOptions options;
-#if !(PLATFORM_ANDROID || PLATFORM_IOS)
+#if PLATFORM_MAC || PLATFORM_WINDOWS
 	options.autoSubscribeAudio = true;
 	options.autoSubscribeVideo = true;
 	options.publishCameraTrack = true;
 	options.publishScreenTrack = false;
-	options.enableAudioRecordingOrPlayout = true;
 	options.clientRoleType = agora::rtc::CLIENT_ROLE_TYPE::CLIENT_ROLE_BROADCASTER;
 #endif
-	((agora::rtc::IRtcEngineEx*)RtcEngineProxy)->joinChannelEx(Token.c_str(), connection, options, nullptr);
+	ret =  ((agora::rtc::IRtcEngineEx*)RtcEngineProxy)->joinChannelEx(Token.c_str(), connection, options, nullptr);
+
+	UE_LOG(LogTemp, Warning, TEXT("MainCameraJoinChannel joinChannelEx returns: %d"), ret);
 }
 
 void USendMultiCameraStreamWidget::MainCameraLeaveChannel()
@@ -143,7 +146,7 @@ void USendMultiCameraStreamWidget::MainCameraLeaveChannel()
 	videoCanvas.sourceType = agora::rtc::VIDEO_SOURCE_TYPE::VIDEO_SOURCE_CAMERA_PRIMARY;
 	RtcEngineProxy->setupLocalVideo(videoCanvas);
 
-	UE_LOG(LogTemp, Warning, TEXT("SecondCameraLeaveChannel returns: %d ,ChannelName %s ,Uid %d"), ret, *FString(ChannelName.c_str()), Uid1);
+	UE_LOG(LogTemp, Warning, TEXT("MainCameraLeaveChannel returns: %d ,ChannelName %s ,Uid %d"), ret, *FString(ChannelName.c_str()), Uid1);
 	PrimaryVideo->Brush = EmptyBrush;
 }
 

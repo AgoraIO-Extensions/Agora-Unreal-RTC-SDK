@@ -38,11 +38,7 @@ struct UserImageData
 	{
 		if (this->image == s.image)
 		{
-			if (this->uid == s.uid)
-			{
-				return true;
-			}
-			return false;
+			return true;
 		}
 		return false;
 	}
