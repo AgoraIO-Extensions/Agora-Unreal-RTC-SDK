@@ -108,6 +108,7 @@ void UScreenShareWidget::StartScreenShrareClick()
 #else
 	RtcEngineProxy->stopScreenCapture();
 	agora::rtc::ScreenCaptureParameters capParam;
+	capParam.dimensions = videoDimensions;
 	const agora::rtc::Rectangle regionRect;
 #if PLATFORM_WINDOWS
 	SIZE size;
@@ -293,8 +294,9 @@ void UScreenShareWidget::OnConfirmButtonClick()
 	videoEncoderConfiguration.frameRate = FCString::Atoi(*FPSComboBox->GetSelectedOption());
 	UE_LOG(LogTemp, Warning, TEXT("UVideoWidget frameRate ======%s"), *FPSComboBox->GetSelectedOption());
 
-	VideoDimensions videoDimensions(FCString::Atoi(*WidthTextBox->GetText().ToString()), FCString::Atoi(*HeightTextBox->GetText().ToString()));
-	videoEncoderConfiguration.dimensions = videoDimensions;
+	VideoDimensions videoDimensionData(FCString::Atoi(*WidthTextBox->GetText().ToString()), FCString::Atoi(*HeightTextBox->GetText().ToString()));
+	videoEncoderConfiguration.dimensions = videoDimensionData;
+	videoDimensions = videoDimensionData;
 	videoEncoderConfiguration.bitrate = FCString::Atoi(*BitRateTextBox->GetText().ToString());
 	UE_LOG(LogTemp, Warning, TEXT("UVideoWidget Width:%d Height:%d"), FCString::Atoi(*WidthTextBox->GetText().ToString()), FCString::Atoi(*HeightTextBox->GetText().ToString()));
 	UE_LOG(LogTemp, Warning, TEXT("UVideoWidget Bitrate %d"), FCString::Atoi(*BitRateTextBox->GetText().ToString()));

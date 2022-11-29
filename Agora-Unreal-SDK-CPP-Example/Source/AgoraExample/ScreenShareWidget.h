@@ -146,6 +146,8 @@ private:
 
 	int SelectDisplayId;
 
+	VideoDimensions videoDimensions;
+
 	void InitUI();
 
 	void JoinChannel();
