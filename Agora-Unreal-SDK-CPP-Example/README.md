@@ -237,6 +237,9 @@ Try deleting the [Binaries] folder in your project
 
 Make sure you have accepted or added "Screen Recording" permission for the App (and the UE Editor) in your Mac Security and Privacy setting.
 
+### Why our app dpi changed after joinchannel?
+
+![dpiproblem](https://user-images.githubusercontent.com/47908151/204960841-7bfc949e-673d-41b1-9f4a-e34171402dc6.png)
 
 # Connect With Us
 - If you have any questions, create an issue [here](https://github.com/AgoraIO-Extensions/Agora-Unreal-SDK-CPP-NG/issues).
