@@ -239,6 +239,7 @@ Make sure you have accepted or added "Screen Recording" permission for the App (
 
 ### Why our app dpi changed after joinchannel?
 
+You can tick the checkboxes below
 ![dpiproblem](https://user-images.githubusercontent.com/47908151/204960841-7bfc949e-673d-41b1-9f4a-e34171402dc6.png)
 
 # Connect With Us
