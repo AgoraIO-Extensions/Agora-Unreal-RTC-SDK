@@ -3,7 +3,7 @@
 
 #include "AgoraBluePrintPlugin/IFrameObserver.h"
 
-bool AIAudioFrameObserver::onPlaybackAudioFrameBeforeMixing(const char* channelId, agora::rtc::uid_t uid, agora::media::IAudioFrameObserverBase::AudioFrame& audioFrame)
+bool UIAudioFrameObserver::onPlaybackAudioFrameBeforeMixing(const char* channelId, agora::rtc::uid_t uid, agora::media::IAudioFrameObserverBase::AudioFrame& audioFrame)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
@@ -22,36 +22,19 @@ bool AIAudioFrameObserver::onPlaybackAudioFrameBeforeMixing(const char* channelI
 }
 
 
-bool AIAudioFrameObserver::onEarMonitoringAudioFrame(AudioFrame& audioFrame)
+bool UIAudioFrameObserver::onEarMonitoringAudioFrame(AudioFrame& audioFrame)
 {
 	return true;
 }
 
-agora::media::IAudioFrameObserverBase::AudioParams AIAudioFrameObserver::getEarMonitoringAudioParams()
+agora::media::IAudioFrameObserverBase::AudioParams UIAudioFrameObserver::getEarMonitoringAudioParams()
 {
 	AudioParams params;
 
 	return params;
 }
 
-void AIAudioSpectrumObserver::BeginPlay()
-{
-	Super::BeginPlay();
-}
-
-
-AIAudioSpectrumObserver::AIAudioSpectrumObserver()
-{
-	PrimaryActorTick.bCanEverTick = false;
-}
-
-
-void AIAudioSpectrumObserver::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-}
-
-bool AIAudioSpectrumObserver::onLocalAudioSpectrum(const agora::media::AudioSpectrumData& data)
+bool UIAudioSpectrumObserver::onLocalAudioSpectrum(const agora::media::AudioSpectrumData& data)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
@@ -68,7 +51,7 @@ bool AIAudioSpectrumObserver::onLocalAudioSpectrum(const agora::media::AudioSpec
 	});
 	return true;
 }
-bool AIAudioSpectrumObserver::onRemoteAudioSpectrum(const agora::media::UserAudioSpectrumInfo* spectrums, unsigned int spectrumNumber)
+bool UIAudioSpectrumObserver::onRemoteAudioSpectrum(const agora::media::UserAudioSpectrumInfo* spectrums, unsigned int spectrumNumber)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
@@ -101,24 +84,8 @@ bool AIAudioSpectrumObserver::onRemoteAudioSpectrum(const agora::media::UserAudi
 	return true;
 }
 
-void AIVideoFrameObserver::BeginPlay()
-{
-	Super::BeginPlay();
-}
 
-
-AIVideoFrameObserver::AIVideoFrameObserver()
-{
-	PrimaryActorTick.bCanEverTick = false;
-}
-
-
-void AIVideoFrameObserver::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-}
-
-bool AIVideoFrameObserver::onCaptureVideoFrame(agora::media::base::VideoFrame& videoFrame)
+bool UIVideoFrameObserver::onCaptureVideoFrame(agora::media::base::VideoFrame& videoFrame)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
@@ -171,7 +138,7 @@ bool AIVideoFrameObserver::onCaptureVideoFrame(agora::media::base::VideoFrame& v
 	});
 	return true;
 }
-bool AIVideoFrameObserver::onPreEncodeVideoFrame(agora::media::base::VideoFrame& videoFrame)
+bool UIVideoFrameObserver::onPreEncodeVideoFrame(agora::media::base::VideoFrame& videoFrame)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
@@ -223,7 +190,7 @@ bool AIVideoFrameObserver::onPreEncodeVideoFrame(agora::media::base::VideoFrame&
 	});
 	return true;
 }
-bool AIVideoFrameObserver::onSecondaryCameraCaptureVideoFrame(agora::media::base::VideoFrame& videoFrame)
+bool UIVideoFrameObserver::onSecondaryCameraCaptureVideoFrame(agora::media::base::VideoFrame& videoFrame)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
@@ -275,7 +242,7 @@ bool AIVideoFrameObserver::onSecondaryCameraCaptureVideoFrame(agora::media::base
 	});
 	return true;
 }
-bool AIVideoFrameObserver::onSecondaryPreEncodeCameraVideoFrame(agora::media::base::VideoFrame& videoFrame)
+bool UIVideoFrameObserver::onSecondaryPreEncodeCameraVideoFrame(agora::media::base::VideoFrame& videoFrame)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
@@ -327,7 +294,7 @@ bool AIVideoFrameObserver::onSecondaryPreEncodeCameraVideoFrame(agora::media::ba
 	});
 	return true;
 }
-bool AIVideoFrameObserver::onScreenCaptureVideoFrame(agora::media::base::VideoFrame& videoFrame)
+bool UIVideoFrameObserver::onScreenCaptureVideoFrame(agora::media::base::VideoFrame& videoFrame)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
@@ -379,7 +346,7 @@ bool AIVideoFrameObserver::onScreenCaptureVideoFrame(agora::media::base::VideoFr
 	});
 	return true;
 }
-bool AIVideoFrameObserver::onPreEncodeScreenVideoFrame(agora::media::base::VideoFrame& videoFrame)
+bool UIVideoFrameObserver::onPreEncodeScreenVideoFrame(agora::media::base::VideoFrame& videoFrame)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
@@ -431,7 +398,7 @@ bool AIVideoFrameObserver::onPreEncodeScreenVideoFrame(agora::media::base::Video
 	});
 	return true;
 }
-bool AIVideoFrameObserver::onMediaPlayerVideoFrame(agora::media::base::VideoFrame& videoFrame, int mediaPlayerId)
+bool UIVideoFrameObserver::onMediaPlayerVideoFrame(agora::media::base::VideoFrame& videoFrame, int mediaPlayerId)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
@@ -484,7 +451,7 @@ bool AIVideoFrameObserver::onMediaPlayerVideoFrame(agora::media::base::VideoFram
 	});
 	return true;
 }
-bool AIVideoFrameObserver::onSecondaryScreenCaptureVideoFrame(agora::media::base::VideoFrame& videoFrame)
+bool UIVideoFrameObserver::onSecondaryScreenCaptureVideoFrame(agora::media::base::VideoFrame& videoFrame)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
@@ -537,7 +504,7 @@ bool AIVideoFrameObserver::onSecondaryScreenCaptureVideoFrame(agora::media::base
 	});
 	return true;
 }
-bool AIVideoFrameObserver::onSecondaryPreEncodeScreenVideoFrame(agora::media::base::VideoFrame& videoFrame)
+bool UIVideoFrameObserver::onSecondaryPreEncodeScreenVideoFrame(agora::media::base::VideoFrame& videoFrame)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
@@ -590,7 +557,7 @@ bool AIVideoFrameObserver::onSecondaryPreEncodeScreenVideoFrame(agora::media::ba
 	});
 	return true;
 }
-bool AIVideoFrameObserver::onRenderVideoFrame(const char* channelId, agora::rtc::uid_t remoteUid, agora::media::base::VideoFrame& videoFrame)
+bool UIVideoFrameObserver::onRenderVideoFrame(const char* channelId, agora::rtc::uid_t remoteUid, agora::media::base::VideoFrame& videoFrame)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
@@ -643,7 +610,7 @@ bool AIVideoFrameObserver::onRenderVideoFrame(const char* channelId, agora::rtc:
 	});
 	return true;
 }
-bool AIVideoFrameObserver::onTranscodedVideoFrame(agora::media::base::VideoFrame& videoFrame)
+bool UIVideoFrameObserver::onTranscodedVideoFrame(agora::media::base::VideoFrame& videoFrame)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
@@ -696,7 +663,7 @@ bool AIVideoFrameObserver::onTranscodedVideoFrame(agora::media::base::VideoFrame
 	});
 	return true;
 }
-agora::media::IVideoFrameObserver::VIDEO_FRAME_PROCESS_MODE AIVideoFrameObserver::getVideoFrameProcessMode()
+agora::media::IVideoFrameObserver::VIDEO_FRAME_PROCESS_MODE UIVideoFrameObserver::getVideoFrameProcessMode()
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
@@ -704,7 +671,7 @@ agora::media::IVideoFrameObserver::VIDEO_FRAME_PROCESS_MODE AIVideoFrameObserver
 	});
 	return PROCESS_MODE_READ_ONLY;
 }
-agora::media::base::VIDEO_PIXEL_FORMAT AIVideoFrameObserver::getVideoFormatPreference()
+agora::media::base::VIDEO_PIXEL_FORMAT UIVideoFrameObserver::getVideoFormatPreference()
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
@@ -714,24 +681,7 @@ agora::media::base::VIDEO_PIXEL_FORMAT AIVideoFrameObserver::getVideoFormatPrefe
 }
 
 
-void AIAudioFrameObserver::BeginPlay()
-{
-	Super::BeginPlay();
-}
-
-
-AIAudioFrameObserver::AIAudioFrameObserver()
-{
-	PrimaryActorTick.bCanEverTick = false;
-}
-
-
-void AIAudioFrameObserver::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-}
-
-bool AIAudioFrameObserver::onRecordAudioFrame(const char* channelId, agora::media::IAudioFrameObserverBase::AudioFrame& audioFrame)
+bool UIAudioFrameObserver::onRecordAudioFrame(const char* channelId, agora::media::IAudioFrameObserverBase::AudioFrame& audioFrame)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
@@ -748,7 +698,7 @@ bool AIAudioFrameObserver::onRecordAudioFrame(const char* channelId, agora::medi
 	});
 	return true;
 }
-bool AIAudioFrameObserver::onPlaybackAudioFrame(const char* channelId, agora::media::IAudioFrameObserverBase::AudioFrame& audioFrame)
+bool UIAudioFrameObserver::onPlaybackAudioFrame(const char* channelId, agora::media::IAudioFrameObserverBase::AudioFrame& audioFrame)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
@@ -765,7 +715,7 @@ bool AIAudioFrameObserver::onPlaybackAudioFrame(const char* channelId, agora::me
 	});
 	return true;
 }
-bool AIAudioFrameObserver::onMixedAudioFrame(const char* channelId, agora::media::IAudioFrameObserverBase::AudioFrame& audioFrame)
+bool UIAudioFrameObserver::onMixedAudioFrame(const char* channelId, agora::media::IAudioFrameObserverBase::AudioFrame& audioFrame)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
@@ -783,7 +733,7 @@ bool AIAudioFrameObserver::onMixedAudioFrame(const char* channelId, agora::media
 	return true;
 }
 
-int AIAudioFrameObserver::getObservedAudioFramePosition()
+int UIAudioFrameObserver::getObservedAudioFramePosition()
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
@@ -791,7 +741,7 @@ int AIAudioFrameObserver::getObservedAudioFramePosition()
 	});
 	return 0;
 }
-agora::media::IAudioFrameObserverBase::AudioParams AIAudioFrameObserver::getPlaybackAudioParams()
+agora::media::IAudioFrameObserverBase::AudioParams UIAudioFrameObserver::getPlaybackAudioParams()
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
@@ -802,7 +752,7 @@ agora::media::IAudioFrameObserverBase::AudioParams AIAudioFrameObserver::getPlay
 
 	return params;
 }
-agora::media::IAudioFrameObserverBase::AudioParams AIAudioFrameObserver::getRecordAudioParams()
+agora::media::IAudioFrameObserverBase::AudioParams UIAudioFrameObserver::getRecordAudioParams()
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
@@ -813,7 +763,7 @@ agora::media::IAudioFrameObserverBase::AudioParams AIAudioFrameObserver::getReco
 
 	return params;
 }
-agora::media::IAudioFrameObserverBase::AudioParams AIAudioFrameObserver::getMixedAudioParams()
+agora::media::IAudioFrameObserverBase::AudioParams UIAudioFrameObserver::getMixedAudioParams()
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
@@ -825,7 +775,7 @@ agora::media::IAudioFrameObserverBase::AudioParams AIAudioFrameObserver::getMixe
 	return params;
 }
 
-bool AIVideoFrameObserver::getRotationApplied()
+bool UIVideoFrameObserver::getRotationApplied()
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
@@ -833,7 +783,7 @@ bool AIVideoFrameObserver::getRotationApplied()
 	});
 	return true;
 }
-bool AIVideoFrameObserver::getMirrorApplied()
+bool UIVideoFrameObserver::getMirrorApplied()
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
@@ -841,7 +791,7 @@ bool AIVideoFrameObserver::getMirrorApplied()
 	});
 	return false;
 }
-uint32_t AIVideoFrameObserver::getObservedFramePosition()
+uint32_t UIVideoFrameObserver::getObservedFramePosition()
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
@@ -849,7 +799,7 @@ uint32_t AIVideoFrameObserver::getObservedFramePosition()
 	});
 	return agora::media::base::POSITION_POST_CAPTURER | agora::media::base::POSITION_PRE_RENDERER;
 }
-bool AIVideoFrameObserver::isExternal()
+bool UIVideoFrameObserver::isExternal()
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{

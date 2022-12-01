@@ -224,14 +224,10 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FGetMixedAudioParams);
 
 
 UCLASS(Blueprintable)
-class AGORAPLUGIN_API AIAudioFrameObserver : public AActor, public agora::media::IAudioFrameObserver
+class AGORAPLUGIN_API UIAudioFrameObserver : public UObject, public agora::media::IAudioFrameObserver
 {
 	GENERATED_BODY()
-protected:
-	void BeginPlay() override;
 public:
-	AIAudioFrameObserver();
-	void Tick(float DeltaTime) override;
 	UPROPERTY(BlueprintAssignable, Category = "Agora|Event")
 	FOnPlaybackAudioFrameBeforeMixing OnPlaybackAudioFrameBeforeMixing;
 	UPROPERTY(BlueprintAssignable, Category = "Agora|Event")
@@ -274,14 +270,10 @@ public:
 
 
 UCLASS(Blueprintable)
-class AGORAPLUGIN_API AIAudioSpectrumObserver : public AActor, public agora::media::IAudioSpectrumObserver
+class AGORAPLUGIN_API UIAudioSpectrumObserver : public UObject, public agora::media::IAudioSpectrumObserver
 {
 	GENERATED_BODY()
-protected:
-	void BeginPlay() override;
 public:
-	AIAudioSpectrumObserver();
-	void Tick(float DeltaTime) override;
 	UPROPERTY(BlueprintAssignable, Category = "Agora|Event")
 	FOnLocalAudioSpectrum OnLocalAudioSpectrum;
 	UPROPERTY(BlueprintAssignable, Category = "Agora|Event")
@@ -297,14 +289,10 @@ public:
 
 
 UCLASS(Blueprintable)
-class AGORAPLUGIN_API AIVideoFrameObserver : public AActor, public agora::media::IVideoFrameObserver
+class AGORAPLUGIN_API UIVideoFrameObserver : public UObject, public agora::media::IVideoFrameObserver
 {
 	GENERATED_BODY()
-protected:
-	void BeginPlay() override;
 public:
-	AIVideoFrameObserver();
-	void Tick(float DeltaTime) override;
 	UPROPERTY(BlueprintAssignable, Category = "Agora|Event")
 	FOnCaptureVideoFrame OnCaptureVideoFrame;
 	UPROPERTY(BlueprintAssignable, Category = "Agora|Event")

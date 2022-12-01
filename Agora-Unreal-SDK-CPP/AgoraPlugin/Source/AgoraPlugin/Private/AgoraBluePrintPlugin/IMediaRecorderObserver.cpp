@@ -4,30 +4,14 @@
 #include "AgoraBluePrintPlugin/IMediaRecorderObserver.h"
 
 
-void AIMediaRecorderObserver::BeginPlay()
-{
-	Super::BeginPlay();
-}
-
-
-AIMediaRecorderObserver::AIMediaRecorderObserver()
-{
-	PrimaryActorTick.bCanEverTick = false;
-}
-
-void AIMediaRecorderObserver::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-}
-
-void AIMediaRecorderObserver::onRecorderStateChanged(agora::media::RecorderState state, agora::media::RecorderErrorCode error)
+void UIMediaRecorderObserver::onRecorderStateChanged(agora::media::RecorderState state, agora::media::RecorderErrorCode error)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
 		OnRecorderStateChanged.Broadcast((ERecorderState)state, (ERecorderErrorCode)error);
 	});
 }
-void AIMediaRecorderObserver::onRecorderInfoUpdated(const agora::media::RecorderInfo& info)
+void UIMediaRecorderObserver::onRecorderInfoUpdated(const agora::media::RecorderInfo& info)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{

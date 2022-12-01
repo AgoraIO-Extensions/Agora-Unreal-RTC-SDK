@@ -30,7 +30,7 @@ struct FAgoraMediaSource
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|MediaSource")
 	AGORAOPTIONAL isLiveSource;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|MediaSource")
-	AIMediaPlayerCustomDataProvider* provider;
+	UIMediaPlayerCustomDataProvider* provider;
 };
 UENUM(BlueprintType)
 enum class EAUDIO_DUAL_MONO_MODE : uint8 {
@@ -101,7 +101,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Agora|IMediaPlayer")
 	int Open(FString url, int64 startPos);
 	UFUNCTION(BlueprintCallable, Category = "Agora|IMediaPlayer")
-	int OpenWithCustomSource(int64 startPos, AIMediaPlayerCustomDataProvider* provider);
+	int OpenWithCustomSource(int64 startPos, UIMediaPlayerCustomDataProvider* provider);
 	UFUNCTION(BlueprintCallable, Category = "Agora|IMediaPlayer")
 	int OpenWithMediaSource(FAgoraMediaSource& source);
 	UFUNCTION(BlueprintCallable, Category = "Agora|IMediaPlayer")
@@ -157,23 +157,21 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Agora|IMediaPlayer")
 	int SetRenderMode(ERENDER_MODE_TYPE renderMode);
 	UFUNCTION(BlueprintCallable, Category = "Agora|IMediaPlayer")
-	int RegisterPlayerSourceObserver(AIMediaPlayerSourceObserver* observer);
+	int RegisterPlayerSourceObserver(UIMediaPlayerSourceObserver* observer);
 	UFUNCTION(BlueprintCallable, Category = "Agora|IMediaPlayer")
-	int UnregisterPlayerSourceObserver(AIMediaPlayerSourceObserver* observer);
-	//UFUNCTION(BlueprintCallable, Category = "Agora|IMediaPlayer")
-	//int RegisterAudioFrameObserver(UIAudioFrameObserver* observer);
+	int UnregisterPlayerSourceObserver(UIMediaPlayerSourceObserver* observer);
 	UFUNCTION(BlueprintCallable, Category = "Agora|IMediaPlayer")
-	int RegisterAudioFrameObserver(AIAudioFrameObserver* observer, ERAW_AUDIO_FRAME_OP_MODE_TYPE mode);
+	int RegisterAudioFrameObserver(UIAudioFrameObserver* observer, ERAW_AUDIO_FRAME_OP_MODE_TYPE mode);
 	UFUNCTION(BlueprintCallable, Category = "Agora|IMediaPlayer")
-	int UnregisterAudioFrameObserver(AIAudioFrameObserver* observer);
+	int UnregisterAudioFrameObserver(UIAudioFrameObserver* observer);
 	UFUNCTION(BlueprintCallable, Category = "Agora|IMediaPlayer")
-	int RegisterVideoFrameObserver(AIVideoFrameObserver* observer);
+	int RegisterVideoFrameObserver(UIVideoFrameObserver* observer);
 	UFUNCTION(BlueprintCallable, Category = "Agora|IMediaPlayer")
-	int UnregisterVideoFrameObserver(AIVideoFrameObserver* observer);
+	int UnregisterVideoFrameObserver(UIVideoFrameObserver* observer);
 	UFUNCTION(BlueprintCallable, Category = "Agora|IMediaPlayer")
-	int RegisterMediaPlayerAudioSpectrumObserver(AIAudioSpectrumObserver* observer, int intervalInMS);
+	int RegisterMediaPlayerAudioSpectrumObserver(UIAudioSpectrumObserver* observer, int intervalInMS);
 	UFUNCTION(BlueprintCallable, Category = "Agora|IMediaPlayer")
-	int UnregisterMediaPlayerAudioSpectrumObserver(AIAudioSpectrumObserver* observer);
+	int UnregisterMediaPlayerAudioSpectrumObserver(UIAudioSpectrumObserver* observer);
 	UFUNCTION(BlueprintCallable, Category = "Agora|IMediaPlayer")
 	int SetAudioDualMonoMode(EAUDIO_DUAL_MONO_MODE mode);
 	UFUNCTION(BlueprintCallable, Category = "Agora|IMediaPlayer")

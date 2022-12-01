@@ -5,8 +5,8 @@
 #include "Components/Image.h"
 #include "URtcEngineProxyCompatibility.generated.h"
 
-class AIRtcEngineEventHandler;
-class AIRtcEngineEventHandlerEx;
+class UIRtcEngineEventHandler;
+class UIRtcEngineEventHandlerEx;
 UENUM(BlueprintType)
 enum class AGORAOPTIONAL : uint8 {
 	AGORA_NULL_VALUE = 0,
@@ -528,7 +528,7 @@ struct FRtcEngineContext
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RtcEngineContext")
 	FString appId;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RtcEngineContext")
-	AIRtcEngineEventHandler* eventHandler;
+	UIRtcEngineEventHandler* eventHandler;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RtcEngineContext")
 	int64 context;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RtcEngineContext")

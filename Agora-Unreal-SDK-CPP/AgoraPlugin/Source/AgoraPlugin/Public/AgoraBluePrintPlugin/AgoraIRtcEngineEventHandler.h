@@ -109,13 +109,12 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnMetadataReceived, const FAgoraMet
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnDirectCdnStreamingStateChanged, EDIRECT_CDN_STREAMING_STATE, state, EDIRECT_CDN_STREAMING_ERROR, error, FString, message);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnDirectCdnStreamingStats, const FDirectCdnStreamingStats&, stats);
 
-UCLASS()
-class AGORAPLUGIN_API AIRtcEngineEventHandler : public AActor, public agora::rtc::IRtcEngineEventHandlerEx
+UCLASS(Blueprintable)
+class AGORAPLUGIN_API UIRtcEngineEventHandler : public UObject, public agora::rtc::IRtcEngineEventHandlerEx
 {
 	GENERATED_BODY()
 
 protected:
-	void BeginPlay() override;
 	using IRtcEngineEventHandlerEx::eventHandlerType;
 	using IRtcEngineEventHandlerEx::onJoinChannelSuccess;
 	using IRtcEngineEventHandlerEx::onRejoinChannelSuccess;
@@ -173,10 +172,6 @@ protected:
 	using IRtcEngineEventHandlerEx::onVideoPublishStateChanged;
 	using IRtcEngineEventHandlerEx::onSnapshotTaken;
 public:
-	AIRtcEngineEventHandler();
-
-	void Tick(float DeltaTime) override;
-
 	UPROPERTY(BlueprintAssignable, Category = "Agora|Event")
 	FEventHandlerType EventHandlerType;
 	UPROPERTY(BlueprintAssignable, Category = "Agora|Event")

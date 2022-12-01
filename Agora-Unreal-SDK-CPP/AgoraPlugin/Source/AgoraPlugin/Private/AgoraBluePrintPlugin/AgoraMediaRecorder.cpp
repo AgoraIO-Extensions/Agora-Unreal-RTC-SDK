@@ -3,7 +3,7 @@
 
 #include "AgoraBluePrintPlugin/AgoraMediaRecorder.h"
 
-int UIMediaRecorder::SetMediaRecorderObserver(FRtcConnection& connection, AIMediaRecorderObserver* callback)
+int UIMediaRecorder::SetMediaRecorderObserver(FRtcConnection& connection, UIMediaRecorderObserver* callback)
 {
 	agora::rtc::RtcConnection rtcConnection;
 	rtcConnection.channelId = TCHAR_TO_ANSI(*connection.channelId);

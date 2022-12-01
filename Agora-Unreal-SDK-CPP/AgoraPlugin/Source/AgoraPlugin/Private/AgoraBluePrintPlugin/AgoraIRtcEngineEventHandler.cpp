@@ -3,22 +3,7 @@
 
 #include "AgoraBluePrintPlugin/AgoraIRtcEngineEventHandler.h"
 
-AIRtcEngineEventHandler::AIRtcEngineEventHandler()
-{
-	PrimaryActorTick.bCanEverTick = false;
-}
-
-void AIRtcEngineEventHandler::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-}
-
-void AIRtcEngineEventHandler::BeginPlay()
-{
-	Super::BeginPlay();
-}
-
-void AIRtcEngineEventHandler::onJoinChannelSuccess(const char* channel, agora::rtc::uid_t uid, int elapsed)
+void UIRtcEngineEventHandler::onJoinChannelSuccess(const char* channel, agora::rtc::uid_t uid, int elapsed)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
@@ -26,7 +11,7 @@ void AIRtcEngineEventHandler::onJoinChannelSuccess(const char* channel, agora::r
 	});
 
 }
-void AIRtcEngineEventHandler::onRejoinChannelSuccess(const char* channel, agora::rtc::uid_t uid, int elapsed)
+void UIRtcEngineEventHandler::onRejoinChannelSuccess(const char* channel, agora::rtc::uid_t uid, int elapsed)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
@@ -34,28 +19,28 @@ void AIRtcEngineEventHandler::onRejoinChannelSuccess(const char* channel, agora:
 	});
 	
 }
-void AIRtcEngineEventHandler::onProxyConnected(const char* channel, agora::rtc::uid_t uid, agora::rtc::PROXY_TYPE proxyType, const char* localProxyIp, int elapsed)
+void UIRtcEngineEventHandler::onProxyConnected(const char* channel, agora::rtc::uid_t uid, agora::rtc::PROXY_TYPE proxyType, const char* localProxyIp, int elapsed)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
 		OnProxyConnected.Broadcast(FString(channel), (int64)uid, (EPROXY_TYPE)proxyType, FString(localProxyIp), elapsed);
 	});
 }
-void AIRtcEngineEventHandler::onError(int err, const char* msg)
+void UIRtcEngineEventHandler::onError(int err, const char* msg)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
 		OnError.Broadcast(err, FString(msg));
 	});
 }
-void AIRtcEngineEventHandler::onAudioQuality(agora::rtc::uid_t uid, int quality, unsigned short delay, unsigned short lost)
+void UIRtcEngineEventHandler::onAudioQuality(agora::rtc::uid_t uid, int quality, unsigned short delay, unsigned short lost)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
 		OnAudioQuality.Broadcast((int64)uid, quality, delay, lost);
 	});
 }
-void AIRtcEngineEventHandler::onLastmileProbeResult(const agora::rtc::LastmileProbeResult& result)
+void UIRtcEngineEventHandler::onLastmileProbeResult(const agora::rtc::LastmileProbeResult& result)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
@@ -75,7 +60,7 @@ void AIRtcEngineEventHandler::onLastmileProbeResult(const agora::rtc::LastmilePr
 		OnLastmileProbeResult.Broadcast(lastmileProbeResult);
 	});
 }
-void AIRtcEngineEventHandler::onAudioVolumeIndication(const agora::rtc::AudioVolumeInfo* speakers, unsigned int speakerNumber, int totalVolume)
+void UIRtcEngineEventHandler::onAudioVolumeIndication(const agora::rtc::AudioVolumeInfo* speakers, unsigned int speakerNumber, int totalVolume)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
@@ -93,7 +78,7 @@ void AIRtcEngineEventHandler::onAudioVolumeIndication(const agora::rtc::AudioVol
 		OnAudioVolumeIndication.Broadcast(audioVolumeInfo, totalVolume);
 	});
 }
-void AIRtcEngineEventHandler::onLeaveChannel(const agora::rtc::RtcStats& stats)
+void UIRtcEngineEventHandler::onLeaveChannel(const agora::rtc::RtcStats& stats)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
@@ -134,7 +119,7 @@ void AIRtcEngineEventHandler::onLeaveChannel(const agora::rtc::RtcStats& stats)
 		OnLeaveChannel.Broadcast(rtcStats);
 	});
 }
-void AIRtcEngineEventHandler::onRtcStats(const agora::rtc::RtcStats& stats)
+void UIRtcEngineEventHandler::onRtcStats(const agora::rtc::RtcStats& stats)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
@@ -175,28 +160,28 @@ void AIRtcEngineEventHandler::onRtcStats(const agora::rtc::RtcStats& stats)
 		OnRtcStats.Broadcast(rtcStats);
 	});
 }
-void AIRtcEngineEventHandler::onAudioDeviceStateChanged(const char* deviceId, int deviceType, int deviceState)
+void UIRtcEngineEventHandler::onAudioDeviceStateChanged(const char* deviceId, int deviceType, int deviceState)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
 		OnAudioDeviceStateChanged.Broadcast(FString(deviceId), deviceType, deviceState);
 	});
 }
-void AIRtcEngineEventHandler::onAudioMixingFinished()
+void UIRtcEngineEventHandler::onAudioMixingFinished()
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
 		OnAudioMixingFinished.Broadcast();
 	});
 }
-void AIRtcEngineEventHandler::onAudioEffectFinished(int soundId)
+void UIRtcEngineEventHandler::onAudioEffectFinished(int soundId)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
 		OnAudioEffectFinished.Broadcast(soundId);
 	});
 }
-void AIRtcEngineEventHandler::onVideoDeviceStateChanged(const char* deviceId, int deviceType, int deviceState)
+void UIRtcEngineEventHandler::onVideoDeviceStateChanged(const char* deviceId, int deviceType, int deviceState)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
@@ -204,21 +189,21 @@ void AIRtcEngineEventHandler::onVideoDeviceStateChanged(const char* deviceId, in
 	});
 }
 
-void AIRtcEngineEventHandler::onNetworkQuality(agora::rtc::uid_t uid, int txQuality, int rxQuality)
+void UIRtcEngineEventHandler::onNetworkQuality(agora::rtc::uid_t uid, int txQuality, int rxQuality)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
 		OnNetworkQuality.Broadcast((int64)uid, txQuality, rxQuality);
 	});
 }
-void AIRtcEngineEventHandler::onIntraRequestReceived()
+void UIRtcEngineEventHandler::onIntraRequestReceived()
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
 		OnIntraRequestReceived.Broadcast();
 	});
 }
-void AIRtcEngineEventHandler::onUplinkNetworkInfoUpdated(const agora::rtc::UplinkNetworkInfo& info)
+void UIRtcEngineEventHandler::onUplinkNetworkInfoUpdated(const agora::rtc::UplinkNetworkInfo& info)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
@@ -227,7 +212,7 @@ void AIRtcEngineEventHandler::onUplinkNetworkInfoUpdated(const agora::rtc::Uplin
 		OnUplinkNetworkInfoUpdated.Broadcast(uplinkNetworkInfo);
 	});
 }
-void AIRtcEngineEventHandler::onDownlinkNetworkInfoUpdated(const agora::rtc::DownlinkNetworkInfo& info)
+void UIRtcEngineEventHandler::onDownlinkNetworkInfoUpdated(const agora::rtc::DownlinkNetworkInfo& info)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
@@ -248,119 +233,119 @@ void AIRtcEngineEventHandler::onDownlinkNetworkInfoUpdated(const agora::rtc::Dow
 		OnDownlinkNetworkInfoUpdated.Broadcast(downlinkNetworkInfo);
 	});
 }
-void AIRtcEngineEventHandler::onLastmileQuality(int quality)
+void UIRtcEngineEventHandler::onLastmileQuality(int quality)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
 		OnLastmileQuality.Broadcast(quality);
 	});
 }
-void AIRtcEngineEventHandler::onFirstLocalVideoFrame(agora::rtc::VIDEO_SOURCE_TYPE source, int width, int height, int elapsed)
+void UIRtcEngineEventHandler::onFirstLocalVideoFrame(agora::rtc::VIDEO_SOURCE_TYPE source, int width, int height, int elapsed)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
 		OnFirstLocalVideoFrame.Broadcast((EVIDEO_SOURCE_TYPE)source, width, height, elapsed);
 	});
 }
-void AIRtcEngineEventHandler::onFirstLocalVideoFramePublished(agora::rtc::VIDEO_SOURCE_TYPE source, int elapsed)
+void UIRtcEngineEventHandler::onFirstLocalVideoFramePublished(agora::rtc::VIDEO_SOURCE_TYPE source, int elapsed)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
 		OnFirstLocalVideoFramePublished.Broadcast((EVIDEO_SOURCE_TYPE)source, elapsed);
 	});
 }
-void AIRtcEngineEventHandler::onFirstRemoteVideoDecoded(agora::rtc::uid_t uid, int width, int height, int elapsed)
+void UIRtcEngineEventHandler::onFirstRemoteVideoDecoded(agora::rtc::uid_t uid, int width, int height, int elapsed)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
 		OnFirstRemoteVideoDecoded.Broadcast((int64)uid, width, height, elapsed);
 	});
 }
-void AIRtcEngineEventHandler::onVideoSizeChanged(agora::rtc::VIDEO_SOURCE_TYPE sourceType, agora::rtc::uid_t uid, int width, int height, int rotation)
+void UIRtcEngineEventHandler::onVideoSizeChanged(agora::rtc::VIDEO_SOURCE_TYPE sourceType, agora::rtc::uid_t uid, int width, int height, int rotation)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
 		OnVideoSizeChanged.Broadcast((EVIDEO_SOURCE_TYPE)sourceType,(int64)uid, width, height, rotation);
 	});
 }
-void AIRtcEngineEventHandler::onLocalVideoStateChanged(agora::rtc::VIDEO_SOURCE_TYPE source, agora::rtc::LOCAL_VIDEO_STREAM_STATE state, agora::rtc::LOCAL_VIDEO_STREAM_ERROR error)
+void UIRtcEngineEventHandler::onLocalVideoStateChanged(agora::rtc::VIDEO_SOURCE_TYPE source, agora::rtc::LOCAL_VIDEO_STREAM_STATE state, agora::rtc::LOCAL_VIDEO_STREAM_ERROR error)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
 		OnLocalVideoStateChanged.Broadcast((EVIDEO_SOURCE_TYPE)source, (ELOCAL_VIDEO_STREAM_STATE)state, (ELOCAL_VIDEO_STREAM_ERROR)error);
 	});
 }
-void AIRtcEngineEventHandler::onRemoteVideoStateChanged(agora::rtc::uid_t uid, agora::rtc::REMOTE_VIDEO_STATE state, agora::rtc::REMOTE_VIDEO_STATE_REASON reason, int elapsed)
+void UIRtcEngineEventHandler::onRemoteVideoStateChanged(agora::rtc::uid_t uid, agora::rtc::REMOTE_VIDEO_STATE state, agora::rtc::REMOTE_VIDEO_STATE_REASON reason, int elapsed)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
 		OnRemoteVideoStateChanged.Broadcast((int64)uid, (EREMOTE_VIDEO_STATE)state, (EREMOTE_VIDEO_STATE_REASON)reason, elapsed);
 	});
 }
-void AIRtcEngineEventHandler::onFirstRemoteVideoFrame(agora::rtc::uid_t userId, int width, int height, int elapsed)
+void UIRtcEngineEventHandler::onFirstRemoteVideoFrame(agora::rtc::uid_t userId, int width, int height, int elapsed)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
 		OnFirstRemoteVideoFrame.Broadcast((int64)userId, width, height, elapsed);
 	});
 }
-void AIRtcEngineEventHandler::onUserJoined(agora::rtc::uid_t uid, int elapsed)
+void UIRtcEngineEventHandler::onUserJoined(agora::rtc::uid_t uid, int elapsed)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
 		OnUserJoined.Broadcast((int64)uid, elapsed);
 	});
 }
-void AIRtcEngineEventHandler::onUserOffline(agora::rtc::uid_t uid, agora::rtc::USER_OFFLINE_REASON_TYPE reason)
+void UIRtcEngineEventHandler::onUserOffline(agora::rtc::uid_t uid, agora::rtc::USER_OFFLINE_REASON_TYPE reason)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
 		OnUserOffline.Broadcast((int64)uid, (EUSER_OFFLINE_REASON_TYPE)reason);
 	});
 }
-void AIRtcEngineEventHandler::onUserMuteAudio(agora::rtc::uid_t uid, bool muted)
+void UIRtcEngineEventHandler::onUserMuteAudio(agora::rtc::uid_t uid, bool muted)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
 		OnUserMuteAudio.Broadcast((int64)uid, muted);
 	});
 }
-void AIRtcEngineEventHandler::onUserMuteVideo(agora::rtc::uid_t userId, bool muted)
+void UIRtcEngineEventHandler::onUserMuteVideo(agora::rtc::uid_t userId, bool muted)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
 		OnUserMuteVideo.Broadcast((int64)userId, muted);
 	});
 }
-void AIRtcEngineEventHandler::onUserEnableVideo(agora::rtc::uid_t uid, bool enabled)
+void UIRtcEngineEventHandler::onUserEnableVideo(agora::rtc::uid_t uid, bool enabled)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
 		OnUserEnableVideo.Broadcast((int64)uid, enabled);
 	});
 }
-void AIRtcEngineEventHandler::onUserStateChanged(agora::rtc::uid_t uid, uint32_t state)
+void UIRtcEngineEventHandler::onUserStateChanged(agora::rtc::uid_t uid, uint32_t state)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
 		OnUserStateChanged.Broadcast((int64)uid, state);
 	});
 }
-void AIRtcEngineEventHandler::onUserEnableLocalVideo(agora::rtc::uid_t uid, bool enabled)
+void UIRtcEngineEventHandler::onUserEnableLocalVideo(agora::rtc::uid_t uid, bool enabled)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
 		OnUserEnableLocalVideo.Broadcast((int64)uid, enabled);
 	});
 }
-void AIRtcEngineEventHandler::onApiCallExecuted(int err, const char* api, const char* result)
+void UIRtcEngineEventHandler::onApiCallExecuted(int err, const char* api, const char* result)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
 		OnApiCallExecuted.Broadcast(err, FString(api), FString(result));
 	});
 }
-void AIRtcEngineEventHandler::onLocalAudioStats(const agora::rtc::LocalAudioStats& stats)
+void UIRtcEngineEventHandler::onLocalAudioStats(const agora::rtc::LocalAudioStats& stats)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
@@ -374,7 +359,7 @@ void AIRtcEngineEventHandler::onLocalAudioStats(const agora::rtc::LocalAudioStat
 		OnLocalAudioStats.Broadcast(localAudioStats);
 	});
 }
-void AIRtcEngineEventHandler::onRemoteAudioStats(const agora::rtc::RemoteAudioStats& stats)
+void UIRtcEngineEventHandler::onRemoteAudioStats(const agora::rtc::RemoteAudioStats& stats)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
@@ -397,7 +382,7 @@ void AIRtcEngineEventHandler::onRemoteAudioStats(const agora::rtc::RemoteAudioSt
 		OnRemoteAudioStats.Broadcast(remoteAudioStats);
 	});
 }
-void AIRtcEngineEventHandler::onLocalVideoStats(agora::rtc::VIDEO_SOURCE_TYPE source, const agora::rtc::LocalVideoStats& stats)
+void UIRtcEngineEventHandler::onLocalVideoStats(agora::rtc::VIDEO_SOURCE_TYPE source, const agora::rtc::LocalVideoStats& stats)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
@@ -427,7 +412,7 @@ void AIRtcEngineEventHandler::onLocalVideoStats(agora::rtc::VIDEO_SOURCE_TYPE so
 		OnLocalVideoStats.Broadcast((EVIDEO_SOURCE_TYPE)source, localVideoStats);
 	});
 }
-void AIRtcEngineEventHandler::onRemoteVideoStats(const agora::rtc::RemoteVideoStats& stats)
+void UIRtcEngineEventHandler::onRemoteVideoStats(const agora::rtc::RemoteVideoStats& stats)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
@@ -450,21 +435,21 @@ void AIRtcEngineEventHandler::onRemoteVideoStats(const agora::rtc::RemoteVideoSt
 		OnRemoteVideoStats.Broadcast(remoteVideoStats);
 	});
 }
-void AIRtcEngineEventHandler::onCameraReady()
+void UIRtcEngineEventHandler::onCameraReady()
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
 		OnCameraReady.Broadcast();
 	});
 }
-void AIRtcEngineEventHandler::onCameraFocusAreaChanged(int x, int y, int width, int height)
+void UIRtcEngineEventHandler::onCameraFocusAreaChanged(int x, int y, int width, int height)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
 		OnCameraFocusAreaChanged.Broadcast(x, y, width, height);
 	});
 }
-void AIRtcEngineEventHandler::onCameraExposureAreaChanged(int x, int y, int width, int height)
+void UIRtcEngineEventHandler::onCameraExposureAreaChanged(int x, int y, int width, int height)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
@@ -472,7 +457,7 @@ void AIRtcEngineEventHandler::onCameraExposureAreaChanged(int x, int y, int widt
 	});
 }
 #if defined(__ANDROID__) || (defined(__APPLE__) && TARGET_OS_IOS)
-void AIRtcEngineEventHandler::onFacePositionChanged(int imageWidth, int imageHeight, const agora::rtc::Rectangle* vecRectangle, const int* vecDistance, int numFaces)
+void UIRtcEngineEventHandler::onFacePositionChanged(int imageWidth, int imageHeight, const agora::rtc::Rectangle* vecRectangle, const int* vecDistance, int numFaces)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
@@ -494,49 +479,49 @@ void AIRtcEngineEventHandler::onFacePositionChanged(int imageWidth, int imageHei
 	});
 }
 #endif
-void AIRtcEngineEventHandler::onVideoStopped()
+void UIRtcEngineEventHandler::onVideoStopped()
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
 		OnVideoStopped.Broadcast();
 	});
 }
-void AIRtcEngineEventHandler::onAudioMixingStateChanged(agora::rtc::AUDIO_MIXING_STATE_TYPE state, agora::rtc::AUDIO_MIXING_REASON_TYPE reason)
+void UIRtcEngineEventHandler::onAudioMixingStateChanged(agora::rtc::AUDIO_MIXING_STATE_TYPE state, agora::rtc::AUDIO_MIXING_REASON_TYPE reason)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
 		OnAudioMixingStateChanged.Broadcast((EAUDIO_MIXING_STATE_TYPE)state, (EAUDIO_MIXING_REASON_TYPE)reason);
 	});
 }
-void AIRtcEngineEventHandler::onRhythmPlayerStateChanged(agora::rtc::RHYTHM_PLAYER_STATE_TYPE state, agora::rtc::RHYTHM_PLAYER_ERROR_TYPE errorCode)
+void UIRtcEngineEventHandler::onRhythmPlayerStateChanged(agora::rtc::RHYTHM_PLAYER_STATE_TYPE state, agora::rtc::RHYTHM_PLAYER_ERROR_TYPE errorCode)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
 		OnRhythmPlayerStateChanged.Broadcast((ERHYTHM_PLAYER_STATE_TYPE)state, (ERHYTHM_PLAYER_ERROR_TYPE)errorCode);
 	});
 }
-void AIRtcEngineEventHandler::onConnectionLost()
+void UIRtcEngineEventHandler::onConnectionLost()
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
 		OnConnectionLost.Broadcast();
 	});
 }
-void AIRtcEngineEventHandler::onConnectionInterrupted()
+void UIRtcEngineEventHandler::onConnectionInterrupted()
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
 		OnConnectionInterrupted.Broadcast();
 	});
 }
-void AIRtcEngineEventHandler::onConnectionBanned()
+void UIRtcEngineEventHandler::onConnectionBanned()
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
 		OnConnectionBanned.Broadcast();
 	});
 }
-void AIRtcEngineEventHandler::onStreamMessage(agora::rtc::uid_t userId, int streamId, const char* data, size_t length, uint64_t sentTs)
+void UIRtcEngineEventHandler::onStreamMessage(agora::rtc::uid_t userId, int streamId, const char* data, size_t length, uint64_t sentTs)
 {
 	char* tempdata = new char[length];
 	FMemory::Memcpy(tempdata, data, length);
@@ -547,84 +532,84 @@ void AIRtcEngineEventHandler::onStreamMessage(agora::rtc::uid_t userId, int stre
 		OnStreamMessage.Broadcast((int64)userId, streamId, FString(UTF8_TO_TCHAR(temp.c_str())), length, sentTs);
 	});
 }
-void AIRtcEngineEventHandler::onStreamMessageError(agora::rtc::uid_t userId, int streamId, int code, int missed, int cached)
+void UIRtcEngineEventHandler::onStreamMessageError(agora::rtc::uid_t userId, int streamId, int code, int missed, int cached)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
 		OnStreamMessageError.Broadcast((int64)userId, streamId, code, missed, cached);
 	});
 }
-void AIRtcEngineEventHandler::onRequestToken()
+void UIRtcEngineEventHandler::onRequestToken()
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
 		OnRequestToken.Broadcast();
 	});
 }
-void AIRtcEngineEventHandler::onTokenPrivilegeWillExpire(const char* token)
+void UIRtcEngineEventHandler::onTokenPrivilegeWillExpire(const char* token)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
 		OnTokenPrivilegeWillExpire.Broadcast(FString(token));
 	});
 }
-void AIRtcEngineEventHandler::onFirstLocalAudioFramePublished(int elapsed)
+void UIRtcEngineEventHandler::onFirstLocalAudioFramePublished(int elapsed)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
 		OnFirstLocalAudioFramePublished.Broadcast(elapsed);
 	});
 }
-void AIRtcEngineEventHandler::onFirstRemoteAudioFrame(agora::rtc::uid_t uid, int elapsed)
+void UIRtcEngineEventHandler::onFirstRemoteAudioFrame(agora::rtc::uid_t uid, int elapsed)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
 		OnFirstRemoteAudioFrame.Broadcast((int64)uid, elapsed);
 	});
 }
-void AIRtcEngineEventHandler::onFirstRemoteAudioDecoded(agora::rtc::uid_t uid, int elapsed)
+void UIRtcEngineEventHandler::onFirstRemoteAudioDecoded(agora::rtc::uid_t uid, int elapsed)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
 		OnFirstRemoteAudioDecoded.Broadcast((int64)uid, elapsed);
 	});
 }
-void AIRtcEngineEventHandler::onLocalAudioStateChanged(agora::rtc::LOCAL_AUDIO_STREAM_STATE state, agora::rtc::LOCAL_AUDIO_STREAM_ERROR error)
+void UIRtcEngineEventHandler::onLocalAudioStateChanged(agora::rtc::LOCAL_AUDIO_STREAM_STATE state, agora::rtc::LOCAL_AUDIO_STREAM_ERROR error)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
 		OnLocalAudioStateChanged.Broadcast((ELOCAL_AUDIO_STREAM_STATE)state, (ELOCAL_AUDIO_STREAM_ERROR)error);
 	});
 }
-void AIRtcEngineEventHandler::onRemoteAudioStateChanged(agora::rtc::uid_t uid, agora::rtc::REMOTE_AUDIO_STATE state, agora::rtc::REMOTE_AUDIO_STATE_REASON reason, int elapsed)
+void UIRtcEngineEventHandler::onRemoteAudioStateChanged(agora::rtc::uid_t uid, agora::rtc::REMOTE_AUDIO_STATE state, agora::rtc::REMOTE_AUDIO_STATE_REASON reason, int elapsed)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
 		OnRemoteAudioStateChanged.Broadcast((int64)uid, (EREMOTE_AUDIO_STATE)state, (EREMOTE_AUDIO_STATE_REASON)reason, elapsed);
 	});
 }
-void AIRtcEngineEventHandler::onActiveSpeaker(agora::rtc::uid_t userId)
+void UIRtcEngineEventHandler::onActiveSpeaker(agora::rtc::uid_t userId)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
 		OnActiveSpeaker.Broadcast((int64)userId);
 	});
 }
-void AIRtcEngineEventHandler::onContentInspectResult(agora::media::CONTENT_INSPECT_RESULT result)
+void UIRtcEngineEventHandler::onContentInspectResult(agora::media::CONTENT_INSPECT_RESULT result)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
 		OnContentInspectResult.Broadcast((ECONTENT_INSPECT_RESULT)result);
 	});
 }
-void AIRtcEngineEventHandler::onSnapshotTaken(agora::rtc::uid_t uid, const char* filePath, int width, int height, int errCode)
+void UIRtcEngineEventHandler::onSnapshotTaken(agora::rtc::uid_t uid, const char* filePath, int width, int height, int errCode)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
 		OnSnapshotTaken.Broadcast((int64)uid, FString(filePath), width, height, errCode);
 	});
 }
-void AIRtcEngineEventHandler::onClientRoleChanged(agora::rtc::CLIENT_ROLE_TYPE oldRole, agora::rtc::CLIENT_ROLE_TYPE newRole, const agora::rtc::ClientRoleOptions& newRoleOptions)
+void UIRtcEngineEventHandler::onClientRoleChanged(agora::rtc::CLIENT_ROLE_TYPE oldRole, agora::rtc::CLIENT_ROLE_TYPE newRole, const agora::rtc::ClientRoleOptions& newRoleOptions)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
@@ -633,105 +618,105 @@ void AIRtcEngineEventHandler::onClientRoleChanged(agora::rtc::CLIENT_ROLE_TYPE o
 		OnClientRoleChanged.Broadcast((ECLIENT_ROLE_TYPE)oldRole, (ECLIENT_ROLE_TYPE)newRole, roleoptions);
 	});
 }
-void AIRtcEngineEventHandler::onClientRoleChangeFailed(agora::rtc::CLIENT_ROLE_CHANGE_FAILED_REASON reason, agora::rtc::CLIENT_ROLE_TYPE currentRole)
+void UIRtcEngineEventHandler::onClientRoleChangeFailed(agora::rtc::CLIENT_ROLE_CHANGE_FAILED_REASON reason, agora::rtc::CLIENT_ROLE_TYPE currentRole)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
 		OnClientRoleChangeFailed.Broadcast((ECLIENT_ROLE_CHANGE_FAILED_REASON)reason, (ECLIENT_ROLE_TYPE)currentRole);
 	});
 }
-void AIRtcEngineEventHandler::onAudioDeviceVolumeChanged(agora::rtc::MEDIA_DEVICE_TYPE deviceType, int volume, bool muted)
+void UIRtcEngineEventHandler::onAudioDeviceVolumeChanged(agora::rtc::MEDIA_DEVICE_TYPE deviceType, int volume, bool muted)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
 		OnAudioDeviceVolumeChanged.Broadcast((EMEDIA_DEVICE_TYPE)deviceType, volume, muted);
 	});
 }
-void AIRtcEngineEventHandler::onRtmpStreamingStateChanged(const char* url, agora::rtc::RTMP_STREAM_PUBLISH_STATE state, agora::rtc::RTMP_STREAM_PUBLISH_ERROR_TYPE errCode)
+void UIRtcEngineEventHandler::onRtmpStreamingStateChanged(const char* url, agora::rtc::RTMP_STREAM_PUBLISH_STATE state, agora::rtc::RTMP_STREAM_PUBLISH_ERROR_TYPE errCode)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
 		OnRtmpStreamingStateChanged.Broadcast(FString(url), (ERTMP_STREAM_PUBLISH_STATE)state, (ERTMP_STREAM_PUBLISH_ERROR_TYPE)errCode);
 	});
 }
-void AIRtcEngineEventHandler::onRtmpStreamingEvent(const char* url, agora::rtc::RTMP_STREAMING_EVENT eventCode)
+void UIRtcEngineEventHandler::onRtmpStreamingEvent(const char* url, agora::rtc::RTMP_STREAMING_EVENT eventCode)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
 		OnRtmpStreamingEvent.Broadcast(FString(url), (ERTMP_STREAMING_EVENT)eventCode);
 	});
 }
-void AIRtcEngineEventHandler::onTranscodingUpdated()
+void UIRtcEngineEventHandler::onTranscodingUpdated()
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
 		OnTranscodingUpdated.Broadcast();
 	});
 }
-void AIRtcEngineEventHandler::onAudioRoutingChanged(int routing)
+void UIRtcEngineEventHandler::onAudioRoutingChanged(int routing)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
 		OnAudioRoutingChanged.Broadcast(routing);
 	});
 }
-void AIRtcEngineEventHandler::onChannelMediaRelayStateChanged(int state, int code)
+void UIRtcEngineEventHandler::onChannelMediaRelayStateChanged(int state, int code)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
 		OnChannelMediaRelayStateChanged.Broadcast(state, code);
 	});	
 }
-void AIRtcEngineEventHandler::onChannelMediaRelayEvent(int code)
+void UIRtcEngineEventHandler::onChannelMediaRelayEvent(int code)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
 		OnChannelMediaRelayEvent.Broadcast(code);
 	});
 }
-void AIRtcEngineEventHandler::onLocalPublishFallbackToAudioOnly(bool isFallbackOrRecover)
+void UIRtcEngineEventHandler::onLocalPublishFallbackToAudioOnly(bool isFallbackOrRecover)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
 		OnLocalPublishFallbackToAudioOnly.Broadcast(isFallbackOrRecover);
 	});
 }
-void AIRtcEngineEventHandler::onRemoteSubscribeFallbackToAudioOnly(agora::rtc::uid_t uid, bool isFallbackOrRecover)
+void UIRtcEngineEventHandler::onRemoteSubscribeFallbackToAudioOnly(agora::rtc::uid_t uid, bool isFallbackOrRecover)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
 		OnRemoteSubscribeFallbackToAudioOnly.Broadcast((int64)uid, isFallbackOrRecover);
 	});
 }
-void AIRtcEngineEventHandler::onRemoteAudioTransportStats(agora::rtc::uid_t uid, unsigned short delay, unsigned short lost, unsigned short rxKBitRate)
+void UIRtcEngineEventHandler::onRemoteAudioTransportStats(agora::rtc::uid_t uid, unsigned short delay, unsigned short lost, unsigned short rxKBitRate)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
 		OnRemoteAudioTransportStats.Broadcast((int64)uid, delay, lost, rxKBitRate);
 	});
 }
-void AIRtcEngineEventHandler::onRemoteVideoTransportStats(agora::rtc::uid_t uid, unsigned short delay, unsigned short lost, unsigned short rxKBitRate)
+void UIRtcEngineEventHandler::onRemoteVideoTransportStats(agora::rtc::uid_t uid, unsigned short delay, unsigned short lost, unsigned short rxKBitRate)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
 		OnRemoteVideoTransportStats.Broadcast((int64)uid, delay, lost, rxKBitRate);
 	});
 }
-void AIRtcEngineEventHandler::onConnectionStateChanged(agora::rtc::CONNECTION_STATE_TYPE state, agora::rtc::CONNECTION_CHANGED_REASON_TYPE reason)
+void UIRtcEngineEventHandler::onConnectionStateChanged(agora::rtc::CONNECTION_STATE_TYPE state, agora::rtc::CONNECTION_CHANGED_REASON_TYPE reason)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
 		OnConnectionStateChanged.Broadcast((ECONNECTION_STATE_TYPE)state, (ECONNECTION_CHANGED_REASON_TYPE)reason);
 	});
 }
-void AIRtcEngineEventHandler::onWlAccMessage(agora::rtc::WLACC_MESSAGE_REASON reason, agora::rtc::WLACC_SUGGEST_ACTION action, const char* wlAccMsg)
+void UIRtcEngineEventHandler::onWlAccMessage(agora::rtc::WLACC_MESSAGE_REASON reason, agora::rtc::WLACC_SUGGEST_ACTION action, const char* wlAccMsg)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
 		OnWlAccMessage.Broadcast((EWLACC_MESSAGE_REASON)reason, (EWLACC_SUGGEST_ACTION)action, FString(wlAccMsg));
 	});
 }
-void AIRtcEngineEventHandler::onWlAccStats(agora::rtc::WlAccStats currentStats, agora::rtc::WlAccStats averageStats)
+void UIRtcEngineEventHandler::onWlAccStats(agora::rtc::WlAccStats currentStats, agora::rtc::WlAccStats averageStats)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
@@ -746,35 +731,35 @@ void AIRtcEngineEventHandler::onWlAccStats(agora::rtc::WlAccStats currentStats, 
 		OnWlAccStats.Broadcast(current, average);
 	});
 }
-void AIRtcEngineEventHandler::onNetworkTypeChanged(agora::rtc::NETWORK_TYPE type)
+void UIRtcEngineEventHandler::onNetworkTypeChanged(agora::rtc::NETWORK_TYPE type)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
 		OnNetworkTypeChanged.Broadcast((ENETWORK_TYPE)type);
 	});
 }
-void AIRtcEngineEventHandler::onEncryptionError(agora::rtc::ENCRYPTION_ERROR_TYPE errorType)
+void UIRtcEngineEventHandler::onEncryptionError(agora::rtc::ENCRYPTION_ERROR_TYPE errorType)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
 		OnEncryptionError.Broadcast((EENCRYPTION_ERROR_TYPE)errorType);
 	});
 }
-void AIRtcEngineEventHandler::onPermissionError(agora::rtc::PERMISSION_TYPE permissionType)
+void UIRtcEngineEventHandler::onPermissionError(agora::rtc::PERMISSION_TYPE permissionType)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
 		OnPermissionError.Broadcast((EPERMISSION_TYPE)permissionType);
 	});
 }
-void AIRtcEngineEventHandler::onLocalUserRegistered(agora::rtc::uid_t uid, const char* userAccount)
+void UIRtcEngineEventHandler::onLocalUserRegistered(agora::rtc::uid_t uid, const char* userAccount)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
 		OnLocalUserRegistered.Broadcast((int64)uid, FString(userAccount));
 	});
 }
-void AIRtcEngineEventHandler::onUserInfoUpdated(agora::rtc::uid_t uid, const agora::rtc::UserInfo& info)
+void UIRtcEngineEventHandler::onUserInfoUpdated(agora::rtc::uid_t uid, const agora::rtc::UserInfo& info)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
@@ -784,70 +769,70 @@ void AIRtcEngineEventHandler::onUserInfoUpdated(agora::rtc::uid_t uid, const ago
 		OnUserInfoUpdated.Broadcast((int64)uid, userInfo);
 	});
 }
-void AIRtcEngineEventHandler::onUploadLogResult(const char* requestId, bool success, agora::rtc::UPLOAD_ERROR_REASON reason)
+void UIRtcEngineEventHandler::onUploadLogResult(const char* requestId, bool success, agora::rtc::UPLOAD_ERROR_REASON reason)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
 		OnUploadLogResult.Broadcast(FString(requestId), success, (EUPLOAD_ERROR_REASON)reason);
 	});
 }
-void AIRtcEngineEventHandler::onAudioSubscribeStateChanged(const char* channel, agora::rtc::uid_t uid, agora::rtc::STREAM_SUBSCRIBE_STATE oldState, agora::rtc::STREAM_SUBSCRIBE_STATE newState, int elapseSinceLastState)
+void UIRtcEngineEventHandler::onAudioSubscribeStateChanged(const char* channel, agora::rtc::uid_t uid, agora::rtc::STREAM_SUBSCRIBE_STATE oldState, agora::rtc::STREAM_SUBSCRIBE_STATE newState, int elapseSinceLastState)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
 		OnAudioSubscribeStateChanged.Broadcast(FString(channel), (int64)uid, (ESTREAM_SUBSCRIBE_STATE)oldState, (ESTREAM_SUBSCRIBE_STATE)newState, elapseSinceLastState);
 	});
 }
-void AIRtcEngineEventHandler::onVideoSubscribeStateChanged(const char* channel, agora::rtc::uid_t uid, agora::rtc::STREAM_SUBSCRIBE_STATE oldState, agora::rtc::STREAM_SUBSCRIBE_STATE newState, int elapseSinceLastState)
+void UIRtcEngineEventHandler::onVideoSubscribeStateChanged(const char* channel, agora::rtc::uid_t uid, agora::rtc::STREAM_SUBSCRIBE_STATE oldState, agora::rtc::STREAM_SUBSCRIBE_STATE newState, int elapseSinceLastState)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
 		OnVideoSubscribeStateChanged.Broadcast(FString(channel), (int64)uid, (ESTREAM_SUBSCRIBE_STATE)oldState, (ESTREAM_SUBSCRIBE_STATE)newState, elapseSinceLastState);
 	});
 }
-void AIRtcEngineEventHandler::onAudioPublishStateChanged(const char* channel, agora::rtc::STREAM_PUBLISH_STATE oldState, agora::rtc::STREAM_PUBLISH_STATE newState, int elapseSinceLastState)
+void UIRtcEngineEventHandler::onAudioPublishStateChanged(const char* channel, agora::rtc::STREAM_PUBLISH_STATE oldState, agora::rtc::STREAM_PUBLISH_STATE newState, int elapseSinceLastState)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
 		OnAudioPublishStateChanged.Broadcast(FString(channel), (ESTREAM_PUBLISH_STATE)oldState, (ESTREAM_PUBLISH_STATE)newState, elapseSinceLastState);
 	});
 }
-void AIRtcEngineEventHandler::onVideoPublishStateChanged(agora::rtc::VIDEO_SOURCE_TYPE source, const char* channel, agora::rtc::STREAM_PUBLISH_STATE oldState, agora::rtc::STREAM_PUBLISH_STATE newState, int elapseSinceLastState)
+void UIRtcEngineEventHandler::onVideoPublishStateChanged(agora::rtc::VIDEO_SOURCE_TYPE source, const char* channel, agora::rtc::STREAM_PUBLISH_STATE oldState, agora::rtc::STREAM_PUBLISH_STATE newState, int elapseSinceLastState)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
 		OnVideoPublishStateChanged.Broadcast((EVIDEO_SOURCE_TYPE)source, FString(channel), (ESTREAM_PUBLISH_STATE)oldState, (ESTREAM_PUBLISH_STATE)newState, elapseSinceLastState);
 	});
 }
-void AIRtcEngineEventHandler::onExtensionEvent(const char* provider, const char* extension, const char* key, const char* value)
+void UIRtcEngineEventHandler::onExtensionEvent(const char* provider, const char* extension, const char* key, const char* value)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
 		OnExtensionEvent.Broadcast(FString(provider), FString(extension), FString(key), FString(value));
 	});
 }
-void AIRtcEngineEventHandler::onExtensionStarted(const char* provider, const char* extension)
+void UIRtcEngineEventHandler::onExtensionStarted(const char* provider, const char* extension)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
 		OnExtensionStarted.Broadcast(FString(provider), FString(extension));
 	});
 }
-void AIRtcEngineEventHandler::onExtensionStopped(const char* provider, const char* extension)
+void UIRtcEngineEventHandler::onExtensionStopped(const char* provider, const char* extension)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
 		OnExtensionStopped.Broadcast(FString(provider), FString(extension));
 	});
 }
-void AIRtcEngineEventHandler::onExtensionError(const char* provider, const char* extension, int error, const char* message)
+void UIRtcEngineEventHandler::onExtensionError(const char* provider, const char* extension, int error, const char* message)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
 		OnExtensionError.Broadcast(FString(provider), FString(extension), error, FString(message));
 	});
 }
-void AIRtcEngineEventHandler::onUserAccountUpdated(agora::rtc::uid_t uid, const char* userAccount)
+void UIRtcEngineEventHandler::onUserAccountUpdated(agora::rtc::uid_t uid, const char* userAccount)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
@@ -856,7 +841,7 @@ void AIRtcEngineEventHandler::onUserAccountUpdated(agora::rtc::uid_t uid, const 
 }
 
 
-const char* AIRtcEngineEventHandler::eventHandlerType() const
+const char* UIRtcEngineEventHandler::eventHandlerType() const
 {
 	 return "event_handler"; 
 }

@@ -83,14 +83,10 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnMixedAudioEncodedFrame, const 
 
 
 UCLASS(Blueprintable)
-class AGORAPLUGIN_API AIPacketObserver : public AActor, public agora::rtc::IPacketObserver
+class AGORAPLUGIN_API UIPacketObserver : public UObject, public agora::rtc::IPacketObserver
 {
 	GENERATED_BODY()
-protected:
-	void BeginPlay() override;
 public:
-	AIPacketObserver();
-	void Tick(float DeltaTime) override;
 	UPROPERTY(BlueprintAssignable, Category = "Agora|Event")
 	FOnSendAudioPacket OnSendAudioPacket;
 	UPROPERTY(BlueprintAssignable, Category = "Agora|Event")
@@ -112,7 +108,7 @@ public:
 
 
 UCLASS(Blueprintable)
-class AGORAPLUGIN_API AIAudioEncodedFrameObserver : public AActor, public agora::rtc::IAudioEncodedFrameObserver
+class AGORAPLUGIN_API UIAudioEncodedFrameObserver : public UObject, public agora::rtc::IAudioEncodedFrameObserver
 {
 	GENERATED_BODY()
 

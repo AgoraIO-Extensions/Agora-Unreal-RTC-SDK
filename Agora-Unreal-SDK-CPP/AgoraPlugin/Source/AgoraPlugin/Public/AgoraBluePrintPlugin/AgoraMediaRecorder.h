@@ -52,7 +52,7 @@ class AGORAPLUGIN_API UIMediaRecorder : public UObject
 
 public:
 	UFUNCTION(BlueprintCallable, Category = "Agora|IMediaRecorder")
-	int SetMediaRecorderObserver(FRtcConnection& connection, AIMediaRecorderObserver* callback);
+	int SetMediaRecorderObserver(FRtcConnection& connection, UIMediaRecorderObserver* callback);
 	UFUNCTION(BlueprintCallable, Category = "Agora|IMediaRecorder")
 	int StartRecording(FRtcConnection& connection, FMediaRecorderConfiguration& config);
 	UFUNCTION(BlueprintCallable, Category = "Agora|IMediaRecorder")

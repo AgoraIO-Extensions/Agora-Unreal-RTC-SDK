@@ -3,63 +3,63 @@
 
 #include "AgoraBluePrintPlugin/AgoraIMediaPlayerSourceObserver.h"
 
-void AIMediaPlayerSourceObserver::onPlayerSourceStateChanged(agora::media::base::MEDIA_PLAYER_STATE state, agora::media::base::MEDIA_PLAYER_ERROR ec)
+void UIMediaPlayerSourceObserver::onPlayerSourceStateChanged(agora::media::base::MEDIA_PLAYER_STATE state, agora::media::base::MEDIA_PLAYER_ERROR ec)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
 		OnPlayerSourceStateChanged.Broadcast((EMEDIA_PLAYER_STATE)state, (EMEDIA_PLAYER_ERROR)ec);
 	});
 }
-void AIMediaPlayerSourceObserver::onPositionChanged(int64_t position_ms)
+void UIMediaPlayerSourceObserver::onPositionChanged(int64_t position_ms)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
 		OnPositionChanged.Broadcast(position_ms);
 	});
 }
-void AIMediaPlayerSourceObserver::onPlayerEvent(agora::media::base::MEDIA_PLAYER_EVENT eventCode, int64_t elapsedTime, const char* message)
+void UIMediaPlayerSourceObserver::onPlayerEvent(agora::media::base::MEDIA_PLAYER_EVENT eventCode, int64_t elapsedTime, const char* message)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
 		OnPlayerEvent.Broadcast((EMEDIA_PLAYER_EVENT)eventCode, elapsedTime, FString(message));
 	});
 }
-void AIMediaPlayerSourceObserver::onMetaData(const void* data, int length)
+void UIMediaPlayerSourceObserver::onMetaData(const void* data, int length)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
 		OnMetaData.Broadcast((int64)data, length);
 	});
 }
-void AIMediaPlayerSourceObserver::onPlayBufferUpdated(int64_t playCachedBuffer)
+void UIMediaPlayerSourceObserver::onPlayBufferUpdated(int64_t playCachedBuffer)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
 		OnPlayBufferUpdated.Broadcast(playCachedBuffer);
 	});
 }
-void AIMediaPlayerSourceObserver::onPreloadEvent(const char* src, agora::media::base::PLAYER_PRELOAD_EVENT event)
+void UIMediaPlayerSourceObserver::onPreloadEvent(const char* src, agora::media::base::PLAYER_PRELOAD_EVENT event)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
 		OnPreloadEvent.Broadcast(FString(src), (EPLAYER_PRELOAD_EVENT)event);
 	});
 }
-void AIMediaPlayerSourceObserver::onCompleted()
+void UIMediaPlayerSourceObserver::onCompleted()
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
 		OnCompleted.Broadcast();
 	});
 }
-void AIMediaPlayerSourceObserver::onAgoraCDNTokenWillExpire()
+void UIMediaPlayerSourceObserver::onAgoraCDNTokenWillExpire()
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
 		OnAgoraCDNTokenWillExpire.Broadcast();
 	});
 }
-void AIMediaPlayerSourceObserver::onPlayerSrcInfoChanged(const agora::media::base::SrcInfo& from, const agora::media::base::SrcInfo& to)
+void UIMediaPlayerSourceObserver::onPlayerSrcInfoChanged(const agora::media::base::SrcInfo& from, const agora::media::base::SrcInfo& to)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
@@ -72,7 +72,7 @@ void AIMediaPlayerSourceObserver::onPlayerSrcInfoChanged(const agora::media::bas
 		OnPlayerSrcInfoChanged.Broadcast(fromInfo, toInfo);
 	});
 }
-void AIMediaPlayerSourceObserver::onPlayerInfoUpdated(const agora::media::base::PlayerUpdatedInfo& info)
+void UIMediaPlayerSourceObserver::onPlayerInfoUpdated(const agora::media::base::PlayerUpdatedInfo& info)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
@@ -96,7 +96,7 @@ void AIMediaPlayerSourceObserver::onPlayerInfoUpdated(const agora::media::base::
 		OnPlayerInfoUpdated.Broadcast(playerUpdatedInfo);
 	});
 }
-void AIMediaPlayerSourceObserver::onAudioVolumeIndication(int volume)
+void UIMediaPlayerSourceObserver::onAudioVolumeIndication(int volume)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
@@ -105,41 +105,7 @@ void AIMediaPlayerSourceObserver::onAudioVolumeIndication(int volume)
 }
 
 
-AIMediaPlayerSourceObserver::AIMediaPlayerSourceObserver()
-{
-	PrimaryActorTick.bCanEverTick = false;
-}
-
-
-void AIMediaPlayerSourceObserver::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-}
-
-void AIMediaPlayerSourceObserver::BeginPlay()
-{
-	Super::BeginPlay();
-}
-
-
-void AIMediaPlayerCustomDataProvider::BeginPlay()
-{
-	Super::BeginPlay();
-}
-
-
-AIMediaPlayerCustomDataProvider::AIMediaPlayerCustomDataProvider()
-{
-	PrimaryActorTick.bCanEverTick = false;
-}
-
-
-void AIMediaPlayerCustomDataProvider::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-}
-
-int AIMediaPlayerCustomDataProvider::onReadData(unsigned char* buffer, int bufferSize)
+int UIMediaPlayerCustomDataProvider::onReadData(unsigned char* buffer, int bufferSize)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
@@ -157,7 +123,7 @@ int AIMediaPlayerCustomDataProvider::onReadData(unsigned char* buffer, int buffe
 	return bufferSize;
 }
 
-int64_t AIMediaPlayerCustomDataProvider::onSeek(int64_t offset, int whence)
+int64_t UIMediaPlayerCustomDataProvider::onSeek(int64_t offset, int whence)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{

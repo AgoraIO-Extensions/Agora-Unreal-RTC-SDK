@@ -64,74 +64,68 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnUserAccountUpdatedEx, const FR
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_SixParams(FOnSnapshotTakenEx, const FRtcConnection&, connection, int64, uid, const FString, filePath, int, width, int, height, int, errCode);
 
 
-UCLASS()
-class AGORAPLUGIN_API AIRtcEngineEventHandlerEx : public AIRtcEngineEventHandler
+UCLASS(Blueprintable)
+class AGORAPLUGIN_API UIRtcEngineEventHandlerEx : public UIRtcEngineEventHandler
 {
 
 	GENERATED_BODY()
-	using AIRtcEngineEventHandler::eventHandlerType;
-	using AIRtcEngineEventHandler::onJoinChannelSuccess;
-	using AIRtcEngineEventHandler::onRejoinChannelSuccess;
-	using AIRtcEngineEventHandler::onAudioQuality;
-	using AIRtcEngineEventHandler::onAudioVolumeIndication;
-	using AIRtcEngineEventHandler::onLeaveChannel;
-	using AIRtcEngineEventHandler::onRtcStats;
-	using AIRtcEngineEventHandler::onNetworkQuality;
-	using AIRtcEngineEventHandler::onIntraRequestReceived;
-	using AIRtcEngineEventHandler::onFirstLocalVideoFrame;
-	using AIRtcEngineEventHandler::onFirstLocalVideoFramePublished;
-	using AIRtcEngineEventHandler::onFirstRemoteVideoDecoded;
-	using AIRtcEngineEventHandler::onVideoSizeChanged;
-	using AIRtcEngineEventHandler::onLocalVideoStateChanged;
-	using AIRtcEngineEventHandler::onRemoteVideoStateChanged;
-	using AIRtcEngineEventHandler::onFirstRemoteVideoFrame;
-	using AIRtcEngineEventHandler::onUserJoined;
-	using AIRtcEngineEventHandler::onUserOffline;
-	using AIRtcEngineEventHandler::onUserMuteAudio;
-	using AIRtcEngineEventHandler::onUserMuteVideo;
-	using AIRtcEngineEventHandler::onUserEnableVideo;
-	using AIRtcEngineEventHandler::onUserEnableLocalVideo;
-	using AIRtcEngineEventHandler::onUserStateChanged;
-	using AIRtcEngineEventHandler::onLocalAudioStats;
-	using AIRtcEngineEventHandler::onRemoteAudioStats;
-	using AIRtcEngineEventHandler::onLocalVideoStats;
-	using AIRtcEngineEventHandler::onRemoteVideoStats;
-	using AIRtcEngineEventHandler::onConnectionLost;
-	using AIRtcEngineEventHandler::onConnectionInterrupted;
-	using AIRtcEngineEventHandler::onConnectionBanned;
-	using AIRtcEngineEventHandler::onStreamMessage;
-	using AIRtcEngineEventHandler::onStreamMessageError;
-	using AIRtcEngineEventHandler::onRequestToken;
-	using AIRtcEngineEventHandler::onTokenPrivilegeWillExpire;
-	using AIRtcEngineEventHandler::onFirstLocalAudioFramePublished;
-	using AIRtcEngineEventHandler::onFirstRemoteAudioFrame;
-	using AIRtcEngineEventHandler::onFirstRemoteAudioDecoded;
-	using AIRtcEngineEventHandler::onLocalAudioStateChanged;
-	using AIRtcEngineEventHandler::onRemoteAudioStateChanged;
-	using AIRtcEngineEventHandler::onActiveSpeaker;
-	using AIRtcEngineEventHandler::onClientRoleChanged;
-	using AIRtcEngineEventHandler::onClientRoleChangeFailed;
-	using AIRtcEngineEventHandler::onRemoteAudioTransportStats;
-	using AIRtcEngineEventHandler::onRemoteVideoTransportStats;
-	using AIRtcEngineEventHandler::onConnectionStateChanged;
-	using AIRtcEngineEventHandler::onWlAccMessage;
-	using AIRtcEngineEventHandler::onWlAccStats;
-	using AIRtcEngineEventHandler::onNetworkTypeChanged;
-	using AIRtcEngineEventHandler::onEncryptionError;
-	using AIRtcEngineEventHandler::onUploadLogResult;
-	using AIRtcEngineEventHandler::onUserAccountUpdated;
-	using AIRtcEngineEventHandler::onAudioSubscribeStateChanged;
-	using AIRtcEngineEventHandler::onVideoSubscribeStateChanged;
-	using AIRtcEngineEventHandler::onAudioPublishStateChanged;
-	using AIRtcEngineEventHandler::onVideoPublishStateChanged;
-	using AIRtcEngineEventHandler::onSnapshotTaken;
-protected:
-	void BeginPlay() override;
+	using UIRtcEngineEventHandler::eventHandlerType;
+	using UIRtcEngineEventHandler::onJoinChannelSuccess;
+	using UIRtcEngineEventHandler::onRejoinChannelSuccess;
+	using UIRtcEngineEventHandler::onAudioQuality;
+	using UIRtcEngineEventHandler::onAudioVolumeIndication;
+	using UIRtcEngineEventHandler::onLeaveChannel;
+	using UIRtcEngineEventHandler::onRtcStats;
+	using UIRtcEngineEventHandler::onNetworkQuality;
+	using UIRtcEngineEventHandler::onIntraRequestReceived;
+	using UIRtcEngineEventHandler::onFirstLocalVideoFrame;
+	using UIRtcEngineEventHandler::onFirstLocalVideoFramePublished;
+	using UIRtcEngineEventHandler::onFirstRemoteVideoDecoded;
+	using UIRtcEngineEventHandler::onVideoSizeChanged;
+	using UIRtcEngineEventHandler::onLocalVideoStateChanged;
+	using UIRtcEngineEventHandler::onRemoteVideoStateChanged;
+	using UIRtcEngineEventHandler::onFirstRemoteVideoFrame;
+	using UIRtcEngineEventHandler::onUserJoined;
+	using UIRtcEngineEventHandler::onUserOffline;
+	using UIRtcEngineEventHandler::onUserMuteAudio;
+	using UIRtcEngineEventHandler::onUserMuteVideo;
+	using UIRtcEngineEventHandler::onUserEnableVideo;
+	using UIRtcEngineEventHandler::onUserEnableLocalVideo;
+	using UIRtcEngineEventHandler::onUserStateChanged;
+	using UIRtcEngineEventHandler::onLocalAudioStats;
+	using UIRtcEngineEventHandler::onRemoteAudioStats;
+	using UIRtcEngineEventHandler::onLocalVideoStats;
+	using UIRtcEngineEventHandler::onRemoteVideoStats;
+	using UIRtcEngineEventHandler::onConnectionLost;
+	using UIRtcEngineEventHandler::onConnectionInterrupted;
+	using UIRtcEngineEventHandler::onConnectionBanned;
+	using UIRtcEngineEventHandler::onStreamMessage;
+	using UIRtcEngineEventHandler::onStreamMessageError;
+	using UIRtcEngineEventHandler::onRequestToken;
+	using UIRtcEngineEventHandler::onTokenPrivilegeWillExpire;
+	using UIRtcEngineEventHandler::onFirstLocalAudioFramePublished;
+	using UIRtcEngineEventHandler::onFirstRemoteAudioFrame;
+	using UIRtcEngineEventHandler::onFirstRemoteAudioDecoded;
+	using UIRtcEngineEventHandler::onLocalAudioStateChanged;
+	using UIRtcEngineEventHandler::onRemoteAudioStateChanged;
+	using UIRtcEngineEventHandler::onActiveSpeaker;
+	using UIRtcEngineEventHandler::onClientRoleChanged;
+	using UIRtcEngineEventHandler::onClientRoleChangeFailed;
+	using UIRtcEngineEventHandler::onRemoteAudioTransportStats;
+	using UIRtcEngineEventHandler::onRemoteVideoTransportStats;
+	using UIRtcEngineEventHandler::onConnectionStateChanged;
+	using UIRtcEngineEventHandler::onWlAccMessage;
+	using UIRtcEngineEventHandler::onWlAccStats;
+	using UIRtcEngineEventHandler::onNetworkTypeChanged;
+	using UIRtcEngineEventHandler::onEncryptionError;
+	using UIRtcEngineEventHandler::onUploadLogResult;
+	using UIRtcEngineEventHandler::onUserAccountUpdated;
+	using UIRtcEngineEventHandler::onAudioSubscribeStateChanged;
+	using UIRtcEngineEventHandler::onVideoSubscribeStateChanged;
+	using UIRtcEngineEventHandler::onAudioPublishStateChanged;
+	using UIRtcEngineEventHandler::onVideoPublishStateChanged;
+	using UIRtcEngineEventHandler::onSnapshotTaken;
 public:
-	AIRtcEngineEventHandlerEx();
-
-	void Tick(float DeltaTime) override;
-
 	const char* eventHandlerType() const { return "event_handler_ex"; }
 
 	UPROPERTY(BlueprintAssignable, Category = "Agora|Event")

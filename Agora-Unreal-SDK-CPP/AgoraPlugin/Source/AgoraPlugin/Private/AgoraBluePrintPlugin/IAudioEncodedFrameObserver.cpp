@@ -4,24 +4,7 @@
 #include "AgoraBluePrintPlugin/IAudioEncodedFrameObserver.h"
 
 
-void AIPacketObserver::BeginPlay()
-{
-	Super::BeginPlay();
-}
-
-
-AIPacketObserver::AIPacketObserver()
-{
-	PrimaryActorTick.bCanEverTick = false;
-}
-
-
-void AIPacketObserver::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-}
-
-bool AIPacketObserver::onSendAudioPacket(agora::rtc::IPacketObserver::Packet& packet)
+bool UIPacketObserver::onSendAudioPacket(agora::rtc::IPacketObserver::Packet& packet)
 {
 	FPacket pack;
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -39,7 +22,7 @@ bool AIPacketObserver::onSendAudioPacket(agora::rtc::IPacketObserver::Packet& pa
 
 	return true;
 }
-bool AIPacketObserver::onSendVideoPacket(agora::rtc::IPacketObserver::Packet& packet)
+bool UIPacketObserver::onSendVideoPacket(agora::rtc::IPacketObserver::Packet& packet)
 {
 	FPacket pack;
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -56,7 +39,7 @@ bool AIPacketObserver::onSendVideoPacket(agora::rtc::IPacketObserver::Packet& pa
 	packet.size = pack.size;
 	return true;
 }
-bool AIPacketObserver::onReceiveAudioPacket(agora::rtc::IPacketObserver::Packet& packet)
+bool UIPacketObserver::onReceiveAudioPacket(agora::rtc::IPacketObserver::Packet& packet)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
@@ -75,7 +58,7 @@ bool AIPacketObserver::onReceiveAudioPacket(agora::rtc::IPacketObserver::Packet&
 	});
 	return true;
 }
-bool AIPacketObserver::onReceiveVideoPacket(agora::rtc::IPacketObserver::Packet& packet)
+bool UIPacketObserver::onReceiveVideoPacket(agora::rtc::IPacketObserver::Packet& packet)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
@@ -95,7 +78,7 @@ bool AIPacketObserver::onReceiveVideoPacket(agora::rtc::IPacketObserver::Packet&
 	return true;
 }
 
-void AIAudioEncodedFrameObserver::OnRecordAudioEncodedFrame(const uint8_t* frameBuffer, int length, const agora::rtc::EncodedAudioFrameInfo& audioEncodedFrameInfo)
+void UIAudioEncodedFrameObserver::OnRecordAudioEncodedFrame(const uint8_t* frameBuffer, int length, const agora::rtc::EncodedAudioFrameInfo& audioEncodedFrameInfo)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
@@ -121,7 +104,7 @@ void AIAudioEncodedFrameObserver::OnRecordAudioEncodedFrame(const uint8_t* frame
 	});
 }
 
-void AIAudioEncodedFrameObserver::OnPlaybackAudioEncodedFrame(const uint8_t* frameBuffer, int length, const agora::rtc::EncodedAudioFrameInfo& audioEncodedFrameInfo)
+void UIAudioEncodedFrameObserver::OnPlaybackAudioEncodedFrame(const uint8_t* frameBuffer, int length, const agora::rtc::EncodedAudioFrameInfo& audioEncodedFrameInfo)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
@@ -148,7 +131,7 @@ void AIAudioEncodedFrameObserver::OnPlaybackAudioEncodedFrame(const uint8_t* fra
 }
 
 
-void AIAudioEncodedFrameObserver::OnMixedAudioEncodedFrame(const uint8_t* frameBuffer, int length, const agora::rtc::EncodedAudioFrameInfo& audioEncodedFrameInfo)
+void UIAudioEncodedFrameObserver::OnMixedAudioEncodedFrame(const uint8_t* frameBuffer, int length, const agora::rtc::EncodedAudioFrameInfo& audioEncodedFrameInfo)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{

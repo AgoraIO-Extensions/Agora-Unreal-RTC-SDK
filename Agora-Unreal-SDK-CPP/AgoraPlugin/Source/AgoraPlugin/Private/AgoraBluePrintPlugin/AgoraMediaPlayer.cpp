@@ -14,7 +14,7 @@ int UIMediaPlayer::Open(FString url, int64 startPos)
 	return MediaPlayer->open(TCHAR_TO_ANSI(*url), startPos);
 }
 
-int UIMediaPlayer::OpenWithCustomSource(int64 startPos, AIMediaPlayerCustomDataProvider* provider)
+int UIMediaPlayer::OpenWithCustomSource(int64 startPos, UIMediaPlayerCustomDataProvider* provider)
 {
 	return MediaPlayer->openWithCustomSource(startPos, provider);
 }
@@ -177,35 +177,35 @@ int UIMediaPlayer::SetRenderMode(ERENDER_MODE_TYPE renderMode)
 {
 	return MediaPlayer->setRenderMode((agora::media::base::RENDER_MODE_TYPE)renderMode);
 }
-int UIMediaPlayer::RegisterPlayerSourceObserver(AIMediaPlayerSourceObserver* observer)
+int UIMediaPlayer::RegisterPlayerSourceObserver(UIMediaPlayerSourceObserver* observer)
 {
 	return MediaPlayer->registerPlayerSourceObserver(observer);
 }
-int UIMediaPlayer::UnregisterPlayerSourceObserver(AIMediaPlayerSourceObserver* observer)
+int UIMediaPlayer::UnregisterPlayerSourceObserver(UIMediaPlayerSourceObserver* observer)
 {
 	return MediaPlayer->unregisterPlayerSourceObserver(observer);
 }
-int UIMediaPlayer::RegisterAudioFrameObserver(AIAudioFrameObserver* observer, ERAW_AUDIO_FRAME_OP_MODE_TYPE mode)
+int UIMediaPlayer::RegisterAudioFrameObserver(UIAudioFrameObserver* observer, ERAW_AUDIO_FRAME_OP_MODE_TYPE mode)
 {
 	return MediaPlayer->registerAudioFrameObserver((agora::media::base::IAudioFrameObserver*)observer, (agora::rtc::RAW_AUDIO_FRAME_OP_MODE_TYPE)mode);
 }
-int UIMediaPlayer::UnregisterAudioFrameObserver(AIAudioFrameObserver* observer)
+int UIMediaPlayer::UnregisterAudioFrameObserver(UIAudioFrameObserver* observer)
 {
 	return MediaPlayer->unregisterAudioFrameObserver((agora::media::base::IAudioFrameObserver*)observer);
 }
-int UIMediaPlayer::RegisterVideoFrameObserver(AIVideoFrameObserver* observer)
+int UIMediaPlayer::RegisterVideoFrameObserver(UIVideoFrameObserver* observer)
 {
 	return MediaPlayer->registerVideoFrameObserver((agora::media::base::IVideoFrameObserver*)observer);
 }
-int UIMediaPlayer::UnregisterVideoFrameObserver(AIVideoFrameObserver* observer)
+int UIMediaPlayer::UnregisterVideoFrameObserver(UIVideoFrameObserver* observer)
 {
 	return MediaPlayer->unregisterVideoFrameObserver((agora::media::base::IVideoFrameObserver*)observer);
 }
-int UIMediaPlayer::RegisterMediaPlayerAudioSpectrumObserver(AIAudioSpectrumObserver* observer, int intervalInMS)
+int UIMediaPlayer::RegisterMediaPlayerAudioSpectrumObserver(UIAudioSpectrumObserver* observer, int intervalInMS)
 {
 	return MediaPlayer->registerMediaPlayerAudioSpectrumObserver(observer, intervalInMS);
 }
-int UIMediaPlayer::UnregisterMediaPlayerAudioSpectrumObserver(AIAudioSpectrumObserver* observer)
+int UIMediaPlayer::UnregisterMediaPlayerAudioSpectrumObserver(UIAudioSpectrumObserver* observer)
 {
 	return MediaPlayer->unregisterMediaPlayerAudioSpectrumObserver(observer);
 }

@@ -14,14 +14,10 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnRecorderInfoUpdated, const FRecor
 
 
 UCLASS(Blueprintable)
-class AGORAPLUGIN_API AIMediaRecorderObserver : public AActor, public agora::media::IMediaRecorderObserver
+class AGORAPLUGIN_API UIMediaRecorderObserver : public UObject, public agora::media::IMediaRecorderObserver
 {
 	GENERATED_BODY()
-protected:
-	void BeginPlay() override;
 public:
-	AIMediaRecorderObserver();
-	void Tick(float DeltaTime) override;
 	UPROPERTY(BlueprintAssignable, Category = "Agora|Event")
 	FOnRecorderStateChanged OnRecorderStateChanged;
 	UPROPERTY(BlueprintAssignable, Category = "Agora|Event")

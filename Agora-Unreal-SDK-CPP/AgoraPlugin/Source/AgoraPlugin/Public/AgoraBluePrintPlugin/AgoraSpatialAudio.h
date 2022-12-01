@@ -16,7 +16,7 @@ struct FLocalSpatialAudioConfig
 	GENERATED_BODY()
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LocalSpatialAudioConfig")
-	AAgoraRtcEngine* rtcEngine;
+	UAgoraRtcEngine* rtcEngine;
 };
 
 USTRUCT(BlueprintType)
