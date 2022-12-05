@@ -846,7 +846,7 @@ const char* UIRtcEngineEventHandler::eventHandlerType() const
 	 return "event_handler"; 
 }
 
-int AIMetadataObserver::getMaxMetadataSize()
+int UIMetadataObserver::getMaxMetadataSize()
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
@@ -854,7 +854,7 @@ int AIMetadataObserver::getMaxMetadataSize()
 	});
 	return DEFAULT_METADATA_SIZE_IN_BYTE;
 }
-bool AIMetadataObserver::onReadyToSendMetadata(agora::rtc::IMetadataObserver::Metadata& metadata, agora::rtc::VIDEO_SOURCE_TYPE source_type)
+bool UIMetadataObserver::onReadyToSendMetadata(agora::rtc::IMetadataObserver::Metadata& metadata, agora::rtc::VIDEO_SOURCE_TYPE source_type)
 {
 	FAgoraMetadata data;
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -873,7 +873,7 @@ bool AIMetadataObserver::onReadyToSendMetadata(agora::rtc::IMetadataObserver::Me
 	metadata.timeStampMs = data.timeStampMs;
 	return true;
 }
-void AIMetadataObserver::onMetadataReceived(const agora::rtc::IMetadataObserver::Metadata& metadata)
+void UIMetadataObserver::onMetadataReceived(const agora::rtc::IMetadataObserver::Metadata& metadata)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
@@ -893,14 +893,14 @@ void AIMetadataObserver::onMetadataReceived(const agora::rtc::IMetadataObserver:
 		OnMetadataReceived.Broadcast(data);
 	});
 }
-void AIDirectCdnStreamingEventHandler::onDirectCdnStreamingStateChanged(agora::rtc::DIRECT_CDN_STREAMING_STATE state, agora::rtc::DIRECT_CDN_STREAMING_ERROR error, const char* message)
+void UIDirectCdnStreamingEventHandler::onDirectCdnStreamingStateChanged(agora::rtc::DIRECT_CDN_STREAMING_STATE state, agora::rtc::DIRECT_CDN_STREAMING_ERROR error, const char* message)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
 		OnDirectCdnStreamingStateChanged.Broadcast((EDIRECT_CDN_STREAMING_STATE)state, (EDIRECT_CDN_STREAMING_ERROR)error, FString(message));
 	});
 }
-void AIDirectCdnStreamingEventHandler::onDirectCdnStreamingStats(const agora::rtc::DirectCdnStreamingStats& stats)
+void UIDirectCdnStreamingEventHandler::onDirectCdnStreamingStats(const agora::rtc::DirectCdnStreamingStats& stats)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{

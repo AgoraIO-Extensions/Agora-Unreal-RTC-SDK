@@ -465,9 +465,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
 	int SendCustomReportMessage(FString id, FString category, FString event, FString label, int value);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
-	int RegisterMediaMetadataObserver(AIMetadataObserver* observer, EMETADATA_TYPE type);
+	int RegisterMediaMetadataObserver(UIMetadataObserver* observer, EMETADATA_TYPE type);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
-	int UnregisterMediaMetadataObserver(AIMetadataObserver* observer, EMETADATA_TYPE type);
+	int UnregisterMediaMetadataObserver(UIMetadataObserver* observer, EMETADATA_TYPE type);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
 	int StartAudioFrameDump(FString channel_id, int64 user_id, FString location, FString uuid, FString passwd, int64 duration_ms, bool auto_upload);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
@@ -495,7 +495,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
 	int SetDirectCdnStreamingVideoConfiguration(FVideoEncoderConfiguration& config);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
-	int StartDirectCdnStreaming(AIDirectCdnStreamingEventHandler* eventHandler, FString publishUrl, FDirectCdnStreamingMediaOptions& options);
+	int StartDirectCdnStreaming(UIDirectCdnStreamingEventHandler* eventHandler, FString publishUrl, FDirectCdnStreamingMediaOptions& options);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
 	int StopDirectCdnStreaming();
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")

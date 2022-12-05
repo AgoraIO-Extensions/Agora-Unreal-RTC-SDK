@@ -547,7 +547,7 @@ public:
 
 
 UCLASS(Blueprintable)
-class AGORAPLUGIN_API AIMetadataObserver : public AActor, public agora::rtc::IMetadataObserver
+class AGORAPLUGIN_API UIMetadataObserver : public UObject, public agora::rtc::IMetadataObserver
 {
 	GENERATED_BODY()
 
@@ -568,7 +568,7 @@ public:
 
 
 UCLASS(Blueprintable)
-class AGORAPLUGIN_API AIDirectCdnStreamingEventHandler : public AActor, public agora::rtc::IDirectCdnStreamingEventHandler
+class AGORAPLUGIN_API UIDirectCdnStreamingEventHandler : public UObject, public agora::rtc::IDirectCdnStreamingEventHandler
 {
 	GENERATED_BODY()
 

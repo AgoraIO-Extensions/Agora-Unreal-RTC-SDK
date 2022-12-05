@@ -2167,11 +2167,11 @@ int UAgoraRtcEngine::SendCustomReportMessage(FString id, FString category, FStri
 	return RtcEngineProxy::sendCustomReportMessage(Id.c_str(), Category.c_str(), Event.c_str(), Label.c_str(), value);
 }
 
-int UAgoraRtcEngine::RegisterMediaMetadataObserver(AIMetadataObserver* observer, EMETADATA_TYPE type)
+int UAgoraRtcEngine::RegisterMediaMetadataObserver(UIMetadataObserver* observer, EMETADATA_TYPE type)
 {
 	return RtcEngineProxy::registerMediaMetadataObserver(observer, (agora::rtc::IMetadataObserver::METADATA_TYPE)type);
 }
-int UAgoraRtcEngine::UnregisterMediaMetadataObserver(AIMetadataObserver* observer, EMETADATA_TYPE type)
+int UAgoraRtcEngine::UnregisterMediaMetadataObserver(UIMetadataObserver* observer, EMETADATA_TYPE type)
 {
 	return RtcEngineProxy::unregisterMediaMetadataObserver(observer, (agora::rtc::IMetadataObserver::METADATA_TYPE)type);
 }
@@ -2579,7 +2579,7 @@ int UAgoraRtcEngine::SetDirectCdnStreamingVideoConfiguration(FVideoEncoderConfig
 	videoEncoderConfiguration.mirrorMode = (agora::rtc::VIDEO_MIRROR_MODE_TYPE)config.mirrorMode;
 	return RtcEngineProxy::setDirectCdnStreamingVideoConfiguration(videoEncoderConfiguration);
 }
-int UAgoraRtcEngine::StartDirectCdnStreaming(AIDirectCdnStreamingEventHandler* eventHandler, FString publishUrl, FDirectCdnStreamingMediaOptions& options)
+int UAgoraRtcEngine::StartDirectCdnStreaming(UIDirectCdnStreamingEventHandler* eventHandler, FString publishUrl, FDirectCdnStreamingMediaOptions& options)
 {
 	agora::rtc::DirectCdnStreamingMediaOptions directCdnStreamingMediaOptions;
 	if (options.publishCameraTrack != AGORAOPTIONAL::AGORA_NULL_VALUE)
