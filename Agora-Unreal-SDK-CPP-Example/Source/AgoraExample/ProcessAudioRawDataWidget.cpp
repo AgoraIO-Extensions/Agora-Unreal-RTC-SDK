@@ -114,7 +114,7 @@ void UProcessAudioRawDataWidget::onJoinChannelSuccess(const RtcConnection& conne
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Blue, FString::Printf(TEXT("UProcessAudioRawDataWidget::JoinChannelSuccess uid: %d"), (int64)connection.localUid));
+		GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Blue, FString::Printf(TEXT("UProcessAudioRawDataWidget::JoinChannelSuccess uid: %u"), connection.localUid));
 	});
 }
 
@@ -122,7 +122,7 @@ void UProcessAudioRawDataWidget::onUserJoined(const RtcConnection& connection, u
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Blue, FString::Printf(TEXT("UProcessAudioRawDataWidget::onUserJoined uid: %d"), (int64)remoteUid));
+		GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Blue, FString::Printf(TEXT("UProcessAudioRawDataWidget::onUserJoined uid: %u"), remoteUid));
 	});
 }
 

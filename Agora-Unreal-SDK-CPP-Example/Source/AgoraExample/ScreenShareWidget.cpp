@@ -203,7 +203,7 @@ void UScreenShareWidget::onJoinChannelSuccess(const char* channel, agora::rtc::u
 		{
 			return;
 		}
-		UE_LOG(LogTemp, Warning, TEXT("JoinChannelSuccess"));
+		UE_LOG(LogTemp, Warning, TEXT("JoinChannelSuccess uid:%d"),uid);
 		agora::rtc::VideoCanvas videoCanvas;
 		videoCanvas.view = LocalVideo;
 		videoCanvas.uid = 0;

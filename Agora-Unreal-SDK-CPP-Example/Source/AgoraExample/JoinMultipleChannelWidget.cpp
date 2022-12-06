@@ -299,7 +299,7 @@ void UJoinMultipleChannelWidget::onUserOffline(const RtcConnection& connection, 
 		{
 			return;
 		}
-		UE_LOG(LogTemp, Warning, TEXT("UVideoWidget::onUserOffline  uid: %d"), (int64)remoteUid);
+		UE_LOG(LogTemp, Warning, TEXT("UVideoWidget::onUserOffline  uid: %u"), remoteUid);
 		agora::rtc::VideoCanvas videoCanvas;
 		videoCanvas.view = nullptr;
 		videoCanvas.uid = remoteUid;

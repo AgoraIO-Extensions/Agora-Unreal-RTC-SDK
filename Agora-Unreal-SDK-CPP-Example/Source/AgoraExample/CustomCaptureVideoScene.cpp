@@ -122,9 +122,9 @@ void UCustomCaptureVideoScene::SetExternalVideoSource()
 
 	agora::rtc::SenderOptions sendoptions;
 
-	int ret1 = MediaEngineManager->setExternalVideoSource(true, false, agora::media::EXTERNAL_VIDEO_SOURCE_TYPE::VIDEO_FRAME, sendoptions);
+	ret = MediaEngineManager->setExternalVideoSource(true, false, agora::media::EXTERNAL_VIDEO_SOURCE_TYPE::VIDEO_FRAME, sendoptions);
 	
-	GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Red, FString::Printf(TEXT("setExternalVideoSource init is %d"), ret1));
+	GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Red, FString::Printf(TEXT("setExternalVideoSource init is %d"), ret));
 }
 
 

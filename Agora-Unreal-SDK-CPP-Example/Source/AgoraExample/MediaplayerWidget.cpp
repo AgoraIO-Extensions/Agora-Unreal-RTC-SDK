@@ -29,7 +29,7 @@ void UMediaplayerWidget::onVideoSizeChanged(VIDEO_SOURCE_TYPE sourceType, uid_t 
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Black, FString::Printf(TEXT("onVideoSizeChanged uid:%d ,width:%d ,height:%d"), (int64)uid, width, height));
+		GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Black, FString::Printf(TEXT("onVideoSizeChanged uid:%u ,width:%d ,height:%d"), uid, width, height));
 
 
 		if (uid == 0)

@@ -85,7 +85,7 @@ void UEncryptionSampleWidget::onJoinChannelSuccess(const char* channel, agora::r
 		{
 			return;
 		}
-		UE_LOG(LogTemp, Warning, TEXT("JoinChannelSuccess uid:%d"), (int64)uid);
+		UE_LOG(LogTemp, Warning, TEXT("JoinChannelSuccess uid:%u"), uid);
 		agora::rtc::VideoCanvas videoCanvas;
 		videoCanvas.view = localVideo;
 		videoCanvas.uid = 0;
@@ -102,7 +102,7 @@ void UEncryptionSampleWidget::onUserJoined(agora::rtc::uid_t uid, int elapsed) {
 		{
 			return;
 		}
-		UE_LOG(LogTemp, Warning, TEXT("UEncryptionSampleWidget::onUserJoined  uid: %d"), (int64)uid);
+		UE_LOG(LogTemp, Warning, TEXT("UEncryptionSampleWidget::onUserJoined  uid: %u"), uid);
 		agora::rtc::VideoCanvas videoCanvas;
 		videoCanvas.view = remoteVideo;
 		videoCanvas.uid = uid;
@@ -123,7 +123,7 @@ void UEncryptionSampleWidget::onUserOffline(agora::rtc::uid_t uid, agora::rtc::U
 		{
 			return;
 		}
-		UE_LOG(LogTemp, Warning, TEXT("UEncryptionSampleWidget::onUserOffline  uid: %d"), (int64)uid);
+		UE_LOG(LogTemp, Warning, TEXT("UEncryptionSampleWidget::onUserOffline  uid: %u"), uid);
 		agora::rtc::VideoCanvas videoCanvas;
 		videoCanvas.view = nullptr;
 		videoCanvas.uid = uid;

@@ -195,7 +195,7 @@ void USendMultiCameraStreamWidget::onUserOffline(const RtcConnection& connection
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Red, FString::Printf(TEXT("OnUserJoined uid: %d, reason: %d"), (int64)remoteUid,(int)reason));
+		GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Red, FString::Printf(TEXT("OnUserJoined uid: %u, reason: %d"), remoteUid,(int)reason));
 
 		if (remoteUid != Uid1 && remoteUid != Uid2)
 		{
@@ -220,7 +220,7 @@ void USendMultiCameraStreamWidget::onJoinChannelSuccess(const RtcConnection& con
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Red, FString::Printf(TEXT("OnJoinChannelSuccess uid: %d,ChannelName: %s, elapsed: %d"), connection.localUid, *FString(connection.channelId),elapsed));
+		GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Red, FString::Printf(TEXT("OnJoinChannelSuccess uid: %u,ChannelName: %s, elapsed: %d"), connection.localUid, *FString(connection.channelId),elapsed));
 
 		if (connection.localUid == Uid1)
 		{
@@ -279,7 +279,7 @@ void USendMultiCameraStreamWidget::onUserJoined(const RtcConnection& connection,
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Red, FString::Printf(TEXT("OnUserJoined uid: %d elapsed: %d"), connection.channelId, elapsed));
+		GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Red, FString::Printf(TEXT("OnUserJoined uid: %u elapsed: %d"), connection.channelId, elapsed));
 
 		if (remoteUid != Uid1 && remoteUid != Uid2)
 		{

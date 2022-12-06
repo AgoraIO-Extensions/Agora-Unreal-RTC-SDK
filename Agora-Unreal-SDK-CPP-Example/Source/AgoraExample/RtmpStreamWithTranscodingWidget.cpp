@@ -159,7 +159,7 @@ void URtmpStreamWithTranscodingWidget::onJoinChannelSuccess(const char* channel,
 		{
 			return;
 		}
-		UE_LOG(LogTemp, Warning, TEXT("JoinChannelSuccess"));
+		UE_LOG(LogTemp, Warning, TEXT("JoinChannelSuccess uid:%d"),uid);
 		agora::rtc::VideoCanvas videoCanvas;
 		videoCanvas.view = localVideo;
 		videoCanvas.uid = 0;
@@ -177,7 +177,7 @@ void URtmpStreamWithTranscodingWidget::onUserJoined(agora::rtc::uid_t uid, int e
 		{
 			return;
 		}
-		UE_LOG(LogTemp, Warning, TEXT("URtmpStreamWithTranscodingWidget::onUserJoined  uid: %d"), (int64)uid);
+		UE_LOG(LogTemp, Warning, TEXT("URtmpStreamWithTranscodingWidget::onUserJoined  uid: %u"), uid);
 		agora::rtc::VideoCanvas videoCanvas;
 		videoCanvas.view = remoteVideo;
 		videoCanvas.uid = uid;
@@ -198,7 +198,7 @@ void URtmpStreamWithTranscodingWidget::onUserOffline(agora::rtc::uid_t uid, agor
 		{
 			return;
 		}
-		UE_LOG(LogTemp, Warning, TEXT("URtmpStreamWithTranscodingWidget::onUserOffline  uid: %d"), (int64)uid);
+		UE_LOG(LogTemp, Warning, TEXT("URtmpStreamWithTranscodingWidget::onUserOffline  uid: %u"), uid);
 		agora::rtc::VideoCanvas videoCanvas;
 		videoCanvas.view = nullptr;
 		videoCanvas.uid = uid;

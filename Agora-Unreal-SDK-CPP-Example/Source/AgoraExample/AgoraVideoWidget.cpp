@@ -116,7 +116,7 @@ void UAgoraVideoWidget::onJoinChannelSuccess(const char* channel, agora::rtc::ui
 		{
 			return;
 		}
-		UE_LOG(LogTemp, Warning, TEXT("JoinChannelSuccess uid: %d"), (int64)uid);
+		UE_LOG(LogTemp, Warning, TEXT("JoinChannelSuccess uid: %u"), uid);
 		agora::rtc::VideoCanvas videoCanvas;
 		videoCanvas.view = localVideo;
 		videoCanvas.uid = 0;
@@ -133,7 +133,7 @@ void UAgoraVideoWidget::onUserJoined(agora::rtc::uid_t uid, int elapsed) {
 		{
 			return;
 		}
-		UE_LOG(LogTemp, Warning, TEXT("UVideoWidget::onUserJoined  uid: %d"), (int64)uid);
+		UE_LOG(LogTemp, Warning, TEXT("UVideoWidget::onUserJoined  uid: %u"), uid);
 		UserImageData ImageData = GetUImageNoData(uid);
 		if (ImageData.image ==nullptr)
 		{
@@ -158,7 +158,7 @@ void UAgoraVideoWidget::onUserOffline(agora::rtc::uid_t uid, agora::rtc::USER_OF
 		{
 			return;
 		}
-		UE_LOG(LogTemp, Warning, TEXT("UVideoWidget::onUserOffline  uid: %d"), (int64)uid);
+		UE_LOG(LogTemp, Warning, TEXT("UVideoWidget::onUserOffline  uid: %u"), uid);
 		UserImageData ImageData = RemoveUImageData(uid);
 
 		if (ImageData.image != nullptr)
