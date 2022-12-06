@@ -68,7 +68,7 @@ void UCustomCaptureAudioWidget::JoinChannel() {
 }
 void UCustomCaptureAudioWidget::StartPushAudio()
 {
-	FString LoadDir = FPaths::ProjectContentDir() / TEXT("Audio/Agora.io-Interactions.wav");  //ÎÄ¼þÂ·¾¶
+	FString LoadDir = FPaths::ProjectContentDir() / TEXT("Audio/Agora.io-Interactions.wav");  
 	TArray<uint8> result;
 	FFileHelper::LoadFileToArray(result, *LoadDir, 0);
 	Runnable = new FAgoraCaptureRunnable(MediaEngine, result.GetData(), result.Num() * sizeof(uint8));

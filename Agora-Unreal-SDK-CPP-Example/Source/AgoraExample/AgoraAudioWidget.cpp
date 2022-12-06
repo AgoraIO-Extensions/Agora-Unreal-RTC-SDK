@@ -24,7 +24,6 @@ void UAgoraAudioWidget::InitAgoraEngine(FString APP_ID, FString TOKEN, FString C
 	RtcEngineContext.eventHandler = this;
 	RtcEngineContext.channelProfile = agora::CHANNEL_PROFILE_TYPE::CHANNEL_PROFILE_LIVE_BROADCASTING;
 
-
 	AppId = APP_ID;
 	Token = TOKEN;
 	ChannelName = CHANNEL_NAME;
@@ -116,7 +115,6 @@ void UAgoraAudioWidget::onUserJoined(agora::rtc::uid_t uid, int elapsed)
 
 void UAgoraAudioWidget::InitUI()
 {
-
 	ProfileComboBox->AddOption("BROADCASTING");
 	ProfileComboBox->AddOption("COMMUNICATION");
 

@@ -14,7 +14,6 @@
 #include "Kismet/GameplayStatics.h"
 #include "AudioDevice.h"
 #include <mutex>
-#include "Http.h"
 #include "HAL/Runnable.h"
 #include <chrono>
 #include "CustomCaptureAudioWidget.generated.h"
