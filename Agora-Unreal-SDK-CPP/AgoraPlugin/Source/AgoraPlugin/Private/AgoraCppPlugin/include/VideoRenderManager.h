@@ -45,7 +45,7 @@ namespace agora {
                 virtual TStatId GetStatId() const override;
 
             private:
-                std::mutex VideoRenderMutex;
+                //std::mutex VideoRenderMutex;
 
                 std::map<VideoFrameIdentity, TSharedPtr<class VideoRender>> VideoRenderMap;
 

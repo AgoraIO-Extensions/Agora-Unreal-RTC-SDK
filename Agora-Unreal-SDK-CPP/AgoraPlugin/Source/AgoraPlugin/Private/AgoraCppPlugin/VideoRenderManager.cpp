@@ -16,7 +16,7 @@ namespace agora {
 
             void VideoRenderManager::Tick(float DeltaTime)
             {
-                std::lock_guard<std::mutex> lock(VideoRenderMutex);
+                //std::lock_guard<std::mutex> lock(VideoRenderMutex);
                 for (VideoRenderIter = VideoRenderMap.begin(); VideoRenderIter != VideoRenderMap.end(); VideoRenderIter++)
                 {
                     if (VideoRenderIter->second!=nullptr)
@@ -29,7 +29,7 @@ namespace agora {
             void VideoRenderManager::setRenderImage(UImage* RenderImage, unsigned int Uid, const char* ChannelId, VIDEO_SOURCE_TYPE SourceType)
             {
                 VideoFrameIdentity VideoFrameId(SourceType,Uid,ChannelId);
-                std::lock_guard<std::mutex> lock(VideoRenderMutex);
+                //std::lock_guard<std::mutex> lock(VideoRenderMutex);
                 auto it = VideoRenderMap.find(VideoFrameId);
                 if (it == VideoRenderMap.end()) {
                     TSharedPtr<VideoRender> videoRender = MakeShareable(new VideoRender(DataManager::getInstance()->getCacheManager()));
@@ -44,7 +44,7 @@ namespace agora {
             void VideoRenderManager::releaseVideoRender(unsigned int Uid, const char* ChannelId, VIDEO_SOURCE_TYPE SourceType)
             {
                 VideoFrameIdentity VideoFrameId(SourceType, Uid, ChannelId);
-                std::lock_guard<std::mutex> lock(VideoRenderMutex);
+                //std::lock_guard<std::mutex> lock(VideoRenderMutex);
                 auto it = VideoRenderMap.find(VideoFrameId);
                 if (it != VideoRenderMap.end()) {
                     VideoRenderMap[VideoFrameId].Reset();
@@ -54,7 +54,7 @@ namespace agora {
 
             void VideoRenderManager::releaseAllVideoRender()
             {
-                std::lock_guard<std::mutex> lock(VideoRenderMutex);
+                //std::lock_guard<std::mutex> lock(VideoRenderMutex);
                 VideoRenderMap.clear();
             }
 
