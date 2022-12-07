@@ -44,12 +44,12 @@ void UAgoraVideoWidget::SetUpUIEvent() {
 
 	JoinBtn->OnClicked.AddDynamic(this, &UAgoraVideoWidget::OnJoinButtonClick);
 	LeaveBtn->OnClicked.AddDynamic(this, &UAgoraVideoWidget::OnLeaveButtonClick);
-	ConfirmBtn->OnClicked.AddDynamic(this, &UAgoraVideoWidget::OnConfirmButtonClick);
+	//ConfirmBtn->OnClicked.AddDynamic(this, &UAgoraVideoWidget::OnConfirmButtonClick);
 }
 
 void UAgoraVideoWidget::OnConfirmButtonClick() {
 
-	int ret = RtcEngineProxy->setChannelProfile(AgoraChannelProfileEnumMap[ProfileComboBox->GetSelectedOption()]);
+	/*int ret = RtcEngineProxy->setChannelProfile(AgoraChannelProfileEnumMap[ProfileComboBox->GetSelectedOption()]);
 	UE_LOG(LogTemp, Warning, TEXT("UVideoWidget setChannelProfile ret: %d ChannelProfile : %s"), ret, *ProfileComboBox->GetSelectedOption());
 
 	ret = RtcEngineProxy->setAudioScenario(AgoraAudioScenarioEnumMap[ScenarioComboBox->GetSelectedOption()]);
@@ -67,7 +67,7 @@ void UAgoraVideoWidget::OnConfirmButtonClick() {
 
 	ret = RtcEngineProxy->setVideoEncoderConfiguration(videoEncoderConfiguration);
 
-	UE_LOG(LogTemp, Warning, TEXT("UVideoWidget setVideoEncoderConfiguration ret %d"), ret);
+	UE_LOG(LogTemp, Warning, TEXT("UVideoWidget setVideoEncoderConfiguration ret %d"), ret);*/
 }
 
 void UAgoraVideoWidget::OnJoinButtonClick() {
@@ -271,39 +271,39 @@ void UAgoraVideoWidget::InitUI()
 	NotUseArray.Add(UserImageData(remoteVideoUser4, 0));
 	NotUseArray.Add(UserImageData(remoteVideoUser5, 0));
 	NotUseArray.Add(UserImageData(remoteVideoUser6, 0));
-
+	NotUseArray.Add(UserImageData(remoteVideoUser7, 0));
 	UsedArray.Empty();
 
-	ProfileComboBox->AddOption("BROADCASTING");
-	ProfileComboBox->AddOption("COMMUNICATION");
+	//ProfileComboBox->AddOption("BROADCASTING");
+	//ProfileComboBox->AddOption("COMMUNICATION");
 
-	ProfileComboBox->SetSelectedOption(FString("BROADCASTING"));
+	//ProfileComboBox->SetSelectedOption(FString("BROADCASTING"));
 
-	ScenarioComboBox->AddOption("DEFAULT");
-	ScenarioComboBox->AddOption("GAME_STREAMING");
-	ScenarioComboBox->AddOption("CHATROOM");
-	ScenarioComboBox->AddOption("CHORUS");
-	ScenarioComboBox->AddOption("MEETING");
-	ScenarioComboBox->AddOption("NUM");
-	ScenarioComboBox->SetSelectedOption(FString("DEFAULT"));
+	//ScenarioComboBox->AddOption("DEFAULT");
+	//ScenarioComboBox->AddOption("GAME_STREAMING");
+	//ScenarioComboBox->AddOption("CHATROOM");
+	//ScenarioComboBox->AddOption("CHORUS");
+	//ScenarioComboBox->AddOption("MEETING");
+	//ScenarioComboBox->AddOption("NUM");
+	//ScenarioComboBox->SetSelectedOption(FString("DEFAULT"));
 
 
-	FPSComboBox->AddOption("5");
-	FPSComboBox->AddOption("15");
-	FPSComboBox->AddOption("24");
-	FPSComboBox->AddOption("30");
-	FPSComboBox->AddOption("60");
-	FPSComboBox->SetSelectedOption(FString("15"));
+	//FPSComboBox->AddOption("5");
+	//FPSComboBox->AddOption("15");
+	//FPSComboBox->AddOption("24");
+	//FPSComboBox->AddOption("30");
+	//FPSComboBox->AddOption("60");
+	//FPSComboBox->SetSelectedOption(FString("15"));
 
-	AgoraChannelProfileEnumMap.Add(FString("BROADCASTING"), CHANNEL_PROFILE_TYPE::CHANNEL_PROFILE_LIVE_BROADCASTING);
-	AgoraChannelProfileEnumMap.Add(FString("COMMUNICATION"), CHANNEL_PROFILE_TYPE::CHANNEL_PROFILE_COMMUNICATION);
+	//AgoraChannelProfileEnumMap.Add(FString("BROADCASTING"), CHANNEL_PROFILE_TYPE::CHANNEL_PROFILE_LIVE_BROADCASTING);
+	//AgoraChannelProfileEnumMap.Add(FString("COMMUNICATION"), CHANNEL_PROFILE_TYPE::CHANNEL_PROFILE_COMMUNICATION);
 
-	AgoraAudioScenarioEnumMap.Add(FString("DEFAULT"), AUDIO_SCENARIO_TYPE::AUDIO_SCENARIO_DEFAULT);
-	AgoraAudioScenarioEnumMap.Add(FString("GAME_STREAMING"), AUDIO_SCENARIO_TYPE::AUDIO_SCENARIO_GAME_STREAMING);
-	AgoraAudioScenarioEnumMap.Add(FString("CHATROOM"), AUDIO_SCENARIO_TYPE::AUDIO_SCENARIO_CHATROOM);
-	AgoraAudioScenarioEnumMap.Add(FString("CHORUS"), AUDIO_SCENARIO_TYPE::AUDIO_SCENARIO_CHORUS);
-	AgoraAudioScenarioEnumMap.Add(FString("MEETING"), AUDIO_SCENARIO_TYPE::AUDIO_SCENARIO_MEETING);
-	AgoraAudioScenarioEnumMap.Add(FString("NUM"), AUDIO_SCENARIO_TYPE::AUDIO_SCENARIO_NUM);
+	//AgoraAudioScenarioEnumMap.Add(FString("DEFAULT"), AUDIO_SCENARIO_TYPE::AUDIO_SCENARIO_DEFAULT);
+	//AgoraAudioScenarioEnumMap.Add(FString("GAME_STREAMING"), AUDIO_SCENARIO_TYPE::AUDIO_SCENARIO_GAME_STREAMING);
+	//AgoraAudioScenarioEnumMap.Add(FString("CHATROOM"), AUDIO_SCENARIO_TYPE::AUDIO_SCENARIO_CHATROOM);
+	//AgoraAudioScenarioEnumMap.Add(FString("CHORUS"), AUDIO_SCENARIO_TYPE::AUDIO_SCENARIO_CHORUS);
+	//AgoraAudioScenarioEnumMap.Add(FString("MEETING"), AUDIO_SCENARIO_TYPE::AUDIO_SCENARIO_MEETING);
+	//AgoraAudioScenarioEnumMap.Add(FString("NUM"), AUDIO_SCENARIO_TYPE::AUDIO_SCENARIO_NUM);
 
 }
 

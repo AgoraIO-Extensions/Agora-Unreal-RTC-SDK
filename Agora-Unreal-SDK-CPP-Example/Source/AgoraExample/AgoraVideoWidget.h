@@ -68,6 +68,8 @@ public:
 	UImage* remoteVideoUser5 = nullptr;
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	UImage* remoteVideoUser6 = nullptr;
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	UImage* remoteVideoUser7 = nullptr;
 
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	UImage* localVideo = nullptr;
@@ -81,10 +83,10 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
 	UButton* BackHomeBtn = nullptr;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-	UButton* ConfirmBtn = nullptr;
+	/*UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	UButton* ConfirmBtn = nullptr;*/
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget))
+	/*UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget))
 	UComboBoxString* ScenarioComboBox = nullptr;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget))
@@ -100,7 +102,7 @@ public:
 	UEditableTextBox* HeightTextBox = nullptr;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-	UEditableTextBox* BitRateTextBox = nullptr;
+	UEditableTextBox* BitRateTextBox = nullptr;*/
 
 	UFUNCTION(BlueprintCallable)
 	void OnLeaveButtonClick();
