@@ -12,6 +12,12 @@ void UAgoraVideoWidget::InitAgoraWidget(FString APP_ID, FString TOKEN, FString C
 	SetUpUIEvent();
 
 	InitUI();
+
+	int ret = RtcEngineProxy->setParameters("{\"che.video.local.camera_index\":1024}");
+	UE_LOG(LogTemp, Warning, TEXT("UVideoWidget setParameters che.video.local.camera_index ======%d"), ret);
+
+	ret = RtcEngineProxy->setParameters("{\"rtc.video.degradation_preference\":100}");
+	UE_LOG(LogTemp, Warning, TEXT("UVideoWidget setParameters rtc.video.degradation_preference ======%d"), ret);
 }
 
 

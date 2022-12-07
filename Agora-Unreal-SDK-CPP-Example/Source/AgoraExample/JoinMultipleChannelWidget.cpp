@@ -19,16 +19,23 @@ void UJoinMultipleChannelWidget::InitAgoraWidget(FString APP_ID, FString TOKEN, 
 
 	SetUpUIEvent();
 
+	InitUI();
+
+	int ret = RtcEngineProxy->setParameters("{\"che.video.local.camera_index\":1024}");
+	UE_LOG(LogTemp, Warning, TEXT("UVideoWidget setParameters che.video.local.camera_index ======%d"), ret);
+
+	ret = RtcEngineProxy->setParameters("{\"rtc.video.degradation_preference\":100}");
+	UE_LOG(LogTemp, Warning, TEXT("UVideoWidget setParameters rtc.video.degradation_preference ======%d"), ret);
+
+	ret = RtcEngineProxy->setParameters("{\"che.video.h264.hwenc\":1}");
+	UE_LOG(LogTemp, Warning, TEXT("UVideoWidget setParameters che.video.h264.hwenc ======%d"), ret);
 }
 
 void UJoinMultipleChannelWidget::SetUpUIEvent()
 {
-	StartScreenShrareBtn->SetVisibility(ESlateVisibility::Collapsed);
-#if PLATFORM_WINDOWS || PLATFORM_MAC || PLATFORM_ANDROID
-	StartScreenShrareBtn->OnClicked.AddDynamic(this, &UJoinMultipleChannelWidget::StartScreenShrareClick);
-	StartScreenShrareBtn->SetVisibility(ESlateVisibility::Visible);
-#endif
 	JoinBtn->OnClicked.AddDynamic(this, &UJoinMultipleChannelWidget::JoinChannelClick);
+	LeaveBtn->OnClicked.AddDynamic(this, &UJoinMultipleChannelWidget::LeaveChannelClick);
+	ConfirmBtn->OnClicked.AddDynamic(this, &UJoinMultipleChannelWidget::ScreenShareClick);
 }
 
 void UJoinMultipleChannelWidget::CheckAndroidPermission()
@@ -66,7 +73,7 @@ void  UJoinMultipleChannelWidget::InitAgoraEngine(FString APP_ID, FString TOKEN,
 }
 
 
-void UJoinMultipleChannelWidget::StartScreenShrareClick()
+void UJoinMultipleChannelWidget::StartScreenShare(int width, int height, int bitRate, int frameRate)
 {
 #if PLATFORM_IOS
 	//iPhone not support screen capture       
@@ -79,6 +86,14 @@ void UJoinMultipleChannelWidget::StartScreenShrareClick()
 #else
 	RtcEngineProxy->stopScreenCapture();
 	agora::rtc::ScreenCaptureParameters capParam;
+	VideoDimensions dimensions(width,height);
+	capParam.dimensions = dimensions;
+	capParam.bitrate = bitRate;
+	capParam.frameRate = frameRate;
+	capParam.enableHighLight = false;
+	capParam.windowFocus = false;
+	capParam.captureMouseCursor =false;
+	UE_LOG(LogTemp, Warning, TEXT("UJoinMultipleChannelWidget StartScreenShrare width: %d height : %d,bitRate %d,frameRate %d"), width,height,bitRate,frameRate);
 	const agora::rtc::Rectangle regionRect;
 #if PLATFORM_WINDOWS
 	SIZE size;
@@ -144,11 +159,28 @@ void UJoinMultipleChannelWidget::PrepareScreenCapture()
 	}
 #endif
 }
+void UJoinMultipleChannelWidget::LeaveChannelClick()
+{
+	UE_LOG(LogTemp, Warning, TEXT("UJoinMultipleChannelWidget OnJoinButtonClick ======"));
 
+	RtcEngineProxy->leaveChannel();
+	for (int i = 0; i < NotUseArray.Num(); i++)
+	{
+		NotUseArray[i].image->SetBrush(EmptyBrush);
+	}
+	for (int i = 0; i < UsedArray.Num(); i++)
+	{
+		UsedArray[i].image->SetBrush(EmptyBrush);
+	}
+	LocalVideo->SetBrush(EmptyBrush);
+	NotUseArray.Empty();
+	UsedArray.Empty();
+	InitUI();
+}
 
 void UJoinMultipleChannelWidget::JoinChannelClick()
 {
-	UE_LOG(LogTemp, Warning, TEXT("UVideoWidget OnJoinButtonClick ======"));
+	UE_LOG(LogTemp, Warning, TEXT("UJoinMultipleChannelWidget OnJoinButtonClick ======"));
 
 	RtcEngineProxy->enableAudio();
 	RtcEngineProxy->enableVideo();
@@ -173,6 +205,17 @@ void UJoinMultipleChannelWidget::JoinChannelClick()
 	((agora::rtc::IRtcEngineEx*)RtcEngineProxy)->joinChannelEx(Token.c_str(), rtcConnection, options, nullptr);
 }
 
+void UJoinMultipleChannelWidget::ScreenShareClick()
+{
+	int ret = RtcEngineProxy->setChannelProfile(AgoraChannelProfileEnumMap[ProfileComboBox->GetSelectedOption()]);
+	UE_LOG(LogTemp, Warning, TEXT("UJoinMultipleChannelWidget setChannelProfile ret: %d ChannelProfile : %s"), ret, *ProfileComboBox->GetSelectedOption());
+
+	ret = RtcEngineProxy->setAudioScenario(AgoraAudioScenarioEnumMap[ScenarioComboBox->GetSelectedOption()]);
+	UE_LOG(LogTemp, Warning, TEXT("UJoinMultipleChannelWidget setAudioScenario ret: %d AudioScenario : %s"), ret, *ScenarioComboBox->GetSelectedOption());
+
+	StartScreenShare(FCString::Atoi(*WidthTextBox->GetText().ToString()), FCString::Atoi(*HeightTextBox->GetText().ToString()), FCString::Atoi(*BitRateTextBox->GetText().ToString()), FCString::Atoi(*FPSComboBox->GetSelectedOption()));
+}
+
 void UJoinMultipleChannelWidget::SelectValueCallBack(FString SelectedItem, ESelectInfo::Type SelectionType)
 {
 	UE_LOG(LogTemp, Warning, TEXT("Screen Callpture"));
@@ -185,7 +228,7 @@ void UJoinMultipleChannelWidget::SelectValueCallBack(FString SelectedItem, ESele
 
 void UJoinMultipleChannelWidget::ScreenShareJoinChannel()
 {
-	UE_LOG(LogTemp, Warning, TEXT("UVideoWidget JoinChannel ======"));
+	UE_LOG(LogTemp, Warning, TEXT("UJoinMultipleChannelWidget JoinChannel ======"));
 	RtcEngineProxy->enableAudio();
 	RtcEngineProxy->enableVideo();
 
@@ -226,16 +269,6 @@ void UJoinMultipleChannelWidget::onJoinChannelSuccess(const RtcConnection& conne
 			videoCanvas.sourceType = agora::rtc::VIDEO_SOURCE_TYPE::VIDEO_SOURCE_CAMERA;
 			RtcEngineProxy->setupLocalVideo(videoCanvas);
 		}
-		else if (connection.localUid == Uid2)
-		{
-			UE_LOG(LogTemp, Warning, TEXT("JoinChannelSuccess ScreenShare"));
-			agora::rtc::VideoCanvas videoCanvas;
-			videoCanvas.view = ScreenShareVideo;
-			videoCanvas.uid = 0;
-			videoCanvas.sourceType = agora::rtc::VIDEO_SOURCE_TYPE::VIDEO_SOURCE_SCREEN;
-			RtcEngineProxy->setupLocalVideo(videoCanvas);
-		}
-		
 	});
 }
 
@@ -256,15 +289,6 @@ void UJoinMultipleChannelWidget::onLeaveChannel(const RtcConnection& connection,
 			videoCanvas.sourceType = agora::rtc::VIDEO_SOURCE_TYPE::VIDEO_SOURCE_CAMERA;
 			RtcEngineProxy->setupLocalVideo(videoCanvas);
 		}
-		else if (connection.localUid == Uid2)
-		{
-			UE_LOG(LogTemp, Warning, TEXT("JoinChannelSuccess ScreenShare"));
-			agora::rtc::VideoCanvas videoCanvas;
-			videoCanvas.view = nullptr;
-			videoCanvas.uid = 0;
-			videoCanvas.sourceType = agora::rtc::VIDEO_SOURCE_TYPE::VIDEO_SOURCE_SCREEN;
-			RtcEngineProxy->setupLocalVideo(videoCanvas);
-		}
 	});
 }
 
@@ -278,8 +302,14 @@ void UJoinMultipleChannelWidget::onUserJoined(const RtcConnection& connection, u
 		}
 		if (remoteUid != Uid1 && remoteUid != Uid2)
 		{
+			UE_LOG(LogTemp, Warning, TEXT("UJoinMultipleChannelWidget::onUserJoined  uid: %d"), (int64)remoteUid);
+			UserImageData ImageData = GetUImageNoData(remoteUid);
+			if (ImageData.image == nullptr)
+			{
+				return;
+			}
 			agora::rtc::VideoCanvas videoCanvas;
-			videoCanvas.view = remoteVideo;
+			videoCanvas.view = ImageData.image;
 			videoCanvas.uid = remoteUid;
 			videoCanvas.sourceType = agora::rtc::VIDEO_SOURCE_TYPE::VIDEO_SOURCE_REMOTE;
 
@@ -299,7 +329,12 @@ void UJoinMultipleChannelWidget::onUserOffline(const RtcConnection& connection, 
 		{
 			return;
 		}
-		UE_LOG(LogTemp, Warning, TEXT("UVideoWidget::onUserOffline  uid: %u"), remoteUid);
+		UE_LOG(LogTemp, Warning, TEXT("UJoinMultipleChannelWidget::onUserOffline  uid: %d"), (int64)remoteUid);
+		UserImageData ImageData = RemoveUImageData(remoteUid);
+		if (ImageData.image != nullptr)
+		{
+			ImageData.image->SetBrush(EmptyBrush);
+		}
 		agora::rtc::VideoCanvas videoCanvas;
 		videoCanvas.view = nullptr;
 		videoCanvas.uid = remoteUid;
@@ -314,6 +349,113 @@ void UJoinMultipleChannelWidget::onUserOffline(const RtcConnection& connection, 
 		}
 	});
 }
+
+UserImageData UJoinMultipleChannelWidget::GetUImageNoData(agora::rtc::uid_t uid) {
+
+	UserImageData data;
+
+	if (NotUseArray.Num() == 0)
+	{
+		return data;
+	}
+	for (int i = 0; i < UsedArray.Num(); i++)
+	{
+		if (UsedArray[i].uid == uid)
+		{
+			return data;
+		}
+	}
+	for (int i = 0; i < NotUseArray.Num(); i++)
+	{
+		if (NotUseArray[i].uid == 0)
+		{
+			data = NotUseArray[i];
+
+			data.uid = uid;
+
+			UsedArray.Add(data);
+
+			NotUseArray.Remove(data);
+
+			return data;
+		}
+	}
+	return data;
+}
+
+UserImageData UJoinMultipleChannelWidget::RemoveUImageData(agora::rtc::uid_t uid) {
+
+	UserImageData data;
+
+	if (UsedArray.Num() == 0)
+	{
+		return data;
+	}
+
+	for (int i = 0; i < UsedArray.Num(); i++)
+	{
+		if (UsedArray[i].uid == uid)
+		{
+			data = UsedArray[i];
+
+			data.uid = 0;
+
+			NotUseArray.Add(data);
+
+			UsedArray.Remove(data);
+
+			return data;
+		}
+	}
+	return data;
+}
+
+void UJoinMultipleChannelWidget::InitUI()
+{
+	NotUseArray.Empty();
+
+	NotUseArray.Add(UserImageData(remoteVideoUser1, 0));
+	NotUseArray.Add(UserImageData(remoteVideoUser2, 0));
+	NotUseArray.Add(UserImageData(remoteVideoUser3, 0));
+	NotUseArray.Add(UserImageData(remoteVideoUser4, 0));
+	NotUseArray.Add(UserImageData(remoteVideoUser5, 0));
+	NotUseArray.Add(UserImageData(remoteVideoUser6, 0));
+
+	UsedArray.Empty();
+
+	ProfileComboBox->AddOption("BROADCASTING");
+	ProfileComboBox->AddOption("COMMUNICATION");
+
+	ProfileComboBox->SetSelectedOption(FString("BROADCASTING"));
+
+	ScenarioComboBox->AddOption("DEFAULT");
+	ScenarioComboBox->AddOption("GAME_STREAMING");
+	ScenarioComboBox->AddOption("CHATROOM");
+	ScenarioComboBox->AddOption("CHORUS");
+	ScenarioComboBox->AddOption("MEETING");
+	ScenarioComboBox->AddOption("NUM");
+	ScenarioComboBox->SetSelectedOption(FString("DEFAULT"));
+
+
+	FPSComboBox->AddOption("5");
+	FPSComboBox->AddOption("15");
+	FPSComboBox->AddOption("24");
+	FPSComboBox->AddOption("30");
+	FPSComboBox->AddOption("60");
+	FPSComboBox->SetSelectedOption(FString("15"));
+
+	AgoraChannelProfileEnumMap.Add(FString("BROADCASTING"), CHANNEL_PROFILE_TYPE::CHANNEL_PROFILE_LIVE_BROADCASTING);
+	AgoraChannelProfileEnumMap.Add(FString("COMMUNICATION"), CHANNEL_PROFILE_TYPE::CHANNEL_PROFILE_COMMUNICATION);
+
+	AgoraAudioScenarioEnumMap.Add(FString("DEFAULT"), AUDIO_SCENARIO_TYPE::AUDIO_SCENARIO_DEFAULT);
+	AgoraAudioScenarioEnumMap.Add(FString("GAME_STREAMING"), AUDIO_SCENARIO_TYPE::AUDIO_SCENARIO_GAME_STREAMING);
+	AgoraAudioScenarioEnumMap.Add(FString("CHATROOM"), AUDIO_SCENARIO_TYPE::AUDIO_SCENARIO_CHATROOM);
+	AgoraAudioScenarioEnumMap.Add(FString("CHORUS"), AUDIO_SCENARIO_TYPE::AUDIO_SCENARIO_CHORUS);
+	AgoraAudioScenarioEnumMap.Add(FString("MEETING"), AUDIO_SCENARIO_TYPE::AUDIO_SCENARIO_MEETING);
+	AgoraAudioScenarioEnumMap.Add(FString("NUM"), AUDIO_SCENARIO_TYPE::AUDIO_SCENARIO_NUM);
+
+}
+
 
 void UJoinMultipleChannelWidget::NativeDestruct()
 {
