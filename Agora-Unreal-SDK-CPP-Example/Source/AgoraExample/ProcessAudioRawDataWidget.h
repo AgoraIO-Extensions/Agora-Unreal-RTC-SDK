@@ -90,8 +90,8 @@ private:
 
 	void InitConfig();
 
-	int SAMPLE_RATE = 32000; // this should = CLIP_SAMPLES x PULL_FREQ_PER_SEC
+	int SAMPLE_RATE = 48000; // this should = CLIP_SAMPLES x PULL_FREQ_PER_SEC
 
-	int CHANNEL = 1; 
+	int CHANNEL = 2; 
 
 };

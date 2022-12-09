@@ -119,6 +119,7 @@ void UJoinMultipleChannelWidget::StartScreenShare(int width, int height, int bit
 		RtcEngineProxy->startScreenCaptureByWindowId(info.sourceId, regionRect, capParam);
 	}
 #endif
+	RtcEngineProxy->setScreenCaptureScenario(SCREEN_SCENARIO_GAMING);
 	ScreenShareJoinChannel();
 }
 

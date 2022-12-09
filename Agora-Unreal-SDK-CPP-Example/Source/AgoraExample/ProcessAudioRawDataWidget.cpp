@@ -43,10 +43,9 @@ void UProcessAudioRawDataWidget::InitAgoraEngine(FString APP_ID, FString TOKEN, 
 void UProcessAudioRawDataWidget::InitConfig()
 {
 	audioParams.channels = 2;
-	audioParams.sample_rate = 16000;
-	audioParams.channels = 2;
+	audioParams.sample_rate = 48000;
 	audioParams.mode = agora::rtc::RAW_AUDIO_FRAME_OP_MODE_TYPE::RAW_AUDIO_FRAME_OP_MODE_READ_WRITE;
-	audioParams.samples_per_call = 1024;
+	audioParams.samples_per_call = 960;
 
 	if (AgoraSoundWaveProcedural == nullptr)
 	{
