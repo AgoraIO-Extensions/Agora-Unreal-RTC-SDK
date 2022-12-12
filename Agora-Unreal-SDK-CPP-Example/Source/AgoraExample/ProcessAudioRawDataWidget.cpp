@@ -37,7 +37,7 @@ void UProcessAudioRawDataWidget::InitAgoraEngine(FString APP_ID, FString TOKEN, 
 
 	MediaEngine->registerAudioFrameObserver(this);
 
-	RtcEngineProxy->setPlaybackAudioFrameParameters(SAMPLE_RATE, 1, agora::rtc::RAW_AUDIO_FRAME_OP_MODE_TYPE::RAW_AUDIO_FRAME_OP_MODE_READ_WRITE, 1024);
+	//RtcEngineProxy->setPlaybackAudioFrameParameters(SAMPLE_RATE, 1, agora::rtc::RAW_AUDIO_FRAME_OP_MODE_TYPE::RAW_AUDIO_FRAME_OP_MODE_READ_WRITE, 1024);
 }
 
 void UProcessAudioRawDataWidget::InitConfig()
