@@ -45,6 +45,7 @@ void UAgoraVideoWidget::SetUpUIEvent() {
 	JoinBtn->OnClicked.AddDynamic(this, &UAgoraVideoWidget::OnJoinButtonClick);
 	LeaveBtn->OnClicked.AddDynamic(this, &UAgoraVideoWidget::OnLeaveButtonClick);
 	ConfirmBtn->OnClicked.AddDynamic(this, &UAgoraVideoWidget::OnConfirmButtonClick);
+	BackHomeBtn->OnClicked.AddDynamic(this, &UAgoraVideoWidget::OnBackHomeButtonClick);
 }
 
 void UAgoraVideoWidget::OnConfirmButtonClick() {
@@ -68,6 +69,18 @@ void UAgoraVideoWidget::OnConfirmButtonClick() {
 	ret = RtcEngineProxy->setVideoEncoderConfiguration(videoEncoderConfiguration);
 
 	UE_LOG(LogTemp, Warning, TEXT("UVideoWidget setVideoEncoderConfiguration ret %d"), ret);
+}
+
+void UAgoraVideoWidget::OnBackHomeButtonClick()
+{
+	if (RtcEngineProxy != nullptr)
+	{
+		RtcEngineProxy->unregisterEventHandler(this);
+		RtcEngineProxy->release();
+		delete RtcEngineProxy;
+		RtcEngineProxy = nullptr;
+	}
+	UGameplayStatics::OpenLevel(UGameplayStatics::GetPlayerController(GWorld, 0)->GetWorld(), FName("MainLevel"));
 }
 
 void UAgoraVideoWidget::OnJoinButtonClick() {
@@ -118,10 +131,6 @@ void UAgoraVideoWidget::OnLeaveButtonClick() {
 void UAgoraVideoWidget::onJoinChannelSuccess(const char* channel, agora::rtc::uid_t uid, int elapsed) {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
-		if (!bInitialized)
-		{
-			return;
-		}
 		UE_LOG(LogTemp, Warning, TEXT("JoinChannelSuccess uid: %u"), uid);
 		agora::rtc::VideoCanvas videoCanvas;
 		videoCanvas.view = localVideo;
@@ -135,10 +144,6 @@ void UAgoraVideoWidget::onUserJoined(agora::rtc::uid_t uid, int elapsed) {
 
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
-		if (!bInitialized)
-		{
-			return;
-		}
 		UE_LOG(LogTemp, Warning, TEXT("UVideoWidget::onUserJoined  uid: %u"), uid);
 		UserImageData ImageData = GetUImageNoData(uid);
 		if (ImageData.image ==nullptr)
@@ -160,10 +165,6 @@ void UAgoraVideoWidget::onUserJoined(agora::rtc::uid_t uid, int elapsed) {
 void UAgoraVideoWidget::onUserOffline(agora::rtc::uid_t uid, agora::rtc::USER_OFFLINE_REASON_TYPE reason) {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
-		if (!bInitialized)
-		{
-			return;
-		}
 		UE_LOG(LogTemp, Warning, TEXT("UVideoWidget::onUserOffline  uid: %u"), uid);
 		UserImageData ImageData = RemoveUImageData(uid);
 
@@ -189,10 +190,6 @@ void UAgoraVideoWidget::onUserOffline(agora::rtc::uid_t uid, agora::rtc::USER_OF
 void UAgoraVideoWidget::onLeaveChannel(const agora::rtc::RtcStats& stats) {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
-		if (!bInitialized)
-		{
-			return;
-		}
 		UE_LOG(LogTemp, Warning, TEXT("UVideoWidget::onLeaveChannel"));
 		agora::rtc::VideoCanvas videoCanvas;
 		videoCanvas.view = nullptr;

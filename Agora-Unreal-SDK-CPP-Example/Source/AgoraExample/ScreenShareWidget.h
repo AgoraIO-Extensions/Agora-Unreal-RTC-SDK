@@ -72,6 +72,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SelectValueCallBack(FString SelectedItem, ESelectInfo::Type SelectionType);
 
+	UFUNCTION(BlueprintCallable)
+	void OnBackHomeButtonClick();
+
 	void InitAgoraWidget(FString APP_ID, FString TOKEN, FString CHANNEL_NAME) override;
 
 	void GetScreenDisplayId();

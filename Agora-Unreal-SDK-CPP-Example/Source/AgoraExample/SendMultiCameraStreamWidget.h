@@ -61,6 +61,8 @@ public:
 	void SecondCameraJoinChannel();
 	UFUNCTION(BlueprintCallable)
 	void SecondCameraLeaveChannel();
+	UFUNCTION(BlueprintCallable)
+	void OnBackHomeButtonClick();
 
 	unsigned int Uid1 = 123;
 

@@ -98,8 +98,20 @@ void URtmpStreamWithTranscodingWidget::SetUpUIEvent() {
 	StartBtn->OnClicked.AddDynamic(this, &URtmpStreamWithTranscodingWidget::OnStartButtonClick);
 	UpdateBtn->OnClicked.AddDynamic(this, &URtmpStreamWithTranscodingWidget::OnUpdateButtonClick);
 	StopBtn->OnClicked.AddDynamic(this, &URtmpStreamWithTranscodingWidget::OnStopButtonClick);
+	BackHomeBtn->OnClicked.AddDynamic(this, &URtmpStreamWithTranscodingWidget::OnBackHomeButtonClick);
 }
 
+void URtmpStreamWithTranscodingWidget::OnBackHomeButtonClick()
+{
+	if (RtcEngineProxy != nullptr)
+	{
+		RtcEngineProxy->unregisterEventHandler(this);
+		RtcEngineProxy->release();
+		delete RtcEngineProxy;
+		RtcEngineProxy = nullptr;
+	}
+	UGameplayStatics::OpenLevel(UGameplayStatics::GetPlayerController(GWorld, 0)->GetWorld(), FName("MainLevel"));
+}
 
 void URtmpStreamWithTranscodingWidget::JoinChannel() {
 
@@ -155,10 +167,6 @@ void URtmpStreamWithTranscodingWidget::onJoinChannelSuccess(const char* channel,
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
-		if (!bInitialized)
-		{
-			return;
-		}
 		UE_LOG(LogTemp, Warning, TEXT("JoinChannelSuccess uid:%d"),uid);
 		agora::rtc::VideoCanvas videoCanvas;
 		videoCanvas.view = localVideo;
@@ -173,10 +181,6 @@ void URtmpStreamWithTranscodingWidget::onUserJoined(agora::rtc::uid_t uid, int e
 
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
-		if (!bInitialized)
-		{
-			return;
-		}
 		UE_LOG(LogTemp, Warning, TEXT("URtmpStreamWithTranscodingWidget::onUserJoined  uid: %u"), uid);
 		agora::rtc::VideoCanvas videoCanvas;
 		videoCanvas.view = remoteVideo;
@@ -194,10 +198,6 @@ void URtmpStreamWithTranscodingWidget::onUserOffline(agora::rtc::uid_t uid, agor
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
-		if (!bInitialized)
-		{
-			return;
-		}
 		UE_LOG(LogTemp, Warning, TEXT("URtmpStreamWithTranscodingWidget::onUserOffline  uid: %u"), uid);
 		agora::rtc::VideoCanvas videoCanvas;
 		videoCanvas.view = nullptr;
@@ -221,10 +221,6 @@ void URtmpStreamWithTranscodingWidget::onLeaveChannel(const agora::rtc::RtcStats
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
-		if (!bInitialized)
-		{
-			return;
-		}
 		UE_LOG(LogTemp, Warning, TEXT("URtmpStreamWithTranscodingWidget::onLeaveChannel"));
 		agora::rtc::VideoCanvas videoCanvas;
 		videoCanvas.view = nullptr;

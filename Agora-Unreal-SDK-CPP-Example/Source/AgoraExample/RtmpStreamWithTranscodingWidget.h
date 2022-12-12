@@ -57,6 +57,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void OnStopButtonClick();
 
+	UFUNCTION(BlueprintCallable)
+	void OnBackHomeButtonClick();
+
 	void JoinChannel();
 
 	void CheckAndroidPermission();
@@ -84,6 +87,8 @@ private:
 	void InitAgoraEngine(FString APP_ID, FString TOKEN, FString CHANNEL_NAME);
 
 	void SetUpUIEvent();
+
+
 
 	void SetRemoteView(UImage* remoteview, agora::rtc::uid_t uid);
 

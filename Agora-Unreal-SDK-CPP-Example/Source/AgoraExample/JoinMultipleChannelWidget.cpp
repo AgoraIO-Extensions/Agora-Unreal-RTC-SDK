@@ -36,8 +36,22 @@ void UJoinMultipleChannelWidget::SetUpUIEvent()
 	JoinBtn->OnClicked.AddDynamic(this, &UJoinMultipleChannelWidget::JoinChannelClick);
 	LeaveBtn->OnClicked.AddDynamic(this, &UJoinMultipleChannelWidget::LeaveChannelClick);
 	ConfirmBtn->OnClicked.AddDynamic(this, &UJoinMultipleChannelWidget::ScreenShareClick);
+	BackHomeBtn->OnClicked.AddDynamic(this, &UJoinMultipleChannelWidget::OnBackHomeButtonClick);
 }
-
+void UJoinMultipleChannelWidget::OnBackHomeButtonClick()
+{
+	if (RtcEngineProxy != nullptr)
+	{
+		((agora::rtc::IRtcEngineEx*)RtcEngineProxy)->unregisterEventHandler(this);
+#if !PLATFORM_IOS
+		RtcEngineProxy->stopScreenCapture();
+#endif
+		RtcEngineProxy->release();
+		delete RtcEngineProxy;
+		RtcEngineProxy = nullptr;
+	}
+	UGameplayStatics::OpenLevel(UGameplayStatics::GetPlayerController(GWorld, 0)->GetWorld(), FName("MainLevel"));
+}
 void UJoinMultipleChannelWidget::CheckAndroidPermission()
 {
 #if PLATFORM_ANDROID
@@ -259,10 +273,6 @@ void UJoinMultipleChannelWidget::onJoinChannelSuccess(const RtcConnection& conne
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
-		if (!bInitialized)
-		{
-			return;
-		}
 		if (connection.localUid == Uid1)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("JoinChannelSuccess Video"));
@@ -279,10 +289,6 @@ void UJoinMultipleChannelWidget::onLeaveChannel(const RtcConnection& connection,
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
-		if (!bInitialized)
-		{
-			return;
-		}
 		if (connection.localUid == Uid1)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("JoinChannelSuccess Video"));
@@ -299,10 +305,6 @@ void UJoinMultipleChannelWidget::onUserJoined(const RtcConnection& connection, u
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
-		if (!bInitialized)
-		{
-			return;
-		}
 		if (remoteUid != Uid1 && remoteUid != Uid2)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("UJoinMultipleChannelWidget::onUserJoined  uid: %d"), (int64)remoteUid);
@@ -328,10 +330,6 @@ void UJoinMultipleChannelWidget::onUserOffline(const RtcConnection& connection, 
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
-		if (!bInitialized)
-		{
-			return;
-		}
 		UE_LOG(LogTemp, Warning, TEXT("UJoinMultipleChannelWidget::onUserOffline  uid: %d"), (int64)remoteUid);
 		UserImageData ImageData = RemoveUImageData(remoteUid);
 		if (ImageData.image != nullptr)

@@ -24,7 +24,24 @@ void UCustomCaptureVideoScene::InitAgoraWidget(FString APP_ID, FString TOKEN, FS
 	{
 		eventId = FSlateApplication::Get().GetRenderer()->OnBackBufferReadyToPresent().AddUObject(this, &UCustomCaptureVideoScene::OnBackBufferReady_RenderThread);
 	}
+
+	BackHomeBtn->OnClicked.AddDynamic(this, &UCustomCaptureVideoScene::OnBackHomeButtonClick);
 }
+
+
+void UCustomCaptureVideoScene::OnBackHomeButtonClick()
+{
+	if (RtcEngineProxy != nullptr)
+	{
+		RtcEngineProxy->unregisterEventHandler(this);
+		RtcEngineProxy->release();
+		delete RtcEngineProxy;
+		RtcEngineProxy = nullptr;
+		MediaEngineManager = nullptr;
+	}
+	UGameplayStatics::OpenLevel(UGameplayStatics::GetPlayerController(GWorld, 0)->GetWorld(), FName("MainLevel"));
+}
+
 
 void UCustomCaptureVideoScene::OnBackBufferReady_RenderThread(SWindow& window, const FTexture2DRHIRef& BackBuffer)
 {
@@ -62,7 +79,6 @@ void UCustomCaptureVideoScene::OnBackBufferReady_RenderThread(SWindow& window, c
 		}
 	}
 }
-
 
 
 void UCustomCaptureVideoScene::NativeDestruct()

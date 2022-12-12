@@ -37,11 +37,15 @@ public:
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	UButton* BackHomeBtn = nullptr;
 
+	UFUNCTION(BlueprintCallable)
+	void OnBackHomeButtonClick();
+
 	IRtcEngine* RtcEngineProxy;
 
 	agora::media::base::ExternalVideoFrame* externalVideoFrame;
 
 	void InitAgoraWidget(FString APP_ID, FString TOKEN, FString CHANNEL_NAME) override;
+
 
 	void OnBackBufferReady_RenderThread(SWindow& window, const FTexture2DRHIRef& ref);
 
@@ -52,6 +56,7 @@ public:
 	std::string ChannelName;
 
 	FDelegateHandle eventId;
+
 protected:
 
 	void NativeDestruct();

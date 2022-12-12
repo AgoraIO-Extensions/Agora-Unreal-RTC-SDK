@@ -34,6 +34,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void CallDeviceManagerApi();
 
+	UFUNCTION(BlueprintCallable)
+	void OnBackHomeButtonClick();
+
 	void InitAgoraWidget(FString APP_ID, FString TOKEN, FString CHANNEL_NAME) override;
 
 private:
@@ -61,6 +64,7 @@ private:
 	void InitAgoraEngine(FString APP_ID, FString TOKEN, FString CHANNEL_NAME);
 
 	void SetUpUIEvent();
+
 
 	void GetAudioRecordingDevice();
 

@@ -35,9 +35,20 @@ void UEncryptionSampleWidget::SetUpUIEvent() {
 
 	JoinBtn->OnClicked.AddDynamic(this, &UEncryptionSampleWidget::OnJoinButtonClick);
 	LeaveBtn->OnClicked.AddDynamic(this, &UEncryptionSampleWidget::OnLeaveButtonClick);
+	BackHomeBtn->OnClicked.AddDynamic(this, &UEncryptionSampleWidget::OnBackHomeButtonClick);
 }
 
-
+void UEncryptionSampleWidget::OnBackHomeButtonClick()
+{
+	if (RtcEngineProxy != nullptr)
+	{
+		RtcEngineProxy->unregisterEventHandler(this);
+		RtcEngineProxy->release();
+		delete RtcEngineProxy;
+		RtcEngineProxy = nullptr;
+	}
+	UGameplayStatics::OpenLevel(UGameplayStatics::GetPlayerController(GWorld, 0)->GetWorld(), FName("MainLevel"));
+}
 void UEncryptionSampleWidget::OnJoinButtonClick() {
 
 	SetEncryption();
@@ -81,10 +92,6 @@ void UEncryptionSampleWidget::onJoinChannelSuccess(const char* channel, agora::r
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
-		if (!bInitialized)
-		{
-			return;
-		}
 		UE_LOG(LogTemp, Warning, TEXT("JoinChannelSuccess uid:%u"), uid);
 		agora::rtc::VideoCanvas videoCanvas;
 		videoCanvas.view = localVideo;
@@ -98,10 +105,6 @@ void UEncryptionSampleWidget::onUserJoined(agora::rtc::uid_t uid, int elapsed) {
 
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
-		if (!bInitialized)
-		{
-			return;
-		}
 		UE_LOG(LogTemp, Warning, TEXT("UEncryptionSampleWidget::onUserJoined  uid: %u"), uid);
 		agora::rtc::VideoCanvas videoCanvas;
 		videoCanvas.view = remoteVideo;
@@ -119,10 +122,6 @@ void UEncryptionSampleWidget::onUserOffline(agora::rtc::uid_t uid, agora::rtc::U
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
-		if (!bInitialized)
-		{
-			return;
-		}
 		UE_LOG(LogTemp, Warning, TEXT("UEncryptionSampleWidget::onUserOffline  uid: %u"), uid);
 		agora::rtc::VideoCanvas videoCanvas;
 		videoCanvas.view = nullptr;
@@ -145,10 +144,6 @@ void UEncryptionSampleWidget::onLeaveChannel(const agora::rtc::RtcStats& stats)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
-		if (!bInitialized)
-		{
-			return;
-		}
 		UE_LOG(LogTemp, Warning, TEXT("UEncryptionSampleWidget::onLeaveChannel"));
 		agora::rtc::VideoCanvas videoCanvas;
 		videoCanvas.view = nullptr;

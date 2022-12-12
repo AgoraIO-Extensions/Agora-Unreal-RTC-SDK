@@ -47,6 +47,19 @@ void USendMultiCameraStreamWidget::SetUpUIEvent()
 	MainCameraLeave->OnClicked.AddDynamic(this, &USendMultiCameraStreamWidget::MainCameraLeaveChannel);
 	SecondCameraJoin->OnClicked.AddDynamic(this, &USendMultiCameraStreamWidget::SecondCameraJoinChannel);
 	SecondCameraLeave->OnClicked.AddDynamic(this, &USendMultiCameraStreamWidget::SecondCameraLeaveChannel);
+	BackHomeBtn->OnClicked.AddDynamic(this, &USendMultiCameraStreamWidget::OnBackHomeButtonClick);
+}
+
+void USendMultiCameraStreamWidget::OnBackHomeButtonClick()
+{
+	if (RtcEngineProxy != nullptr)
+	{
+		((agora::rtc::IRtcEngineEx*)RtcEngineProxy)->unregisterEventHandler(this);
+		RtcEngineProxy->release();
+		delete RtcEngineProxy;
+		RtcEngineProxy = nullptr;
+	}
+	UGameplayStatics::OpenLevel(UGameplayStatics::GetPlayerController(GWorld, 0)->GetWorld(), FName("MainLevel"));
 }
 
 void USendMultiCameraStreamWidget::CheckAndroidPermission()

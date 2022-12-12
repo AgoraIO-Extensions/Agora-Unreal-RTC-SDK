@@ -38,8 +38,20 @@ void UScreenShareWidget::SetUpUIEvent()
 {
 	ScreenShareBtn->OnClicked.AddDynamic(this, &UScreenShareWidget::OnScreenShareClick);
 	LeaveBtn->OnClicked.AddDynamic(this, &UScreenShareWidget::OnLeaveButtonClick);
+	BackHomeBtn->OnClicked.AddDynamic(this, &UScreenShareWidget::OnBackHomeButtonClick);
 }
 
+void UScreenShareWidget::OnBackHomeButtonClick()
+{
+	if (RtcEngineProxy != nullptr)
+	{
+		RtcEngineProxy->unregisterEventHandler(this);
+		RtcEngineProxy->release();
+		delete RtcEngineProxy;
+		RtcEngineProxy = nullptr;
+	}
+	UGameplayStatics::OpenLevel(UGameplayStatics::GetPlayerController(GWorld, 0)->GetWorld(), FName("MainLevel"));
+}
 
 void UScreenShareWidget::InitAgoraEngine(FString APP_ID, FString TOKEN, FString CHANNEL_NAME)
 {
@@ -199,10 +211,6 @@ void UScreenShareWidget::onJoinChannelSuccess(const char* channel, agora::rtc::u
 	//If you want to show the preview, you can turn on the annotation below, but it may generate performance degradation
 	/*AsyncTask(ENamedThreads::GameThread, [=]()
 	{
-		if (!bInitialized)
-		{
-			return;
-		}
 		UE_LOG(LogTemp, Warning, TEXT("JoinChannelSuccess uid:%d"),uid);
 		agora::rtc::VideoCanvas videoCanvas;
 		videoCanvas.view = LocalVideo;
@@ -216,10 +224,6 @@ void UScreenShareWidget::onLeaveChannel(const agora::rtc::RtcStats& stats)
 {
 	//AsyncTask(ENamedThreads::GameThread, [=]()
 	//{
-	//	if (!bInitialized)
-	//	{
-	//		return;
-	//	}
 	//	//agora::rtc::VideoCanvas videoCanvas;
 	//	//videoCanvas.view = nullptr;
 	//	//videoCanvas.uid = 0;

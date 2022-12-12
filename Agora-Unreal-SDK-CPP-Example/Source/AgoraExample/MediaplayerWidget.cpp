@@ -20,10 +20,6 @@ void UMediaplayerWidget::InitAgoraWidget(FString APP_ID, FString TOKEN, FString 
 	bURLOpen = true;
 }
 
-bool UMediaplayerWidget::GetInitlize()
-{
-	return bInitialized;
-}
 
 void UMediaplayerWidget::onVideoSizeChanged(VIDEO_SOURCE_TYPE sourceType, uid_t uid, int width, int height, int rotation)
 {
@@ -72,8 +68,27 @@ void UMediaplayerWidget::SetUpUIEvent()
 	ResumeButton->OnClicked.AddDynamic(this, &UMediaplayerWidget::OnResumeButtonClick);
 	OpenButton->OnClicked.AddDynamic(this, &UMediaplayerWidget::OnOpenButtonClick);
 	CheckBoxUrl->OnCheckStateChanged.AddDynamic(this, &UMediaplayerWidget::CheckBoxValueChange);
+	BackHomeBtn->OnClicked.AddDynamic(this, &UMediaplayerWidget::OnBackHomeButtonClick);
 }
-
+void UMediaplayerWidget::OnBackHomeButtonClick()
+{
+	if (RtcEngineProxy != nullptr)
+	{
+		MediaPlayer->unregisterPlayerSourceObserver(handler);
+		RtcEngineProxy->destroyMediaPlayer(MediaPlayer);
+		MediaPlayer.reset();
+		if (handler != nullptr)
+		{
+			delete handler;
+			handler = nullptr;
+		}
+		RtcEngineProxy->unregisterEventHandler(this);
+		RtcEngineProxy->release();
+		delete RtcEngineProxy;
+		RtcEngineProxy = nullptr;
+	}
+	UGameplayStatics::OpenLevel(UGameplayStatics::GetPlayerController(GWorld, 0)->GetWorld(), FName("MainLevel"));
+}
 void UMediaplayerWidget::InitMediaPlayer()
 {
 	MediaPlayer = RtcEngineProxy->createMediaPlayer();
@@ -188,11 +203,6 @@ void MpkEventHandler::onPlayerSourceStateChanged(media::base::MEDIA_PLAYER_STATE
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
-		if (!MediaplayerWidget->GetInitlize())
-		{
-			return;
-		}
-
 		GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Black, FString::Printf(TEXT("OnPlayerSourceStateChanged playId: %d"),MediaplayerWidget->MediaPlayer->getMediaPlayerId()));
 
 		UE_LOG(LogTemp, Warning, TEXT("OnPlayerSourceStateChanged"));

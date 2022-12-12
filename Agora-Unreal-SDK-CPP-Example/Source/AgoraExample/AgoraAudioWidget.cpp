@@ -39,6 +39,7 @@ void UAgoraAudioWidget::SetUpUIEvent()
 	LeaveBtn->OnClicked.AddDynamic(this, &UAgoraAudioWidget::OnLeaveButtonClick);
 	ConfirmBtn->OnClicked.AddDynamic(this, &UAgoraAudioWidget::OnConfirmButtonClick);
 	VolumeIndicationBtn->OnClicked.AddDynamic(this, &UAgoraAudioWidget::OnVolumeIndicationClick);
+	BackHomeBtn->OnClicked.AddDynamic(this, &UAgoraAudioWidget::OnBackHomeButtonClick);
 }
 
 void UAgoraAudioWidget::CheckAndroidPermission()
@@ -146,6 +147,18 @@ void UAgoraAudioWidget::OnConfirmButtonClick()
 
 	ret = RtcEngineProxy->setAudioScenario(AgoraAudioScenarioEnumMap[ScenarioComboBox->GetSelectedOption()]);
 	UE_LOG(LogTemp, Warning, TEXT("UVideoWidget setAudioScenario ret: %d AudioScenario : %s"), ret, *ScenarioComboBox->GetSelectedOption());
+}
+
+void UAgoraAudioWidget::OnBackHomeButtonClick()
+{
+	if (RtcEngineProxy != nullptr)
+	{
+		RtcEngineProxy->unregisterEventHandler(this);
+		RtcEngineProxy->release();
+		delete RtcEngineProxy;
+		RtcEngineProxy = nullptr;
+	}
+	UGameplayStatics::OpenLevel(UGameplayStatics::GetPlayerController(GWorld, 0)->GetWorld(), FName("MainLevel"));
 }
 
 void UAgoraAudioWidget::SetButtonClickAble(bool enable) 

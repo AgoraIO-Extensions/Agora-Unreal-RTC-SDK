@@ -57,6 +57,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void OnConfirmButtonClick();
 
+	UFUNCTION(BlueprintCallable)
+	void OnBackHomeButtonClick();
+
 	void InitAgoraWidget(FString APP_ID, FString TOKEN, FString CHANNEL_NAME) override;
 
 private:

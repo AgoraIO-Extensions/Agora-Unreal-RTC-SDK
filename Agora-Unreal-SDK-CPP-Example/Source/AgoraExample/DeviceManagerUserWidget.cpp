@@ -36,6 +36,20 @@ void UDeviceManagerUserWidget::InitAgoraEngine(FString APP_ID, FString TOKEN, FS
 void UDeviceManagerUserWidget::SetUpUIEvent() {
 
 	CallBtn->OnClicked.AddDynamic(this, &UDeviceManagerUserWidget::CallDeviceManagerApi);
+	BackHomeBtn->OnClicked.AddDynamic(this, &UDeviceManagerUserWidget::OnBackHomeButtonClick);
+}
+
+void UDeviceManagerUserWidget::OnBackHomeButtonClick()
+{
+	if (RtcEngineProxy != nullptr)
+	{
+		AudioDeviceManager.reset(nullptr);
+		VideoDeviceManager.reset(nullptr);
+		RtcEngineProxy->release();
+		delete RtcEngineProxy;
+		RtcEngineProxy = nullptr;
+	}
+	UGameplayStatics::OpenLevel(UGameplayStatics::GetPlayerController(GWorld, 0)->GetWorld(), FName("MainLevel"));
 }
 
 void UDeviceManagerUserWidget::CallDeviceManagerApi()

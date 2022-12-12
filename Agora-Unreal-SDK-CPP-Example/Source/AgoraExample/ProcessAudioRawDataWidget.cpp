@@ -69,8 +69,24 @@ void UProcessAudioRawDataWidget::SetUpUIEvent()
 {
 	JoinBtn->OnClicked.AddDynamic(this, &UProcessAudioRawDataWidget::OnJoinButtonClick);
 	LeaveBtn->OnClicked.AddDynamic(this, &UProcessAudioRawDataWidget::OnLeaveButtonClick);
+	BackHomeBtn->OnClicked.AddDynamic(this, &UProcessAudioRawDataWidget::OnBackHomeButtonClick);
 }
 
+void UProcessAudioRawDataWidget::OnBackHomeButtonClick()
+{
+	if (RtcEngineProxy != nullptr)
+	{
+		if (MediaEngine != nullptr)
+		{
+			MediaEngine->registerAudioFrameObserver(nullptr);
+		}
+		((agora::rtc::IRtcEngineEx*)RtcEngineProxy)->unregisterEventHandler(this);
+		RtcEngineProxy->release();
+		delete RtcEngineProxy;
+		RtcEngineProxy = nullptr;
+	}
+	UGameplayStatics::OpenLevel(UGameplayStatics::GetPlayerController(GWorld, 0)->GetWorld(), FName("MainLevel"));
+}
 
 void UProcessAudioRawDataWidget::CheckAndroidPermission()
 {

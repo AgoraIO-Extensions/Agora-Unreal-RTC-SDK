@@ -113,6 +113,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void LeaveChannelClick();
 
+	UFUNCTION(BlueprintCallable)
+	void OnBackHomeButtonClick();
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget))
 	UComboBoxString* ComboBoxDisplayId = nullptr;
 

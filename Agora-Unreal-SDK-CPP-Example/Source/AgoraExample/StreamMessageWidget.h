@@ -63,6 +63,10 @@ private:
 	void InitAgoraEngine(FString APP_ID, FString TOKEN, FString CHANNEL_NAME);
 
 	void SetUpUIEvent();
+
+	UFUNCTION(BlueprintCallable)
+	void OnBackHomeButtonClick();
+
 	UFUNCTION(BlueprintCallable)
 	void onSendButtonClick();
 

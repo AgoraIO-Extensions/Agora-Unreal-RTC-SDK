@@ -49,7 +49,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void RightMoveButtonClick();
 
-
+	UFUNCTION(BlueprintCallable)
+	void OnBackHomeButtonClick();
 protected:
 
 	agora::rtc::IRtcEngine* RtcEngineProxy;

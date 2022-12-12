@@ -33,12 +33,15 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
 	UButton* BackHomeBtn = nullptr;
+	UFUNCTION(BlueprintCallable)
+	void OnBackHomeButtonClick();
 
 	void CheckAndroidPermission();
 
 	void JoinChannel();
 
 	void InitAgoraWidget(FString APP_ID, FString TOKEN, FString CHANNEL_NAME) override;
+
 
 	void SetExternalAudioSource();
 

@@ -18,8 +18,26 @@ void UCustomRenderAudioWidget::InitAgoraWidget(FString APP_ID, FString TOKEN, FS
 		Runnable = new FAgoraRenderRunnable(MediaEngine, AgoraSoundWaveProcedural);
 		FRunnableThread* RunnableThread = FRunnableThread::Create(Runnable, TEXT("Agora"));
 	}
+
+	BackHomeBtn->OnClicked.AddDynamic(this, &UCustomRenderAudioWidget::OnBackHomeButtonClick);
 }
 
+void UCustomRenderAudioWidget::OnBackHomeButtonClick()
+{
+	if (Runnable != nullptr)
+	{
+		Runnable->Exit();
+		Runnable = nullptr;
+	}
+	if (RtcEngineProxy != nullptr)
+	{
+		RtcEngineProxy->unregisterEventHandler(this);
+		RtcEngineProxy->release();
+		delete RtcEngineProxy;
+		RtcEngineProxy = nullptr;
+	}
+	UGameplayStatics::OpenLevel(UGameplayStatics::GetPlayerController(GWorld, 0)->GetWorld(), FName("MainLevel"));
+}
 
 void UCustomRenderAudioWidget::InitAgoraEngine(FString APP_ID, FString TOKEN, FString CHANNEL_NAME)
 {

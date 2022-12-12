@@ -37,6 +37,24 @@ void USpatialAudioWidget::SetUpUIEvent()
 	JoinBtn->OnClicked.AddDynamic(this, &USpatialAudioWidget::OnJoinButtonClick);
 	LeftMoveBtn->OnClicked.AddDynamic(this, &USpatialAudioWidget::LeftMoveButtonClick);
 	RightMoveBtn->OnClicked.AddDynamic(this, &USpatialAudioWidget::RightMoveButtonClick);
+	BackHomeBtn->OnClicked.AddDynamic(this, &USpatialAudioWidget::OnBackHomeButtonClick);
+}
+
+void USpatialAudioWidget::OnBackHomeButtonClick()
+{
+	if (RtcEngineProxy!=nullptr)
+	{
+		if (LocalSpatialAudioEngine != nullptr)
+		{
+			LocalSpatialAudioEngine->release();
+			LocalSpatialAudioEngine = nullptr;
+		}
+		RtcEngineProxy->unregisterEventHandler(this);
+		RtcEngineProxy->release();
+		delete RtcEngineProxy;
+		RtcEngineProxy = nullptr;
+	}
+	UGameplayStatics::OpenLevel(UGameplayStatics::GetPlayerController(GWorld, 0)->GetWorld(), FName("MainLevel"));
 }
 
 void USpatialAudioWidget::onJoinChannelSuccess(const char* channel, uid_t uid, int elapsed)
@@ -114,7 +132,7 @@ void USpatialAudioWidget::NativeConstruct()
 void USpatialAudioWidget::NativeDestruct()
 {
 	Super::NativeDestruct();
-	if (RtcEngineProxy)
+	if (RtcEngineProxy!=nullptr)
 	{
 		if (LocalSpatialAudioEngine != nullptr)
 		{

@@ -67,11 +67,12 @@ public:
 	void OnOpenButtonClick();
 
 	UFUNCTION(BlueprintCallable)
+	void OnBackHomeButtonClick();
+
+	UFUNCTION(BlueprintCallable)
 	void CheckBoxValueChange(bool isOn);
 
 	void InitAgoraWidget(FString APP_ID, FString TOKEN, FString CHANNEL_NAME) override;
-
-	bool GetInitlize();
 
 	IRtcEngine* RtcEngineProxy;
 
@@ -98,6 +99,8 @@ private:
 	void InitAgoraEngine(FString APP_ID, FString TOKEN, FString CHANNEL_NAME);
 
 	void SetUpUIEvent();
+
+
 
 	void InitMediaPlayer();
 

@@ -43,6 +43,8 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void OnLeaveButtonClick();
+	UFUNCTION(BlueprintCallable)
+	void OnBackHomeButtonClick();
 
 	class UAgoraSoundWaveProcedural* AgoraSoundWaveProcedural;
 
@@ -87,6 +89,8 @@ private:
 	void InitAgoraEngine(FString APP_ID, FString TOKEN, FString CHANNEL_NAME);
 
 	void SetUpUIEvent();
+
+
 
 	void InitConfig();
 

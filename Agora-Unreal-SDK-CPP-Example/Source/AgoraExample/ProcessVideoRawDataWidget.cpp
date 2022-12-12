@@ -41,8 +41,24 @@ void UProcessVideoRawDataWidget::SetUpUIEvent() {
 
 	JoinBtn->OnClicked.AddDynamic(this, &UProcessVideoRawDataWidget::OnJoinButtonClick);
 	LeaveBtn->OnClicked.AddDynamic(this, &UProcessVideoRawDataWidget::OnLeaveButtonClick);
+	BackHomeBtn->OnClicked.AddDynamic(this, &UProcessVideoRawDataWidget::OnBackHomeButtonClick);
 }
-
+void UProcessVideoRawDataWidget::OnBackHomeButtonClick()
+{
+	if (RtcEngineProxy != nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("UProcessVideoRawDataWidget::NativeDestruct"));
+		if (MediaEngine != nullptr)
+		{
+			MediaEngine->registerVideoFrameObserver(nullptr);
+		}
+		RtcEngineProxy->unregisterEventHandler(this);
+		RtcEngineProxy->release();
+		delete RtcEngineProxy;
+		RtcEngineProxy = nullptr;
+	}
+	UGameplayStatics::OpenLevel(UGameplayStatics::GetPlayerController(GWorld, 0)->GetWorld(), FName("MainLevel"));
+}
 
 void UProcessVideoRawDataWidget::OnJoinButtonClick() {
 
@@ -87,11 +103,6 @@ void UProcessVideoRawDataWidget::onUserOffline(agora::rtc::uid_t uid, agora::rtc
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
-		if (!bInitialized)
-		{
-			return;
-		}
-
 		UE_LOG(LogTemp, Warning, TEXT("UProcessVideoRawDataWidget::onUserOffline  uid: %u"), uid);
 
 		remoteVideo->SetBrush(EmptyBrush);
@@ -140,10 +151,6 @@ bool UProcessVideoRawDataWidget::onCaptureVideoFrame(VideoFrame& videoFrame)
 	//UE_LOG(LogTemp, Warning, TEXT("UProcessVideoRawDataWidget::onCaptureVideoFrame"));
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
-		if (!bInitialized)
-		{
-			return;
-		}
 		if (LocalRenderTexture == nullptr || !LocalRenderTexture->IsValidLowLevel())
 		{
 			LocalRenderTexture = UTexture2D::CreateTransient(videoFrame.width, videoFrame.height, PF_R8G8B8A8);
@@ -168,10 +175,6 @@ bool UProcessVideoRawDataWidget::onRenderVideoFrame(const char* channelId, rtc::
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
-		if (!bInitialized)
-		{
-			return;
-		}
 		if (RemoteRenderTexture == nullptr || !RemoteRenderTexture->IsValidLowLevel())
 		{
 			RemoteRenderTexture = UTexture2D::CreateTransient(videoFrame.width, videoFrame.height, PF_R8G8B8A8);

@@ -36,8 +36,20 @@ void UStreamMessageWidget::InitAgoraEngine(FString APP_ID, FString TOKEN, FStrin
 void UStreamMessageWidget::SetUpUIEvent()
 {
 	SendBtn->OnClicked.AddDynamic(this, &UStreamMessageWidget::onSendButtonClick);
+	BackHomeBtn->OnClicked.AddDynamic(this, &UStreamMessageWidget::OnBackHomeButtonClick);
 }
 
+void UStreamMessageWidget::OnBackHomeButtonClick()
+{
+	if (RtcEngineProxy != nullptr)
+	{
+		RtcEngineProxy->unregisterEventHandler(this);
+		RtcEngineProxy->release();
+		delete RtcEngineProxy;
+		RtcEngineProxy = nullptr;
+	}
+	UGameplayStatics::OpenLevel(UGameplayStatics::GetPlayerController(GWorld, 0)->GetWorld(), FName("MainLevel"));
+}
 void UStreamMessageWidget::onSendButtonClick()
 {
 	FString sendMessage = SendTextBox->GetText().ToString();

@@ -15,8 +15,26 @@ void UCustomCaptureAudioWidget::InitAgoraWidget(FString APP_ID, FString TOKEN, F
 	JoinChannel();
 
 	StartPushAudio();
+
+	BackHomeBtn->OnClicked.AddDynamic(this, &UCustomCaptureAudioWidget::OnBackHomeButtonClick);
 }
 
+void UCustomCaptureAudioWidget::OnBackHomeButtonClick()
+{
+	if (Runnable != nullptr)
+	{
+		Runnable->Exit();
+		Runnable = nullptr;
+	}
+	if (RtcEngineProxy != nullptr)
+	{
+		RtcEngineProxy->unregisterEventHandler(this);
+		RtcEngineProxy->release();
+		delete RtcEngineProxy;
+		RtcEngineProxy = nullptr;
+	}
+	UGameplayStatics::OpenLevel(UGameplayStatics::GetPlayerController(GWorld, 0)->GetWorld(), FName("MainLevel"));
+}
 void UCustomCaptureAudioWidget::SetExternalAudioSource()
 {
 	int ret = MediaEngine->setExternalAudioSource(true, SAMPLE_RATE, CHANNEL, 1);

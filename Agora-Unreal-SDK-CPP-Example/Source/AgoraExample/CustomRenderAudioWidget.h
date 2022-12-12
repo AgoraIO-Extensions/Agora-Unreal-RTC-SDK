@@ -30,6 +30,8 @@ class AGORAEXAMPLE_API UCustomRenderAudioWidget : public UBaseAgoraUserWidget, p
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
 	UButton* BackHomeBtn = nullptr;
+	UFUNCTION(BlueprintCallable)
+	void OnBackHomeButtonClick();
 
 	class UAgoraSoundWaveProcedural* AgoraSoundWaveProcedural;
 
