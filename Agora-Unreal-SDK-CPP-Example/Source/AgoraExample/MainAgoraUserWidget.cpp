@@ -61,7 +61,7 @@ void UMainAgoraUserWidget::InitLevelArray()
 {
 	LevelArray.Add(FString("BasicAudioCallScene"));
 	LevelArray.Add(FString("BasicVideoCallScene"));
-#if PLATFORM_MAC&&PLATFORM_WINDOWS
+#if PLATFORM_MAC||PLATFORM_WINDOWS
 	LevelArray.Add(FString("DeviceManager"));
 	LevelArray.Add(FString("SendMultiCameraStream"));
 #endif
