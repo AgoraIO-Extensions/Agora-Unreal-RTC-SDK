@@ -15,6 +15,7 @@
 #include "AudioDevice.h"
 #include "HAL/Runnable.h"
 #include <chrono>
+#include <string>
 #include "AgoraSoundWaveProcedural.h"
 #include "CustomRenderAudioWidget.generated.h"
 using namespace agora::rtc;
