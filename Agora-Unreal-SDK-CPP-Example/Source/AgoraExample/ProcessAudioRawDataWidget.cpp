@@ -2,8 +2,8 @@
 
 
 #include "ProcessAudioRawDataWidget.h"
-
-
+#include <string>
+#import <Foundation/Foundation.h>
 void UProcessAudioRawDataWidget::InitAgoraWidget(FString APP_ID, FString TOKEN, FString CHANNEL_NAME)
 {
 	InitConfig();
@@ -156,24 +156,20 @@ bool UProcessAudioRawDataWidget::onRecordAudioFrame(const char* channelId, Audio
 
 bool UProcessAudioRawDataWidget::onPlaybackAudioFrame(const char* channelId, AudioFrame& audioFrame)
 {
-#if PLATFORM_IOS
-	std::string output;
-	if (time.IsEmpty())
-	{
-		FString time = FString("ProcessAudioRawData-") + FDateTime::Now().ToString(TEXT("%Y-%m-%d-%H-%M-%S")) + FString(".pcm");
-		std::string timeStr(TCHAR_TO_UTF8(*time));
-		NSString* path = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) objectAtIndex:0];
-		std::string temp = std::string([path UTF8String]);
-		std::string output = temp + timeStr;
-	}
-	FILE* file = fopen(output.c_str(), "ab+");
-	fwrite(audioFrame.buffer, 1, audioFrame.bytesPerSample * audioFrame.samplesPerChannel * audioFrame.channels, file);
-	fclose(file);
-#else
 	AgoraSoundWaveProcedural->AddToFrames(audioFrame);
 	FMemory::Memset(audioFrame.buffer, 0, audioFrame.bytesPerSample * audioFrame.samplesPerChannel * audioFrame.channels);
+
+	// unreal playback failed, but the data is normal. Customers can modify it by themselves if they find the right way
+#if PLATFORM_IOS
+    NSString* path = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) objectAtIndex:0];
+    std::string temp =std::string([path UTF8String]);
+    std::string output = temp +std::string("/ProcessAudioRawData.pcm");
+    FILE* file = fopen(output.c_str(),"ab+");
+    fwrite(audioFrame.buffer, 1, audioFrame.bytesPerSample * audioFrame.samplesPerChannel * audioFrame.channels, file);
+    fclose(file);
 #endif
-	return false;
+
+	return true;
 }
 
 bool UProcessAudioRawDataWidget::onMixedAudioFrame(const char* channelId, AudioFrame& audioFrame)

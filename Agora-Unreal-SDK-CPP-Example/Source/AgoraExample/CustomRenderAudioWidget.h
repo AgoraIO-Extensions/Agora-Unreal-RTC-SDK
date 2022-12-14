@@ -60,7 +60,7 @@ private:
 
 	FString ChannelName;
 
-	FString time;
+	FString timedata;
 
 	TArray<uint8> RecordingBuffer;
 

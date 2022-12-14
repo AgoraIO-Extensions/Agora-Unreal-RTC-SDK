@@ -2,7 +2,7 @@
 
 
 #include "CustomRenderAudioWidget.h"
-
+#include <string>
 void UCustomRenderAudioWidget::InitAgoraWidget(FString APP_ID, FString TOKEN, FString CHANNEL_NAME)
 {
 	CheckAndroidPermission();
@@ -182,28 +182,20 @@ uint32 FAgoraRenderRunnable::Run()
 			//UE_LOG(LogTemp, Warning, TEXT("UCustomCaptureAudioWidget TimeStamp ====== %d"), toc - tic);
 			tic = getTimeStamp();
 			auto ret = MediaEngine->pullAudioFrame(&externalAudioFrame);
-		
-#if PLATFORM_IOS
-			std::string output;
-			if (time.IsEmpty())
-			{
-				FString time = FString("CustomRenderAudio-") + FDateTime::Now().ToString(TEXT("%Y-%m-%d-%H-%M-%S")) + FString(".pcm");
-				std::string timeStr(TCHAR_TO_UTF8(*time));
-				NSString* path = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) objectAtIndex:0];
-				std::string temp = std::string([path UTF8String]);
-				std::string output = temp + timeStr;
-			}
-			FILE* file = fopen(output.c_str(), "ab+");
-			fwrite(audioFrame.buffer, 1, audioFrame.bytesPerSample * audioFrame.samplesPerChannel * audioFrame.channels, file);
-			fclose(file);
-#else
 			//UE_LOG(LogTemp, Warning, TEXT("UCustomRenderAudioWidget pullAudioFrame ====== %d"), ret);
 			if (ret == 0)
 			{
+			// unreal playback failed, but the data is normal. Customers can modify it by themselves if they find the right way
+#if PLATFORM_IOS
+                NSString* path = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) objectAtIndex:0];
+                std::string temp =std::string([path UTF8String]);
+                std::string output = temp +std::string("/CustomAudiodata.pcm");
+                FILE* file = fopen(output.c_str(),"ab+");
+                fwrite(externalAudioFrame.buffer, 1, externalAudioFrame.bytesPerSample * externalAudioFrame.samplesPerChannel * externalAudioFrame.channels, file);
+                fclose(file);
+#endif
 				AgoraSoundWaveProcedural->AddToFrames(externalAudioFrame);
 			}
-#endif
-	
 		}
 		FPlatformProcess::Sleep(0.001f);
 	}
