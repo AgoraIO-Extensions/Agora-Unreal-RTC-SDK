@@ -157,7 +157,7 @@ bool UProcessAudioRawDataWidget::onRecordAudioFrame(const char* channelId, Audio
 bool UProcessAudioRawDataWidget::onPlaybackAudioFrame(const char* channelId, AudioFrame& audioFrame)
 {
 #if PLATFORM_IOS
-	std::string temp;
+	std::string output;
 	if (time.IsEmpty())
 	{
 		FString time = FString("ProcessAudioRawData-") + FDateTime::Now().ToString(TEXT("%Y-%m-%d-%H-%M-%S")) + FString(".pcm");

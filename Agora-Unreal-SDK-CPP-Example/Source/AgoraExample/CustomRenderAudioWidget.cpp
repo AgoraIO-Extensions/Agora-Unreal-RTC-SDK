@@ -184,7 +184,7 @@ uint32 FAgoraRenderRunnable::Run()
 			auto ret = MediaEngine->pullAudioFrame(&externalAudioFrame);
 		
 #if PLATFORM_IOS
-			std::string temp;
+			std::string output;
 			if (time.IsEmpty())
 			{
 				FString time = FString("CustomRenderAudio-") + FDateTime::Now().ToString(TEXT("%Y-%m-%d-%H-%M-%S")) + FString(".pcm");
