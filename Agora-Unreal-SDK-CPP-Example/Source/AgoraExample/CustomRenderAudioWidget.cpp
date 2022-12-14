@@ -192,7 +192,7 @@ uint32 FAgoraRenderRunnable::Run()
 				std::string temp = std::string([path UTF8String]);
 				std::string output = temp + timeStr;
 				FILE* file = fopen(output.c_str(), "ab+");
-				fwrite(audioFrame.buffer, 1, audioFrame.bytesPerSample * audioFrame.samplesPerChannel * audioFrame.channels, file);
+				fwrite(externalAudioFrame.buffer, 1, externalAudioFrame.bytesPerSample * externalAudioFrame.samplesPerChannel * externalAudioFrame.channels, file);
 				fclose(file);
 			}
 #else
