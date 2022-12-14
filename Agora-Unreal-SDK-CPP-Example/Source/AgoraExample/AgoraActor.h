@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "BaseAgoraUserWidget.h"
+#include "Kismet/GameplayStatics.h"
+#include "AgoraConfig.h"
 #include "AgoraActor.generated.h"
 
 UCLASS()
@@ -27,6 +29,9 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Agora|Context")
 	FString CHANNEL_NAME = "YOUR_CHANNEL_NAME";
 
+	UPROPERTY(EditAnywhere, Category = "Agora|LoadConfig")
+	bool bLoadConfig = true;
+	
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

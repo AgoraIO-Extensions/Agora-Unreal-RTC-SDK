@@ -1,11 +1,11 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
-#include "Include/AgoraPlugin.h"
+#include "AgoraPlugin.h"
 #include "Core.h"
 #include "Modules/ModuleManager.h"
 #include "Interfaces/IPluginManager.h"
 #include <string>
-#include "Include/AgoraHeaderBase.h"
+#include "AgoraCppPlugin/Include/AgoraHeaderBase.h"
 
 #define LOCTEXT_NAMESPACE "FAgoraPluginModule"
 

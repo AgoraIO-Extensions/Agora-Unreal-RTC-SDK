@@ -7,27 +7,19 @@ void UAgoraVideoWidget::InitAgoraWidget(FString APP_ID, FString TOKEN, FString C
 {
 	CheckAndroidPermission();
 
-	InitAgoraEngine(APP_ID,TOKEN,CHANNEL_NAME);
+	InitAgoraEngine(APP_ID, TOKEN, CHANNEL_NAME);
 
 	SetUpUIEvent();
 
-	//SetResolution(640,480);
+	InitUI();
+
+	int ret = RtcEngineProxy->setParameters("{\"che.video.local.camera_index\":1024}");
+	UE_LOG(LogTemp, Warning, TEXT("UVideoWidget setParameters che.video.local.camera_index ======%d"), ret);
+
+	ret = RtcEngineProxy->setParameters("{\"rtc.video.degradation_preference\":100}");
+	UE_LOG(LogTemp, Warning, TEXT("UVideoWidget setParameters rtc.video.degradation_preference ======%d"), ret);
 }
 
-void UAgoraVideoWidget::SetResolution(int width ,int height)
-{
-	VideoEncoderConfiguration videoEncoderConfiguration;
-	VideoDimensions videoDimensions(width, height);
-	videoEncoderConfiguration.dimensions = videoDimensions;
-	videoEncoderConfiguration.codecType = VIDEO_CODEC_TYPE::VIDEO_CODEC_H264;
-	videoEncoderConfiguration.bitrate = 0;
-	videoEncoderConfiguration.minBitrate = 1;
-	videoEncoderConfiguration.orientationMode = ORIENTATION_MODE::ORIENTATION_MODE_ADAPTIVE;
-	videoEncoderConfiguration.degradationPreference = DEGRADATION_PREFERENCE::MAINTAIN_FRAMERATE;
-	videoEncoderConfiguration.mirrorMode = VIDEO_MIRROR_MODE_TYPE::VIDEO_MIRROR_MODE_AUTO;
-
-	RtcEngineProxy->setVideoEncoderConfiguration(videoEncoderConfiguration);
-}
 
 
 void UAgoraVideoWidget::InitAgoraEngine(FString APP_ID, FString TOKEN, FString CHANNEL_NAME) {
@@ -52,13 +44,44 @@ void UAgoraVideoWidget::SetUpUIEvent() {
 
 	JoinBtn->OnClicked.AddDynamic(this, &UAgoraVideoWidget::OnJoinButtonClick);
 	LeaveBtn->OnClicked.AddDynamic(this, &UAgoraVideoWidget::OnLeaveButtonClick);
-	PreviousBtn->SetIsEnabled(false);
-	NextBtn->SetIsEnabled(false);
-	PreviousBtn->OnClicked.AddDynamic(this, &UAgoraVideoWidget::OnPreviousButtonClick);
-	NextBtn->OnClicked.AddDynamic(this, &UAgoraVideoWidget::OnNextButtonClick);
-	BackHomeBtn->OnClicked.AddDynamic(this, &UAgoraVideoWidget::BackHomeClick);
+	ConfirmBtn->OnClicked.AddDynamic(this, &UAgoraVideoWidget::OnConfirmButtonClick);
+	BackHomeBtn->OnClicked.AddDynamic(this, &UAgoraVideoWidget::OnBackHomeButtonClick);
 }
 
+void UAgoraVideoWidget::OnConfirmButtonClick() {
+
+	int ret = RtcEngineProxy->setChannelProfile(AgoraChannelProfileEnumMap[ProfileComboBox->GetSelectedOption()]);
+	UE_LOG(LogTemp, Warning, TEXT("UVideoWidget setChannelProfile ret: %d ChannelProfile : %s"), ret, *ProfileComboBox->GetSelectedOption());
+
+	ret = RtcEngineProxy->setAudioScenario(AgoraAudioScenarioEnumMap[ScenarioComboBox->GetSelectedOption()]);
+	UE_LOG(LogTemp, Warning, TEXT("UVideoWidget setAudioScenario ret: %d AudioScenario : %s"), ret, *ScenarioComboBox->GetSelectedOption());
+
+	VideoEncoderConfiguration videoEncoderConfiguration;
+	videoEncoderConfiguration.frameRate = FCString::Atoi(*FPSComboBox->GetSelectedOption());
+	UE_LOG(LogTemp, Warning, TEXT("UVideoWidget frameRate ======%s"), *FPSComboBox->GetSelectedOption());
+
+	VideoDimensions videoDimensions(FCString::Atoi(*WidthTextBox->GetText().ToString()), FCString::Atoi(*HeightTextBox->GetText().ToString()));
+	videoEncoderConfiguration.dimensions = videoDimensions;
+	videoEncoderConfiguration.bitrate = FCString::Atoi(*BitRateTextBox->GetText().ToString());
+	UE_LOG(LogTemp, Warning, TEXT("UVideoWidget Width:%d Height:%d"), FCString::Atoi(*WidthTextBox->GetText().ToString()), FCString::Atoi(*HeightTextBox->GetText().ToString()));
+	UE_LOG(LogTemp, Warning, TEXT("UVideoWidget Bitrate %d"), FCString::Atoi(*BitRateTextBox->GetText().ToString()));
+
+	ret = RtcEngineProxy->setVideoEncoderConfiguration(videoEncoderConfiguration);
+
+	UE_LOG(LogTemp, Warning, TEXT("UVideoWidget setVideoEncoderConfiguration ret %d"), ret);
+}
+
+void UAgoraVideoWidget::OnBackHomeButtonClick()
+{
+	if (RtcEngineProxy != nullptr)
+	{
+		RtcEngineProxy->unregisterEventHandler(this);
+		RtcEngineProxy->release();
+		delete RtcEngineProxy;
+		RtcEngineProxy = nullptr;
+	}
+	UGameplayStatics::OpenLevel(UGameplayStatics::GetPlayerController(GWorld, 0)->GetWorld(), FName("MainLevel"));
+}
 
 void UAgoraVideoWidget::OnJoinButtonClick() {
 
@@ -70,45 +93,8 @@ void UAgoraVideoWidget::OnJoinButtonClick() {
 
 }
 
-void UAgoraVideoWidget::OnPreviousButtonClick()
-{
-	if (RemoteUserIdArray.Num() == 1 || CurrentRemoteIndex == 0)
-	{
-		return;
-	}
-	SetRemoteView(nullptr, RemoteUserIdArray[CurrentRemoteIndex]);
-	CurrentRemoteIndex--;
-	SetRemoteView(remoteVideo, RemoteUserIdArray[CurrentRemoteIndex]);
-	NextBtn->SetIsEnabled(true);
-}
 
-void UAgoraVideoWidget::OnNextButtonClick()
-{
-	if (RemoteUserIdArray.Num() == 1 || CurrentRemoteIndex == RemoteUserIdArray.Num() - 1)
-	{
-		return;
-	}
-	SetRemoteView(nullptr, RemoteUserIdArray[CurrentRemoteIndex]);
-	CurrentRemoteIndex++;
-	SetRemoteView(remoteVideo, RemoteUserIdArray[CurrentRemoteIndex]);
-	PreviousBtn->SetIsEnabled(true);
-}
-
-void UAgoraVideoWidget::BackHomeClick()
-{
-	UClass* AgoraWidgetClass = LoadClass<UBaseAgoraUserWidget>(NULL, TEXT("WidgetBlueprint'/Game/API-Example/Advance/MainWidgetManager.MainWidgetManager_C'"));
-
-	UBaseAgoraUserWidget* AgoraWidget = CreateWidget<UBaseAgoraUserWidget>(GetWorld(), AgoraWidgetClass);
-
-	AgoraWidget->AddToViewport();
-
-	AgoraWidget->InitAgoraWidget(FString(AppID.c_str()), FString(Token.c_str()), FString(ChannelName.c_str()));
-
-	this->RemoveFromViewport();
-}
-
-void UAgoraVideoWidget::CheckAndroidPermission()
-{
+void UAgoraVideoWidget::CheckAndroidPermission() {
 #if PLATFORM_ANDROID
 	FString pathfromName = UGameplayStatics::GetPlatformName();
 	if (pathfromName == "Android")
@@ -126,28 +112,26 @@ void UAgoraVideoWidget::CheckAndroidPermission()
 void UAgoraVideoWidget::OnLeaveButtonClick() {
 	UE_LOG(LogTemp, Warning, TEXT("UVideoWidget OnLeaveButtonClick ======"));
 
-	for (int i = 0; i < RemoteUserIdArray.Num(); i++)
-	{
-		VideoCanvas videoCanvas;
-		videoCanvas.view = nullptr;
-		videoCanvas.uid = RemoteUserIdArray[i];
-		videoCanvas.sourceType = agora::rtc::VIDEO_SOURCE_TYPE::VIDEO_SOURCE_REMOTE;
-
-		RtcConnection connection;
-		connection.channelId = ChannelName.c_str();
-		((IRtcEngineEx*)RtcEngineProxy)->setupRemoteVideoEx(videoCanvas, connection);
-	}
-	RemoteUserIdArray.Empty();
-
 	RtcEngineProxy->leaveChannel();
+	for (int i = 0; i < NotUseArray.Num(); i++)
+	{
+		NotUseArray[i].image->SetBrush(EmptyBrush);
+	}
+	for (int i = 0; i < UsedArray.Num(); i++)
+	{
+		UsedArray[i].image->SetBrush(EmptyBrush);
+	}
+	localVideo->SetBrush(EmptyBrush);
+	NotUseArray.Empty();
+	UsedArray.Empty();
+	InitUI();
 }
 
 #pragma region RtcEngineCallBack
-void UAgoraVideoWidget::onJoinChannelSuccess(const char* channel, agora::rtc::uid_t uid, int elapsed)
-{
+void UAgoraVideoWidget::onJoinChannelSuccess(const char* channel, agora::rtc::uid_t uid, int elapsed) {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
-		UE_LOG(LogTemp, Warning, TEXT("JoinChannelSuccess"));
+		UE_LOG(LogTemp, Warning, TEXT("JoinChannelSuccess uid: %u"), uid);
 		agora::rtc::VideoCanvas videoCanvas;
 		videoCanvas.view = localVideo;
 		videoCanvas.uid = 0;
@@ -161,35 +145,33 @@ void UAgoraVideoWidget::onUserJoined(agora::rtc::uid_t uid, int elapsed) {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
 		UE_LOG(LogTemp, Warning, TEXT("UVideoWidget::onUserJoined  uid: %u"), uid);
+		UserImageData ImageData = GetUImageNoData(uid);
+		if (ImageData.image ==nullptr)
+		{
+			return;
+		}
 		agora::rtc::VideoCanvas videoCanvas;
-		videoCanvas.view = remoteVideo;
+		videoCanvas.view = ImageData.image;
 		videoCanvas.uid = uid;
 		videoCanvas.sourceType = agora::rtc::VIDEO_SOURCE_TYPE::VIDEO_SOURCE_REMOTE;
 
 		agora::rtc::RtcConnection connection;
 		connection.channelId = ChannelName.c_str();
 
-		if (RemoteUserIdArray.Num()>0)
-		{
-			SetRemoteView(nullptr, RemoteUserIdArray[CurrentRemoteIndex]);
-
-		}
-		RemoteUserIdArray.Add(uid);
-		SetRemoteView(remoteVideo, uid);
-		CurrentRemoteIndex = RemoteUserIdArray.Num() - 1;
-
-		NextBtn->SetIsEnabled(RemoteUserIdArray.Num() != 1);
-		PreviousBtn->SetIsEnabled(RemoteUserIdArray.Num() != 1);
-
 		((agora::rtc::IRtcEngineEx*)RtcEngineProxy)->setupRemoteVideoEx(videoCanvas, connection);
 	});
 }
 
-void UAgoraVideoWidget::onUserOffline(agora::rtc::uid_t uid, agora::rtc::USER_OFFLINE_REASON_TYPE reason)
-{
+void UAgoraVideoWidget::onUserOffline(agora::rtc::uid_t uid, agora::rtc::USER_OFFLINE_REASON_TYPE reason) {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
 		UE_LOG(LogTemp, Warning, TEXT("UVideoWidget::onUserOffline  uid: %u"), uid);
+		UserImageData ImageData = RemoveUImageData(uid);
+
+		if (ImageData.image != nullptr)
+		{
+			ImageData.image->SetBrush(EmptyBrush);
+		}
 		agora::rtc::VideoCanvas videoCanvas;
 		videoCanvas.view = nullptr;
 		videoCanvas.uid = uid;
@@ -202,24 +184,13 @@ void UAgoraVideoWidget::onUserOffline(agora::rtc::uid_t uid, agora::rtc::USER_OF
 		{
 			((agora::rtc::IRtcEngineEx*)RtcEngineProxy)->setupRemoteVideoEx(videoCanvas, connection);
 		}
-
-		if (RemoteUserIdArray.Num() != 0)
-		{
-			SetRemoteView(nullptr, RemoteUserIdArray[CurrentRemoteIndex]);
-			CurrentRemoteIndex = 0;
-			SetRemoteView(remoteVideo, RemoteUserIdArray[CurrentRemoteIndex]);
-		}
-
-		RemoteUserIdArray.Remove(uid);
-		remoteVideo->SetBrush(EmptyBrush);
 	});
 }
 
-void UAgoraVideoWidget::onLeaveChannel(const agora::rtc::RtcStats& stats)
-{
+void UAgoraVideoWidget::onLeaveChannel(const agora::rtc::RtcStats& stats) {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
-		UE_LOG(LogTemp, Warning, TEXT("UVideoWidget::onLeaveChannel  uid"));
+		UE_LOG(LogTemp, Warning, TEXT("UVideoWidget::onLeaveChannel"));
 		agora::rtc::VideoCanvas videoCanvas;
 		videoCanvas.view = nullptr;
 		videoCanvas.uid = 0;
@@ -228,35 +199,124 @@ void UAgoraVideoWidget::onLeaveChannel(const agora::rtc::RtcStats& stats)
 		{
 			RtcEngineProxy->setupLocalVideo(videoCanvas);
 		}
-		localVideo->SetBrush(EmptyBrush);
-		remoteVideo->SetBrush(EmptyBrush);
 	});
 }
 #pragma endregion RtcEngineCallBack
 
 
-void UAgoraVideoWidget::SetRemoteView(UImage* remoteview, uid_t uid)
-{
-	VideoCanvas videoCanvas;
-	videoCanvas.view = remoteview;
-	videoCanvas.uid = uid;
-	videoCanvas.sourceType = agora::rtc::VIDEO_SOURCE_TYPE::VIDEO_SOURCE_REMOTE;
+UserImageData UAgoraVideoWidget::GetUImageNoData(agora::rtc::uid_t uid) {
 
-	RtcConnection connection;
-	connection.channelId = ChannelName.c_str();
+	UserImageData data;
 
-	((IRtcEngineEx*)RtcEngineProxy)->setupRemoteVideoEx(videoCanvas, connection);
+	if (NotUseArray.Num() == 0)
+	{
+		return data;
+	}
+
+	for (int i = 0; i < NotUseArray.Num(); i++)
+	{
+		if (NotUseArray[i].uid == 0)
+		{
+			data = NotUseArray[i];
+
+			data.uid = uid;
+
+			UsedArray.Add(data);
+
+			NotUseArray.Remove(data);
+
+			return data;
+		}
+	}
+	return data;
 }
+
+UserImageData UAgoraVideoWidget::RemoveUImageData(agora::rtc::uid_t uid) {
+
+	UserImageData data;
+
+	if (UsedArray.Num() == 0)
+	{
+		return data;
+	}
+
+	for (int i = 0; i < UsedArray.Num(); i++)
+	{
+		if (UsedArray[i].uid == uid)
+		{
+			data = UsedArray[i];
+
+			data.uid = 0;
+
+			NotUseArray.Add(data);
+
+			UsedArray.Remove(data);
+
+			return data;
+		}
+	}
+	return data;
+}
+
+void UAgoraVideoWidget::InitUI()
+{
+	NotUseArray.Empty();
+
+	NotUseArray.Add(UserImageData(remoteVideoUser1, 0));
+	NotUseArray.Add(UserImageData(remoteVideoUser2, 0));
+	NotUseArray.Add(UserImageData(remoteVideoUser3, 0));
+	NotUseArray.Add(UserImageData(remoteVideoUser4, 0));
+	NotUseArray.Add(UserImageData(remoteVideoUser5, 0));
+	NotUseArray.Add(UserImageData(remoteVideoUser6, 0));
+
+	UsedArray.Empty();
+
+	ProfileComboBox->AddOption("BROADCASTING");
+	ProfileComboBox->AddOption("COMMUNICATION");
+
+	ProfileComboBox->SetSelectedOption(FString("BROADCASTING"));
+
+	ScenarioComboBox->AddOption("DEFAULT");
+	ScenarioComboBox->AddOption("GAME_STREAMING");
+	ScenarioComboBox->AddOption("CHATROOM");
+	ScenarioComboBox->AddOption("CHORUS");
+	ScenarioComboBox->AddOption("MEETING");
+	ScenarioComboBox->AddOption("NUM");
+	ScenarioComboBox->SetSelectedOption(FString("DEFAULT"));
+
+
+	FPSComboBox->AddOption("5");
+	FPSComboBox->AddOption("15");
+	FPSComboBox->AddOption("24");
+	FPSComboBox->AddOption("30");
+	FPSComboBox->AddOption("60");
+	FPSComboBox->SetSelectedOption(FString("15"));
+
+	AgoraChannelProfileEnumMap.Add(FString("BROADCASTING"), CHANNEL_PROFILE_TYPE::CHANNEL_PROFILE_LIVE_BROADCASTING);
+	AgoraChannelProfileEnumMap.Add(FString("COMMUNICATION"), CHANNEL_PROFILE_TYPE::CHANNEL_PROFILE_COMMUNICATION);
+
+	AgoraAudioScenarioEnumMap.Add(FString("DEFAULT"), AUDIO_SCENARIO_TYPE::AUDIO_SCENARIO_DEFAULT);
+	AgoraAudioScenarioEnumMap.Add(FString("GAME_STREAMING"), AUDIO_SCENARIO_TYPE::AUDIO_SCENARIO_GAME_STREAMING);
+	AgoraAudioScenarioEnumMap.Add(FString("CHATROOM"), AUDIO_SCENARIO_TYPE::AUDIO_SCENARIO_CHATROOM);
+	AgoraAudioScenarioEnumMap.Add(FString("CHORUS"), AUDIO_SCENARIO_TYPE::AUDIO_SCENARIO_CHORUS);
+	AgoraAudioScenarioEnumMap.Add(FString("MEETING"), AUDIO_SCENARIO_TYPE::AUDIO_SCENARIO_MEETING);
+	AgoraAudioScenarioEnumMap.Add(FString("NUM"), AUDIO_SCENARIO_TYPE::AUDIO_SCENARIO_NUM);
+
+}
+
+
 
 
 void UAgoraVideoWidget::NativeDestruct() {
 
 	Super::NativeDestruct();
-
+	UE_LOG(LogTemp, Warning, TEXT("UVideoWidget::NativeDestruct"));
 	if (RtcEngineProxy != nullptr)
 	{
+		RtcEngineProxy->unregisterEventHandler(this);
 		RtcEngineProxy->release();
 		delete RtcEngineProxy;
+
 		RtcEngineProxy = nullptr;
 	}
 

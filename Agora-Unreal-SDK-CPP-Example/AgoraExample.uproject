@@ -12,8 +12,15 @@
 				"Engine",
 				"Slate",
 				"SlateCore",
-				"UMG"
+				"UMG",
+				"CoreUObject"
 			]
+		}
+	],
+	"Plugins": [
+		{
+			"Name": "AudioCapture",
+			"Enabled": false
 		}
 	]
 }

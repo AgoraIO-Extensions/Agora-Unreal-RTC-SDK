@@ -20,25 +20,27 @@ void UMediaplayerWidget::InitAgoraWidget(FString APP_ID, FString TOKEN, FString 
 	bURLOpen = true;
 }
 
-//void UMediaplayerWidget::onVideoSizeChanged(uid_t uid, int width, int height, int rotation)
-//{
-//	AsyncTask(ENamedThreads::GameThread, [=]()
-//	{
-//		GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Black, FString::Printf(TEXT("onVideoSizeChanged uid:%d ,width:%d ,height:%d"),uid,width,height));
-//
-//
-//		if (uid == 0)
-//		{
-//#if ENGINE_MAJOR_VERSION > 4
-//			UCanvasPanelSlot* imageSlot = dynamic_cast<UCanvasPanelSlot*>(remoteVideo->Slot.Get());
-//#else
-//			UCanvasPanelSlot* imageSlot = dynamic_cast<UCanvasPanelSlot*>(remoteVideo->Slot);
-//#endif
-//			imageSlot->SetSize(FVector2D(width, height));
-//		}
-//
-//	});
-//}
+
+void UMediaplayerWidget::onVideoSizeChanged(VIDEO_SOURCE_TYPE sourceType, uid_t uid, int width, int height, int rotation)
+{
+	AsyncTask(ENamedThreads::GameThread, [=]()
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Black, FString::Printf(TEXT("onVideoSizeChanged uid:%u ,width:%d ,height:%d"), uid, width, height));
+
+
+		if (uid == 0)
+		{
+#if ENGINE_MAJOR_VERSION > 4
+				UCanvasPanelSlot* imageSlot = dynamic_cast<UCanvasPanelSlot*>(remoteVideo->Slot.Get());
+#else
+				UCanvasPanelSlot* imageSlot = dynamic_cast<UCanvasPanelSlot*>(remoteVideo->Slot);
+#endif
+				imageSlot->SetSize(FVector2D(width, height));
+		}
+
+	});
+}
+
 
 void UMediaplayerWidget::InitAgoraEngine(FString APP_ID, FString TOKEN, FString CHANNEL_NAME)
 {
@@ -66,9 +68,27 @@ void UMediaplayerWidget::SetUpUIEvent()
 	ResumeButton->OnClicked.AddDynamic(this, &UMediaplayerWidget::OnResumeButtonClick);
 	OpenButton->OnClicked.AddDynamic(this, &UMediaplayerWidget::OnOpenButtonClick);
 	CheckBoxUrl->OnCheckStateChanged.AddDynamic(this, &UMediaplayerWidget::CheckBoxValueChange);
-	BackHomeBtn->OnClicked.AddDynamic(this, &UMediaplayerWidget::BackHomeClick);
+	BackHomeBtn->OnClicked.AddDynamic(this, &UMediaplayerWidget::OnBackHomeButtonClick);
 }
-
+void UMediaplayerWidget::OnBackHomeButtonClick()
+{
+	if (RtcEngineProxy != nullptr)
+	{
+		MediaPlayer->unregisterPlayerSourceObserver(handler);
+		RtcEngineProxy->destroyMediaPlayer(MediaPlayer);
+		MediaPlayer.reset();
+		if (handler != nullptr)
+		{
+			delete handler;
+			handler = nullptr;
+		}
+		RtcEngineProxy->unregisterEventHandler(this);
+		RtcEngineProxy->release();
+		delete RtcEngineProxy;
+		RtcEngineProxy = nullptr;
+	}
+	UGameplayStatics::OpenLevel(UGameplayStatics::GetPlayerController(GWorld, 0)->GetWorld(), FName("MainLevel"));
+}
 void UMediaplayerWidget::InitMediaPlayer()
 {
 	MediaPlayer = RtcEngineProxy->createMediaPlayer();
@@ -128,18 +148,6 @@ void UMediaplayerWidget::CheckBoxValueChange(bool isOn)
 	UE_LOG(LogTemp, Warning, TEXT("TCheckBoxValueChange is %s"), (bURLOpen ? TEXT("true") : TEXT("false")));
 }
 
-void UMediaplayerWidget::BackHomeClick()
-{
-	UClass* AgoraWidgetClass = LoadClass<UBaseAgoraUserWidget>(NULL, TEXT("WidgetBlueprint'/Game/API-Example/Advance/MainWidgetManager.MainWidgetManager_C'"));
-
-	UBaseAgoraUserWidget* AgoraWidget = CreateWidget<UBaseAgoraUserWidget>(GetWorld(), AgoraWidgetClass);
-
-	AgoraWidget->AddToViewport();
-
-	AgoraWidget->InitAgoraWidget(FString(AppID.c_str()), FString(Token.c_str()), FString(ChannelName.c_str()));
-
-	this->RemoveFromViewport();
-}
 
 void UMediaplayerWidget::OnPlayButtonClick()
 {
@@ -174,18 +182,9 @@ void UMediaplayerWidget::OnOpenButtonClick()
 	}
 	else
 	{
+		FString LoadDir = FPaths::ProjectContentDir() / TEXT("Movies/MPK.mp4");  
 
-#if PLATFORM_WINDOWS
-		FString MPKFilepath("FileMediaSource'/Game/Movies/MPK.MPK'");
-
-		UFileMediaSource* FileMediaSource = LoadObject<UFileMediaSource>(NULL, *MPKFilepath);
-
-		path = TCHAR_TO_ANSI(*FileMediaSource->GetFullPath());
-
-		UE_LOG(LogTemp, Warning, TEXT("OnOpenButtonClick %s"), *FileMediaSource->GetFullPath());
-#else
-		GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Black, FString::Printf(TEXT("Please add absolute path to path")));
-#endif
+		path = TCHAR_TO_ANSI(*LoadDir);
 	}
 	auto ret = MediaPlayer->open(path, 0);
 
@@ -287,6 +286,7 @@ void UMediaplayerWidget::NativeDestruct()
 	Super::NativeDestruct();
 	if (RtcEngineProxy != nullptr)
 	{
+		MediaPlayer->unregisterPlayerSourceObserver(handler);
 		RtcEngineProxy->destroyMediaPlayer(MediaPlayer);
 		MediaPlayer.reset();
 		if (handler != nullptr)
@@ -294,6 +294,7 @@ void UMediaplayerWidget::NativeDestruct()
 			delete handler;
 			handler = nullptr;
 		}
+		RtcEngineProxy->unregisterEventHandler(this);
 		RtcEngineProxy->release();
 		delete RtcEngineProxy;
 		RtcEngineProxy = nullptr;

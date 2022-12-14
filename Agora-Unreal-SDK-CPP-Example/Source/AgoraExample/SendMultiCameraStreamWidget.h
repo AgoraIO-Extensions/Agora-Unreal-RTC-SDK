@@ -54,8 +54,6 @@ public:
 	void InitAgoraWidget(FString APP_ID, FString TOKEN, FString CHANNEL_NAME) override;
 
 	UFUNCTION(BlueprintCallable)
-	void BackHomeClick();
-	UFUNCTION(BlueprintCallable)
 	void MainCameraJoinChannel();
 	UFUNCTION(BlueprintCallable)
 	void MainCameraLeaveChannel();
@@ -63,8 +61,8 @@ public:
 	void SecondCameraJoinChannel();
 	UFUNCTION(BlueprintCallable)
 	void SecondCameraLeaveChannel();
-
-
+	UFUNCTION(BlueprintCallable)
+	void OnBackHomeButtonClick();
 
 	unsigned int Uid1 = 123;
 
@@ -79,8 +77,6 @@ public:
 	void onRejoinChannelSuccess(const RtcConnection& connection, int elapsed) override;
 
 	void onLeaveChannel(const RtcConnection& connection, const RtcStats& stats) override;
-
-	void onClientRoleChanged(const RtcConnection& connection, CLIENT_ROLE_TYPE oldRole, CLIENT_ROLE_TYPE newRole) override;
 
 	void onUserJoined(const RtcConnection& connection, uid_t remoteUid, int elapsed) override;
 

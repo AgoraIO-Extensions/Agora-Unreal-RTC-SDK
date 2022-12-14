@@ -15,18 +15,6 @@ void USendMultiCameraStreamWidget::InitAgoraWidget(FString APP_ID, FString TOKEN
 	SetUpUIEvent();
 }
 
-void USendMultiCameraStreamWidget::BackHomeClick()
-{
-	UClass* AgoraWidgetClass = LoadClass<UBaseAgoraUserWidget>(NULL, TEXT("WidgetBlueprint'/Game/API-Example/Advance/MainWidgetManager.MainWidgetManager_C'"));
-
-	UBaseAgoraUserWidget* AgoraWidget = CreateWidget<UBaseAgoraUserWidget>(GetWorld(), AgoraWidgetClass);
-
-	AgoraWidget->AddToViewport();
-
-	AgoraWidget->InitAgoraWidget(FString(AppID.c_str()), FString(Token.c_str()), FString(ChannelName.c_str()));
-
-	this->RemoveFromViewport();
-}
 
 void USendMultiCameraStreamWidget::InitAgoraEngine(FString APP_ID, FString TOKEN, FString CHANNEL_NAME)
 {
@@ -59,7 +47,19 @@ void USendMultiCameraStreamWidget::SetUpUIEvent()
 	MainCameraLeave->OnClicked.AddDynamic(this, &USendMultiCameraStreamWidget::MainCameraLeaveChannel);
 	SecondCameraJoin->OnClicked.AddDynamic(this, &USendMultiCameraStreamWidget::SecondCameraJoinChannel);
 	SecondCameraLeave->OnClicked.AddDynamic(this, &USendMultiCameraStreamWidget::SecondCameraLeaveChannel);
-	BackHomeBtn->OnClicked.AddDynamic(this, &USendMultiCameraStreamWidget::BackHomeClick);
+	BackHomeBtn->OnClicked.AddDynamic(this, &USendMultiCameraStreamWidget::OnBackHomeButtonClick);
+}
+
+void USendMultiCameraStreamWidget::OnBackHomeButtonClick()
+{
+	if (RtcEngineProxy != nullptr)
+	{
+		((agora::rtc::IRtcEngineEx*)RtcEngineProxy)->unregisterEventHandler(this);
+		RtcEngineProxy->release();
+		delete RtcEngineProxy;
+		RtcEngineProxy = nullptr;
+	}
+	UGameplayStatics::OpenLevel(UGameplayStatics::GetPlayerController(GWorld, 0)->GetWorld(), FName("MainLevel"));
 }
 
 void USendMultiCameraStreamWidget::CheckAndroidPermission()
@@ -128,8 +128,10 @@ void USendMultiCameraStreamWidget::MainCameraJoinChannel()
 
 
 	auto ret = RtcEngineProxy->startPrimaryCameraCapture(ConfigPrimary);
+
+	UE_LOG(LogTemp, Warning, TEXT("MainCameraJoinChannel returns: %d"), ret);
 	agora::rtc::ChannelMediaOptions options;
-#if !(PLATFORM_ANDROID || PLATFORM_IOS)
+#if PLATFORM_MAC || PLATFORM_WINDOWS
 	options.autoSubscribeAudio = true;
 	options.autoSubscribeVideo = true;
 	options.publishCameraTrack = true;
@@ -137,7 +139,9 @@ void USendMultiCameraStreamWidget::MainCameraJoinChannel()
 	options.enableAudioRecordingOrPlayout = true;
 	options.clientRoleType = agora::rtc::CLIENT_ROLE_TYPE::CLIENT_ROLE_BROADCASTER;
 #endif
-	((agora::rtc::IRtcEngineEx*)RtcEngineProxy)->joinChannelEx(Token.c_str(), connection, options, nullptr);
+	ret =  ((agora::rtc::IRtcEngineEx*)RtcEngineProxy)->joinChannelEx(Token.c_str(), connection, options, nullptr);
+
+	UE_LOG(LogTemp, Warning, TEXT("MainCameraJoinChannel joinChannelEx returns: %d"), ret);
 }
 
 void USendMultiCameraStreamWidget::MainCameraLeaveChannel()
@@ -156,7 +160,7 @@ void USendMultiCameraStreamWidget::MainCameraLeaveChannel()
 	videoCanvas.sourceType = agora::rtc::VIDEO_SOURCE_TYPE::VIDEO_SOURCE_CAMERA_PRIMARY;
 	RtcEngineProxy->setupLocalVideo(videoCanvas);
 
-	UE_LOG(LogTemp, Warning, TEXT("SecondCameraLeaveChannel returns: %d ,ChannelName %s ,Uid %d"), ret, *FString(ChannelName.c_str()), Uid1);
+	UE_LOG(LogTemp, Warning, TEXT("MainCameraLeaveChannel returns: %d ,ChannelName %s ,Uid %d"), ret, *FString(ChannelName.c_str()), Uid1);
 	PrimaryVideo->Brush = EmptyBrush;
 }
 
@@ -204,7 +208,7 @@ void USendMultiCameraStreamWidget::onUserOffline(const RtcConnection& connection
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Red, FString::Printf(TEXT("OnUserJoined uid: %d, reason: %d"), remoteUid,(int)reason));
+		GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Red, FString::Printf(TEXT("OnUserJoined uid: %u, reason: %d"), remoteUid,(int)reason));
 
 		if (remoteUid != Uid1 && remoteUid != Uid2)
 		{
@@ -229,9 +233,7 @@ void USendMultiCameraStreamWidget::onJoinChannelSuccess(const RtcConnection& con
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
-		bIsChannelJoined = true;
-
-		GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Red, FString::Printf(TEXT("OnJoinChannelSuccess uid: %d,ChannelName: %s, elapsed: %d"), connection.localUid, *FString(connection.channelId),elapsed));
+		GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Red, FString::Printf(TEXT("OnJoinChannelSuccess uid: %u,ChannelName: %s, elapsed: %d"), connection.localUid, *FString(connection.channelId),elapsed));
 
 		if (connection.localUid == Uid1)
 		{
@@ -262,8 +264,6 @@ void USendMultiCameraStreamWidget::onLeaveChannel(const RtcConnection& connectio
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
-		bIsChannelJoined = false;
-
 		GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Red, FString::Printf(TEXT("OnLeaveChannel")));
 
 		if (connection.localUid == Uid1)
@@ -273,7 +273,7 @@ void USendMultiCameraStreamWidget::onLeaveChannel(const RtcConnection& connectio
 			videoCanvas.uid = Uid1;
 			videoCanvas.sourceType = agora::rtc::VIDEO_SOURCE_TYPE::VIDEO_SOURCE_CAMERA;
 			RtcEngineProxy->setupLocalVideo(videoCanvas);
-			//PrimaryVideo->Brush = EmptyBrush;
+			PrimaryVideo->Brush = EmptyBrush;
 		}
 
 		if (connection.localUid == Uid2)
@@ -283,21 +283,16 @@ void USendMultiCameraStreamWidget::onLeaveChannel(const RtcConnection& connectio
 			videoCanvas.uid = Uid2;
 			videoCanvas.sourceType = agora::rtc::VIDEO_SOURCE_TYPE::VIDEO_SOURCE_CAMERA;
 			RtcEngineProxy->setupLocalVideo(videoCanvas);
-			SecondVideo->Brush = EmptyBrush;
 		}
 	});
 }
 
-void USendMultiCameraStreamWidget::onClientRoleChanged(const RtcConnection& connection, CLIENT_ROLE_TYPE oldRole, CLIENT_ROLE_TYPE newRole)
-{
-	GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Red, FString::Printf(TEXT("OnClientRoleChanged")));
-}
 
 void USendMultiCameraStreamWidget::onUserJoined(const RtcConnection& connection, uid_t remoteUid, int elapsed)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Red, FString::Printf(TEXT("OnUserJoined uid: %d elapsed: %d"), connection.channelId, elapsed));
+		GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Red, FString::Printf(TEXT("OnUserJoined uid: %u elapsed: %d"), connection.channelId, elapsed));
 
 		if (remoteUid != Uid1 && remoteUid != Uid2)
 		{
@@ -317,6 +312,7 @@ void USendMultiCameraStreamWidget::NativeDestruct()
 	Super::NativeDestruct();
 	if (RtcEngineProxy != nullptr)
 	{
+		((agora::rtc::IRtcEngineEx*)RtcEngineProxy)->unregisterEventHandler(this);
 		RtcEngineProxy->release();
 		delete RtcEngineProxy;
 		RtcEngineProxy = nullptr;

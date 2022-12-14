@@ -2,101 +2,82 @@
 
 
 #include "MainAgoraUserWidget.h"
-
-void UMainAgoraUserWidget::JoinChannelVideoClick()
-{
-	LoadWidget(FString("WidgetBlueprint'/Game/API-Example/Basic/JoinChannelVideo/BP_VideoWidget.BP_VideoWidget_C'"));
-}
-
-
-void UMainAgoraUserWidget::JoinChannelAudioClick()
-{
-	LoadWidget(FString("WidgetBlueprint'/Game/API-Example/Basic/JoinChannelAudio/BP_AudioWidget.BP_AudioWidget_C'"));
-}
-
-void UMainAgoraUserWidget::DvicesManagerClick()
-{
-	LoadWidget(FString("WidgetBlueprint'/Game/API-Example/Advance/DeviceManager/BP_DeviceManager.BP_DeviceManager_C'"));
-}
-
-void UMainAgoraUserWidget::JoinMultipleChannelClick()
-{
-	LoadWidget(FString("WidgetBlueprint'/Game/API-Example/Advance/JoinMultipleChannel/BP_JoinMultipleChannel.BP_JoinMultipleChannel_C'"));
-}
-
-void UMainAgoraUserWidget::MediaPlayerClick()
-{
-	LoadWidget(FString("WidgetBlueprint'/Game/API-Example/Advance/MediaPlayer/BP_Mediaplayer.BP_Mediaplayer_C'"));
-}
-
-void UMainAgoraUserWidget::ScreenShareClick()
-{
-	LoadWidget(FString("WidgetBlueprint'/Game/API-Example/Advance/ScreenShare/BP_ScreenShare.BP_ScreenShare_C'"));
-}
-
-void UMainAgoraUserWidget::SendMultiCameraStreamClick()
-{
-	LoadWidget(FString("WidgetBlueprint'/Game/API-Example/Advance/SendMultiCameraStream/BP_SendMultiCameraStream.BP_SendMultiCameraStream_C'"));
-}
-
-void UMainAgoraUserWidget::SpatialAudioClick()
-{
-	LoadWidget(FString("WidgetBlueprint'/Game/API-Example/Advance/SpatialAudio/BP_SpatialAudio.BP_SpatialAudio_C'"));
-}
-
-void UMainAgoraUserWidget::CustomCaptureVideoClick()
-{
-	LoadWidget(FString("WidgetBlueprint'/Game/API-Example/Advance/CustomCaptureVideo/BP_CustomCaptureVideoScene.BP_CustomCaptureVideoScene_C'"));
-}
-
-void UMainAgoraUserWidget::LoadWidget(FString WidgetName)
-{
-	UClass* AgoraWidgetClass = LoadClass<UBaseAgoraUserWidget>(NULL, *WidgetName);
-
-	UBaseAgoraUserWidget* AgoraWidget = CreateWidget<UBaseAgoraUserWidget>(GetWorld(), AgoraWidgetClass);
-
-	AgoraWidget->AddToViewport();
-
-	AgoraWidget->InitAgoraWidget(AppidBox->GetText().ToString(), TokenBox->GetText().ToString(), ChannelBox->GetText().ToString());
-
-	this->RemoveFromViewport();
-}
-
-void UMainAgoraUserWidget::InitAgoraWidget(FString Id, FString Token, FString Channelname)
-{
-	this->APP_ID = Id;
-
-	this->TOKEN = Token;
-
-	this->CHANNEL_NAME = Channelname;
-
-	AppidBox->SetText(FText::FromString(APP_ID));
-
-	TokenBox->SetText(FText::FromString(Token));
-
-	ChannelBox->SetText(FText::FromString(Channelname));
-}
+#include "GameFramework/GameUserSettings.h"
 
 void UMainAgoraUserWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
+#if PLATFORM_MAC
+	GEngine->GetGameUserSettings()->SetFullscreenMode(EWindowMode::Windowed);
+	GEngine->GetGameUserSettings()->SetScreenResolution(FIntPoint(1920, 1080));
+	GEngine->GetGameUserSettings()->ApplySettings(true);
+#endif
 
-	JoinChannelVideo->OnClicked.AddDynamic(this, &UMainAgoraUserWidget::JoinChannelVideoClick);
+	if (UAgoraConfig* LoadedGame = Cast<UAgoraConfig>(UGameplayStatics::LoadGameFromSlot(FString("AgoraSave"), 0)))
+	{
+		this->APP_ID = LoadedGame->AppId;
 
-	JoinChannelAudio->OnClicked.AddDynamic(this, &UMainAgoraUserWidget::JoinChannelAudioClick);
+		this->TOKEN = LoadedGame->Token;
 
-	DeviceManager->OnClicked.AddDynamic(this, &UMainAgoraUserWidget::DvicesManagerClick);
+		this->CHANNEL_NAME = LoadedGame->Channelname;
 
-	JoinMultipleChannel->OnClicked.AddDynamic(this, &UMainAgoraUserWidget::JoinMultipleChannelClick);
+		AppidBox->SetText(FText::FromString(LoadedGame->AppId));
 
-	MediaPlayer->OnClicked.AddDynamic(this, &UMainAgoraUserWidget::MediaPlayerClick);
+		TokenBox->SetText(FText::FromString(LoadedGame->Token));
 
-	ScreenShare->OnClicked.AddDynamic(this, &UMainAgoraUserWidget::ScreenShareClick);
+		ChannelBox->SetText(FText::FromString(LoadedGame->Channelname));
+	}
 
-	SendMultiCameraStream->OnClicked.AddDynamic(this, &UMainAgoraUserWidget::SendMultiCameraStreamClick);
+	InitLevelArray();
 
-	SpatialAudio->OnClicked.AddDynamic(this, &UMainAgoraUserWidget::SpatialAudioClick);
+	for (int i = 0; i < LevelArray.Num(); i++)
+	{
+		ULevelSwitchItem* temp = NewObject<ULevelSwitchItem>();
 
-	CustomCaptureVideo->OnClicked.AddDynamic(this, &UMainAgoraUserWidget::CustomCaptureVideoClick);
+		temp->LevelName = LevelArray[i];
+
+		LevelTileView->AddItem(temp);
+	}
+
+}
+
+void UMainAgoraUserWidget::NativeDestruct()
+{
+	Super::NativeDestruct();
+
+	UAgoraConfig* SaveGameInstance = Cast<UAgoraConfig>(UGameplayStatics::CreateSaveGameObject(UAgoraConfig::StaticClass()));
+	SaveGameInstance->AppId = FString(AppidBox->GetText().ToString());
+	SaveGameInstance->Token = FString(TokenBox->GetText().ToString());
+	SaveGameInstance->Channelname = FString(ChannelBox->GetText().ToString());
+
+	if (UGameplayStatics::SaveGameToSlot(SaveGameInstance, FString("AgoraSave"), 0))
+	{
+		UE_LOG(LogTemp,Warning,TEXT("Save Config Succeed"));
+	}
+	
+}
+
+void UMainAgoraUserWidget::InitLevelArray()
+{
+	LevelArray.Add(FString("BasicAudioCallScene"));
+	LevelArray.Add(FString("BasicVideoCallScene"));
+#if PLATFORM_MAC||PLATFORM_WINDOWS
+	LevelArray.Add(FString("DeviceManager"));
+	LevelArray.Add(FString("SendMultiCameraStream"));
+#endif
+#if !PLATFORM_IOS
+	LevelArray.Add(FString("JoinMultipleChannel"));
+	LevelArray.Add(FString("ScreenShare"));
+#endif
+	LevelArray.Add(FString("MediaPlayer"));
+	LevelArray.Add(FString("SpatialAudio"));
+	LevelArray.Add(FString("SetEncryptionScene"));
+	LevelArray.Add(FString("StreamMessageScene"));
+	LevelArray.Add(FString("StartRtmpStreamWithTranscoding"));
+	LevelArray.Add(FString("CustomCaptureAudio"));
+	LevelArray.Add(FString("CustomCaptureVideo"));
+	LevelArray.Add(FString("CustomRenderAudio"));
+	LevelArray.Add(FString("ProcessAudioRawData"));
+	LevelArray.Add(FString("ProcessVideoRawData"));
 }
 

@@ -2,6 +2,12 @@
 
 
 #include "CustomCaptureVideoScene.h"
+#include "RHICommandList.h"
+#include "Math/IntRect.h"
+#include "RHI.h"
+#include "Rendering/SlateRenderer.h"
+#include "Widgets/SWindow.h"
+#include "RHIDefinitions.h"
 
 
 void UCustomCaptureVideoScene::InitAgoraWidget(FString APP_ID, FString TOKEN, FString CHANNEL_NAME)
@@ -14,79 +20,78 @@ void UCustomCaptureVideoScene::InitAgoraWidget(FString APP_ID, FString TOKEN, FS
 
 	JoinChannel();
 
-	InitVideo();
+	if (FSlateApplication::IsInitialized())
+	{
+		eventId = FSlateApplication::Get().GetRenderer()->OnBackBufferReadyToPresent().AddUObject(this, &UCustomCaptureVideoScene::OnBackBufferReady_RenderThread);
+	}
 
-	BackHomeBtn->OnClicked.AddDynamic(this, &UCustomCaptureVideoScene::BackHomeClick);
+	BackHomeBtn->OnClicked.AddDynamic(this, &UCustomCaptureVideoScene::OnBackHomeButtonClick);
 }
 
 
-void UCustomCaptureVideoScene::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
+void UCustomCaptureVideoScene::OnBackHomeButtonClick()
 {
-	Super::NativeTick(MyGeometry, InDeltaTime);
-	UTexture2D* tex = (UTexture2D*)localVideo->Brush.GetResourceObject();
+	if (RtcEngineProxy != nullptr)
+	{
+		RtcEngineProxy->unregisterEventHandler(this);
+		RtcEngineProxy->release();
+		delete RtcEngineProxy;
+		RtcEngineProxy = nullptr;
+		MediaEngineManager = nullptr;
+	}
+	UGameplayStatics::OpenLevel(UGameplayStatics::GetPlayerController(GWorld, 0)->GetWorld(), FName("MainLevel"));
+}
+
+
+void UCustomCaptureVideoScene::OnBackBufferReady_RenderThread(SWindow& window, const FTexture2DRHIRef& BackBuffer)
+{
+	FRHICommandListImmediate& RHICmdList = FRHICommandListExecutor::GetImmediateCommandList();
+	auto width = BackBuffer->GetSizeX();
+	auto height = BackBuffer->GetSizeY();
+	FIntRect Rect(0, 0, BackBuffer->GetSizeX(), BackBuffer->GetSizeY());
+	TArray<FColor> Data;
+
+	RHICmdList.ReadSurfaceData(BackBuffer, Rect, Data, FReadSurfaceDataFlags());
 	if (externalVideoFrame == nullptr)
 	{
 		externalVideoFrame = new agora::media::base::ExternalVideoFrame();
 	}
 	externalVideoFrame->type = agora::media::base::ExternalVideoFrame::VIDEO_BUFFER_TYPE::VIDEO_BUFFER_RAW_DATA;
 	externalVideoFrame->format = agora::media::base::VIDEO_PIXEL_FORMAT::VIDEO_PIXEL_BGRA;
-	externalVideoFrame->stride = tex->GetSizeX();
-	externalVideoFrame->height = tex->GetSizeY();
+	externalVideoFrame->stride = BackBuffer->GetSizeX();
+	externalVideoFrame->height = BackBuffer->GetSizeY();
 	externalVideoFrame->cropLeft = 10;
 	externalVideoFrame->cropTop = 10;
 	externalVideoFrame->cropRight = 10;
 	externalVideoFrame->cropBottom = 10;
 	externalVideoFrame->rotation = 0;
+	externalVideoFrame->timestamp = getTimeStamp();
 	if (externalVideoFrame->buffer == nullptr)
 	{
-		externalVideoFrame->buffer = (uint8*)FMemory::Malloc(tex->GetSizeX() * tex->GetSizeY()*4);
+		externalVideoFrame->buffer = (uint8*)FMemory::Malloc(BackBuffer->GetSizeX() * BackBuffer->GetSizeY() * 4);
 	}
-	externalVideoFrame->timestamp = getTimeStamp();
-#if ENGINE_MAJOR_VERSION > 4
-	if (tex->GetPlatformData() != nullptr)
+	if (Data.Num() > 4)
 	{
-		uint8* raw = (uint8*)tex->GetPlatformData()->Mips[0].BulkData.Lock(LOCK_READ_ONLY);
-		memcpy(externalVideoFrame->buffer, raw, tex->GetSizeX() * tex->GetSizeY() * 4);
-		tex->GetPlatformData()->Mips[0].BulkData.Unlock();
-
-		MediaEngineManager->pushVideoFrame(externalVideoFrame);
+		FMemory::Memcpy(externalVideoFrame->buffer, Data.GetData(), BackBuffer->GetSizeX() * BackBuffer->GetSizeY() * 4);
+		if (MediaEngineManager!=nullptr)
+		{
+			MediaEngineManager->pushVideoFrame(externalVideoFrame);
+		}
 	}
-#else
-	if (tex->PlatformData != nullptr)
-	{
-		uint8* raw = (uint8*)tex->PlatformData->Mips[0].BulkData.Lock(LOCK_READ_ONLY);
-		memcpy(externalVideoFrame->buffer, raw, tex->GetSizeX() * tex->GetSizeY() * 4);
-		tex->PlatformData->Mips[0].BulkData.Unlock();
-
-		MediaEngineManager->pushVideoFrame(externalVideoFrame);
-	}
-#endif
-	
 }
 
 
 void UCustomCaptureVideoScene::NativeDestruct()
 {
 	Super::NativeConstruct();
+	FSlateApplication::Get().GetRenderer()->OnBackBufferReadyToPresent().Remove(eventId);
 	if (RtcEngineProxy != nullptr)
 	{
-		if (externalVideoFrame != nullptr)
-		{
-			if (externalVideoFrame->buffer != nullptr)
-			{
-				FMemory::Free(externalVideoFrame->buffer);
-				externalVideoFrame->buffer = nullptr;
-			}
-			delete externalVideoFrame;
-			externalVideoFrame = nullptr;
-		}
-		if(MediaEngineManager!=nullptr)
-		{
-			MediaEngineManager->release();
-		}
+		RtcEngineProxy->unregisterEventHandler(this);
 		RtcEngineProxy->release();
 		delete RtcEngineProxy;
 		RtcEngineProxy = nullptr;
+		MediaEngineManager = nullptr;
 	}
 }
 
@@ -133,9 +138,9 @@ void UCustomCaptureVideoScene::SetExternalVideoSource()
 
 	agora::rtc::SenderOptions sendoptions;
 
-	int ret1 = MediaEngineManager->setExternalVideoSource(true, false, agora::media::EXTERNAL_VIDEO_SOURCE_TYPE::VIDEO_FRAME, sendoptions);
+	ret = MediaEngineManager->setExternalVideoSource(true, false, agora::media::EXTERNAL_VIDEO_SOURCE_TYPE::VIDEO_FRAME, sendoptions);
 	
-	GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Red, FString::Printf(TEXT("setExternalVideoSource init is %d"), ret1));
+	GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Red, FString::Printf(TEXT("setExternalVideoSource init is %d"), ret));
 }
 
 
@@ -156,15 +161,10 @@ std::time_t UCustomCaptureVideoScene::getTimeStamp()
 }
 
 
-void UCustomCaptureVideoScene::BackHomeClick()
+void UCustomCaptureVideoScene::NativeConstruct()
 {
-	UClass* AgoraWidgetClass = LoadClass<UBaseAgoraUserWidget>(NULL, TEXT("WidgetBlueprint'/Game/API-Example/Advance/MainWidgetManager.MainWidgetManager_C'"));
+	Super::NativeConstruct();
 
-	UBaseAgoraUserWidget* AgoraWidget = CreateWidget<UBaseAgoraUserWidget>(GetWorld(), AgoraWidgetClass);
 
-	AgoraWidget->AddToViewport();
-
-	AgoraWidget->InitAgoraWidget(FString(AppID.c_str()), FString(Token.c_str()), FString(ChannelName.c_str()));
-
-	this->RemoveFromViewport();
+	externalVideoFrame = nullptr; 
 }

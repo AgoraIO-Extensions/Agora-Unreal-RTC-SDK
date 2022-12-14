@@ -3,6 +3,7 @@
 
 #include "AgoraActor.h"
 #include "Engine/Engine.h"
+
 // Sets default values
 AAgoraActor::AAgoraActor()
 {
@@ -21,7 +22,21 @@ void AAgoraActor::BeginPlay()
 		return;
 	}
 	VideoWidget->AddToViewport();
-	if (APP_ID=="YOUR_APPID")
+
+	if (UAgoraConfig* LoadedGame = Cast<UAgoraConfig>(UGameplayStatics::LoadGameFromSlot(FString("AgoraSave"), 0)))
+	{
+		if (bLoadConfig)
+		{
+			this->APP_ID = LoadedGame->AppId;
+
+			this->TOKEN = LoadedGame->Token;
+
+			this->CHANNEL_NAME = LoadedGame->Channelname;
+		}
+
+	}
+
+	if (APP_ID == "YOUR_APPID" || APP_ID=="")
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, "please input your APP_ID");
 		return;

@@ -41,9 +41,6 @@ public:
 	UButton* BackHomeBtn = nullptr;
 
 	UFUNCTION(BlueprintCallable)
-	void BackHomeClick();
-
-	UFUNCTION(BlueprintCallable)
 	void OnJoinButtonClick();
 
 	UFUNCTION(BlueprintCallable)
@@ -52,7 +49,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void RightMoveButtonClick();
 
-
+	UFUNCTION(BlueprintCallable)
+	void OnBackHomeButtonClick();
 protected:
 
 	agora::rtc::IRtcEngine* RtcEngineProxy;

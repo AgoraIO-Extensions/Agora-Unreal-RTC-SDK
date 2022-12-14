@@ -11,8 +11,10 @@
 #if PLATFORM_ANDROID
 #include "AndroidPermission/Classes/AndroidPermissionFunctionLibrary.h"
 #endif
+#include "Components/ComboBoxString.h"
 #include "AgoraAudioWidget.generated.h"
-
+using namespace agora::rtc;
+using namespace agora;
 /**
  * 
  */
@@ -28,10 +30,20 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget))
 	UButton* LeaveBtn = nullptr;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget))
+	UButton* VolumeIndicationBtn = nullptr;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
 	UButton* BackHomeBtn = nullptr;
 
-	void CheckAndroidPermission();
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	UButton* ConfirmBtn = nullptr;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget))
+	UComboBoxString* ScenarioComboBox = nullptr;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget))
+	UComboBoxString* ProfileComboBox = nullptr;
 
 	UFUNCTION(BlueprintCallable)
 	void OnJoinButtonClick();
@@ -40,16 +52,15 @@ public:
 	void OnLeaveButtonClick();
 
 	UFUNCTION(BlueprintCallable)
-	void BackHomeClick();
+	void OnVolumeIndicationClick();
+
+	UFUNCTION(BlueprintCallable)
+	void OnConfirmButtonClick();
+
+	UFUNCTION(BlueprintCallable)
+	void OnBackHomeButtonClick();
 
 	void InitAgoraWidget(FString APP_ID, FString TOKEN, FString CHANNEL_NAME) override;
-
-	void NativeDestruct() override;
-
-	void onUserJoined(agora::rtc::uid_t uid, int elapsed) override;
-
-	void onJoinChannelSuccess(const char* channel, agora::rtc::uid_t uid, int elapsed);
-
 
 private:
 
@@ -66,4 +77,20 @@ private:
 	void InitAgoraEngine(FString APP_ID, FString TOKEN, FString CHANNEL_NAME);
 
 	void SetUpUIEvent();
+
+	TMap<FString, CHANNEL_PROFILE_TYPE> AgoraChannelProfileEnumMap;
+
+	TMap<FString, AUDIO_SCENARIO_TYPE> AgoraAudioScenarioEnumMap;
+
+	void NativeDestruct() override;
+
+	void onUserJoined(agora::rtc::uid_t uid, int elapsed) override;
+
+	void CheckAndroidPermission();
+
+	void InitUI();
+
+	void onJoinChannelSuccess(const char* channel, agora::rtc::uid_t uid, int elapsed);
+
+	void onAudioVolumeIndication(const agora::rtc::AudioVolumeInfo* speakers, unsigned int speakerNumber, int totalVolume) override;
 };

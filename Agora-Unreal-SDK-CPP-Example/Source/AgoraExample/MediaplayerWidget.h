@@ -21,7 +21,7 @@ using namespace agora;
 /**
  * 
  */
-UCLASS()
+UCLASS(Abstract)
 class AGORAEXAMPLE_API UMediaplayerWidget : public UBaseAgoraUserWidget, public agora::rtc::IRtcEngineEventHandler 
 {
 	GENERATED_BODY()
@@ -52,9 +52,6 @@ public:
 	UButton* BackHomeBtn = nullptr;
 
 	UFUNCTION(BlueprintCallable)
-	void BackHomeClick();
-
-	UFUNCTION(BlueprintCallable)
 	void OnPlayButtonClick();
 
 	UFUNCTION(BlueprintCallable)
@@ -70,6 +67,9 @@ public:
 	void OnOpenButtonClick();
 
 	UFUNCTION(BlueprintCallable)
+	void OnBackHomeButtonClick();
+
+	UFUNCTION(BlueprintCallable)
 	void CheckBoxValueChange(bool isOn);
 
 	void InitAgoraWidget(FString APP_ID, FString TOKEN, FString CHANNEL_NAME) override;
@@ -80,8 +80,7 @@ public:
 
 	FSlateBrush EmptyBrush;
 
-
-	//void onVideoSizeChanged(uid_t uid, int width, int height, int rotation) override;
+	void onVideoSizeChanged(VIDEO_SOURCE_TYPE sourceType, uid_t uid, int width, int height, int rotation) override;
 
 private:
 
@@ -100,6 +99,8 @@ private:
 	void InitAgoraEngine(FString APP_ID, FString TOKEN, FString CHANNEL_NAME);
 
 	void SetUpUIEvent();
+
+
 
 	void InitMediaPlayer();
 

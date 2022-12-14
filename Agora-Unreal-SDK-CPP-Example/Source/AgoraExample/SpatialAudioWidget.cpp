@@ -37,7 +37,24 @@ void USpatialAudioWidget::SetUpUIEvent()
 	JoinBtn->OnClicked.AddDynamic(this, &USpatialAudioWidget::OnJoinButtonClick);
 	LeftMoveBtn->OnClicked.AddDynamic(this, &USpatialAudioWidget::LeftMoveButtonClick);
 	RightMoveBtn->OnClicked.AddDynamic(this, &USpatialAudioWidget::RightMoveButtonClick);
-	BackHomeBtn->OnClicked.AddDynamic(this, &USpatialAudioWidget::BackHomeClick);
+	BackHomeBtn->OnClicked.AddDynamic(this, &USpatialAudioWidget::OnBackHomeButtonClick);
+}
+
+void USpatialAudioWidget::OnBackHomeButtonClick()
+{
+	if (RtcEngineProxy!=nullptr)
+	{
+		if (LocalSpatialAudioEngine != nullptr)
+		{
+			LocalSpatialAudioEngine->release();
+			LocalSpatialAudioEngine = nullptr;
+		}
+		RtcEngineProxy->unregisterEventHandler(this);
+		RtcEngineProxy->release();
+		delete RtcEngineProxy;
+		RtcEngineProxy = nullptr;
+	}
+	UGameplayStatics::OpenLevel(UGameplayStatics::GetPlayerController(GWorld, 0)->GetWorld(), FName("MainLevel"));
 }
 
 void USpatialAudioWidget::onJoinChannelSuccess(const char* channel, uid_t uid, int elapsed)
@@ -46,7 +63,7 @@ void USpatialAudioWidget::onJoinChannelSuccess(const char* channel, uid_t uid, i
 	float f2[3] = { 1.0f, 0.0f, 0.0f };
 	float f3[3] = { 0.0f, 1.0f, 0.0f };
 	float f4[3] = { 0.0f, 0.0f, 1.0f };
-	GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Black, FString::Printf(TEXT("OnJoinChannelSuccess channelName: %s, uid: %d, elapsed: %d"), UTF8_TO_TCHAR(channel), uid, elapsed));
+	GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Black, FString::Printf(TEXT("OnJoinChannelSuccess channelName: %s, uid: %u, elapsed: %d"), UTF8_TO_TCHAR(channel), uid, elapsed));
 	if (LocalSpatialAudioEngine)
 	{
 		LocalSpatialAudioEngine->updateSelfPosition(f1, f2, f3, f4);
@@ -55,34 +72,39 @@ void USpatialAudioWidget::onJoinChannelSuccess(const char* channel, uid_t uid, i
 
 void USpatialAudioWidget::onUserJoined(uid_t uid, int elapsed)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Black, FString::Printf(TEXT("OnUserJoined uid: %d elapsed: %d"), uid, elapsed));
+	GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Black, FString::Printf(TEXT("OnUserJoined uid: %d elapsed: %d"), (int64)uid, elapsed));
 
 	RemoteUid = uid;
 }
 
-void USpatialAudioWidget::BackHomeClick()
-{
-	UClass* AgoraWidgetClass = LoadClass<UBaseAgoraUserWidget>(NULL, TEXT("WidgetBlueprint'/Game/API-Example/Advance/MainWidgetManager.MainWidgetManager_C'"));
-
-	UBaseAgoraUserWidget* AgoraWidget = CreateWidget<UBaseAgoraUserWidget>(GetWorld(), AgoraWidgetClass);
-
-	AgoraWidget->AddToViewport();
-
-	AgoraWidget->InitAgoraWidget(Appid, Token, ChannelName);
-
-	this->RemoveFromViewport();
-}
 
 void USpatialAudioWidget::OnJoinButtonClick()
 {
 	UE_LOG(LogTemp, Warning, TEXT("USpatialAudioWidget OnJoinButtonClick ======"));
 
 	RtcEngineProxy->joinChannel(TCHAR_TO_ANSI(*Token), TCHAR_TO_ANSI(*ChannelName), "", 0);
+
+	RtcEngineProxy->setClientRole(agora::rtc::CLIENT_ROLE_TYPE::CLIENT_ROLE_BROADCASTER);
+
+	agora::rtc::ChannelMediaOptions options;
+	options.autoSubscribeAudio = false;
+	options.autoSubscribeVideo = false;
+	options.publishCameraTrack = false;
+	options.publishMicrophoneTrack = true;
+#if PLATFORM_WINDOWS || PLATFORM_MAC
+	options.publishScreenTrack = false;
+#elif PLATFORM_ANDROID
+	options.publishScreenCaptureAudio = false;
+	options.publishScreenCaptureVideo = false;
+#endif
+	options.enableAudioRecordingOrPlayout = true;
+	options.clientRoleType = agora::rtc::CLIENT_ROLE_TYPE::CLIENT_ROLE_BROADCASTER;
+
+	RtcEngineProxy->updateChannelMediaOptions(options);
 }
 
-
 void USpatialAudioWidget::RightMoveButtonClick()
-{
+{	
 	RemoteVoicePositionInfo remoteVoicePos{ { 0.0f, 1.0f, 0.0f }, { 0.0f, 0.0f, 0.0f } };
 
 	auto ret = LocalSpatialAudioEngine->updateRemotePosition(RemoteUid, remoteVoicePos);
@@ -110,13 +132,14 @@ void USpatialAudioWidget::NativeConstruct()
 void USpatialAudioWidget::NativeDestruct()
 {
 	Super::NativeDestruct();
-	if (RtcEngineProxy)
+	if (RtcEngineProxy!=nullptr)
 	{
 		if (LocalSpatialAudioEngine != nullptr)
 		{
 			LocalSpatialAudioEngine->release();
 			LocalSpatialAudioEngine = nullptr;
 		}
+		RtcEngineProxy->unregisterEventHandler(this);
 		RtcEngineProxy->release();
 		delete RtcEngineProxy;
 		RtcEngineProxy = nullptr;

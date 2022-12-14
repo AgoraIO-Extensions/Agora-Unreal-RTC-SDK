@@ -11,6 +11,8 @@ void UAgoraAudioWidget::InitAgoraWidget(FString APP_ID, FString TOKEN, FString C
 	InitAgoraEngine(APP_ID, TOKEN, CHANNEL_NAME);
 
 	SetUpUIEvent();
+
+	InitUI();
 }
 
 
@@ -21,7 +23,6 @@ void UAgoraAudioWidget::InitAgoraEngine(FString APP_ID, FString TOKEN, FString C
 	RtcEngineContext.appId = TCHAR_TO_ANSI(*APP_ID);
 	RtcEngineContext.eventHandler = this;
 	RtcEngineContext.channelProfile = agora::CHANNEL_PROFILE_TYPE::CHANNEL_PROFILE_LIVE_BROADCASTING;
-
 
 	AppId = APP_ID;
 	Token = TOKEN;
@@ -36,7 +37,9 @@ void UAgoraAudioWidget::SetUpUIEvent()
 {
 	JoinBtn->OnClicked.AddDynamic(this, &UAgoraAudioWidget::OnJoinButtonClick);
 	LeaveBtn->OnClicked.AddDynamic(this, &UAgoraAudioWidget::OnLeaveButtonClick);
-	BackHomeBtn->OnClicked.AddDynamic(this, &UAgoraAudioWidget::BackHomeClick);
+	ConfirmBtn->OnClicked.AddDynamic(this, &UAgoraAudioWidget::OnConfirmButtonClick);
+	VolumeIndicationBtn->OnClicked.AddDynamic(this, &UAgoraAudioWidget::OnVolumeIndicationClick);
+	BackHomeBtn->OnClicked.AddDynamic(this, &UAgoraAudioWidget::OnBackHomeButtonClick);
 }
 
 void UAgoraAudioWidget::CheckAndroidPermission()
@@ -54,7 +57,8 @@ void UAgoraAudioWidget::CheckAndroidPermission()
 #endif
 }
 
-void UAgoraAudioWidget::OnJoinButtonClick() {
+void UAgoraAudioWidget::OnJoinButtonClick() 
+{
 	UE_LOG(LogTemp, Warning, TEXT("UAgoraAudioWidget OnJoinButtonClick ======"));
 
 	SetButtonClickAble(false);
@@ -64,23 +68,20 @@ void UAgoraAudioWidget::OnJoinButtonClick() {
 	RtcEngineProxy->setClientRole(agora::rtc::CLIENT_ROLE_TYPE::CLIENT_ROLE_BROADCASTER);
 }
 
-void UAgoraAudioWidget::OnLeaveButtonClick() {
+void UAgoraAudioWidget::OnLeaveButtonClick() 
+{
 	UE_LOG(LogTemp, Warning, TEXT("UAgoraAudioWidget OnLeaveButtonClick ======"));
 	SetButtonClickAble(true);
 	RtcEngineProxy->leaveChannel();
 }
 
-void UAgoraAudioWidget::BackHomeClick()
+
+void UAgoraAudioWidget::OnVolumeIndicationClick()
 {
-	UClass* AgoraWidgetClass = LoadClass<UBaseAgoraUserWidget>(NULL, TEXT("WidgetBlueprint'/Game/API-Example/Advance/MainWidgetManager.MainWidgetManager_C'"));
-
-	UBaseAgoraUserWidget* AgoraWidget = CreateWidget<UBaseAgoraUserWidget>(GetWorld(), AgoraWidgetClass);
-
-	AgoraWidget->AddToViewport();
-
-	AgoraWidget->InitAgoraWidget(AppId, Token, ChannelName);
-
-	this->RemoveFromViewport();
+	if (RtcEngineProxy != nullptr)
+	{
+		RtcEngineProxy->enableAudioVolumeIndication(200, 3, false);
+	}
 }
 
 #pragma region RtcEngineCallBack
@@ -88,29 +89,91 @@ void UAgoraAudioWidget::onJoinChannelSuccess(const char* channel, agora::rtc::ui
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Red, FString::Printf(TEXT("UAgoraAudioWidget::JoinChannelSuccess uid: %u"), uid));
+		GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Blue, FString::Printf(TEXT("UAgoraAudioWidget::JoinChannelSuccess uid: %u"), uid));
 	});
 }
 
-void UAgoraAudioWidget::onUserJoined(agora::rtc::uid_t uid, int elapsed) {
+void UAgoraAudioWidget::onAudioVolumeIndication(const agora::rtc::AudioVolumeInfo* speakers, unsigned int speakerNumber, int totalVolume)
+{
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Red, FString::Printf(TEXT("UAgoraAudioWidget::onUserJoined uid: %u"), uid));
+		for (unsigned int i = 0; i < speakerNumber; i++)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, FString::Printf(TEXT("onAudioVolumeIndication uid:%u,vad:%d,voicepatch:%d,volume %d,totalvolume:%d"), speakers[i].uid, speakers[i].vad, speakers[i].voicePitch, speakers[i].volume, totalVolume));
+		}
+	});
+}
+
+void UAgoraAudioWidget::onUserJoined(agora::rtc::uid_t uid, int elapsed) 
+{
+	AsyncTask(ENamedThreads::GameThread, [=]()
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Blue, FString::Printf(TEXT("UAgoraAudioWidget::onUserJoined uid: %u"), uid));
 	});
 
 }
 #pragma endregion RtcEngineCallBack
 
-void UAgoraAudioWidget::SetButtonClickAble(bool enable) {
+void UAgoraAudioWidget::InitUI()
+{
+	ProfileComboBox->AddOption("BROADCASTING");
+	ProfileComboBox->AddOption("COMMUNICATION");
+
+	ProfileComboBox->SetSelectedOption(FString("BROADCASTING"));
+
+	ScenarioComboBox->AddOption("DEFAULT");
+	ScenarioComboBox->AddOption("GAME_STREAMING");
+	ScenarioComboBox->AddOption("CHATROOM");
+	ScenarioComboBox->AddOption("CHORUS");
+	ScenarioComboBox->AddOption("MEETING");
+	ScenarioComboBox->AddOption("NUM");
+	ScenarioComboBox->SetSelectedOption(FString("DEFAULT"));
+
+	AgoraChannelProfileEnumMap.Add(FString("BROADCASTING"), CHANNEL_PROFILE_TYPE::CHANNEL_PROFILE_LIVE_BROADCASTING);
+	AgoraChannelProfileEnumMap.Add(FString("COMMUNICATION"), CHANNEL_PROFILE_TYPE::CHANNEL_PROFILE_COMMUNICATION);
+
+	AgoraAudioScenarioEnumMap.Add(FString("DEFAULT"), AUDIO_SCENARIO_TYPE::AUDIO_SCENARIO_DEFAULT);
+	AgoraAudioScenarioEnumMap.Add(FString("GAME_STREAMING"), AUDIO_SCENARIO_TYPE::AUDIO_SCENARIO_GAME_STREAMING);
+	AgoraAudioScenarioEnumMap.Add(FString("CHATROOM"), AUDIO_SCENARIO_TYPE::AUDIO_SCENARIO_CHATROOM);
+	AgoraAudioScenarioEnumMap.Add(FString("CHORUS"), AUDIO_SCENARIO_TYPE::AUDIO_SCENARIO_CHORUS);
+	AgoraAudioScenarioEnumMap.Add(FString("MEETING"), AUDIO_SCENARIO_TYPE::AUDIO_SCENARIO_MEETING);
+	AgoraAudioScenarioEnumMap.Add(FString("NUM"), AUDIO_SCENARIO_TYPE::AUDIO_SCENARIO_NUM);
+}
+
+void UAgoraAudioWidget::OnConfirmButtonClick()
+{
+	int ret = RtcEngineProxy->setChannelProfile(AgoraChannelProfileEnumMap[ProfileComboBox->GetSelectedOption()]);
+	UE_LOG(LogTemp, Warning, TEXT("UVideoWidget setChannelProfile ret: %d ChannelProfile : %s"), ret, *ProfileComboBox->GetSelectedOption());
+
+	ret = RtcEngineProxy->setAudioScenario(AgoraAudioScenarioEnumMap[ScenarioComboBox->GetSelectedOption()]);
+	UE_LOG(LogTemp, Warning, TEXT("UVideoWidget setAudioScenario ret: %d AudioScenario : %s"), ret, *ScenarioComboBox->GetSelectedOption());
+}
+
+void UAgoraAudioWidget::OnBackHomeButtonClick()
+{
+	if (RtcEngineProxy != nullptr)
+	{
+		RtcEngineProxy->unregisterEventHandler(this);
+		RtcEngineProxy->release();
+		delete RtcEngineProxy;
+		RtcEngineProxy = nullptr;
+	}
+	UGameplayStatics::OpenLevel(UGameplayStatics::GetPlayerController(GWorld, 0)->GetWorld(), FName("MainLevel"));
+}
+
+void UAgoraAudioWidget::SetButtonClickAble(bool enable) 
+{
 	JoinBtn->SetIsEnabled(enable);
 	LeaveBtn->SetIsEnabled(!enable);
 }
 
-void UAgoraAudioWidget::NativeDestruct() {
+void UAgoraAudioWidget::NativeDestruct() 
+{
 	Super::NativeDestruct();
 
-	if (RtcEngineProxy!=nullptr)
+	if (RtcEngineProxy != nullptr)
 	{
+		RtcEngineProxy->unregisterEventHandler(this);
 		RtcEngineProxy->release();
 		delete RtcEngineProxy;
 		RtcEngineProxy = nullptr;

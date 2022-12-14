@@ -1,5 +1,6 @@
 #pragma once
-#include "../Private/Include/AgoraHeaderBase.h"
+
+#include "../Private/AgoraCppPlugin/Include/AgoraHeaderBase.h"
 
 namespace agora
 {

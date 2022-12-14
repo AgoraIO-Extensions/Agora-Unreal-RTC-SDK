@@ -6,33 +6,52 @@
 
 void UScreenShareWidget::InitAgoraWidget(FString APP_ID, FString TOKEN, FString CHANNEL_NAME)
 {
-#if PLATFORM_IOS
-	GEngine->AddOnScreenDebugMessage(-1, 60.f, FColor::White, FString::Printf(TEXT("Not Support in this platform!")));
-	return;
-#endif
-
+#if PLATFORM_ANDROID || PLATFORM_IOS
 #if PLATFORM_ANDROID
 	CheckAndroidPermission();
+#endif
 	ComboBoxDisplayId->SetVisibility(ESlateVisibility::Collapsed);
 #endif
 
 	InitAgoraEngine(APP_ID, TOKEN, CHANNEL_NAME);
 
 	SetUpUIEvent();
+
+	InitUI();
 	/*this get all windows in you devices ,you can move this to other position. 
 	this code may freeze,you can move this to button click */
 #if PLATFORM_WINDOWS || PLATFORM_MAC
 	GetScreenDisplayId();
 #endif
+
+	int ret = RtcEngineProxy->setParameters("{\"che.video.local.camera_index\":1024}");
+	UE_LOG(LogTemp, Warning, TEXT("UVideoWidget setParameters che.video.local.camera_index ======%d"), ret);
+
+	ret = RtcEngineProxy->setParameters("{\"rtc.video.degradation_preference\":100}");
+	UE_LOG(LogTemp, Warning, TEXT("UVideoWidget setParameters rtc.video.degradation_preference ======%d"), ret);
+
+	ret = RtcEngineProxy->setParameters("{\"che.video.h264.hwenc\":1}");
+	UE_LOG(LogTemp, Warning, TEXT("UVideoWidget setParameters che.video.h264.hwenc ======%d"), ret);
 }
 
 void UScreenShareWidget::SetUpUIEvent()
 {
-	ScreenShareBtn->OnClicked.AddDynamic(this, &UScreenShareWidget::StartScreenShrareClick);
+	ScreenShareBtn->OnClicked.AddDynamic(this, &UScreenShareWidget::OnScreenShareClick);
 	LeaveBtn->OnClicked.AddDynamic(this, &UScreenShareWidget::OnLeaveButtonClick);
-	BackHomeBtn->OnClicked.AddDynamic(this, &UScreenShareWidget::BackHomeClick);
+	BackHomeBtn->OnClicked.AddDynamic(this, &UScreenShareWidget::OnBackHomeButtonClick);
 }
 
+void UScreenShareWidget::OnBackHomeButtonClick()
+{
+	if (RtcEngineProxy != nullptr)
+	{
+		RtcEngineProxy->unregisterEventHandler(this);
+		RtcEngineProxy->release();
+		delete RtcEngineProxy;
+		RtcEngineProxy = nullptr;
+	}
+	UGameplayStatics::OpenLevel(UGameplayStatics::GetPlayerController(GWorld, 0)->GetWorld(), FName("MainLevel"));
+}
 
 void UScreenShareWidget::InitAgoraEngine(FString APP_ID, FString TOKEN, FString CHANNEL_NAME)
 {
@@ -53,58 +72,47 @@ void UScreenShareWidget::InitAgoraEngine(FString APP_ID, FString TOKEN, FString 
 
 void UScreenShareWidget::UpdateChannelMediaOptions()
 {
-#if PLATFORM_WINDOWS || PLATFORM_ANDROID || PLATFORM_MAC
 	agora::rtc::ChannelMediaOptions options;
-	options.autoSubscribeAudio = true;
-	options.autoSubscribeVideo = true;
+	options.autoSubscribeAudio = false;
+	options.autoSubscribeVideo = false;
 	options.publishCameraTrack = false;
 #if PLATFORM_WINDOWS || PLATFORM_MAC
 	options.publishScreenTrack = true;
-#elif PLATFORM_ANDROID
+#elif PLATFORM_ANDROID || PLATFORM_IOS
 	options.publishScreenCaptureAudio = true;
 	options.publishScreenCaptureVideo = true;
 #endif
 	options.clientRoleType = agora::rtc::CLIENT_ROLE_TYPE::CLIENT_ROLE_BROADCASTER;
 
 	RtcEngineProxy->updateChannelMediaOptions(options);
-#endif
 }
 
+
 void UScreenShareWidget::JoinChannel() {
-	UE_LOG(LogTemp, Warning, TEXT("UVideoWidget JoinChannel ======"));
+	
 
 	RtcEngineProxy->enableAudio();
 	RtcEngineProxy->enableVideo();
 	auto ret = RtcEngineProxy->joinChannel(TCHAR_TO_ANSI(*Token), TCHAR_TO_ANSI(*ChannelName),"",0);
-}
 
-void UScreenShareWidget::BackHomeClick()
-{
-	UClass* AgoraWidgetClass = LoadClass<UBaseAgoraUserWidget>(NULL, TEXT("WidgetBlueprint'/Game/API-Example/Advance/MainWidgetManager.MainWidgetManager_C'"));
-
-	UBaseAgoraUserWidget* AgoraWidget = CreateWidget<UBaseAgoraUserWidget>(GetWorld(), AgoraWidgetClass);
-
-	AgoraWidget->AddToViewport();
-
-	AgoraWidget->InitAgoraWidget(AppId, Token, ChannelName);
-
-	this->RemoveFromViewport();
+	UE_LOG(LogTemp, Warning, TEXT("UVideoWidget JoinChannel ======%d"), ret);
 }
 
 void UScreenShareWidget::OnLeaveButtonClick() {
 	UE_LOG(LogTemp, Warning, TEXT("UVideoWidget OnLeaveButtonClick ======"));
 
-#if PLATFORM_WINDOWS || PLATFORM_ANDROID || PLATFORM_MAC
 	RtcEngineProxy->stopScreenCapture();
-#endif
+
 	RtcEngineProxy->leaveChannel();
+
+	LocalVideo->SetBrush(EmptyBrush);
+
+	InitUI();
 }
 
-void UScreenShareWidget::StartScreenShrareClick()
-{
-#if PLATFORM_IOS
-	//iPhone not support screen capture       
-#elif PLATFORM_ANDROID
+void UScreenShareWidget::StartScreenShare(int width, int height, int bitRate, int frameRate)
+{    
+#if PLATFORM_ANDROID || PLATFORM_IOS
 	ScreenCaptureParameters2 parameters2;
 	parameters2.captureAudio = true;
 	parameters2.captureVideo = true;
@@ -113,15 +121,22 @@ void UScreenShareWidget::StartScreenShrareClick()
 #else
 	RtcEngineProxy->stopScreenCapture();
 	agora::rtc::ScreenCaptureParameters capParam;
+	VideoDimensions dimensions(width, height);
+	capParam.dimensions = dimensions;
+	capParam.bitrate = bitRate;
+	capParam.frameRate = frameRate;
+	capParam.enableHighLight = false;
+	capParam.windowFocus = false;
+	capParam.captureMouseCursor = false;
 	const agora::rtc::Rectangle regionRect;
 #if PLATFORM_WINDOWS
 	SIZE size;
-	size.cx = 100;
-	size.cy = 100;
+	size.cx = 360;
+	size.cy = 240;
 #else
 	agora::rtc::SIZE size;
-	size.width = 100;
-	size.height = 100;
+	size.width = 360;
+	size.height = 240;
 #endif
 	if (infos == nullptr)
 	{
@@ -142,18 +157,20 @@ void UScreenShareWidget::StartScreenShrareClick()
 	JoinChannel();
 }
 
+
+
 void UScreenShareWidget::GetScreenDisplayId()
 {
 #if PLATFORM_WINDOWS || PLATFORM_MAC
 #if PLATFORM_WINDOWS
 	SIZE size;
-	size.cx = 100;
-	size.cy = 100;
+	size.cx = 360;
+	size.cy = 240;
 #endif
 #if PLATFORM_MAC
 	agora::rtc::SIZE size;
-	size.width = 100;
-	size.height = 100;
+	size.width = 360;
+	size.height = 240;
 #endif
 
 	infos = RtcEngineProxy->getScreenCaptureSources(size, size, true);
@@ -187,48 +204,116 @@ void UScreenShareWidget::SelectValueCallBack(FString SelectedItem, ESelectInfo::
 		SelectDisplayId = ComboBoxDisplayId->FindOptionIndex(SelectedItem);
 	}
 }
-
+#pragma region RtcEngineCallBack
 
 void UScreenShareWidget::onJoinChannelSuccess(const char* channel, agora::rtc::uid_t uid, int elapsed)
 {
-
-	AsyncTask(ENamedThreads::GameThread, [=]()
+	//If you want to show the preview, you can turn on the annotation below, but it may generate performance degradation
+	/*AsyncTask(ENamedThreads::GameThread, [=]()
 	{
-		UE_LOG(LogTemp, Warning, TEXT("JoinChannelSuccess"));
+		UE_LOG(LogTemp, Warning, TEXT("JoinChannelSuccess uid:%d"),uid);
 		agora::rtc::VideoCanvas videoCanvas;
 		videoCanvas.view = LocalVideo;
 		videoCanvas.uid = 0;
 		videoCanvas.sourceType = agora::rtc::VIDEO_SOURCE_TYPE::VIDEO_SOURCE_SCREEN;
 		RtcEngineProxy->setupLocalVideo(videoCanvas);
-	});
+	});*/
 }
 
 void UScreenShareWidget::onLeaveChannel(const agora::rtc::RtcStats& stats)
 {
+	//AsyncTask(ENamedThreads::GameThread, [=]()
+	//{
+	//	//agora::rtc::VideoCanvas videoCanvas;
+	//	//videoCanvas.view = nullptr;
+	//	//videoCanvas.uid = 0;
+	//	//videoCanvas.sourceType = agora::rtc::VIDEO_SOURCE_TYPE::VIDEO_SOURCE_SCREEN;
+	//	//if (RtcEngineProxy != nullptr)
+	//	//{
+	//	//	RtcEngineProxy->setupLocalVideo(videoCanvas);
+	//	//}
+	//});
+}
+
+void UScreenShareWidget::onUserJoined(agora::rtc::uid_t uid, int elapsed) {
+
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
-		agora::rtc::VideoCanvas videoCanvas;
-		videoCanvas.view = nullptr;
-		videoCanvas.uid = 0;
-		videoCanvas.sourceType = agora::rtc::VIDEO_SOURCE_TYPE::VIDEO_SOURCE_SCREEN;
-		if (RtcEngineProxy != nullptr)
-		{
-			RtcEngineProxy->setupLocalVideo(videoCanvas);
-		}
-		LocalVideo->Brush = EmptyBrush;
+		UE_LOG(LogTemp, Warning, TEXT("UVideoWidget::onUserJoined  uid: %u"), uid);
 	});
 }
 
+void UScreenShareWidget::onUserOffline(agora::rtc::uid_t uid, agora::rtc::USER_OFFLINE_REASON_TYPE reason)
+{
+	AsyncTask(ENamedThreads::GameThread, [=]()
+	{
+		UE_LOG(LogTemp, Warning, TEXT("UVideoWidget::onUserOffline  uid: %u"), uid);
+	});
+}
+#pragma endregion RtcEngineCallBack
 void UScreenShareWidget::NativeDestruct()
 {
 	Super::NativeDestruct();
 	if (RtcEngineProxy!=nullptr)
 	{
+		RtcEngineProxy->unregisterEventHandler(this);
 		RtcEngineProxy->release();
 		delete RtcEngineProxy;
 		RtcEngineProxy = nullptr;
 	}
 }
+
+
+void UScreenShareWidget::OnScreenShareClick()
+{
+	int ret = RtcEngineProxy->setAudioScenario(AgoraAudioScenarioEnumMap[ScenarioComboBox->GetSelectedOption()]);
+	UE_LOG(LogTemp, Warning, TEXT("UVideoWidget setAudioScenario ret: %d AudioScenario : %s"), ret, *ScenarioComboBox->GetSelectedOption());
+
+	VideoEncoderConfiguration videoEncoderConfiguration;
+	videoEncoderConfiguration.frameRate = FCString::Atoi(*FPSComboBox->GetSelectedOption());
+	UE_LOG(LogTemp, Warning, TEXT("UVideoWidget frameRate ======%s"), *FPSComboBox->GetSelectedOption());
+
+	VideoDimensions videoDimensionData(FCString::Atoi(*WidthTextBox->GetText().ToString()), FCString::Atoi(*HeightTextBox->GetText().ToString()));
+	videoEncoderConfiguration.dimensions = videoDimensionData;
+	videoDimensions = videoDimensionData;
+	videoEncoderConfiguration.bitrate = FCString::Atoi(*BitRateTextBox->GetText().ToString());
+	UE_LOG(LogTemp, Warning, TEXT("UVideoWidget Width:%d Height:%d"), FCString::Atoi(*WidthTextBox->GetText().ToString()), FCString::Atoi(*HeightTextBox->GetText().ToString()));
+	UE_LOG(LogTemp, Warning, TEXT("UVideoWidget Bitrate %d"), FCString::Atoi(*BitRateTextBox->GetText().ToString()));
+
+	ret = RtcEngineProxy->setVideoEncoderConfiguration(videoEncoderConfiguration);
+
+	StartScreenShare(FCString::Atoi(*WidthTextBox->GetText().ToString()), FCString::Atoi(*HeightTextBox->GetText().ToString()), FCString::Atoi(*BitRateTextBox->GetText().ToString()), FCString::Atoi(*FPSComboBox->GetSelectedOption()));
+}
+
+void UScreenShareWidget::InitUI()
+{
+	ScenarioComboBox->AddOption("DEFAULT");
+	ScenarioComboBox->AddOption("GAME_STREAMING");
+	ScenarioComboBox->AddOption("CHATROOM");
+	ScenarioComboBox->AddOption("CHORUS");
+	ScenarioComboBox->AddOption("MEETING");
+	ScenarioComboBox->AddOption("NUM");
+	ScenarioComboBox->SetSelectedOption(FString("DEFAULT"));
+
+
+	FPSComboBox->AddOption("5");
+	FPSComboBox->AddOption("15");
+	FPSComboBox->AddOption("24");
+	FPSComboBox->AddOption("30");
+	FPSComboBox->AddOption("60");
+	FPSComboBox->SetSelectedOption(FString("15"));
+
+	AgoraChannelProfileEnumMap.Add(FString("Broadcaster"), CHANNEL_PROFILE_TYPE::CHANNEL_PROFILE_LIVE_BROADCASTING);
+	AgoraChannelProfileEnumMap.Add(FString("Audience"), CHANNEL_PROFILE_TYPE::CHANNEL_PROFILE_COMMUNICATION);
+
+	AgoraAudioScenarioEnumMap.Add(FString("DEFAULT"), AUDIO_SCENARIO_TYPE::AUDIO_SCENARIO_DEFAULT);
+	AgoraAudioScenarioEnumMap.Add(FString("GAME_STREAMING"), AUDIO_SCENARIO_TYPE::AUDIO_SCENARIO_GAME_STREAMING);
+	AgoraAudioScenarioEnumMap.Add(FString("CHATROOM"), AUDIO_SCENARIO_TYPE::AUDIO_SCENARIO_CHATROOM);
+	AgoraAudioScenarioEnumMap.Add(FString("CHORUS"), AUDIO_SCENARIO_TYPE::AUDIO_SCENARIO_CHORUS);
+	AgoraAudioScenarioEnumMap.Add(FString("MEETING"), AUDIO_SCENARIO_TYPE::AUDIO_SCENARIO_MEETING);
+	AgoraAudioScenarioEnumMap.Add(FString("NUM"), AUDIO_SCENARIO_TYPE::AUDIO_SCENARIO_NUM);
+}
+
 
 void UScreenShareWidget::CheckAndroidPermission()
 {

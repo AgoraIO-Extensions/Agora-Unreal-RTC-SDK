@@ -1,107 +1,126 @@
 # Agora Unreal C++ SDK API-Example
 ## Overview
 
-This project contains different scenes on how to integrate the Agora SDK APIs into your project.  You may run the project from the high level or go into a particular level to experience a single API example.
+This project contains different ways for integrating the Agora Unreal SDK APIs into your project. You can run the project in the main level to experience the major features or in a particular level to experience a specific API example.
 
 ## Prerequisites
- 1. Agora Developer Account
- 2. Unreal Engine 4.27 or above (including UE5)
- 3. Platform support
+- An Agora [account](https://docs.agora.io/en/video-calling/reference/manage-agora-account#create-an-agora-account) and [project](https://docs.agora.io/en/video-calling/reference/manage-agora-account#create-an-agora-project).
+- Unreal Engine 4.27 or later (including UE5)
+- The supported platforms and their requirements are as follows:
 
 | Platform | IDE  | OS | Architecture|Note|
 |--|--|--|--|--|
-|  Android|  Android Studio 3.5.3 or above| [see Unreal Android requirement](https://docs.unrealengine.com/4.27/en-US/SharingAndReleasing/Mobile/Android/AndroidSDKRequirements/)|arm64-v8a, arneabi-v7a|Real devices only (not working on emulators); NDK version 21
-|iOS|XCode 11.0 or above|[see Unreal IOS requirement](https://docs.unrealengine.com/4.27/en-US/SharingAndReleasing/Mobile/iOS/DeviceCompatibility/)|--|Valid Apple developer signature required
-|MacOS|XCode 11.0 or above|OS X 10.11 or above|Intel, M1|same as above
-|Windows 64bit|Visual Studio 2019|Windows 7 SP1 or above|Intel|Disk space: at least 1.64 GB of space after the IDE and relevant tools are installed
-|Windows 32bit|Visual Studio 2019|Windows 7 SP1 or above|Intel|Unreal5 does not support it, so it is disabled by default in AgoraPluginLibrary.Build.cs, if you want to use, please uncomment it|
+|  Android|  Android Studio 3.5.3 or later| see [the Unreal Engine Android Development Requirements.](https://docs.unrealengine.com/4.27/en-US/SharingAndReleasing/Mobile/Android/AndroidSDKRequirements/)|arm64-v8a, arneabi-v7a|Real devices only (not working on emulators)  NDK version 21
+|iOS|XCode 11.0 or later|see [the Unreal Engine iOS and tvOS Development Requirements.](https://docs.unrealengine.com/4.27/en-US/SharingAndReleasing/Mobile/iOS/DeviceCompatibility/)|--|A valid Apple developer signature.
+|MacOS|XCode 11.0 or later|OS X 10.11 or later|Intel, M1|A valid Apple developer signature.
+|Windows (64bit)|Visual Studio 2019|Windows 7 SP1 or later|Intel|At least 1.65 GB of disk space after the IDE and relevant tools are installed.
+|Windows (32bit)|Visual Studio 2019|Windows 7 SP1 or later|Intel|Unreal Engine 5 (UE5) is not supported on 32-bit Windows. If you want to use Unreal Engine 4 (UE4) with 32-bit Windows, uncomment the code relating to Win32 in the *AgoraPluginLibrary.Build.cs* file.
 
 
-## Example Case
+## Case examples
 
 ### Basic Case
 - JoinChannelAudio
 - JoinChannelVideo
 ### Advance Case
-- DeviceManager
+- DvicesManager
 - JoinMultipleChannel
 - MediaPlayer
 - ScreenShare
 - SendMultiCameraStream
 - SpatialAudio
+- StartRtmpStreamWithTranscoding
+- StreamMessage
+- SetEncryption
+- CustomCaptureAudio(case only cpp)
+- CustomCaptureVideo(case only cpp)
+- CustomRenderAudio(case only cpp)
+- ProcessAudioRawData(case only cpp)
+- ProcessVideoRawData(case only cpp)
 
 
-## Run Project
+## Project setup
 
-### Obtain an App ID
+### Get the App ID
 
-Before you can build and run any Agora project, you will need to add your AppID to the configuration. Go to your  [developer account’s project console](https://console.agora.io/projects), create a new AppId or copy the AppId from an existing project.
+Before you build and run your project, you need to get the App ID. To copy this App ID, find your project on the [Project Management](https://console.agora.io/projects) page in Agora Console, and click the copy icon in the App ID column.
 
-**Note**  it is important that for a production ready project, you should always use an AppId with token enabled. However, in testing a demo, you will skip this part. Using a testing mode AppId can save time for POC integration.
- ![Test Mode APPID](https://user-images.githubusercontent.com/1261195/110023464-11eb0480-7ce2-11eb-99d6-031af60715ab.png)
+### Get the App Certificate
+When generating a token on your app server, you need to fill in parameters such as the App ID, channel name, user ID, and App Certificate.
 
+To get an App Certificate, do the following:  
+
+1. On the [Project Management](https://console.agora.io/projects) page, click **Config** for the project you want to use.  
+2. Click the copy icon under Primary Certificate.   
+	
+### Generate a temporary token
+When a user attempts to join a channel, your app passes an encrypted authentication token to Agora SD-RTN™. This token is unique for each channel. It is generated using the App ID of your project and the channel name. In a test or production environment, your app retrieves the token from a token server. However, for local testing, you can generate a temporary token in Agora Console.
+
+1. In Agora Console, open [Project Management](https://console.agora.io/projects), select your project, and click **Config**.  
+2. Under Features, click **Generate temp Video SDK token**.  
+3. Type the channel name, then click **Generate**.  
+   Agora Console generates a token valid to join that channel only.
+4. Click Copy.  
+   The temporary token is added to the clipboard of your development machine.
+
+	
 ### Integrating the SDK
 
-1. Download the SDK and its from [the Release area](https://github.com/AgoraIO-Extensions/Agora-Unreal-RTC-SDK-NG/releases).
-2. Create a folder named *Plugins* in your project's root directory.  
-3. Unzip the SDK files to *Plugins*
+1. Download the [SDK](https://github.com/AgoraIO-Extensions/Agora-Unreal-RTC-SDK-NG/releases).  
+2. Create a folder named Plugins in the root directory of your project.  
+3. Unzip the SDK files to *Plugins* folder
+
  ![plugins](https://user-images.githubusercontent.com/1261195/186286865-24d40426-4329-4ba1-b943-2626ce50d1b0.png)
 
 
+### Compile and run the demo
+You can run the demos in a main level or in any level of the API examples.  
+![MainLevelPos](https://user-images.githubusercontent.com/47908151/202615511-b4ad613d-1bc8-45bf-b149-fdb00133adff.png)
+1.Compile and run the project in the main level, and then click the Play button on the UE Editor. You see the main screen as shown in the following image:
 
-
-### Compile and Run the Demo
-You may run the demos at a high level loader or at any level of the individual API samples.
-**1)  Running at a high level**
-Compile the project and then hit the Play button on the UE Editor.  You should get a main  screen like the following:
 ![AgoraExample_-_Unreal_Editor](https://user-images.githubusercontent.com/1261195/186287084-9d462257-93eb-4913-b6fa-cba892de004e.png)
 
-Fill in your App ID, Channel Name and optionally the token if you set up the application with certificate enabled.  You can now press a button to navigate to any of the API sample level.
+Fill in your App ID, channel name, and token (optional). You can now click a button on the left to navigate to a particular level of the API examples.  
+2.Run in a particular level if you want experience an API example. Take *Basic/joinChannelAudio/BasicAudioCall/* as an example:
+ 1. Find a blueprint named BP_Agoractor in the World outliner.
+ 2. Fill in your App ID and channel name below the BP_Agoractor.
 
-**2) Running at individual level**
-In case you are focusing on one API sample, you may run the individual code the following way, using *Basic/joinChannelAudio/BasicAudioCall/* as an example:
-	- Find a blueprint named **BP_Agoractor** in the **WorldOutliner**
-	- enter your AppID and Channel Name in the position below
+![Sample-PlayAudio](https://user-images.githubusercontent.com/47908151/202999790-cfe614c8-9b6e-4550-8741-0ac4be26a171.gif)
 
-![Sample-PlayAudio](https://user-images.githubusercontent.com/1261195/186288166-50bb7c3f-66e2-4b88-a0de-df2ab2ac19af.gif)
-
-
-
-
-## Making a Build (Project Packaging):
-
+## Project Packaging
 
 ### Windows Packaging
 
-File->Package Project->Windows->Windows(64-bit)
+Click File > Package Project > Windows > Windows(64-bit).
 
-![Windowspackages](../ReadmePicture/windowspackage.jpg)
+![windowspackage](https://user-images.githubusercontent.com/47908151/202615706-41df9c3e-0463-43eb-8fef-a8d154745976.jpg)
 
-#### 32bit Windows
-Since UE5 does not support 32-bit Windows, our plugin leave out the 32-bit implementation by default; otherwise, the compilation will result in error for UE5.  If you want to use the 32-bit build in UE4, please uncomment the win32 related code in AgoraPluginLibrary.Build.cs.  See this screenshot:
+Since UE5 does not support 32-bit Windows, the Agora plugin omits the 32-bit implementation by default. If you want to use 32-bit Windows with UE4, uncomment the code relating to Win32 in the **AgoraPluginLibrary.Build.cs** file, as shown in the red box in the following image:
 
 ![code_16613129312915](https://user-images.githubusercontent.com/1261195/186325436-d8bf6543-5aea-4adc-a903-0199519339eb.png)
 
 ### MacOS Packaging
 
-File -> Package Project -> Mac
+1. Click File > Package Project > Mac.
 
-#### Add device permissions to plist.info:
+2. Add device permissions to plist.info
 
-1. Right click the compiled xxx.app File - select "Show Package Contents"
+	a. Right click the compiled xxx.app file, and select **Show Package Contents**.
 
 ![contextMenu_and_MacNoEditor](https://user-images.githubusercontent.com/1261195/186290440-ab80de0e-b87c-4a3a-a589-cc68960b6397.png)
 
-2. Edit Contents/Info.plist (Double-click to open it in XCode,  then see Step 3 next; or Step 3b if using your favorite text editor).
+        b. Edit Contents/Info.plist (Double-click to open it in XCode,  then see Step 3 next; or Step 3b if using your favorite text editor).
 
-3. Select "Information Property List" and add the following two permissions:
+3. Add permissions.
+
+Double click to open *Contents/Info.plist* in XCode, then click **Information Property List** to add the following permissions:
 
 - Privacy - Camera Usage Description
 - Privacy - Microphone Usage Description
 
 ![privacy_plist](https://user-images.githubusercontent.com/1261195/186293374-d550e36c-cd87-4feb-b79d-8344945af827.gif)
 
-3b. Equivalent of editing with Xcode, you may just open the plist file with a text editor and paste the following XML snippet into it:
+If you are editing with Xcode, you can just open the plist file with a text editor and paste the following XML snippet into it:
 ```xml
 	<key>NSCameraUsageDescription</key>
 	<string>Use camera</string>
@@ -109,7 +128,7 @@ File -> Package Project -> Mac
 	<string>Use mic</string>
 ```
 
-#### Add the SDK frameworks
+4. Add the SDK frameworks.
 
 Copy ***.framework** from ***Plugs/AgoraPlugin/Source/ ThirdParty/Agora/MAC/Release*** to ***MacNoEditor/xxx/Contents/MacOS/*** .
 ![unrealMacPlugins](https://user-images.githubusercontent.com/1261195/186295172-9fea300b-77fc-4bfe-bb15-41f5727044a3.png)
@@ -121,30 +140,39 @@ The following permissions are also required on iOS:
 - Privacy - Microphone Usage Description
 
 To add the above permissions to the info.plist, you can enter them in the UE Editor.
-1. **Copy the following single line text:**
+1. Copy the following single line text:
 
 ```xml
 <key>NSCameraUsageDescription</key><string>AgoraVideoCall</string><key>NSMicrophoneUsageDescription</key><string>AgoraVideoCall</string>
 ```
-2. Open the screen at **Edit-> Project Settings->Platforms: iOS**
+2. Click Edit > Project Settings >Platforms > iOS.
 3. Enter the text to the "**additional plist data**" field:
 <img width="936" alt="iOS_add_permission" src="https://user-images.githubusercontent.com/1261195/186298955-19949598-fcf8-46ac-8d8a-d0d0e320917c.png">
 
 
-Finally, you can package the iOS project (*File->Package Project->iOS*).
+You can package the iOS project (File > Package Project > iOS).
+
+iOS should add the following code to your target as well:
+
+![iospackage2](https://user-images.githubusercontent.com/47908151/202614986-e641ac9b-de6a-40a6-b4e3-517651899c0a.jpg)
+
+On the iOS platform, Unreal Engine uses the built-in Binned memory allocator by default. For related source code, please refer to FApplePlatformMemory::BaseAllocator().
+Here, the global macro definition setting engine uses the standard C memory allocation method on the iOS platform, that is, directly calling malloc, free, realloc and other functions, so as to avoid some abnormal memory release problems when using the Agora plug-in on the iOS platform;
+
+Regarding the performance difference between Ansi and Binned memory allocation: Binned's optimization of small memory usage is better than that of Ansi, but the overall memory usage will be higher, and the overall performance difference between the two is not obvious on mid-to-high-end iOS devices.
 
 ### Android Packaging
-Build Android via "File -> Package Project -> Android".  Note **ASTC** is a more common target for modern Android devices.
+Build Android via File > Package Project > Android. Note that ASTC is a more common target for modern Android devices.
 
-On Android, the following permissions need to be applied.
-1. android.permission.RECORD_AUDIO
-2. android.permission.CAMERA
-3. android.permission.READ_PHONE_STATE
-4. android.permission.WRITE_EXTERNAL_STORAGE
+On Android, the following permissions need to be applied:
 
-The API-Examples provides sample code in doing so.  
+- android.permission.RECORD_AUDIO
+- android.permission.CAMERA
+- android.permission.READ_PHONE_STATE
+- android.permission.WRITE_EXTERNAL_STORAGE
 
-For instance, in AgoraVideoWidget.cpp, the following function is called to enable the permissions.
+Take AgoraVideoWidget.cpp as an example, the following function is called to enable the permissions.
+
 ```cpp
 void UAgoraVideoWidget::CheckAndroidPermission()
 {
@@ -209,9 +237,10 @@ Try deleting the [Binaries] folder in your project
 
 Make sure you have accepted or added "Screen Recording" permission for the App (and the UE Editor) in your Mac Security and Privacy setting.
 
-### Why the value of X Scale is -1 for the UImage in WidgetBlueprint?
+### Why our app dpi changed after joinchannel?
 
-This is a trick to do quick mirroring effect.
+You can tick the checkboxes below
+![dpiproblem](https://user-images.githubusercontent.com/47908151/204960841-7bfc949e-673d-41b1-9f4a-e34171402dc6.png)
 
 # Connect With Us
 - If you have any questions, create an issue [here](https://github.com/AgoraIO-Extensions/Agora-Unreal-SDK-CPP-NG/issues).
