@@ -182,19 +182,20 @@ uint32 FAgoraRenderRunnable::Run()
 			//UE_LOG(LogTemp, Warning, TEXT("UCustomCaptureAudioWidget TimeStamp ====== %d"), toc - tic);
 			tic = getTimeStamp();
 			auto ret = MediaEngine->pullAudioFrame(&externalAudioFrame);
-
+		
 #if PLATFORM_IOS
-			if (time == "")
+			std::string temp;
+			if (time.IsEmpty())
 			{
-				FString time =FString("CustomRenderAudio-")+FDateTime::Now().ToString(TEXT("%Y-%m-%d-%H-%M-%S")) + FString(".pcm");
-				std::string timeStr(TCHAR_TO_UTF8(*timeStr));
+				FString time = FString("CustomRenderAudio-") + FDateTime::Now().ToString(TEXT("%Y-%m-%d-%H-%M-%S")) + FString(".pcm");
+				std::string timeStr(TCHAR_TO_UTF8(*time));
 				NSString* path = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) objectAtIndex:0];
 				std::string temp = std::string([path UTF8String]);
 				std::string output = temp + timeStr;
-				FILE* file = fopen(output.c_str(), "ab+");
-				fwrite(externalAudioFrame.buffer, 1, externalAudioFrame.bytesPerSample * externalAudioFrame.samplesPerChannel * externalAudioFrame.channels, file);
-				fclose(file);
 			}
+			FILE* file = fopen(output.c_str(), "ab+");
+			fwrite(audioFrame.buffer, 1, audioFrame.bytesPerSample * audioFrame.samplesPerChannel * audioFrame.channels, file);
+			fclose(file);
 #else
 			//UE_LOG(LogTemp, Warning, TEXT("UCustomRenderAudioWidget pullAudioFrame ====== %d"), ret);
 			if (ret == 0)
