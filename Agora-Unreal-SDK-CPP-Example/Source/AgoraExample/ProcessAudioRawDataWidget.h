@@ -14,6 +14,7 @@
 #if PLATFORM_ANDROID
 #include "AndroidPermission/Classes/AndroidPermissionFunctionLibrary.h"
 #endif
+#include <string>
 #include "ProcessAudioRawDataWidget.generated.h"
 
 using namespace agora::rtc;
@@ -82,6 +83,8 @@ private:
 
 	FString ChannelName;
 
+	FString time;
+
 	agora::media::IAudioFrameObserverBase::AudioParams audioParams;
 
 	void SetButtonClickAble(bool enable);
@@ -89,8 +92,6 @@ private:
 	void InitAgoraEngine(FString APP_ID, FString TOKEN, FString CHANNEL_NAME);
 
 	void SetUpUIEvent();
-
-
 
 	void InitConfig();
 

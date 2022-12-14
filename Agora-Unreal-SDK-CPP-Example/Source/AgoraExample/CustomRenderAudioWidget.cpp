@@ -182,11 +182,27 @@ uint32 FAgoraRenderRunnable::Run()
 			//UE_LOG(LogTemp, Warning, TEXT("UCustomCaptureAudioWidget TimeStamp ====== %d"), toc - tic);
 			tic = getTimeStamp();
 			auto ret = MediaEngine->pullAudioFrame(&externalAudioFrame);
+
+#if PLATFORM_IOS
+			if (time == "")
+			{
+				FString time = FDateTime::Now().ToString(TEXT("%Y-%m-%d-%H-%M-%S")) + FString(".pcm");
+				std::string timeStr(TCHAR_TO_UTF8(*timeStr));
+				NSString* path = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) objectAtIndex:0];
+				std::string temp = std::string([path UTF8String]);
+				std::string output = temp + timeStr;
+				FILE* file = fopen(output.c_str(), "ab+");
+				fwrite(audioFrame.buffer, 1, audioFrame.bytesPerSample * audioFrame.samplesPerChannel * audioFrame.channels, file);
+				fclose(file);
+			}
+#else
 			//UE_LOG(LogTemp, Warning, TEXT("UCustomRenderAudioWidget pullAudioFrame ====== %d"), ret);
 			if (ret == 0)
 			{
 				AgoraSoundWaveProcedural->AddToFrames(externalAudioFrame);
 			}
+#endif
+	
 		}
 		FPlatformProcess::Sleep(0.001f);
 	}

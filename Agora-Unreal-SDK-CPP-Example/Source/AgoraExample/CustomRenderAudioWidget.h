@@ -59,6 +59,8 @@ private:
 
 	FString ChannelName;
 
+	FString time;
+
 	TArray<uint8> RecordingBuffer;
 
 	agora::media::IMediaEngine* MediaEngine;

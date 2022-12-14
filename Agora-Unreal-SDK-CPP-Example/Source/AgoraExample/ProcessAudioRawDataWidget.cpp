@@ -156,10 +156,22 @@ bool UProcessAudioRawDataWidget::onRecordAudioFrame(const char* channelId, Audio
 
 bool UProcessAudioRawDataWidget::onPlaybackAudioFrame(const char* channelId, AudioFrame& audioFrame)
 {
+#if PLATFORM_IOS
+	if (time == "")
+	{
+		FString time = FDateTime::Now().ToString(TEXT("%Y-%m-%d-%H-%M-%S")) + FString(".pcm");
+		std::string timeStr(TCHAR_TO_UTF8(*timeStr));
+		NSString* path = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) objectAtIndex:0];
+		std::string temp = std::string([path UTF8String]);
+		std::string output = temp + timeStr;
+		FILE* file = fopen(output.c_str(), "ab+");
+		fwrite(audioFrame.buffer, 1, audioFrame.bytesPerSample * audioFrame.samplesPerChannel * audioFrame.channels, file);
+		fclose(file);
+	}
+#else
 	AgoraSoundWaveProcedural->AddToFrames(audioFrame);
-
-	FMemory::Memset(audioFrame.buffer, 0 ,audioFrame.bytesPerSample * audioFrame.samplesPerChannel * audioFrame.channels);
-	
+	FMemory::Memset(audioFrame.buffer, 0, audioFrame.bytesPerSample * audioFrame.samplesPerChannel * audioFrame.channels);
+#endif
 	return false;
 }
 
