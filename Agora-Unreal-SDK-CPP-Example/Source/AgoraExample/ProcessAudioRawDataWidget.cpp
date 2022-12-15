@@ -2,8 +2,7 @@
 
 
 #include "ProcessAudioRawDataWidget.h"
-#include <string>
-#import <Foundation/Foundation.h>
+
 void UProcessAudioRawDataWidget::InitAgoraWidget(FString APP_ID, FString TOKEN, FString CHANNEL_NAME)
 {
 	InitConfig();

@@ -15,6 +15,9 @@
 #include "AndroidPermission/Classes/AndroidPermissionFunctionLibrary.h"
 #endif
 #include <string>
+#if PLATFORM_IOS
+#import <Foundation/Foundation.h>
+#endif
 #include "ProcessAudioRawDataWidget.generated.h"
 
 using namespace agora::rtc;

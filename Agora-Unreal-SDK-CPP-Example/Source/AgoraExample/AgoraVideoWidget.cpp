@@ -190,6 +190,11 @@ void UAgoraVideoWidget::onUserOffline(agora::rtc::uid_t uid, agora::rtc::USER_OF
 void UAgoraVideoWidget::onLeaveChannel(const agora::rtc::RtcStats& stats) {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
+		if (bIsDestruct)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("UVideoWidget::onLeaveChannel bIsDestruct"));
+			return;
+		}
 		UE_LOG(LogTemp, Warning, TEXT("UVideoWidget::onLeaveChannel"));
 		agora::rtc::VideoCanvas videoCanvas;
 		videoCanvas.view = nullptr;
@@ -318,6 +323,8 @@ void UAgoraVideoWidget::NativeDestruct() {
 		delete RtcEngineProxy;
 
 		RtcEngineProxy = nullptr;
+
+		bIsDestruct = true;
 	}
 
 }
