@@ -11,6 +11,8 @@ UAgoraSoundWaveProcedural::UAgoraSoundWaveProcedural(const FObjectInitializer& O
 
 int32 UAgoraSoundWaveProcedural::OnGeneratePCMAudio(TArray<uint8>& OutAudio, int32 NumSamples)
 {
+	FScopeLock Lock(&CriticalSectionOfAudioFrames);
+
 	agora::media::IAudioFrameObserverBase::AudioFrame frame;
 
 	if (AudioFrames.Num() > 0)
@@ -50,6 +52,7 @@ Audio::EAudioMixerStreamDataFormat::Type UAgoraSoundWaveProcedural::GetGenerated
 
 void UAgoraSoundWaveProcedural::AddToFrames(agora::media::IAudioFrameObserverBase::AudioFrame& audioFrame)
 {
+	FScopeLock Lock(&CriticalSectionOfAudioFrames);
 	agora::media::IAudioFrameObserverBase::AudioFrame frame;
 	frame.type = audioFrame.type;
 	frame.samplesPerChannel = audioFrame.samplesPerChannel;
@@ -65,9 +68,11 @@ void UAgoraSoundWaveProcedural::AddToFrames(agora::media::IAudioFrameObserverBas
 
 void UAgoraSoundWaveProcedural::BeginDestroy()
 {
+	FScopeLock Lock(&CriticalSectionOfAudioFrames);
 	Super::BeginDestroy();
 	for (int i = 0; i < AudioFrames.Num(); i++)
 	{
 		FMemory::Free(AudioFrames[i].buffer);
 	}
+	AudioFrames.Empty();
 }

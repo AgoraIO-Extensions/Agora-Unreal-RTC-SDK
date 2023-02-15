@@ -31,4 +31,5 @@ private:
 
     TArray<agora::media::IAudioFrameObserverBase::AudioFrame> AudioFrames;
 
+    FCriticalSection CriticalSectionOfAudioFrames;
 };
