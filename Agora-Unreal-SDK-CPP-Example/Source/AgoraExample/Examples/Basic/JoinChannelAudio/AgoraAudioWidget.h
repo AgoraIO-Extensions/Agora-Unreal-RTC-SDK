@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "BaseAgoraUserWidget.h"
+#include "../../BaseAgoraUserWidget.h"
 #include "Blueprint/UserWidget.h"
 #include "Components/Image.h"
 #include "Components/Button.h"

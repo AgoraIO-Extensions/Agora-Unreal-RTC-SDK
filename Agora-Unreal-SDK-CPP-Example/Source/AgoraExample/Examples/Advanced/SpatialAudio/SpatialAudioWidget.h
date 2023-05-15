@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "BaseAgoraUserWidget.h"
+#include "../../BaseAgoraUserWidget.h"
 #include "Components/Button.h"
 #include "AgoraPluginInterface.h"
 #if PLATFORM_ANDROID

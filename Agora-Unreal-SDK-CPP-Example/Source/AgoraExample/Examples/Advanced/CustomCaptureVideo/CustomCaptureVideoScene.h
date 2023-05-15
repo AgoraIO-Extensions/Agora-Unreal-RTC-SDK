@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "BaseAgoraUserWidget.h"
+#include "../../BaseAgoraUserWidget.h"
 #include "AgoraPluginInterface.h"
 #include "Components/Image.h"
 #include "Components/CanvasPanelSlot.h"

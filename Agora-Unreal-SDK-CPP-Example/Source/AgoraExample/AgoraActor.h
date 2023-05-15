@@ -4,9 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "BaseAgoraUserWidget.h"
+#include "Examples/BaseAgoraUserWidget.h"
 #include "Kismet/GameplayStatics.h"
-#include "AgoraConfig.h"
+#include "Config/AgoraConfig.h"
 #include "AgoraActor.generated.h"
 
 UCLASS()

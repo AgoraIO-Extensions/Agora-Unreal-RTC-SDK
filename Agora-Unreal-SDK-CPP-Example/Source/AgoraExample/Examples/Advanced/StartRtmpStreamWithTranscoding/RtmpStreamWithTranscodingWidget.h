@@ -3,10 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "BaseAgoraUserWidget.h"
+#include "../../BaseAgoraUserWidget.h"
 #include "Blueprint/UserWidget.h"
 #include "Components/Image.h"
 #include "Components/Button.h"
+#include "Components/EditableTextBox.h"
 #include "AgoraPluginInterface.h"
 #include "Kismet/GameplayStatics.h"
 #if PLATFORM_ANDROID
@@ -14,15 +15,15 @@
 #endif
 #include <iostream>
 #include <string.h>
-#include "Components/EditableTextBox.h"
-#include "EncryptionSampleWidget.generated.h"
+#include "AgoraPluginInterface.h"
+#include "RtmpStreamWithTranscodingWidget.generated.h"
 using namespace agora::rtc;
 using namespace agora;
 /**
  * 
  */
 UCLASS(Abstract)
-class AGORAEXAMPLE_API UEncryptionSampleWidget : public UBaseAgoraUserWidget, public agora::rtc::IRtcEngineEventHandler
+class AGORAEXAMPLE_API URtmpStreamWithTranscodingWidget : public UBaseAgoraUserWidget, public agora::rtc::IRtcEngineEventHandler
 {
 	GENERATED_BODY()
 public:
@@ -33,25 +34,33 @@ public:
 	UImage* localVideo = nullptr;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-	UButton* JoinBtn = nullptr;
+	UButton* StartBtn = nullptr;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget))
-	UButton* LeaveBtn = nullptr;
+	UButton* UpdateBtn = nullptr;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	UButton* StopBtn = nullptr;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
 	UButton* BackHomeBtn = nullptr;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-	UEditableTextBox* RoomPasswordTextBox = nullptr;
+	UEditableTextBox* RtmpTextBox = nullptr;
 
 	UFUNCTION(BlueprintCallable)
-	void OnLeaveButtonClick();
+	void OnUpdateButtonClick();
 
 	UFUNCTION(BlueprintCallable)
-	void OnJoinButtonClick();
+	void OnStartButtonClick();
+
+	UFUNCTION(BlueprintCallable)
+	void OnStopButtonClick();
 
 	UFUNCTION(BlueprintCallable)
 	void OnBackHomeButtonClick();
+
+	void JoinChannel();
 
 	void CheckAndroidPermission();
 
@@ -71,15 +80,14 @@ private:
 
 	std::string ChannelName;
 
-	const char* secret = "Hello_Unreal";
-
-	ENCRYPTION_MODE EncrytionMode = ENCRYPTION_MODE::AES_128_GCM2;
-
 	FSlateBrush EmptyBrush;
+
+	unsigned int Uid = 0;
 
 	void InitAgoraEngine(FString APP_ID, FString TOKEN, FString CHANNEL_NAME);
 
 	void SetUpUIEvent();
+
 
 
 	void SetRemoteView(UImage* remoteview, agora::rtc::uid_t uid);
@@ -92,5 +100,7 @@ private:
 
 	void onUserOffline(agora::rtc::uid_t uid, agora::rtc::USER_OFFLINE_REASON_TYPE reason) override;
 
-	void SetEncryption();
+	void onTranscodingUpdated() override;
+
+	void onRtmpStreamingStateChanged(const char* url, RTMP_STREAM_PUBLISH_STATE state, RTMP_STREAM_PUBLISH_ERROR_TYPE errCode) override;
 };
