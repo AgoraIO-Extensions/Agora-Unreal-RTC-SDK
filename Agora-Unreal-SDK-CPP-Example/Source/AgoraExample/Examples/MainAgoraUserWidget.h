@@ -8,7 +8,7 @@
 #include "Components/TileView.h"
 #include "Components/EditableTextBox.h"
 #include "Kismet/GameplayStatics.h"
-#include "AgoraConfig.h"
+#include "../Config/AgoraConfig.h"
 #include "LevelSwitchItem.h"
 #include "MainAgoraUserWidget.generated.h"
 

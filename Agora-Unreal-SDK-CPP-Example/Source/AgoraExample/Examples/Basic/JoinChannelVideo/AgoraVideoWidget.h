@@ -3,18 +3,20 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "BaseAgoraUserWidget.h"
+#include "../../BaseAgoraUserWidget.h"
+#include "Blueprint/UserWidget.h"
 #include "Components/Image.h"
 #include "Components/Button.h"
-#include "Components/ComboBoxString.h"
-#include "Components/EditableTextBox.h"
-#include <iostream>
-#include <string.h>
 #include "AgoraPluginInterface.h"
+#include "Kismet/GameplayStatics.h"
 #if PLATFORM_ANDROID
 #include "AndroidPermission/Classes/AndroidPermissionFunctionLibrary.h"
 #endif
-#include "JoinMultipleChannelWidget.generated.h"
+#include <iostream>
+#include <string.h>
+#include "Components/ComboBoxString.h"
+#include "Components/EditableTextBox.h"
+#include "AgoraVideoWidget.generated.h"
 using namespace agora::rtc;
 using namespace agora;
 
@@ -37,7 +39,7 @@ struct UserImageData
 	}
 	bool operator==(const UserImageData& s)
 	{
-		if (this->image == s.image || this->uid ==s.uid)
+		if (this->image == s.image)
 		{
 			return true;
 		}
@@ -45,16 +47,15 @@ struct UserImageData
 	}
 };
 
-
 /**
  * 
  */
 UCLASS(Abstract)
-class AGORAEXAMPLE_API UJoinMultipleChannelWidget : public UBaseAgoraUserWidget, public IRtcEngineEventHandlerEx
+class AGORAEXAMPLE_API UAgoraVideoWidget : public UBaseAgoraUserWidget, public agora::rtc::IRtcEngineEventHandler
 {
 	GENERATED_BODY()
-
 public:
+			
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	UImage* remoteVideoUser1 = nullptr;
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
@@ -69,14 +70,14 @@ public:
 	UImage* remoteVideoUser6 = nullptr;
 
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
-	UImage* LocalVideo = nullptr;
+	UImage* localVideo = nullptr;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget))
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
 	UButton* JoinBtn = nullptr;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget))
-	UButton* LeaveBtn = nullptr;
-	
+	UButton* LeaveBtn = nullptr;										
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
 	UButton* BackHomeBtn = nullptr;
 
@@ -102,43 +103,22 @@ public:
 	UEditableTextBox* BitRateTextBox = nullptr;
 
 	UFUNCTION(BlueprintCallable)
-	void StartScreenShare(int width,int height,int bitRate,int frameRate);
+	void OnLeaveButtonClick();
 
 	UFUNCTION(BlueprintCallable)
-	void JoinChannelClick();
+	void OnJoinButtonClick();
 
 	UFUNCTION(BlueprintCallable)
-	void ScreenShareClick();
-
-	UFUNCTION(BlueprintCallable)
-	void LeaveChannelClick();
+	void OnConfirmButtonClick();
 
 	UFUNCTION(BlueprintCallable)
 	void OnBackHomeButtonClick();
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget))
-	UComboBoxString* ComboBoxDisplayId = nullptr;
-
-	UFUNCTION(BlueprintCallable)
-	void SelectValueCallBack(FString SelectedItem, ESelectInfo::Type SelectionType);
-
 	void InitAgoraWidget(FString APP_ID, FString TOKEN, FString CHANNEL_NAME) override;
-
-	void onJoinChannelSuccess(const RtcConnection& connection, int elapsed) override;
-
-	void onLeaveChannel(const RtcConnection& connection, const RtcStats& stats) override;
-
-	void onUserJoined(const RtcConnection& connection, uid_t remoteUid, int elapsed) override;
-
-	void onUserOffline(const RtcConnection& connection, uid_t remoteUid, USER_OFFLINE_REASON_TYPE reason) override;
-
-protected:
-
-	void NativeDestruct() override;
 
 private:
 
-	agora::rtc::IRtcEngine* RtcEngineProxy;
+	IRtcEngine* RtcEngineProxy;
 
 	std::string AppID;
 
@@ -154,31 +134,30 @@ private:
 
 	UserImageData RemoveUImageData(agora::rtc::uid_t uid);
 
-	void InitUI();
-
 	TMap<FString, CHANNEL_PROFILE_TYPE> AgoraChannelProfileEnumMap;
 
 	TMap<FString, AUDIO_SCENARIO_TYPE> AgoraAudioScenarioEnumMap;
 
-	unsigned int Uid1 = 123;
-
-	unsigned int Uid2 = 456;
-
-	int SelectDisplayId;
-
 	FSlateBrush EmptyBrush;
 
-#if PLATFORM_WINDOWS || PLATFORM_MAC
-	agora::rtc::IScreenCaptureSourceList* infos;
-#endif
+	bool bIsDestruct = false;
+
 	void InitAgoraEngine(FString APP_ID, FString TOKEN, FString CHANNEL_NAME);
-
-	void PrepareScreenCapture();
-
-
-	void ScreenShareJoinChannel();
 
 	void SetUpUIEvent();
 
 	void CheckAndroidPermission();
+
+	void InitUI();
+
+	void NativeDestruct() override;
+
+	void onUserJoined(agora::rtc::uid_t uid, int elapsed) override;
+
+	void onJoinChannelSuccess(const char* channel, agora::rtc::uid_t uid, int elapsed);
+
+	void onLeaveChannel(const agora::rtc::RtcStats& stats) override;
+
+	void onUserOffline(agora::rtc::uid_t uid, agora::rtc::USER_OFFLINE_REASON_TYPE reason) override;
+
 };
