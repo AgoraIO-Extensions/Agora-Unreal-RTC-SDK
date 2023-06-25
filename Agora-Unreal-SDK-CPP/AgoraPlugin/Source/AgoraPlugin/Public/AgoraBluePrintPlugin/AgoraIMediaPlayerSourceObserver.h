@@ -142,11 +142,20 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPlayerInfoUpdated, const FPlayerU
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAudioVolumeIndicationSource, int, volume);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnReadData, TArray<int64>, buffer, int, bufferSize);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnSeek, int64, offset, int, whence);
+
+
+
+//In UE4 versions prior to 4.25 £¨including 4.25£©, UHT does not support the following multi-inheritance syntax with namespaces:
+// class AGORAPLUGIN_API UIMediaPlayerSourceObserver : public UObject, public agora::rtc::IMediaPlayerSourceObserver
+// Therefore, we use a class wrapper to reduce the namespace
+class IMediaPlayerSourceObserverClassWrapper : public agora::rtc::IMediaPlayerSourceObserver {};
+
+
 /**
  * 
  */
 UCLASS(Blueprintable)
-class AGORAPLUGIN_API UIMediaPlayerSourceObserver : public UObject, public agora::rtc::IMediaPlayerSourceObserver
+class AGORAPLUGIN_API UIMediaPlayerSourceObserver : public UObject, public IMediaPlayerSourceObserverClassWrapper
 {
 	GENERATED_BODY()
 public:
@@ -197,8 +206,11 @@ public:
 
 };
 
+
+class IMediaPlayerCustomDataProviderClassWrapper : public  agora::media::base::IMediaPlayerCustomDataProvider {};
+
 UCLASS(Blueprintable)
-class AGORAPLUGIN_API UIMediaPlayerCustomDataProvider : public UObject, public agora::media::base::IMediaPlayerCustomDataProvider
+class AGORAPLUGIN_API UIMediaPlayerCustomDataProvider : public UObject, public IMediaPlayerCustomDataProviderClassWrapper
 {
 	GENERATED_BODY()
 public:

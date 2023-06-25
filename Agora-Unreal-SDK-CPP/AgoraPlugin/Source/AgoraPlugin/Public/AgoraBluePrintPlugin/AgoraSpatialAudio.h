@@ -15,8 +15,8 @@ struct FLocalSpatialAudioConfig
 {
 	GENERATED_BODY()
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LocalSpatialAudioConfig")
-	UAgoraRtcEngine* rtcEngine;
+		UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LocalSpatialAudioConfig")
+		UAgoraRtcEngine* rtcEngine;
 };
 
 USTRUCT(BlueprintType)
@@ -24,10 +24,10 @@ struct FRemoteVoicePositionInfo
 {
 	GENERATED_BODY()
 
+		UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RemoteVoicePositionInfo")
+		FVector position;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RemoteVoicePositionInfo")
-	FVector position;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RemoteVoicePositionInfo")
-	FVector forward;
+		FVector forward;
 };
 
 UCLASS(Blueprintable)
@@ -36,39 +36,39 @@ class AGORAPLUGIN_API UILocalSpatialAudioEngine : public UObject
 	GENERATED_BODY()
 public:
 	UFUNCTION(BlueprintCallable, Category = "Agora|ILocalSpatialAudioEngine")
-	int Initialize(FLocalSpatialAudioConfig& config);
+		int Initialize(const FLocalSpatialAudioConfig& config);
 	UFUNCTION(BlueprintCallable, Category = "Agora|ILocalSpatialAudioEngine")
-	int UpdateRemotePosition(int64 uid, FRemoteVoicePositionInfo& posInfo);
+		int UpdateRemotePosition(int64 uid, const FRemoteVoicePositionInfo& posInfo);
 	UFUNCTION(BlueprintCallable, Category = "Agora|ILocalSpatialAudioEngine")
-	int UpdateRemotePositionEx(int64 uid, FRemoteVoicePositionInfo& posInfo, FRtcConnection& connection);
+		int UpdateRemotePositionEx(int64 uid, const FRemoteVoicePositionInfo& posInfo, const FRtcConnection& connection);
 	UFUNCTION(BlueprintCallable, Category = "Agora|ILocalSpatialAudioEngine")
-	int RemoveRemotePosition(int64 uid);
+		int RemoveRemotePosition(int64 uid);
 	UFUNCTION(BlueprintCallable, Category = "Agora|ILocalSpatialAudioEngine")
-	int RemoveRemotePositionEx(int64 uid, FRtcConnection& connection);
+		int RemoveRemotePositionEx(int64 uid, const FRtcConnection& connection);
 	UFUNCTION(BlueprintCallable, Category = "Agora|ILocalSpatialAudioEngine")
-	int ClearRemotePositions();
+		int ClearRemotePositions();
 	UFUNCTION(BlueprintCallable, Category = "Agora|ILocalSpatialAudioEngine")
-	int ClearRemotePositionsEx(FRtcConnection& connection);
+		int ClearRemotePositionsEx(const FRtcConnection& connection);
 	UFUNCTION(BlueprintCallable, Category = "Agora|ILocalSpatialAudioEngine")
-	void Release();
+		void Release();
 	UFUNCTION(BlueprintCallable, Category = "Agora|ILocalSpatialAudioEngine")
-	int SetMaxAudioRecvCount(int maxCount);
+		int SetMaxAudioRecvCount(int maxCount);
 	UFUNCTION(BlueprintCallable, Category = "Agora|ILocalSpatialAudioEngine")
-	int SetAudioRecvRange(float range);
+		int SetAudioRecvRange(float range);
 	UFUNCTION(BlueprintCallable, Category = "Agora|ILocalSpatialAudioEngine")
-	int SetDistanceUnit(float unit);
+		int SetDistanceUnit(float unit);
 	UFUNCTION(BlueprintCallable, Category = "Agora|ILocalSpatialAudioEngine")
-	int UpdateSelfPosition(FVector position, FVector axisForward, FVector axisRight, FVector axisUp);
+		int UpdateSelfPosition(FVector position, FVector axisForward, FVector axisRight, FVector axisUp);
 	UFUNCTION(BlueprintCallable, Category = "Agora|ILocalSpatialAudioEngine")
-	int UpdateSelfPositionEx(FVector position, FVector axisForward, FVector axisRight, FVector axisUp, const FRtcConnection& connection);
+		int UpdateSelfPositionEx(FVector position, FVector axisForward, FVector axisRight, FVector axisUp, const FRtcConnection& connection);
 	UFUNCTION(BlueprintCallable, Category = "Agora|ILocalSpatialAudioEngine")
-	int UpdatePlayerPositionInfo(int playerId, const FRemoteVoicePositionInfo& positionInfo);
+		int UpdatePlayerPositionInfo(int playerId, const FRemoteVoicePositionInfo& positionInfo);
 	UFUNCTION(BlueprintCallable, Category = "Agora|ILocalSpatialAudioEngine")
-	int SetParameters(FString params);
+		int SetParameters(FString params);
 	UFUNCTION(BlueprintCallable, Category = "Agora|ILocalSpatialAudioEngine")
-	int MuteLocalAudioStream(bool mute);
+		int MuteLocalAudioStream(bool mute);
 	UFUNCTION(BlueprintCallable, Category = "Agora|ILocalSpatialAudioEngine")
-	int MuteAllRemoteAudioStreams(bool mute);
+		int MuteAllRemoteAudioStreams(bool mute);
 	void SetLocalSpatialAudioEngine(agora::rtc::ILocalSpatialAudioEngine* localSpatialAudioEngine);
 private:
 	agora::rtc::ILocalSpatialAudioEngine* LocalSpatialAudioEngine;

@@ -221,10 +221,10 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FGetPlaybackAudioParams);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FGetRecordAudioParams);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FGetMixedAudioParams);
 
-
+class IAudioFrameObserverClassWrapper : public agora::media::IAudioFrameObserver {};
 
 UCLASS(Blueprintable)
-class AGORAPLUGIN_API UIAudioFrameObserver : public UObject, public agora::media::IAudioFrameObserver
+class AGORAPLUGIN_API UIAudioFrameObserver : public UObject, public IAudioFrameObserverClassWrapper
 {
 	GENERATED_BODY()
 public:
@@ -267,10 +267,10 @@ public:
 
 };
 
-
+class IAudioSpectrumObserverClassWrapper : public agora::media::IAudioSpectrumObserver {};
 
 UCLASS(Blueprintable)
-class AGORAPLUGIN_API UIAudioSpectrumObserver : public UObject, public agora::media::IAudioSpectrumObserver
+class AGORAPLUGIN_API UIAudioSpectrumObserver : public UObject, public IAudioSpectrumObserverClassWrapper
 {
 	GENERATED_BODY()
 public:
@@ -286,10 +286,10 @@ public:
 
 
 
-
+class IVideoFrameObserverClassWrapper : public agora::media::IVideoFrameObserver {};
 
 UCLASS(Blueprintable)
-class AGORAPLUGIN_API UIVideoFrameObserver : public UObject, public agora::media::IVideoFrameObserver
+class AGORAPLUGIN_API UIVideoFrameObserver : public UObject, public IVideoFrameObserverClassWrapper
 {
 	GENERATED_BODY()
 public:

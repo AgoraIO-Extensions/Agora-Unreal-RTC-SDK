@@ -18,7 +18,7 @@ int UIMediaPlayer::OpenWithCustomSource(int64 startPos, UIMediaPlayerCustomDataP
 {
 	return MediaPlayer->openWithCustomSource(startPos, provider);
 }
-int UIMediaPlayer::OpenWithMediaSource(FAgoraMediaSource& source)
+int UIMediaPlayer::OpenWithMediaSource(const FAgoraMediaSource& source)
 {
 	agora::media::base::MediaSource mediaSource;
 	mediaSource.url = TCHAR_TO_ANSI(*source.url);
@@ -265,7 +265,7 @@ int UIMediaPlayer::UnloadSrc(FString src)
 {
 	return MediaPlayer->unloadSrc(TCHAR_TO_ANSI(*src));
 }
-int UIMediaPlayer::SetSpatialAudioParams(FSpatialAudioParams& params)
+int UIMediaPlayer::SetSpatialAudioParams(const FSpatialAudioParams& params)
 {
 	agora::SpatialAudioParams spatialAudioParams;
 	if (params.speaker_azimuthValue != AGORAOPTIONAL::AGORA_NULL_VALUE)

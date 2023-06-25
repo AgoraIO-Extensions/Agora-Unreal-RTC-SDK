@@ -38,11 +38,17 @@ private:
 };
 
 
+//In UE4 versions prior to 4.25 （including 4.25）, UHT does not support the following multi-inheritance syntax with namespaces:
+// class AGORAPLUGIN_API UAgoraRtcEngine : public agora::rtc::ue::RtcEngineProxy
+// Therefore, we use a class wrapper to reduce the namespace
+class RtcEngineProxyClassWrapper : public agora::rtc::ue::RtcEngineProxy{};
+
+
 /**
  * 
  */
 UCLASS(Blueprintable)
-class AGORAPLUGIN_API UAgoraRtcEngine : public UObject, public agora::rtc::ue::RtcEngineProxy
+class AGORAPLUGIN_API UAgoraRtcEngine : public UObject, public RtcEngineProxyClassWrapper
 {
 	GENERATED_BODY()
 public:
@@ -51,25 +57,25 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
 	void Release(bool sync);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
-	int Initialize(FRtcEngineContext& context);
+	int Initialize(const FRtcEngineContext& context);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
 	FString GetVersion(int build);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
 	FString GetErrorDescription(int code);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
-	int JoinChannel(FString token, FString channelId, int64 uid, FChannelMediaOptions& options);
+	int JoinChannel(FString token, FString channelId, int64 uid, const FChannelMediaOptions& options);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
-	int UpdateChannelMediaOptions(FChannelMediaOptions& options);
+	int UpdateChannelMediaOptions(const FChannelMediaOptions& options);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
-	int LeaveChannel(FLeaveChannelOptions& options);
+	int LeaveChannel(const FLeaveChannelOptions& options);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
 	int RenewToken(FString token);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
 	int SetChannelProfile(ECHANNEL_PROFILE_TYPE profile);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
-	int SetClientRole(ECLIENT_ROLE_TYPE clientroletype, FClientRoleOptions& options);
+	int SetClientRole(ECLIENT_ROLE_TYPE clientroletype, const FClientRoleOptions& options);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
-	int StartEchoTest(FEchoTestConfiguration& config);
+	int StartEchoTest(const FEchoTestConfiguration& config);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
 	int StopEchoTest();
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
@@ -77,37 +83,37 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
 	int DisableVideo();
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
-	int StartPreview(EVIDEO_SOURCE_TYPE sourceType);
+	int StartPreview(EVIDEO_SOURCE_TYPE sourceType = EVIDEO_SOURCE_TYPE::VIDEO_SOURCE_CAMERA_PRIMARY);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
-	int StopPreview(EVIDEO_SOURCE_TYPE sourceType);
+	int StopPreview(EVIDEO_SOURCE_TYPE sourceType = EVIDEO_SOURCE_TYPE::VIDEO_SOURCE_CAMERA_PRIMARY);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
-	int StartLastmileProbeTest(FLastmileProbeConfig& config);
+	int StartLastmileProbeTest(const FLastmileProbeConfig& config);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
-	int SetVideoEncoderConfiguration(FVideoEncoderConfiguration& config);
+	int SetVideoEncoderConfiguration(const FVideoEncoderConfiguration& config);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
-	int SetBeautyEffectOptions(bool enabled, FBeautyOptions& options, EMEDIA_SOURCE_TYPE type);
+	int SetBeautyEffectOptions(bool enabled, const FBeautyOptions& options, EMEDIA_SOURCE_TYPE type);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
-	int SetLowlightEnhanceOptions(bool enabled, FLowlightEnhanceOptions& options, EMEDIA_SOURCE_TYPE type);
+	int SetLowlightEnhanceOptions(bool enabled, const FLowlightEnhanceOptions& options, EMEDIA_SOURCE_TYPE type);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
-	int SetVideoDenoiserOptions(bool enabled, FVideoDenoiserOptions& options, EMEDIA_SOURCE_TYPE type);
+	int SetVideoDenoiserOptions(bool enabled, const FVideoDenoiserOptions& options, EMEDIA_SOURCE_TYPE type);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
-	int SetColorEnhanceOptions(bool enabled, FColorEnhanceOptions& options, EMEDIA_SOURCE_TYPE type);
+	int SetColorEnhanceOptions(bool enabled, const FColorEnhanceOptions& options, EMEDIA_SOURCE_TYPE type);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
 	int EnableVirtualBackground(bool enabled, FVirtualBackgroundSource backgroundSource, FSegmentationProperty segproperty, EMEDIA_SOURCE_TYPE type);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
 	int EnableRemoteSuperResolution(int64 userId, bool enable);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
-	int SetupRemoteVideo(FVideoCanvas& canvas);
+	int SetupRemoteVideo(const FVideoCanvas& canvas);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
-	int SetupLocalVideo(FVideoCanvas& canvas);
+	int SetupLocalVideo(const FVideoCanvas& canvas);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
 	int EnableAudio();
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
 	int DisableAudio();
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
-	int SetAudioProfile(EAUDIO_PROFILE_TYPE profile, EAUDIO_SCENARIO_TYPE scenario);
+	int SetAudioProfile(EAUDIO_PROFILE_TYPE profile = EAUDIO_PROFILE_TYPE::AUDIO_PROFILE_DEFAULT);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
-	int SetAudioScenario(EAUDIO_SCENARIO_TYPE scenario);
+	int SetAudioScenario(EAUDIO_SCENARIO_TYPE scenario = EAUDIO_SCENARIO_TYPE::AUDIO_SCENARIO_DEFAULT);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
 	int EnableLocalAudio(bool enabled);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
@@ -131,15 +137,15 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
 	int SetRemoteVideoStreamType(int64 uid, EVIDEO_STREAM_TYPE streamType);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
-	int SetRemoteVideoSubscriptionOptions(int64 uid, FVideoSubscriptionOptions& options);
+	int SetRemoteVideoSubscriptionOptions(int64 uid, const FVideoSubscriptionOptions& options);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
 	int SetRemoteDefaultVideoStreamType(EVIDEO_STREAM_TYPE streamType);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
 	int EnableAudioVolumeIndication(int interval, int smooth, bool reportVad);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
-	int StartAudioRecording(FAudioRecordingConfiguration& config);
+	int StartAudioRecording(const FAudioRecordingConfiguration& config);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
-	int RegisterAudioEncodedFrameObserver(FAudioEncodedFrameObserverConfig& config, UIAudioEncodedFrameObserver* observer);
+	int RegisterAudioEncodedFrameObserver(const FAudioEncodedFrameObserverConfig& config, UIAudioEncodedFrameObserver* observer);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
 	int StopAudioRecording();
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
@@ -219,7 +225,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
 	int EnableSpatialAudio(bool enabled);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
-	int SetRemoteUserSpatialAudioParams(int64 uid, FSpatialAudioParams& params);
+	int SetRemoteUserSpatialAudioParams(int64 uid, const FSpatialAudioParams& params);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
 	int SetVoiceBeautifierPreset(EVOICE_BEAUTIFIER_PRESET preset);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
@@ -249,25 +255,25 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
 	int UploadLogFile(FString& requestId);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
-	int SetLocalRenderMode(ERENDER_MODE_TYPE renderMode, EVIDEO_MIRROR_MODE_TYPE mirrorMode);
+	int SetLocalRenderMode(ERENDER_MODE_TYPE renderMode, EVIDEO_MIRROR_MODE_TYPE mirrorMode = EVIDEO_MIRROR_MODE_TYPE::VIDEO_MIRROR_MODE_AUTO);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
 	int SetRemoteRenderMode(int64 uid, ERENDER_MODE_TYPE renderMode, EVIDEO_MIRROR_MODE_TYPE mirrorMode);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
 	int SetLocalVideoMirrorMode(EVIDEO_MIRROR_MODE_TYPE mirrorMode);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
-	int EnableDualStreamMode(bool enabled, FSimulcastStreamConfig& streamConfig);
+	int EnableDualStreamMode(bool enabled, const FSimulcastStreamConfig& streamConfig);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
-	int SetDualStreamMode(ESIMULCAST_STREAM_MODE mode, FSimulcastStreamConfig& streamConfig);
+	int SetDualStreamMode(ESIMULCAST_STREAM_MODE mode, const FSimulcastStreamConfig& streamConfig);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
 	int EnableEchoCancellationExternal(bool enabled, int audioSourceDelay);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
 	int EnableCustomAudioLocalPlayback(int sourceId, bool enabled);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
-	int StartPrimaryCustomAudioTrack(FAudioTrackConfig& config);
+	int StartPrimaryCustomAudioTrack(const FAudioTrackConfig& config);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
 	int StopPrimaryCustomAudioTrack();
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
-	int StartSecondaryCustomAudioTrack(FAudioTrackConfig& config);
+	int StartSecondaryCustomAudioTrack(const FAudioTrackConfig& config);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
 	int StopSecondaryCustomAudioTrack();
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
@@ -313,17 +319,17 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
 	int SetExtensionProviderProperty(FString provider, FString key, FString value);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
-	int EnableExtension(FString provider, FString extension, bool enable, EMEDIA_SOURCE_TYPE type);
+	int EnableExtension(FString provider, FString extension, bool enable = true, EMEDIA_SOURCE_TYPE type = EMEDIA_SOURCE_TYPE::UNKNOWN_MEDIA_SOURCE);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
-	int SetExtensionProperty(FString provider, FString extension, FString key, FString value, EMEDIA_SOURCE_TYPE type);
+	int SetExtensionProperty(FString provider, FString extension, FString key, FString value, EMEDIA_SOURCE_TYPE type = EMEDIA_SOURCE_TYPE::UNKNOWN_MEDIA_SOURCE);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
-	int GetExtensionProperty(FString provider, FString extension, FString key, FString value, int buf_len, EMEDIA_SOURCE_TYPE type);
+	int GetExtensionProperty(FString provider, FString extension, FString key, FString & value, int buf_len, EMEDIA_SOURCE_TYPE type = EMEDIA_SOURCE_TYPE::UNKNOWN_MEDIA_SOURCE);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
-	int SetCameraCapturerConfiguration(FCameraCapturerConfiguration& config);
+	int SetCameraCapturerConfiguration(const FCameraCapturerConfiguration& config);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
 	int64 CreateCustomVideoTrack();
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
-	int64 CreateCustomEncodedVideoTrack(FSenderOptions& sender_option);
+	int64 CreateCustomEncodedVideoTrack(const FSenderOptions& sender_option);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
 	int DestroyCustomVideoTrack(int64 video_track_id);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
@@ -371,25 +377,25 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
 	int SetAudioSessionOperationRestriction(EAUDIO_SESSION_OPERATION_RESTRICTION restriction);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
-	int StartScreenCaptureByDisplayId(int displayId, FRectangle& regionRect, FScreenCaptureParameters& captureParams);
+	int StartScreenCaptureByDisplayId(int displayId, const FRectangle& regionRect, const FScreenCaptureParameters& captureParams);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
-	int StartScreenCaptureByScreenRect(FRectangle& screenRect, FRectangle& regionRect, FScreenCaptureParameters& captureParams);
+	int StartScreenCaptureByScreenRect(const FRectangle& screenRect, const FRectangle& regionRect, const FScreenCaptureParameters& captureParams) __deprecated;
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
 	int GetAudioDeviceInfo(FDeviceInfo& deviceInfo);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
-	int StartScreenCaptureByWindowId(int64 windowId, FRectangle& regionRect, FScreenCaptureParameters& captureParams);
+	int StartScreenCaptureByWindowId(int64 windowId, const FRectangle& regionRect, const  FScreenCaptureParameters& captureParams);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
 	int SetScreenCaptureContentHint(EVIDEO_CONTENT_HINT contentHint);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
 	int SetScreenCaptureScenario(ESCREEN_SCENARIO_TYPE screenScenario);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
-	int UpdateScreenCaptureRegion(FRectangle& regionRect);
+	int UpdateScreenCaptureRegion(const FRectangle& regionRect);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
-	int UpdateScreenCaptureParameters(FScreenCaptureParameters& captureParams);
+	int UpdateScreenCaptureParameters(const FScreenCaptureParameters& captureParams);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
-	int StartScreenCapture(FScreenCaptureParameters2& captureParams);
+	int StartScreenCapture(const FScreenCaptureParameters2& captureParams);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
-	int UpdateScreenCapture(FScreenCaptureParameters2& captureParams);
+	int UpdateScreenCapture(const FScreenCaptureParameters2& captureParams);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
 	int StopScreenCapture();
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
@@ -407,15 +413,15 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
 	int StopRtmpStream(FString url);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
-	int StartLocalVideoTranscoder(FLocalTranscoderConfiguration& config);
+	int StartLocalVideoTranscoder(const FLocalTranscoderConfiguration& config);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
-	int UpdateLocalTranscoderConfiguration(FLocalTranscoderConfiguration& config);
+	int UpdateLocalTranscoderConfiguration(const FLocalTranscoderConfiguration& config);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
 	int StopLocalVideoTranscoder();
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
-	int StartPrimaryCameraCapture(FCameraCapturerConfiguration& config);
+	int StartPrimaryCameraCapture(const FCameraCapturerConfiguration& config);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
-	int StartSecondaryCameraCapture(FCameraCapturerConfiguration& config);
+	int StartSecondaryCameraCapture(const FCameraCapturerConfiguration& config);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
 	int StopPrimaryCameraCapture();
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
@@ -425,9 +431,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
 	int SetScreenCaptureOrientation(EVIDEO_SOURCE_TYPE type, EVIDEO_ORIENTATION orientation);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
-	int StartPrimaryScreenCapture(FScreenCaptureConfiguration& config);
+	int StartPrimaryScreenCapture(const FScreenCaptureConfiguration& config);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
-	int StartSecondaryScreenCapture(FScreenCaptureConfiguration& config);
+	int StartSecondaryScreenCapture(const FScreenCaptureConfiguration& config);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
 	int StopPrimaryScreenCapture();
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
@@ -447,13 +453,13 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
 	int SetEncryptionSecret(FString secret);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
-	int EnableEncryption(bool enabled, FEncryptionConfig& config);
+	int EnableEncryption(bool enabled, const FEncryptionConfig& config);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
-	int CreateDataStream(int& streamId, FDataStreamConfig& config);
+	int CreateDataStream(int& streamId, const FDataStreamConfig& config);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
 	int SendStreamMessage(int streamId, FString data);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
-	int AddVideoWatermark(FString watermarkUrl, FWatermarkOptions& options);
+	int AddVideoWatermark(FString watermarkUrl, const FWatermarkOptions& options);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
 	int ClearVideoWatermarks();
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
@@ -473,17 +479,17 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
 	int RegisterLocalUserAccount(FString appId, FString userAccount);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
-	int JoinChannelWithUserAccount(FString token, FString channelId, FString userAccount, FChannelMediaOptions& options);
+	int JoinChannelWithUserAccount(FString token, FString channelId, FString userAccount, const FChannelMediaOptions& options);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
-	int JoinChannelWithUserAccountEx(FString token, FString channelId, FString userAccount, FChannelMediaOptions& options, UIRtcEngineEventHandler* eventHandler);
+	int JoinChannelWithUserAccountEx(FString token, FString channelId, FString userAccount, const FChannelMediaOptions& options, UIRtcEngineEventHandler* eventHandler);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
 	int GetUserInfoByUserAccount(FString userAccount, FUserInfo& userInfo);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
 	int GetUserInfoByUid(int64 uid, FUserInfo& userInfo);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
-	int StartChannelMediaRelay(FChannelMediaRelayConfiguration& configuration);
+	int StartChannelMediaRelay(const FChannelMediaRelayConfiguration& configuration);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
-	int UpdateChannelMediaRelay(FChannelMediaRelayConfiguration& configuration);
+	int UpdateChannelMediaRelay(const FChannelMediaRelayConfiguration& configuration);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
 	int StopChannelMediaRelay();
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
@@ -493,19 +499,19 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
 	int SetDirectCdnStreamingAudioConfiguration(EAUDIO_PROFILE_TYPE profile);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
-	int SetDirectCdnStreamingVideoConfiguration(FVideoEncoderConfiguration& config);
+	int SetDirectCdnStreamingVideoConfiguration(const FVideoEncoderConfiguration& config);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
 	int StartDirectCdnStreaming(UIDirectCdnStreamingEventHandler* eventHandler, FString publishUrl, FDirectCdnStreamingMediaOptions& options);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
 	int StopDirectCdnStreaming();
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
-	int UpdateDirectCdnStreamingMediaOptions(FDirectCdnStreamingMediaOptions& options);
+	int UpdateDirectCdnStreamingMediaOptions(const FDirectCdnStreamingMediaOptions& options);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
-	int StartRhythmPlayer(FString sound1, FString sound2, FAgoraRhythmPlayerConfig& config);
+	int StartRhythmPlayer(FString sound1, FString sound2, const FAgoraRhythmPlayerConfig& config);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
 	int StopRhythmPlayer();
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
-	int ConfigRhythmPlayer(FAgoraRhythmPlayerConfig& config);
+	int ConfigRhythmPlayer(const FAgoraRhythmPlayerConfig& config);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
 	int TakeSnapshot(int64 uid, FString filePath);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
@@ -517,69 +523,69 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
 	int SetCloudProxy(ECLOUD_PROXY_TYPE proxyType);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
-	int SetLocalAccessPoint(FLocalAccessPointConfiguration& config);
+	int SetLocalAccessPoint(const FLocalAccessPointConfiguration& config);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
-	int SetAdvancedAudioOptions(FAdvancedAudioOptions& options);
+	int SetAdvancedAudioOptions(const FAdvancedAudioOptions& options);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
 	int SetAVSyncSource(FString channelId, int64 uid);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
-	int EnableVideoImageSource(bool enable, FImageTrackOptions& options);
+	int EnableVideoImageSource(bool enable, const FImageTrackOptions& options);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
-	int JoinChannelEx(FString token, FRtcConnection& connection, FChannelMediaOptions& options, UIRtcEngineEventHandler* eventHandler);
+	int JoinChannelEx(FString token, const FRtcConnection& connection, const FChannelMediaOptions& options, UIRtcEngineEventHandler* eventHandler);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
 	int LeaveChannelEx(const FRtcConnection& connection, const FLeaveChannelOptions& options);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
-	int UpdateChannelMediaOptionsEx(FChannelMediaOptions& options, FRtcConnection& connection);
+	int UpdateChannelMediaOptionsEx(const FChannelMediaOptions& options, const FRtcConnection& connection);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
-	int SetVideoEncoderConfigurationEx(FVideoEncoderConfiguration& config, FRtcConnection& connection);
+	int SetVideoEncoderConfigurationEx(const FVideoEncoderConfiguration& config, const FRtcConnection& connection);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
-	int SetupRemoteVideoEx(FVideoCanvas& canvas, FRtcConnection& connection);
+	int SetupRemoteVideoEx(const FVideoCanvas& canvas, const FRtcConnection& connection);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
-	int MuteRemoteAudioStreamEx(int64 uid, bool mute, FRtcConnection& connection);
+	int MuteRemoteAudioStreamEx(int64 uid, bool mute, const FRtcConnection& connection);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
-	int MuteRemoteVideoStreamEx(int64 uid, bool mute, FRtcConnection& connection);
+	int MuteRemoteVideoStreamEx(int64 uid, bool mute, const FRtcConnection& connection);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
-	int SetRemoteVideoStreamTypeEx(int64 uid, EVIDEO_STREAM_TYPE streamType, FRtcConnection& connection);
+	int SetRemoteVideoStreamTypeEx(int64 uid, EVIDEO_STREAM_TYPE streamType, const FRtcConnection& connection);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
-	int SetRemoteVideoSubscriptionOptionsEx(int64 uid, FVideoSubscriptionOptions& options, FRtcConnection& connection);
+	int SetRemoteVideoSubscriptionOptionsEx(int64 uid, const FVideoSubscriptionOptions& options, const FRtcConnection& connection);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
-	int SetRemoteVoicePositionEx(int64 uid, float pan, float gain, FRtcConnection& connection);
+	int SetRemoteVoicePositionEx(int64 uid, float pan, float gain, const FRtcConnection& connection);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
-	int SetRemoteUserSpatialAudioParamsEx(int64 uid, FSpatialAudioParams& params, FRtcConnection& connection);
+	int SetRemoteUserSpatialAudioParamsEx(int64 uid, const FSpatialAudioParams& params, const FRtcConnection& connection);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
-	int SetRemoteRenderModeEx(int64 uid, ERENDER_MODE_TYPE renderMode, EVIDEO_MIRROR_MODE_TYPE mirrorMode, FRtcConnection& connection);
+	int SetRemoteRenderModeEx(int64 uid, ERENDER_MODE_TYPE renderMode, EVIDEO_MIRROR_MODE_TYPE mirrorMode, const FRtcConnection& connection);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
-	int EnableLoopbackRecordingEx(FRtcConnection& connection, bool enabled, FString deviceName);
+	int EnableLoopbackRecordingEx(const FRtcConnection& connection, bool enabled, FString deviceName);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
-	ECONNECTION_STATE_TYPE GetConnectionStateEx(FRtcConnection& connection);
+	ECONNECTION_STATE_TYPE GetConnectionStateEx(const FRtcConnection& connection);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
-	int EnableEncryptionEx(FRtcConnection& connection, bool enabled, FEncryptionConfig& config);
+	int EnableEncryptionEx(const FRtcConnection& connection, bool enabled, const FEncryptionConfig& config);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
-	int CreateDataStreamEx(int& streamId, FDataStreamConfig& config, FRtcConnection& connection);
+	int CreateDataStreamEx(int& streamId, const FDataStreamConfig& config, const FRtcConnection& connection);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
-	int SendStreamMessageEx(int streamId, FString data, FRtcConnection& connection);
+	int SendStreamMessageEx(int streamId, FString data, const  FRtcConnection& connection);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
-	int AddVideoWatermarkEx(FString watermarkUrl, FWatermarkOptions& options, FRtcConnection& connection);
+	int AddVideoWatermarkEx(FString watermarkUrl, const FWatermarkOptions& options, const FRtcConnection& connection);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
-	int ClearVideoWatermarkEx(FRtcConnection& connection);
+	int ClearVideoWatermarkEx(const FRtcConnection& connection);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
-	int SendCustomReportMessageEx(FString id, FString category, FString event, FString label, int value, FRtcConnection& connection);
+	int SendCustomReportMessageEx(FString id, FString category, FString event, FString label, int value, const FRtcConnection& connection);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
-	int EnableAudioVolumeIndicationEx(int interval, int smooth, bool reportVad, FRtcConnection& connection);
+	int EnableAudioVolumeIndicationEx(int interval, int smooth, bool reportVad, const FRtcConnection& connection);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
-	int GetUserInfoByUserAccountEx(FString userAccount, FUserInfo& userInfo, FRtcConnection& connection);
+	int GetUserInfoByUserAccountEx(FString userAccount, FUserInfo& userInfo, const FRtcConnection& connection);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
-	int GetUserInfoByUidEx(int64 uid, FUserInfo& userInfo, FRtcConnection& connection);
+	int GetUserInfoByUidEx(int64 uid, FUserInfo& userInfo, const FRtcConnection& connection);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
 	int SetVideoProfileEx(int width, int height, int frameRate, int bitrate);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
 	int EnableDualStreamModeEx(bool enabled, const FSimulcastStreamConfig& streamConfig, const FRtcConnection& connection);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
-	int SetDualStreamModeEx(ESIMULCAST_STREAM_MODE mode, FSimulcastStreamConfig& streamConfig, FRtcConnection& connection);
+	int SetDualStreamModeEx(ESIMULCAST_STREAM_MODE mode, const FSimulcastStreamConfig& streamConfig, const FRtcConnection& connection);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
 	int EnableWirelessAccelerate(bool enabled);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
-	int TakeSnapshotEx(FRtcConnection& connection, int64 uid, FString filePath);
+	int TakeSnapshotEx(const FRtcConnection& connection, int64 uid, FString filePath);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
 	int MuteLocalAudioStreamEx(bool mute, const FRtcConnection& connection);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")

@@ -3,7 +3,7 @@
 
 #include "AgoraBluePrintPlugin/AgoraSpatialAudio.h"
 
-int UILocalSpatialAudioEngine::Initialize(FLocalSpatialAudioConfig& config)
+int UILocalSpatialAudioEngine::Initialize(const FLocalSpatialAudioConfig& config)
 {
 	agora::rtc::LocalSpatialAudioConfig localSpatialAudioConfig;
 	localSpatialAudioConfig.rtcEngine = config.rtcEngine;
@@ -13,7 +13,7 @@ int UILocalSpatialAudioEngine::Initialize(FLocalSpatialAudioConfig& config)
 	}
 	return -ERROR_NULLPTR;
 }
-int UILocalSpatialAudioEngine::UpdateRemotePosition(int64 uid, FRemoteVoicePositionInfo& posInfo)
+int UILocalSpatialAudioEngine::UpdateRemotePosition(int64 uid, const FRemoteVoicePositionInfo& posInfo)
 {
 	agora::rtc::RemoteVoicePositionInfo remoteVoicePositionInfo;
 	float pos[3];
@@ -36,7 +36,7 @@ int UILocalSpatialAudioEngine::UpdateRemotePosition(int64 uid, FRemoteVoicePosit
 	}
 	return -ERROR_NULLPTR;
 }
-int UILocalSpatialAudioEngine::UpdateRemotePositionEx(int64 uid, FRemoteVoicePositionInfo& posInfo, FRtcConnection& connection)
+int UILocalSpatialAudioEngine::UpdateRemotePositionEx(int64 uid, const  FRemoteVoicePositionInfo& posInfo, const FRtcConnection& connection)
 {
 	agora::rtc::RemoteVoicePositionInfo remoteVoicePositionInfo;
 
@@ -72,7 +72,7 @@ int UILocalSpatialAudioEngine::RemoveRemotePosition(int64 uid)
 	}
 	return -ERROR_NULLPTR;
 }
-int UILocalSpatialAudioEngine::RemoveRemotePositionEx(int64 uid, FRtcConnection& connection)
+int UILocalSpatialAudioEngine::RemoveRemotePositionEx(int64 uid, const  FRtcConnection& connection)
 {
 	agora::rtc::RtcConnection rtcConnection;
 	rtcConnection.channelId = TCHAR_TO_ANSI(*connection.channelId);
@@ -91,7 +91,7 @@ int UILocalSpatialAudioEngine::ClearRemotePositions()
 	}
 	return -ERROR_NULLPTR;
 }
-int UILocalSpatialAudioEngine::ClearRemotePositionsEx(FRtcConnection& connection)
+int UILocalSpatialAudioEngine::ClearRemotePositionsEx(const FRtcConnection& connection)
 {
 	agora::rtc::RtcConnection rtcConnection;
 	rtcConnection.channelId = TCHAR_TO_ANSI(*connection.channelId);

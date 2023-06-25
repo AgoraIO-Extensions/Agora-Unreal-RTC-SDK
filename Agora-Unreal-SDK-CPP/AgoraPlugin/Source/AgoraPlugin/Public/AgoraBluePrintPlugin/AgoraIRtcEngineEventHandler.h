@@ -109,8 +109,11 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnMetadataReceived, const FAgoraMet
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnDirectCdnStreamingStateChanged, EDIRECT_CDN_STREAMING_STATE, state, EDIRECT_CDN_STREAMING_ERROR, error, FString, message);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnDirectCdnStreamingStats, const FDirectCdnStreamingStats&, stats);
 
+class IRtcEngineEventHandlerExClassWrapper : public agora::rtc::IRtcEngineEventHandlerEx {};
+
+
 UCLASS(Blueprintable)
-class AGORAPLUGIN_API UIRtcEngineEventHandler : public UObject, public agora::rtc::IRtcEngineEventHandlerEx
+class AGORAPLUGIN_API UIRtcEngineEventHandler : public UObject, public IRtcEngineEventHandlerExClassWrapper
 {
 	GENERATED_BODY()
 
@@ -544,10 +547,11 @@ public:
 
 };
 
+class IMetadataObserverClassWrapper : public agora::rtc::IMetadataObserver {};
 
 
 UCLASS(Blueprintable)
-class AGORAPLUGIN_API UIMetadataObserver : public UObject, public agora::rtc::IMetadataObserver
+class AGORAPLUGIN_API UIMetadataObserver : public UObject, public IMetadataObserverClassWrapper
 {
 	GENERATED_BODY()
 
@@ -566,9 +570,10 @@ public:
 
 };
 
+class IDirectCdnStreamingEventHandlerClassWrapper : public agora::rtc::IDirectCdnStreamingEventHandler {};
 
 UCLASS(Blueprintable)
-class AGORAPLUGIN_API UIDirectCdnStreamingEventHandler : public UObject, public agora::rtc::IDirectCdnStreamingEventHandler
+class AGORAPLUGIN_API UIDirectCdnStreamingEventHandler : public UObject, public IDirectCdnStreamingEventHandlerClassWrapper
 {
 	GENERATED_BODY()
 
