@@ -7,12 +7,42 @@ namespace agora
 	{
 		namespace ue
 		{
+			RtcEngineProxy* RtcEngineProxy::Instance = nullptr;
+			std::mutex RtcEngineProxy::MutexLock;
+
 			agora::rtc::IRtcEngine* createAgoraRtcEngine()
 			{
-				return new RtcEngineProxy();
+				return RtcEngineProxy::GetInstance();
 			}
 
-			RtcEngineProxy::RtcEngineProxy()
+			RtcEngineProxy* RtcEngineProxy::GetInstance()
+			{
+				if(Instance == nullptr){
+					std::unique_lock<std::mutex> lock(MutexLock);
+					if (Instance == nullptr) {
+						Instance = new RtcEngineProxy();
+						Instance->InitInstance();
+					}
+				}
+		
+				return Instance;
+			}
+
+
+			void RtcEngineProxy::ReleaseInstance()
+			{
+				if (Instance != nullptr) {
+					std::unique_lock<std::mutex> lock(MutexLock);
+					if (Instance != nullptr) {
+						Instance->UnInitInstance();
+						delete Instance;
+						Instance = nullptr;
+					}
+				}
+			}
+
+
+			void RtcEngineProxy::InitInstance()
 			{
 #if PLATFORM_ANDROID
 				if (JNIEnv* Env = FAndroidApplication::GetJavaEnv())
@@ -23,7 +53,7 @@ namespace agora
 					{
 						FJavaWrapper::CallVoidMethod(Env, FJavaWrapper::GameActivityThis, LoadLibrary);
 					}
-					
+
 					static jmethodID LoadAndroidScreenCaptureSo = FJavaWrapper::FindMethod(Env, FJavaWrapper::GameActivityClassID, "LoadAndroidScreenCaptureSo", "()V", false);
 					if (LoadAndroidScreenCaptureSo != NULL)
 					{
@@ -32,16 +62,26 @@ namespace agora
 				}
 #endif
 				RtcEngine = ::createAgoraRtcEngine();
-				VideoRenderMgr = MakeShareable(new VideoRenderManager());
+				VideoRenderMgr = MakeShareable(new VideoRenderManager());	
 			}
 
+
+			void RtcEngineProxy::UnInitInstance(bool sync /*= false*/)
+			{
+				RtcEngine->release(sync);
+				RtcEngine = nullptr;
+			}
+
+			RtcEngineProxy::RtcEngineProxy(){}
+			RtcEngineProxy::~RtcEngineProxy(){}
+
 			void RtcEngineProxy::release(bool sync) {
-				if (RtcEngine != nullptr)
+				if (Instance != nullptr)
 				{
-					RtcEngine->release(sync);
-					RtcEngine = nullptr;
+					RtcEngineProxy::ReleaseInstance();
 				}
 			}
+
 			int RtcEngineProxy::initialize(agora::rtc::RtcEngineContext const& context) {
 				int ret = RtcEngine->initialize(context);
 

@@ -17,18 +17,30 @@ namespace agora
 	{
 		namespace ue
 		{
+			
 			class MediaEngineProxy;
 			class AGORAPLUGIN_API RtcEngineProxy : public IRtcEngineEx
 			{
-			protected:
-
-				IRtcEngine* RtcEngine;
-				TSharedPtr<class MediaEngineProxy> MediaProxy;
-				TSharedPtr<class VideoRenderManager> VideoRenderMgr;
 
 			public:
+				static RtcEngineProxy* GetInstance();
+				static void ReleaseInstance();
 
+			protected:
+				static RtcEngineProxy* Instance;
+				static std::mutex MutexLock;
+
+				agora::rtc::IRtcEngine* RtcEngine;
+				TSharedPtr<class VideoRenderManager> VideoRenderMgr;
+				TSharedPtr<class MediaEngineProxy> MediaProxy;
+
+			private:
+				void InitInstance();
+				void UnInitInstance(bool sync = false);
+
+			public:
 				RtcEngineProxy();
+				~RtcEngineProxy();
 
 				util::AutoPtr<agora::media::IMediaEngine> MediaEngine;
 				virtual int queryInterface(rtc::INTERFACE_ID_TYPE iid, void** inter) override;

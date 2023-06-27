@@ -12,7 +12,7 @@ UObject* UAgoraRtcEngine::QueryInterface(EINTERFACE_ID_TYPE iid)
 	if (iid == EINTERFACE_ID_TYPE::AGORA_IID_VIDEO_DEVICE_MANAGER)
 	{
 		agora::rtc::IVideoDeviceManager* VideoDeviceManager = nullptr;
-		RtcEngineProxyClassWrapper::queryInterface(agora::rtc::INTERFACE_ID_TYPE::AGORA_IID_VIDEO_DEVICE_MANAGER, (void**)&VideoDeviceManager);
+		RtcEngineProxyClassWrapper::GetInstance()->queryInterface(agora::rtc::INTERFACE_ID_TYPE::AGORA_IID_VIDEO_DEVICE_MANAGER, (void**)&VideoDeviceManager);
 
 		if (videoDeviceManager != nullptr)
 		{
@@ -27,7 +27,7 @@ UObject* UAgoraRtcEngine::QueryInterface(EINTERFACE_ID_TYPE iid)
 	else if (iid == EINTERFACE_ID_TYPE::AGORA_IID_AUDIO_DEVICE_MANAGER)
 	{
 		agora::rtc::IAudioDeviceManager* AudioDeviceManager = nullptr;
-		RtcEngineProxyClassWrapper::queryInterface(agora::rtc::INTERFACE_ID_TYPE::AGORA_IID_AUDIO_DEVICE_MANAGER, (void**)&AudioDeviceManager);
+		RtcEngineProxyClassWrapper::GetInstance()->queryInterface(agora::rtc::INTERFACE_ID_TYPE::AGORA_IID_AUDIO_DEVICE_MANAGER, (void**)&AudioDeviceManager);
 
 		if (audioDeviceManager != nullptr)
 		{
@@ -42,7 +42,7 @@ UObject* UAgoraRtcEngine::QueryInterface(EINTERFACE_ID_TYPE iid)
 	else if (iid == EINTERFACE_ID_TYPE::AGORA_IID_LOCAL_SPATIAL_AUDIO)
 	{
 		agora::rtc::ILocalSpatialAudioEngine* SpatialAudioEngine = nullptr;
-		RtcEngineProxyClassWrapper::queryInterface(agora::rtc::INTERFACE_ID_TYPE::AGORA_IID_LOCAL_SPATIAL_AUDIO, (void**)&SpatialAudioEngine);
+		RtcEngineProxyClassWrapper::GetInstance()->queryInterface(agora::rtc::INTERFACE_ID_TYPE::AGORA_IID_LOCAL_SPATIAL_AUDIO, (void**)&SpatialAudioEngine);
 
 		if (spatialAudioEngine != nullptr)
 		{
@@ -57,7 +57,7 @@ UObject* UAgoraRtcEngine::QueryInterface(EINTERFACE_ID_TYPE iid)
 	else if (iid == EINTERFACE_ID_TYPE::AGORA_IID_MEDIA_RECORDER)
 	{
 		agora::rtc::IMediaRecorder* MediaRecorder = nullptr;
-		RtcEngineProxyClassWrapper::queryInterface(agora::rtc::INTERFACE_ID_TYPE::AGORA_IID_MEDIA_RECORDER, (void**)&MediaRecorder);
+		RtcEngineProxyClassWrapper::GetInstance()->queryInterface(agora::rtc::INTERFACE_ID_TYPE::AGORA_IID_MEDIA_RECORDER, (void**)&MediaRecorder);
 
 		if (mediaRecorder != nullptr)
 		{
@@ -104,7 +104,7 @@ void UAgoraRtcEngine::Release(bool sync)
 		screenCaptureSourceList = nullptr;
 	}
 #endif
-	return RtcEngineProxyClassWrapper::release(sync);
+	return RtcEngineProxyClassWrapper::GetInstance()->release(sync);
 }
 int UAgoraRtcEngine::Initialize(const FRtcEngineContext& context)
 {
@@ -147,16 +147,16 @@ int UAgoraRtcEngine::Initialize(const FRtcEngineContext& context)
 	}
 	rtcEngineContext.useExternalEglContext = context.useExternalEglContext;
 
-	int ret = RtcEngineProxyClassWrapper::initialize(rtcEngineContext);
+	int ret = RtcEngineProxyClassWrapper::GetInstance()->initialize(rtcEngineContext);
 	return ret;
 }
 FString UAgoraRtcEngine::GetVersion(int build)
 {
-	return RtcEngineProxyClassWrapper::getVersion(&build);
+	return RtcEngineProxyClassWrapper::GetInstance()->getVersion(&build);
 }
 FString UAgoraRtcEngine::GetErrorDescription(int code)
 {
-	return RtcEngineProxyClassWrapper::getErrorDescription(code);
+	return RtcEngineProxyClassWrapper::GetInstance()->getErrorDescription(code);
 }
 int UAgoraRtcEngine::JoinChannel(FString token, FString channelId, int64 uid, const FChannelMediaOptions& options)
 {
@@ -299,7 +299,7 @@ int UAgoraRtcEngine::JoinChannel(FString token, FString channelId, int64 uid, co
 	}
 	std::string Token = TCHAR_TO_UTF8(*token);
 	std::string ChannelId = TCHAR_TO_UTF8(*channelId);
-	auto ret = RtcEngineProxyClassWrapper::joinChannel(Token.c_str(), ChannelId.c_str(), uid, channelMediaOptions);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->joinChannel(Token.c_str(), ChannelId.c_str(), uid, channelMediaOptions);
 	return ret;
 }
 int UAgoraRtcEngine::UpdateChannelMediaOptions(const FChannelMediaOptions& options)
@@ -441,7 +441,7 @@ int UAgoraRtcEngine::UpdateChannelMediaOptions(const FChannelMediaOptions& optio
 	{
 		channelMediaOptions.isAudioFilterable = options.isAudioFilterable == AGORAOPTIONAL::AGORA_TRUE_VALUE;
 	}
-	auto ret = RtcEngineProxyClassWrapper::updateChannelMediaOptions(channelMediaOptions);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->updateChannelMediaOptions(channelMediaOptions);
 	return ret;
 }
 
@@ -461,7 +461,7 @@ int UAgoraRtcEngine::LeaveChannel(const FLeaveChannelOptions& options)
 		leaveChannelOptions.stopMicrophoneRecording = options.stopMicrophoneRecording == AGORAOPTIONAL::AGORA_TRUE_VALUE;
 	}
 
-	auto ret = RtcEngineProxyClassWrapper::leaveChannel(leaveChannelOptions);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->leaveChannel(leaveChannelOptions);
 	return ret;
 }
 
@@ -469,12 +469,12 @@ int UAgoraRtcEngine::RenewToken(FString token)
 {
 	std::string Token = TCHAR_TO_ANSI(*token);
 
-	auto ret = RtcEngineProxyClassWrapper::renewToken(Token.c_str());
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->renewToken(Token.c_str());
 	return ret;
 }
 int UAgoraRtcEngine::SetChannelProfile(ECHANNEL_PROFILE_TYPE profile)
 {
-	auto ret = RtcEngineProxyClassWrapper::setChannelProfile((agora::CHANNEL_PROFILE_TYPE)profile);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->setChannelProfile((agora::CHANNEL_PROFILE_TYPE)profile);
 	return ret;
 }
 int UAgoraRtcEngine::SetClientRole(ECLIENT_ROLE_TYPE clientroletype, const FClientRoleOptions& options)
@@ -482,7 +482,7 @@ int UAgoraRtcEngine::SetClientRole(ECLIENT_ROLE_TYPE clientroletype, const FClie
 	agora::rtc::ClientRoleOptions clientRoleOptions;
 	clientRoleOptions.audienceLatencyLevel = (agora::rtc::AUDIENCE_LATENCY_LEVEL_TYPE)options.audienceLatencyLevel;
 	agora::rtc::CLIENT_ROLE_TYPE roleType = (agora::rtc::CLIENT_ROLE_TYPE)clientroletype;
-	auto ret = RtcEngineProxyClassWrapper::setClientRole(roleType, clientRoleOptions);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->setClientRole(roleType, clientRoleOptions);
 	return ret;
 }
 int UAgoraRtcEngine::StartEchoTest(const FEchoTestConfiguration& config)
@@ -495,32 +495,32 @@ int UAgoraRtcEngine::StartEchoTest(const FEchoTestConfiguration& config)
 	echoTestConfiguration.token = Token.c_str();
 	std::string ChannelId = TCHAR_TO_ANSI(*config.channelId);
 	echoTestConfiguration.channelId = ChannelId.c_str();
-	auto ret = RtcEngineProxyClassWrapper::startEchoTest(echoTestConfiguration);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->startEchoTest(echoTestConfiguration);
 	return ret;
 }
 int UAgoraRtcEngine::StopEchoTest()
 {
-	auto ret = RtcEngineProxyClassWrapper::stopEchoTest();
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->stopEchoTest();
 	return ret;
 }
 int UAgoraRtcEngine::EnableVideo()
 {
-	auto ret = RtcEngineProxyClassWrapper::enableVideo();
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->enableVideo();
 	return ret;
 }
 int UAgoraRtcEngine::DisableVideo()
 {
-	auto ret = RtcEngineProxyClassWrapper::disableVideo();
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->disableVideo();
 	return ret;
 }
 int UAgoraRtcEngine::StartPreview(EVIDEO_SOURCE_TYPE sourceType)
 {
-	auto ret = RtcEngineProxyClassWrapper::startPreview((agora::rtc::VIDEO_SOURCE_TYPE)sourceType);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->startPreview((agora::rtc::VIDEO_SOURCE_TYPE)sourceType);
 	return ret;
 }
 int UAgoraRtcEngine::StopPreview(EVIDEO_SOURCE_TYPE sourceType)
 {
-	auto ret = RtcEngineProxyClassWrapper::stopPreview((agora::rtc::VIDEO_SOURCE_TYPE)sourceType);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->stopPreview((agora::rtc::VIDEO_SOURCE_TYPE)sourceType);
 	return ret;
 }
 int UAgoraRtcEngine::StartLastmileProbeTest(const FLastmileProbeConfig& config)
@@ -530,7 +530,7 @@ int UAgoraRtcEngine::StartLastmileProbeTest(const FLastmileProbeConfig& config)
 	lastmileProbeConfig.probeDownlink = config.probeDownlink;
 	lastmileProbeConfig.expectedUplinkBitrate = config.expectedUplinkBitrate;
 	lastmileProbeConfig.expectedDownlinkBitrate = config.expectedDownlinkBitrate;
-	auto ret = RtcEngineProxyClassWrapper::startLastmileProbeTest(lastmileProbeConfig);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->startLastmileProbeTest(lastmileProbeConfig);
 	return ret;
 }
 int UAgoraRtcEngine::SetVideoEncoderConfiguration(const FVideoEncoderConfiguration& config)
@@ -549,7 +549,7 @@ int UAgoraRtcEngine::SetVideoEncoderConfiguration(const FVideoEncoderConfigurati
 	videoEncoderConfiguration.orientationMode = (agora::rtc::ORIENTATION_MODE)config.orientationMode;
 	videoEncoderConfiguration.degradationPreference = (agora::rtc::DEGRADATION_PREFERENCE)config.degradationPreference;
 	videoEncoderConfiguration.mirrorMode = (agora::rtc::VIDEO_MIRROR_MODE_TYPE)config.mirrorMode;
-	auto ret = RtcEngineProxyClassWrapper::setVideoEncoderConfiguration(videoEncoderConfiguration);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->setVideoEncoderConfiguration(videoEncoderConfiguration);
 	return ret;
 }
 int UAgoraRtcEngine::SetBeautyEffectOptions(bool enabled, const FBeautyOptions& options, EMEDIA_SOURCE_TYPE type)
@@ -560,7 +560,7 @@ int UAgoraRtcEngine::SetBeautyEffectOptions(bool enabled, const FBeautyOptions& 
 	beautyOptions.smoothnessLevel = options.smoothnessLevel;
 	beautyOptions.rednessLevel = options.rednessLevel;
 	beautyOptions.sharpnessLevel = options.sharpnessLevel;
-	auto ret = RtcEngineProxyClassWrapper::setBeautyEffectOptions(enabled, beautyOptions, (agora::media::MEDIA_SOURCE_TYPE)type);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->setBeautyEffectOptions(enabled, beautyOptions, (agora::media::MEDIA_SOURCE_TYPE)type);
 	return ret;
 }
 int UAgoraRtcEngine::SetLowlightEnhanceOptions(bool enabled, const FLowlightEnhanceOptions& options, EMEDIA_SOURCE_TYPE type)
@@ -568,7 +568,7 @@ int UAgoraRtcEngine::SetLowlightEnhanceOptions(bool enabled, const FLowlightEnha
 	agora::rtc::LowlightEnhanceOptions lowlightEnhanceOptions;
 	lowlightEnhanceOptions.mode = (agora::rtc::LowlightEnhanceOptions::LOW_LIGHT_ENHANCE_MODE)options.mode;
 	lowlightEnhanceOptions.level = (agora::rtc::LowlightEnhanceOptions::LOW_LIGHT_ENHANCE_LEVEL)options.level;
-	auto ret = RtcEngineProxyClassWrapper::setLowlightEnhanceOptions(enabled, lowlightEnhanceOptions, (agora::media::MEDIA_SOURCE_TYPE)type);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->setLowlightEnhanceOptions(enabled, lowlightEnhanceOptions, (agora::media::MEDIA_SOURCE_TYPE)type);
 	return ret;
 }
 int UAgoraRtcEngine::SetVideoDenoiserOptions(bool enabled, const FVideoDenoiserOptions& options, EMEDIA_SOURCE_TYPE type)
@@ -576,7 +576,7 @@ int UAgoraRtcEngine::SetVideoDenoiserOptions(bool enabled, const FVideoDenoiserO
 	agora::rtc::VideoDenoiserOptions videoDenoiserOptions;
 	videoDenoiserOptions.mode = (agora::rtc::VideoDenoiserOptions::VIDEO_DENOISER_MODE)options.mode;
 	videoDenoiserOptions.level = (agora::rtc::VideoDenoiserOptions::VIDEO_DENOISER_LEVEL)options.level;
-	auto ret = RtcEngineProxyClassWrapper::setVideoDenoiserOptions(enabled, videoDenoiserOptions, (agora::media::MEDIA_SOURCE_TYPE)type);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->setVideoDenoiserOptions(enabled, videoDenoiserOptions, (agora::media::MEDIA_SOURCE_TYPE)type);
 	return ret;
 }
 int UAgoraRtcEngine::SetColorEnhanceOptions(bool enabled, const FColorEnhanceOptions& options, EMEDIA_SOURCE_TYPE type)
@@ -584,7 +584,7 @@ int UAgoraRtcEngine::SetColorEnhanceOptions(bool enabled, const FColorEnhanceOpt
 	agora::rtc::ColorEnhanceOptions colorEnhanceOptions;
 	colorEnhanceOptions.strengthLevel = options.strengthLevel;
 	colorEnhanceOptions.skinProtectLevel = options.skinProtectLevel;
-	auto ret = RtcEngineProxyClassWrapper::setColorEnhanceOptions(enabled, colorEnhanceOptions, (agora::media::MEDIA_SOURCE_TYPE)type);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->setColorEnhanceOptions(enabled, colorEnhanceOptions, (agora::media::MEDIA_SOURCE_TYPE)type);
 	return ret;
 }
 int UAgoraRtcEngine::EnableVirtualBackground(bool enabled, FVirtualBackgroundSource backgroundSource, FSegmentationProperty segproperty, EMEDIA_SOURCE_TYPE type)
@@ -598,14 +598,14 @@ int UAgoraRtcEngine::EnableVirtualBackground(bool enabled, FVirtualBackgroundSou
 	agora::rtc::SegmentationProperty segmentationProperty;
 	segmentationProperty.modelType = (agora::rtc::SegmentationProperty::SEG_MODEL_TYPE)segproperty.modelType;
 	segmentationProperty.greenCapacity = segproperty.greenCapacity;
-	auto ret = RtcEngineProxyClassWrapper::enableVirtualBackground(enabled, virtualBackgroundSource, segmentationProperty, (agora::media::MEDIA_SOURCE_TYPE)type);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->enableVirtualBackground(enabled, virtualBackgroundSource, segmentationProperty, (agora::media::MEDIA_SOURCE_TYPE)type);
 	return ret;
 }
 
 
 int UAgoraRtcEngine::EnableRemoteSuperResolution(int64 userId, bool enable)
 {
-	auto ret = RtcEngineProxyClassWrapper::enableRemoteSuperResolution(userId, enable);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->enableRemoteSuperResolution(userId, enable);
 	return ret;
 }
 
@@ -620,7 +620,7 @@ int UAgoraRtcEngine::SetupRemoteVideo(const FVideoCanvas& canvas)
 	videoCanvas.sourceType = (agora::rtc::VIDEO_SOURCE_TYPE)canvas.sourceType;
 	//videoCanvas.cropArea = canvas.cropArea;
 	videoCanvas.setupMode = (agora::rtc::VIDEO_VIEW_SETUP_MODE)canvas.setupMode;
-	auto ret = RtcEngineProxyClassWrapper::setupRemoteVideo(videoCanvas);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->setupRemoteVideo(videoCanvas);
 	return ret;
 }
 int UAgoraRtcEngine::SetupLocalVideo(const FVideoCanvas& canvas)
@@ -636,84 +636,84 @@ int UAgoraRtcEngine::SetupLocalVideo(const FVideoCanvas& canvas)
 	videoCanvas.sourceType = (agora::rtc::VIDEO_SOURCE_TYPE)canvas.sourceType;
 	//videoCanvas.cropArea = canvas.cropArea;
 	//videoCanvas.setupMode = (agora::rtc::VIDEO_VIEW_SETUP_MODE)canvas.setupMode;
-	auto ret = RtcEngineProxyClassWrapper::setupLocalVideo(videoCanvas);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->setupLocalVideo(videoCanvas);
 	return ret;
 }
 int UAgoraRtcEngine::EnableAudio()
 {
-	auto ret = RtcEngineProxyClassWrapper::enableAudio();
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->enableAudio();
 	return ret;
 }
 int UAgoraRtcEngine::DisableAudio()
 {
-	auto ret = RtcEngineProxyClassWrapper::disableAudio();
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->disableAudio();
 	return ret;
 }
 
 int UAgoraRtcEngine::SetAudioProfile(EAUDIO_PROFILE_TYPE profile)
 {
-	auto ret = RtcEngineProxyClassWrapper::setAudioProfile((agora::rtc::AUDIO_PROFILE_TYPE)profile);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->setAudioProfile((agora::rtc::AUDIO_PROFILE_TYPE)profile);
 	return ret;
 }
 
 int UAgoraRtcEngine::SetAudioScenario(EAUDIO_SCENARIO_TYPE scenario)
 {
-	auto ret = RtcEngineProxyClassWrapper::setAudioScenario((agora::rtc::AUDIO_SCENARIO_TYPE)scenario);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->setAudioScenario((agora::rtc::AUDIO_SCENARIO_TYPE)scenario);
 	return ret;
 }
 int UAgoraRtcEngine::EnableLocalAudio(bool enabled)
 {
-	auto ret = RtcEngineProxyClassWrapper::enableLocalAudio(enabled);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->enableLocalAudio(enabled);
 	return ret;
 }
 int UAgoraRtcEngine::MuteLocalAudioStream(bool mute)
 {
-	auto ret = RtcEngineProxyClassWrapper::muteLocalAudioStream(mute);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->muteLocalAudioStream(mute);
 	return ret;
 }
 int UAgoraRtcEngine::MuteAllRemoteAudioStreams(bool mute)
 {
-	auto ret = RtcEngineProxyClassWrapper::muteAllRemoteAudioStreams(mute);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->muteAllRemoteAudioStreams(mute);
 	return ret;
 }
 int UAgoraRtcEngine::SetDefaultMuteAllRemoteAudioStreams(bool mute)
 {
-	auto ret = RtcEngineProxyClassWrapper::setDefaultMuteAllRemoteAudioStreams(mute);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->setDefaultMuteAllRemoteAudioStreams(mute);
 	return ret;
 }
 int UAgoraRtcEngine::MuteRemoteAudioStream(int64 uid, bool mute)
 {
-	auto ret = RtcEngineProxyClassWrapper::muteRemoteAudioStream(uid, mute);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->muteRemoteAudioStream(uid, mute);
 	return ret;
 }
 int UAgoraRtcEngine::MuteLocalVideoStream(bool mute)
 {
-	auto ret = RtcEngineProxyClassWrapper::muteLocalVideoStream(mute);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->muteLocalVideoStream(mute);
 	return ret;
 }
 int UAgoraRtcEngine::EnableLocalVideo(bool enabled)
 {
-	auto ret = RtcEngineProxyClassWrapper::enableLocalVideo(enabled);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->enableLocalVideo(enabled);
 	return ret;
 }
 int UAgoraRtcEngine::MuteAllRemoteVideoStreams(bool mute)
 {
-	auto ret = RtcEngineProxyClassWrapper::muteAllRemoteVideoStreams(mute);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->muteAllRemoteVideoStreams(mute);
 	return ret;
 }
 int UAgoraRtcEngine::SetDefaultMuteAllRemoteVideoStreams(bool mute)
 {
-	auto ret = RtcEngineProxyClassWrapper::setDefaultMuteAllRemoteVideoStreams(mute);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->setDefaultMuteAllRemoteVideoStreams(mute);
 	return ret;
 }
 int UAgoraRtcEngine::MuteRemoteVideoStream(int64 uid, bool mute)
 {
-	auto ret = RtcEngineProxyClassWrapper::muteRemoteVideoStream(uid, mute);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->muteRemoteVideoStream(uid, mute);
 	return ret;
 }
 int UAgoraRtcEngine::SetRemoteVideoStreamType(int64 uid, EVIDEO_STREAM_TYPE streamType)
 {
-	auto ret = RtcEngineProxyClassWrapper::setRemoteVideoStreamType(uid, (agora::rtc::VIDEO_STREAM_TYPE)streamType);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->setRemoteVideoStreamType(uid, (agora::rtc::VIDEO_STREAM_TYPE)streamType);
 	return ret;
 }
 int UAgoraRtcEngine::SetRemoteVideoSubscriptionOptions(int64 uid, const FVideoSubscriptionOptions& options)
@@ -728,18 +728,18 @@ int UAgoraRtcEngine::SetRemoteVideoSubscriptionOptions(int64 uid, const FVideoSu
 		videoSubscriptionOptions.encodedFrameOnly = options.encodedFrameOnly == AGORAOPTIONAL::AGORA_TRUE_VALUE;
 	}
 
-	auto ret = RtcEngineProxyClassWrapper::setRemoteVideoSubscriptionOptions(uid, videoSubscriptionOptions);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->setRemoteVideoSubscriptionOptions(uid, videoSubscriptionOptions);
 	return ret;
 }
 int UAgoraRtcEngine::SetRemoteDefaultVideoStreamType(EVIDEO_STREAM_TYPE streamType)
 {
-	auto ret = RtcEngineProxyClassWrapper::setRemoteDefaultVideoStreamType((agora::rtc::VIDEO_STREAM_TYPE)streamType);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->setRemoteDefaultVideoStreamType((agora::rtc::VIDEO_STREAM_TYPE)streamType);
 	return ret;
 }
 
 int UAgoraRtcEngine::EnableAudioVolumeIndication(int interval, int smooth, bool reportVad)
 {
-	auto ret = RtcEngineProxyClassWrapper::enableAudioVolumeIndication(interval, smooth, reportVad);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->enableAudioVolumeIndication(interval, smooth, reportVad);
 	return ret;
 }
 int UAgoraRtcEngine::StartAudioRecording(const FAudioRecordingConfiguration& config)
@@ -752,7 +752,7 @@ int UAgoraRtcEngine::StartAudioRecording(const FAudioRecordingConfiguration& con
 	audioRecordingConfiguration.fileRecordingType = (agora::rtc::AUDIO_FILE_RECORDING_TYPE)config.fileRecordingType;
 	audioRecordingConfiguration.quality = (agora::rtc::AUDIO_RECORDING_QUALITY_TYPE)config.quality;
 	audioRecordingConfiguration.recordingChannel = config.recordingChannel;
-	auto ret = RtcEngineProxyClassWrapper::startAudioRecording(audioRecordingConfiguration);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->startAudioRecording(audioRecordingConfiguration);
 	return ret;
 }
 
@@ -805,12 +805,12 @@ int UAgoraRtcEngine::RegisterAudioEncodedFrameObserver(const FAudioEncodedFrameO
 		audioEncodedFrameObserverConfig.encodingType = agora::rtc::AUDIO_ENCODING_TYPE::AUDIO_ENCODING_TYPE_OPUS_48000_HIGH;
 	}
 
-	auto ret = RtcEngineProxyClassWrapper::registerAudioEncodedFrameObserver(audioEncodedFrameObserverConfig, observer);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->registerAudioEncodedFrameObserver(audioEncodedFrameObserverConfig, observer);
 	return ret;
 }
 int UAgoraRtcEngine::StopAudioRecording()
 {
-	auto ret = RtcEngineProxyClassWrapper::stopAudioRecording();
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->stopAudioRecording();
 	return ret;
 }
 
@@ -825,7 +825,7 @@ UIMediaPlayer* UAgoraRtcEngine::CreateMediaPlayer()
 
 	mediaPlayer = NewObject<UIMediaPlayer>();
 
-	MediaPlayer = RtcEngineProxyClassWrapper::createMediaPlayer();
+	MediaPlayer = RtcEngineProxyClassWrapper::GetInstance()->createMediaPlayer();
 
 	mediaPlayer->SetMediaPlayer(MediaPlayer);
 
@@ -833,191 +833,191 @@ UIMediaPlayer* UAgoraRtcEngine::CreateMediaPlayer()
 }
 int UAgoraRtcEngine::DestroyMediaPlayer(UIMediaPlayer* media_player)
 {
-	auto ret = RtcEngineProxyClassWrapper::destroyMediaPlayer(media_player->GetMediaPlayer());
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->destroyMediaPlayer(media_player->GetMediaPlayer());
 	return ret;
 }
 int UAgoraRtcEngine::StartAudioMixing(FString filePath, bool loopback, int cycle, int startPos)
 {
 	std::string FilePath = TCHAR_TO_ANSI(*filePath);
-	auto ret = RtcEngineProxyClassWrapper::startAudioMixing(FilePath.c_str(), loopback, cycle, startPos);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->startAudioMixing(FilePath.c_str(), loopback, cycle, startPos);
 	return ret;
 }
 int UAgoraRtcEngine::PauseAudioMixing()
 {
-	auto ret = RtcEngineProxyClassWrapper::pauseAudioMixing();
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->pauseAudioMixing();
 	return ret;
 }
 int UAgoraRtcEngine::ResumeAudioMixing()
 {
-	auto ret = RtcEngineProxyClassWrapper::resumeAudioMixing();
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->resumeAudioMixing();
 	return ret;
 }
 int UAgoraRtcEngine::SelectAudioTrack(int index)
 {
-	auto ret = RtcEngineProxyClassWrapper::selectAudioTrack(index);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->selectAudioTrack(index);
 	return ret;
 }
 int UAgoraRtcEngine::GetAudioTrackCount()
 {
-	auto ret = RtcEngineProxyClassWrapper::getAudioTrackCount();
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->getAudioTrackCount();
 	return ret;
 }
 int UAgoraRtcEngine::AdjustAudioMixingVolume(int volume)
 {
-	auto ret = RtcEngineProxyClassWrapper::adjustAudioMixingVolume(volume);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->adjustAudioMixingVolume(volume);
 	return ret;
 }
 int UAgoraRtcEngine::AdjustAudioMixingPublishVolume(int volume)
 {
-	auto ret = RtcEngineProxyClassWrapper::adjustAudioMixingPublishVolume(volume);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->adjustAudioMixingPublishVolume(volume);
 	return ret;
 }
 int UAgoraRtcEngine::GetAudioMixingPublishVolume()
 {
-	auto ret = RtcEngineProxyClassWrapper::getAudioMixingPublishVolume();
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->getAudioMixingPublishVolume();
 	return ret;
 }
 int UAgoraRtcEngine::AdjustAudioMixingPlayoutVolume(int volume)
 {
-	auto ret = RtcEngineProxyClassWrapper::adjustAudioMixingPlayoutVolume(volume);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->adjustAudioMixingPlayoutVolume(volume);
 	return ret;
 }
 int UAgoraRtcEngine::GetAudioMixingPlayoutVolume()
 {
-	auto ret = RtcEngineProxyClassWrapper::getAudioMixingPlayoutVolume();
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->getAudioMixingPlayoutVolume();
 	return ret;
 }
 int UAgoraRtcEngine::GetAudioMixingDuration()
 {
-	auto ret = RtcEngineProxyClassWrapper::getAudioMixingDuration();
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->getAudioMixingDuration();
 	return ret;
 }
 int UAgoraRtcEngine::GetAudioMixingCurrentPosition()
 {
-	auto ret = RtcEngineProxyClassWrapper::getAudioMixingCurrentPosition();
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->getAudioMixingCurrentPosition();
 	return ret;
 }
 int UAgoraRtcEngine::SetAudioMixingPosition(int pos)
 {
-	auto ret = RtcEngineProxyClassWrapper::setAudioMixingPosition(pos);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->setAudioMixingPosition(pos);
 	return ret;
 }
 int UAgoraRtcEngine::SetAudioMixingDualMonoMode(EAUDIO_MIXING_DUAL_MONO_MODE mode)
 {
-	auto ret = RtcEngineProxyClassWrapper::setAudioMixingDualMonoMode((agora::media::AUDIO_MIXING_DUAL_MONO_MODE)mode);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->setAudioMixingDualMonoMode((agora::media::AUDIO_MIXING_DUAL_MONO_MODE)mode);
 	return ret;
 }
 int UAgoraRtcEngine::SetAudioMixingPitch(int pitch)
 {
-	auto ret = RtcEngineProxyClassWrapper::setAudioMixingPitch(pitch);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->setAudioMixingPitch(pitch);
 	return ret;
 }
 int UAgoraRtcEngine::GetEffectsVolume()
 {
-	auto ret = RtcEngineProxyClassWrapper::getEffectsVolume();
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->getEffectsVolume();
 	return ret;
 }
 int UAgoraRtcEngine::SetEffectsVolume(int volume)
 {
-	auto ret = RtcEngineProxyClassWrapper::setEffectsVolume(volume);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->setEffectsVolume(volume);
 	return ret;
 }
 int UAgoraRtcEngine::PreloadEffect(int soundId, FString filePath, int startPos)
 {
 	std::string FilePath = TCHAR_TO_ANSI(*filePath);
-	auto ret = RtcEngineProxyClassWrapper::preloadEffect(soundId, FilePath.c_str(), startPos);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->preloadEffect(soundId, FilePath.c_str(), startPos);
 	return ret;
 }
 int UAgoraRtcEngine::PlayEffect(int soundId, FString filePath, int loopCount, float pitch, float pan, int gain, bool publish, int startPos)
 {
 	std::string FilePath = TCHAR_TO_ANSI(*filePath);
-	auto ret = RtcEngineProxyClassWrapper::playEffect(soundId, FilePath.c_str(), loopCount, pitch, pan, gain, publish, startPos);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->playEffect(soundId, FilePath.c_str(), loopCount, pitch, pan, gain, publish, startPos);
 	return ret;
 }
 int UAgoraRtcEngine::PlayAllEffects(int loopCount, float pitch, float pan, int gain, bool publish)
 {
-	auto ret = RtcEngineProxyClassWrapper::playAllEffects(loopCount, pitch, pan, gain, publish);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->playAllEffects(loopCount, pitch, pan, gain, publish);
 	return ret;
 }
 int UAgoraRtcEngine::GetVolumeOfEffect(int soundId)
 {
-	auto ret = RtcEngineProxyClassWrapper::getVolumeOfEffect(soundId);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->getVolumeOfEffect(soundId);
 	return ret;
 }
 int UAgoraRtcEngine::SetVolumeOfEffect(int soundId, int volume)
 {
-	auto ret = RtcEngineProxyClassWrapper::setVolumeOfEffect(soundId, volume);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->setVolumeOfEffect(soundId, volume);
 	return ret;
 }
 int UAgoraRtcEngine::PauseEffect(int soundId)
 {
-	auto ret = RtcEngineProxyClassWrapper::pauseEffect(soundId);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->pauseEffect(soundId);
 	return ret;
 }
 int UAgoraRtcEngine::PauseAllEffects()
 {
-	auto ret = RtcEngineProxyClassWrapper::pauseAllEffects();
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->pauseAllEffects();
 	return ret;
 }
 int UAgoraRtcEngine::ResumeEffect(int soundId)
 {
-	auto ret = RtcEngineProxyClassWrapper::resumeEffect(soundId);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->resumeEffect(soundId);
 	return ret;
 }
 int UAgoraRtcEngine::ResumeAllEffects()
 {
-	auto ret = RtcEngineProxyClassWrapper::resumeAllEffects();
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->resumeAllEffects();
 	return ret;
 }
 int UAgoraRtcEngine::StopEffect(int soundId)
 {
-	auto ret = RtcEngineProxyClassWrapper::stopEffect(soundId);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->stopEffect(soundId);
 	return ret;
 }
 int UAgoraRtcEngine::StopAllEffects()
 {
-	auto ret = RtcEngineProxyClassWrapper::stopAllEffects();
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->stopAllEffects();
 	return ret;
 }
 int UAgoraRtcEngine::UnloadEffect(int soundId)
 {
-	auto ret = RtcEngineProxyClassWrapper::unloadEffect(soundId);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->unloadEffect(soundId);
 	return ret;
 }
 int UAgoraRtcEngine::UnloadAllEffects()
 {
-	auto ret = RtcEngineProxyClassWrapper::unloadAllEffects();
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->unloadAllEffects();
 	return ret;
 }
 int UAgoraRtcEngine::GetEffectDuration(FString filePath)
 {
 	std::string FilePath = TCHAR_TO_ANSI(*filePath);
-	auto ret = RtcEngineProxyClassWrapper::getEffectDuration(FilePath.c_str());
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->getEffectDuration(FilePath.c_str());
 	return ret;
 }
 int UAgoraRtcEngine::SetEffectPosition(int soundId, int pos)
 {
-	auto ret = RtcEngineProxyClassWrapper::setEffectPosition(soundId, pos);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->setEffectPosition(soundId, pos);
 	return ret;
 }
 int UAgoraRtcEngine::GetEffectCurrentPosition(int soundId)
 {
-	auto ret = RtcEngineProxyClassWrapper::getEffectCurrentPosition(soundId);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->getEffectCurrentPosition(soundId);
 	return ret;
 }
 int UAgoraRtcEngine::EnableSoundPositionIndication(bool enabled)
 {
-	auto ret = RtcEngineProxyClassWrapper::enableSoundPositionIndication(enabled);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->enableSoundPositionIndication(enabled);
 	return ret;
 }
 int UAgoraRtcEngine::SetRemoteVoicePosition(int64 uid, float pan, float gain)
 {
-	auto ret = RtcEngineProxyClassWrapper::setRemoteVoicePosition(uid, pan, gain);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->setRemoteVoicePosition(uid, pan, gain);
 	return ret;
 }
 int UAgoraRtcEngine::EnableSpatialAudio(bool enabled)
 {
-	auto ret = RtcEngineProxyClassWrapper::enableSpatialAudio(enabled);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->enableSpatialAudio(enabled);
 	return ret;
 }
 int UAgoraRtcEngine::SetRemoteUserSpatialAudioParams(int64 uid, const FSpatialAudioParams& params)
@@ -1056,95 +1056,95 @@ int UAgoraRtcEngine::SetRemoteUserSpatialAudioParams(int64 uid, const FSpatialAu
 		spatialAudioParams.enable_doppler = params.enable_doppler;
 	}
 
-	auto ret = RtcEngineProxyClassWrapper::setRemoteUserSpatialAudioParams(uid, spatialAudioParams);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->setRemoteUserSpatialAudioParams(uid, spatialAudioParams);
 	return ret;
 }
 int UAgoraRtcEngine::SetVoiceBeautifierPreset(EVOICE_BEAUTIFIER_PRESET preset)
 {
-	auto ret = RtcEngineProxyClassWrapper::setVoiceBeautifierPreset((agora::rtc::VOICE_BEAUTIFIER_PRESET)preset);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->setVoiceBeautifierPreset((agora::rtc::VOICE_BEAUTIFIER_PRESET)preset);
 	return ret;
 }
 int UAgoraRtcEngine::SetAudioEffectPreset(EAUDIO_EFFECT_PRESET preset)
 {
-	auto ret = RtcEngineProxyClassWrapper::setAudioEffectPreset((agora::rtc::AUDIO_EFFECT_PRESET)preset);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->setAudioEffectPreset((agora::rtc::AUDIO_EFFECT_PRESET)preset);
 	return ret;
 }
 int UAgoraRtcEngine::SetVoiceConversionPreset(EVOICE_CONVERSION_PRESET preset)
 {
-	auto ret = RtcEngineProxyClassWrapper::setVoiceConversionPreset((agora::rtc::VOICE_CONVERSION_PRESET)preset);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->setVoiceConversionPreset((agora::rtc::VOICE_CONVERSION_PRESET)preset);
 	return ret;
 }
 int UAgoraRtcEngine::SetAudioEffectParameters(EAUDIO_EFFECT_PRESET preset, int param1, int param2)
 {
-	auto ret = RtcEngineProxyClassWrapper::setAudioEffectParameters((agora::rtc::AUDIO_EFFECT_PRESET)preset, param1, param2);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->setAudioEffectParameters((agora::rtc::AUDIO_EFFECT_PRESET)preset, param1, param2);
 	return ret;
 }
 int UAgoraRtcEngine::SetVoiceBeautifierParameters(EVOICE_BEAUTIFIER_PRESET preset, int param1, int param2)
 {
-	auto ret = RtcEngineProxyClassWrapper::setVoiceBeautifierParameters((agora::rtc::VOICE_BEAUTIFIER_PRESET)preset, param1, param2);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->setVoiceBeautifierParameters((agora::rtc::VOICE_BEAUTIFIER_PRESET)preset, param1, param2);
 	return ret;
 }
 int UAgoraRtcEngine::SetVoiceConversionParameters(EVOICE_CONVERSION_PRESET preset, int param1, int param2)
 {
-	auto ret = RtcEngineProxyClassWrapper::setVoiceConversionParameters((agora::rtc::VOICE_CONVERSION_PRESET)preset, param1, param2);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->setVoiceConversionParameters((agora::rtc::VOICE_CONVERSION_PRESET)preset, param1, param2);
 	return ret;
 }
 int UAgoraRtcEngine::SetLocalVoicePitch(float pitch)
 {
-	auto ret = RtcEngineProxyClassWrapper::setLocalVoicePitch(pitch);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->setLocalVoicePitch(pitch);
 	return ret;
 }
 int UAgoraRtcEngine::SetLocalVoiceEqualization(EAUDIO_EQUALIZATION_BAND_FREQUENCY bandFrequency, int bandGain)
 {
-	auto ret = RtcEngineProxyClassWrapper::setLocalVoiceEqualization((agora::rtc::AUDIO_EQUALIZATION_BAND_FREQUENCY)bandFrequency, bandGain);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->setLocalVoiceEqualization((agora::rtc::AUDIO_EQUALIZATION_BAND_FREQUENCY)bandFrequency, bandGain);
 	return ret;
 }
 int UAgoraRtcEngine::SetLocalVoiceReverb(EAUDIO_REVERB_TYPE reverbKey, int value)
 {
-	auto ret = RtcEngineProxyClassWrapper::setLocalVoiceReverb((agora::rtc::AUDIO_REVERB_TYPE)reverbKey, value);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->setLocalVoiceReverb((agora::rtc::AUDIO_REVERB_TYPE)reverbKey, value);
 	return ret;
 }
 int UAgoraRtcEngine::SetLogFile(FString filePath)
 {
 	std::string FilePath = TCHAR_TO_ANSI(*filePath);
-	auto ret = RtcEngineProxyClassWrapper::setLogFile(FilePath.c_str());
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->setLogFile(FilePath.c_str());
 	return ret;
 }
 int UAgoraRtcEngine::SetLogFilter(int filter)
 {
-	auto ret = RtcEngineProxyClassWrapper::setLogFilter(filter);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->setLogFilter(filter);
 	return ret;
 }
 int UAgoraRtcEngine::SetLogLevel(ELOG_LEVEL level)
 {
-	auto ret = RtcEngineProxyClassWrapper::setLogLevel((agora::commons::LOG_LEVEL)level);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->setLogLevel((agora::commons::LOG_LEVEL)level);
 	return ret;
 }
 int UAgoraRtcEngine::SetLogFileSize(int fileSizeInKBytes)
 {
-	auto ret = RtcEngineProxyClassWrapper::setLogFileSize(fileSizeInKBytes);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->setLogFileSize(fileSizeInKBytes);
 	return ret;
 }
 int UAgoraRtcEngine::UploadLogFile(FString& requestId)
 {
 	agora::util::AString _requestId;
-	auto ret = RtcEngineProxyClassWrapper::uploadLogFile(_requestId);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->uploadLogFile(_requestId);
 	requestId = _requestId->c_str();
 	return ret;
 }
 int UAgoraRtcEngine::SetLocalRenderMode(ERENDER_MODE_TYPE renderMode, EVIDEO_MIRROR_MODE_TYPE mirrorMode)
 {
-	auto ret = RtcEngineProxyClassWrapper::setLocalRenderMode((agora::media::base::RENDER_MODE_TYPE)renderMode, (agora::rtc::VIDEO_MIRROR_MODE_TYPE)mirrorMode);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->setLocalRenderMode((agora::media::base::RENDER_MODE_TYPE)renderMode, (agora::rtc::VIDEO_MIRROR_MODE_TYPE)mirrorMode);
 	return ret;
 }
 int UAgoraRtcEngine::SetRemoteRenderMode(int64 uid, ERENDER_MODE_TYPE renderMode, EVIDEO_MIRROR_MODE_TYPE mirrorMode)
 {
-	auto ret = RtcEngineProxyClassWrapper::setRemoteRenderMode(uid, (agora::media::base::RENDER_MODE_TYPE)renderMode, (agora::rtc::VIDEO_MIRROR_MODE_TYPE)mirrorMode);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->setRemoteRenderMode(uid, (agora::media::base::RENDER_MODE_TYPE)renderMode, (agora::rtc::VIDEO_MIRROR_MODE_TYPE)mirrorMode);
 	return ret;
 }
 int UAgoraRtcEngine::SetLocalVideoMirrorMode(EVIDEO_MIRROR_MODE_TYPE mirrorMode)
 {
-	auto ret = RtcEngineProxyClassWrapper::setLocalVideoMirrorMode((agora::rtc::VIDEO_MIRROR_MODE_TYPE)mirrorMode);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->setLocalVideoMirrorMode((agora::rtc::VIDEO_MIRROR_MODE_TYPE)mirrorMode);
 	return ret;
 }
 
@@ -1157,7 +1157,7 @@ int UAgoraRtcEngine::EnableDualStreamMode(bool enabled, const FSimulcastStreamCo
 	simulcastStreamConfig.dimensions = dim;
 	simulcastStreamConfig.kBitrate = streamConfig.bitrate;
 	simulcastStreamConfig.framerate = streamConfig.framerate;
-	auto ret = RtcEngineProxyClassWrapper::enableDualStreamMode(enabled, simulcastStreamConfig);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->enableDualStreamMode(enabled, simulcastStreamConfig);
 	return ret;
 }
 int UAgoraRtcEngine::SetDualStreamMode(ESIMULCAST_STREAM_MODE mode, const FSimulcastStreamConfig& streamConfig)
@@ -1169,20 +1169,20 @@ int UAgoraRtcEngine::SetDualStreamMode(ESIMULCAST_STREAM_MODE mode, const FSimul
 	simulcastStreamConfig.dimensions = dim;
 	simulcastStreamConfig.kBitrate = streamConfig.bitrate;
 	simulcastStreamConfig.framerate = streamConfig.framerate;
-	auto ret = RtcEngineProxyClassWrapper::setDualStreamMode((agora::rtc::SIMULCAST_STREAM_MODE)mode, simulcastStreamConfig);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->setDualStreamMode((agora::rtc::SIMULCAST_STREAM_MODE)mode, simulcastStreamConfig);
 	return ret;
 }
 
 
 int UAgoraRtcEngine::EnableEchoCancellationExternal(bool enabled, int audioSourceDelay)
 {
-	auto ret = RtcEngineProxyClassWrapper::enableEchoCancellationExternal(enabled, audioSourceDelay);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->enableEchoCancellationExternal(enabled, audioSourceDelay);
 	return ret;
 }
 
 int UAgoraRtcEngine::EnableCustomAudioLocalPlayback(int sourceId, bool enabled)
 {
-	auto ret = RtcEngineProxyClassWrapper::enableCustomAudioLocalPlayback(sourceId, enabled);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->enableCustomAudioLocalPlayback(sourceId, enabled);
 	return ret;
 }
 
@@ -1190,121 +1190,121 @@ int UAgoraRtcEngine::StartPrimaryCustomAudioTrack(const FAudioTrackConfig& confi
 {
 	agora::rtc::AudioTrackConfig audioTrackConfig;
 	audioTrackConfig.enableLocalPlayback = config.enableLocalPlayback;
-	auto ret = RtcEngineProxyClassWrapper::startPrimaryCustomAudioTrack(audioTrackConfig);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->startPrimaryCustomAudioTrack(audioTrackConfig);
 	return ret;
 }
 int UAgoraRtcEngine::StopPrimaryCustomAudioTrack()
 {
-	auto ret = RtcEngineProxyClassWrapper::stopPrimaryCustomAudioTrack();
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->stopPrimaryCustomAudioTrack();
 	return ret;
 }
 int UAgoraRtcEngine::StartSecondaryCustomAudioTrack(const FAudioTrackConfig& config)
 {
 	agora::rtc::AudioTrackConfig audioTrackConfig;
 	audioTrackConfig.enableLocalPlayback = config.enableLocalPlayback;
-	auto ret = RtcEngineProxyClassWrapper::startSecondaryCustomAudioTrack(audioTrackConfig);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->startSecondaryCustomAudioTrack(audioTrackConfig);
 	return ret;
 }
 int UAgoraRtcEngine::StopSecondaryCustomAudioTrack()
 {
-	auto ret = RtcEngineProxyClassWrapper::stopSecondaryCustomAudioTrack();
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->stopSecondaryCustomAudioTrack();
 	return ret;
 }
 int UAgoraRtcEngine::SetRecordingAudioFrameParameters(int sampleRate, int channel, ERAW_AUDIO_FRAME_OP_MODE_TYPE mode, int samplesPerCall)
 {
-	auto ret = RtcEngineProxyClassWrapper::setRecordingAudioFrameParameters(sampleRate, channel, (agora::rtc::RAW_AUDIO_FRAME_OP_MODE_TYPE)mode, samplesPerCall);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->setRecordingAudioFrameParameters(sampleRate, channel, (agora::rtc::RAW_AUDIO_FRAME_OP_MODE_TYPE)mode, samplesPerCall);
 	return ret;
 }
 int UAgoraRtcEngine::SetPlaybackAudioFrameParameters(int sampleRate, int channel, ERAW_AUDIO_FRAME_OP_MODE_TYPE mode, int samplesPerCall)
 {
-	auto ret = RtcEngineProxyClassWrapper::setPlaybackAudioFrameParameters(sampleRate, channel, (agora::rtc::RAW_AUDIO_FRAME_OP_MODE_TYPE)mode, samplesPerCall);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->setPlaybackAudioFrameParameters(sampleRate, channel, (agora::rtc::RAW_AUDIO_FRAME_OP_MODE_TYPE)mode, samplesPerCall);
 	return ret;
 }
 int UAgoraRtcEngine::SetMixedAudioFrameParameters(int sampleRate, int channel, int samplesPerCall)
 {
-	auto ret = RtcEngineProxyClassWrapper::setMixedAudioFrameParameters(sampleRate, channel, samplesPerCall);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->setMixedAudioFrameParameters(sampleRate, channel, samplesPerCall);
 	return ret;
 }
 int UAgoraRtcEngine::SetPlaybackAudioFrameBeforeMixingParameters(int sampleRate, int channel)
 {
-	auto ret = RtcEngineProxyClassWrapper::setPlaybackAudioFrameBeforeMixingParameters(sampleRate, channel);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->setPlaybackAudioFrameBeforeMixingParameters(sampleRate, channel);
 	return ret;
 }
 int UAgoraRtcEngine::EnableAudioSpectrumMonitor(int intervalInMS)
 {
-	auto ret = RtcEngineProxyClassWrapper::enableAudioSpectrumMonitor(intervalInMS);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->enableAudioSpectrumMonitor(intervalInMS);
 	return ret;
 }
 int UAgoraRtcEngine::DisableAudioSpectrumMonitor()
 {
-	auto ret = RtcEngineProxyClassWrapper::disableAudioSpectrumMonitor();
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->disableAudioSpectrumMonitor();
 	return ret;
 }
 
 int UAgoraRtcEngine::RegisterAudioSpectrumObserver(UIAudioSpectrumObserver* observer)
 {
-	auto ret = RtcEngineProxyClassWrapper::registerAudioSpectrumObserver(observer);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->registerAudioSpectrumObserver(observer);
 	return ret;
 }
 int UAgoraRtcEngine::UnregisterAudioSpectrumObserver(UIAudioSpectrumObserver* observer)
 {
-	auto ret = RtcEngineProxyClassWrapper::unregisterAudioSpectrumObserver(observer);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->unregisterAudioSpectrumObserver(observer);
 	return ret;
 }
 int UAgoraRtcEngine::AdjustRecordingSignalVolume(int volume)
 {
-	auto ret = RtcEngineProxyClassWrapper::adjustRecordingSignalVolume(volume);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->adjustRecordingSignalVolume(volume);
 	return ret;
 }
 int UAgoraRtcEngine::MuteRecordingSignal(bool mute)
 {
-	auto ret = RtcEngineProxyClassWrapper::muteRecordingSignal(mute);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->muteRecordingSignal(mute);
 	return ret;
 }
 int UAgoraRtcEngine::AdjustPlaybackSignalVolume(int volume)
 {
-	auto ret = RtcEngineProxyClassWrapper::adjustPlaybackSignalVolume(volume);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->adjustPlaybackSignalVolume(volume);
 	return ret;
 }
 int UAgoraRtcEngine::AdjustUserPlaybackSignalVolume(int uid, int volume)
 {
-	auto ret = RtcEngineProxyClassWrapper::adjustUserPlaybackSignalVolume(uid, volume);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->adjustUserPlaybackSignalVolume(uid, volume);
 	return ret;
 }
 int UAgoraRtcEngine::SetLocalPublishFallbackOption(ESTREAM_FALLBACK_OPTIONS option)
 {
-	auto ret = RtcEngineProxyClassWrapper::setLocalPublishFallbackOption((agora::rtc::STREAM_FALLBACK_OPTIONS)option);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->setLocalPublishFallbackOption((agora::rtc::STREAM_FALLBACK_OPTIONS)option);
 	return ret;
 }
 int UAgoraRtcEngine::SetRemoteSubscribeFallbackOption(ESTREAM_FALLBACK_OPTIONS option)
 {
-	auto ret = RtcEngineProxyClassWrapper::setRemoteSubscribeFallbackOption((agora::rtc::STREAM_FALLBACK_OPTIONS)option);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->setRemoteSubscribeFallbackOption((agora::rtc::STREAM_FALLBACK_OPTIONS)option);
 	return ret;
 }
 int UAgoraRtcEngine::EnableLoopbackRecording(bool enabled, FString deviceName)
 {
 	std::string Device = TCHAR_TO_ANSI(*deviceName);
-	auto ret = RtcEngineProxyClassWrapper::enableLoopbackRecording(enabled, Device.c_str());
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->enableLoopbackRecording(enabled, Device.c_str());
 	return ret;
 }
 int UAgoraRtcEngine::AdjustLoopbackSignalVolume(int volume)
 {
-	auto ret = RtcEngineProxyClassWrapper::adjustLoopbackSignalVolume(volume);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->adjustLoopbackSignalVolume(volume);
 	return ret;
 }
 int UAgoraRtcEngine::GetLoopbackRecordingVolume()
 {
-	auto ret = RtcEngineProxyClassWrapper::getLoopbackRecordingVolume();
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->getLoopbackRecordingVolume();
 	return ret;
 }
 int UAgoraRtcEngine::EnableInEarMonitoring(bool enabled, int includeAudioFilters)
 {
-	auto ret = RtcEngineProxyClassWrapper::enableInEarMonitoring(enabled, includeAudioFilters);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->enableInEarMonitoring(enabled, includeAudioFilters);
 	return ret;
 }
 int UAgoraRtcEngine::SetInEarMonitoringVolume(int volume)
 {
-	auto ret = RtcEngineProxyClassWrapper::setInEarMonitoringVolume(volume);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->setInEarMonitoringVolume(volume);
 	return ret;
 }
 int UAgoraRtcEngine::LoadExtensionProvider(FString path, bool unload_after_use)
@@ -1312,7 +1312,7 @@ int UAgoraRtcEngine::LoadExtensionProvider(FString path, bool unload_after_use)
 #if defined (_WIN32) || defined(__linux__) || defined(__ANDROID__)
 	std::string Path = TCHAR_TO_ANSI(*path);
 
-	auto ret = RtcEngineProxyClassWrapper::loadExtensionProvider(Path.c_str(), unload_after_use);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->loadExtensionProvider(Path.c_str(), unload_after_use);
 	return ret;
 #else
 	return -AGORA_UNREAL_PLUGIN_ERROR_CODE::ERROR_NULLPTR;
@@ -1324,14 +1324,14 @@ int UAgoraRtcEngine::SetExtensionProviderProperty(FString provider, FString key,
 	std::string Provider = TCHAR_TO_ANSI(*provider);
 	std::string Key = TCHAR_TO_ANSI(*key);
 	std::string Value = TCHAR_TO_ANSI(*value);
-	auto ret = RtcEngineProxyClassWrapper::setExtensionProviderProperty(Provider.c_str(), Key.c_str(), Value.c_str());
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->setExtensionProviderProperty(Provider.c_str(), Key.c_str(), Value.c_str());
 	return ret;
 }
 int UAgoraRtcEngine::EnableExtension(FString provider, FString extension, bool enable, EMEDIA_SOURCE_TYPE type)
 {
 	std::string Provider = TCHAR_TO_ANSI(*provider);
 	std::string Extension = TCHAR_TO_ANSI(*extension);
-	auto ret = RtcEngineProxyClassWrapper::enableExtension(Provider.c_str(), Extension.c_str(), enable, (agora::media::MEDIA_SOURCE_TYPE)type);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->enableExtension(Provider.c_str(), Extension.c_str(), enable, (agora::media::MEDIA_SOURCE_TYPE)type);
 	return ret;
 }
 int UAgoraRtcEngine::SetExtensionProperty(FString provider, FString extension, FString key, FString value, EMEDIA_SOURCE_TYPE type)
@@ -1340,7 +1340,7 @@ int UAgoraRtcEngine::SetExtensionProperty(FString provider, FString extension, F
 	std::string Extension = TCHAR_TO_ANSI(*extension);
 	std::string Key = TCHAR_TO_ANSI(*key);
 	std::string Value = TCHAR_TO_ANSI(*value);
-	auto ret = RtcEngineProxyClassWrapper::setExtensionProperty(Provider.c_str(), Extension.c_str(), Key.c_str(), Value.c_str(), (agora::media::MEDIA_SOURCE_TYPE)type);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->setExtensionProperty(Provider.c_str(), Extension.c_str(), Key.c_str(), Value.c_str(), (agora::media::MEDIA_SOURCE_TYPE)type);
 	return ret;
 }
 int UAgoraRtcEngine::GetExtensionProperty(FString provider, FString extension, FString key, FString & value, int buf_len, EMEDIA_SOURCE_TYPE type)
@@ -1349,7 +1349,7 @@ int UAgoraRtcEngine::GetExtensionProperty(FString provider, FString extension, F
 	std::string Extension = TCHAR_TO_ANSI(*extension);
 	std::string Key = TCHAR_TO_ANSI(*key);
 	char* val =  new char[buf_len];
-	auto ret = RtcEngineProxyClassWrapper::getExtensionProperty(Provider.c_str(), Extension.c_str(), Key.c_str(), val, buf_len, (agora::media::MEDIA_SOURCE_TYPE)type);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->getExtensionProperty(Provider.c_str(), Extension.c_str(), Key.c_str(), val, buf_len, (agora::media::MEDIA_SOURCE_TYPE)type);
 	value = UTF8_TO_TCHAR(val);
 	delete[] val;
 	return ret;
@@ -1368,12 +1368,12 @@ int UAgoraRtcEngine::SetCameraCapturerConfiguration(const FCameraCapturerConfigu
 	format.height = config.format.height;
 	cameraCapturerConfiguration.format = format;
 	cameraCapturerConfiguration.followEncodeDimensionRatio = config.followEncodeDimensionRatio;
-	auto ret = RtcEngineProxyClassWrapper::setCameraCapturerConfiguration(cameraCapturerConfiguration);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->setCameraCapturerConfiguration(cameraCapturerConfiguration);
 	return ret;
 }
 int64 UAgoraRtcEngine::CreateCustomVideoTrack()
 {
-	return RtcEngineProxyClassWrapper::createCustomVideoTrack();
+	return RtcEngineProxyClassWrapper::GetInstance()->createCustomVideoTrack();
 }
 int64 UAgoraRtcEngine::CreateCustomEncodedVideoTrack(const FSenderOptions& sender_option)
 {
@@ -1381,22 +1381,22 @@ int64 UAgoraRtcEngine::CreateCustomEncodedVideoTrack(const FSenderOptions& sende
 	senderOptions.ccMode = (agora::rtc::TCcMode)sender_option.ccMode;
 	senderOptions.codecType = (agora::rtc::VIDEO_CODEC_TYPE)sender_option.codecType;
 	senderOptions.targetBitrate = sender_option.targetBitrate;
-	return RtcEngineProxyClassWrapper::createCustomEncodedVideoTrack(senderOptions);
+	return RtcEngineProxyClassWrapper::GetInstance()->createCustomEncodedVideoTrack(senderOptions);
 }
 int UAgoraRtcEngine::DestroyCustomVideoTrack(int64 video_track_id)
 {
-	auto ret = RtcEngineProxyClassWrapper::destroyCustomVideoTrack(video_track_id);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->destroyCustomVideoTrack(video_track_id);
 	return ret;
 }
 int UAgoraRtcEngine::DestroyCustomEncodedVideoTrack(int64 video_track_id)
 {
-	auto ret = RtcEngineProxyClassWrapper::destroyCustomEncodedVideoTrack(video_track_id);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->destroyCustomEncodedVideoTrack(video_track_id);
 	return ret;
 }
 int UAgoraRtcEngine::SwitchCamera()
 {
 #if defined(__ANDROID__) || (defined(__APPLE__) && TARGET_OS_IOS)
-	return RtcEngineProxyClassWrapper::switchCamera();
+	return RtcEngineProxyClassWrapper::GetInstance()->switchCamera();
 #else
 	return -AGORA_UNREAL_PLUGIN_ERROR_CODE::ERROR_NULLPTR;
 #endif
@@ -1404,7 +1404,7 @@ int UAgoraRtcEngine::SwitchCamera()
 bool UAgoraRtcEngine::IsCameraZoomSupported()
 {
 #if defined(__ANDROID__) || (defined(__APPLE__) && TARGET_OS_IOS)
-	return RtcEngineProxyClassWrapper::isCameraZoomSupported();
+	return RtcEngineProxyClassWrapper::GetInstance()->isCameraZoomSupported();
 #else
 	return false;
 #endif
@@ -1412,7 +1412,7 @@ bool UAgoraRtcEngine::IsCameraZoomSupported()
 bool UAgoraRtcEngine::IsCameraFaceDetectSupported()
 {
 #if defined(__ANDROID__) || (defined(__APPLE__) && TARGET_OS_IOS)
-	return RtcEngineProxyClassWrapper::isCameraFaceDetectSupported();
+	return RtcEngineProxyClassWrapper::GetInstance()->isCameraFaceDetectSupported();
 #else
 	return false;
 #endif
@@ -1420,7 +1420,7 @@ bool UAgoraRtcEngine::IsCameraFaceDetectSupported()
 bool UAgoraRtcEngine::IsCameraTorchSupported()
 {
 #if defined(__ANDROID__) || (defined(__APPLE__) && TARGET_OS_IOS)
-	return RtcEngineProxyClassWrapper::isCameraTorchSupported();
+	return RtcEngineProxyClassWrapper::GetInstance()->isCameraTorchSupported();
 #else
 	return false;
 #endif
@@ -1428,7 +1428,7 @@ bool UAgoraRtcEngine::IsCameraTorchSupported()
 bool UAgoraRtcEngine::IsCameraFocusSupported()
 {
 #if defined(__ANDROID__) || (defined(__APPLE__) && TARGET_OS_IOS)
-	return RtcEngineProxyClassWrapper::isCameraFocusSupported();
+	return RtcEngineProxyClassWrapper::GetInstance()->isCameraFocusSupported();
 #else
 	return false;
 #endif
@@ -1436,7 +1436,7 @@ bool UAgoraRtcEngine::IsCameraFocusSupported()
 bool UAgoraRtcEngine::IsCameraAutoFocusFaceModeSupported()
 {
 #if defined(__ANDROID__) || (defined(__APPLE__) && TARGET_OS_IOS)
-	return RtcEngineProxyClassWrapper::isCameraAutoFocusFaceModeSupported();
+	return RtcEngineProxyClassWrapper::GetInstance()->isCameraAutoFocusFaceModeSupported();
 #else
 	return false;
 #endif
@@ -1444,7 +1444,7 @@ bool UAgoraRtcEngine::IsCameraAutoFocusFaceModeSupported()
 int UAgoraRtcEngine::SetCameraZoomFactor(float factor)
 {
 #if defined(__ANDROID__) || (defined(__APPLE__) && TARGET_OS_IOS)
-	auto ret = RtcEngineProxyClassWrapper::setCameraZoomFactor(factor);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->setCameraZoomFactor(factor);
 	return ret;
 #else
 	return -AGORA_UNREAL_PLUGIN_ERROR_CODE::ERROR_NULLPTR;
@@ -1453,7 +1453,7 @@ int UAgoraRtcEngine::SetCameraZoomFactor(float factor)
 int UAgoraRtcEngine::EnableFaceDetection(bool enabled)
 {
 #if defined(__ANDROID__) || (defined(__APPLE__) && TARGET_OS_IOS)
-	auto ret = RtcEngineProxyClassWrapper::enableFaceDetection(enabled);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->enableFaceDetection(enabled);
 	return ret;
 #else
 	return -AGORA_UNREAL_PLUGIN_ERROR_CODE::ERROR_NULLPTR;
@@ -1462,7 +1462,7 @@ int UAgoraRtcEngine::EnableFaceDetection(bool enabled)
 float UAgoraRtcEngine::GetCameraMaxZoomFactor()
 {
 #if defined(__ANDROID__) || (defined(__APPLE__) && TARGET_OS_IOS)
-	auto ret = RtcEngineProxyClassWrapper::getCameraMaxZoomFactor();
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->getCameraMaxZoomFactor();
 	return ret;
 #else
 	return -AGORA_UNREAL_PLUGIN_ERROR_CODE::ERROR_NULLPTR;
@@ -1471,7 +1471,7 @@ float UAgoraRtcEngine::GetCameraMaxZoomFactor()
 int UAgoraRtcEngine::SetCameraFocusPositionInPreview(float positionX, float positionY)
 {
 #if defined(__ANDROID__) || (defined(__APPLE__) && TARGET_OS_IOS)
-	auto ret = RtcEngineProxyClassWrapper::setCameraFocusPositionInPreview(positionX, positionY);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->setCameraFocusPositionInPreview(positionX, positionY);
 	return ret;
 #else
 	return -AGORA_UNREAL_PLUGIN_ERROR_CODE::ERROR_NULLPTR;
@@ -1480,7 +1480,7 @@ int UAgoraRtcEngine::SetCameraFocusPositionInPreview(float positionX, float posi
 int UAgoraRtcEngine::SetCameraTorchOn(bool isOn)
 {
 #if defined(__ANDROID__) || (defined(__APPLE__) && TARGET_OS_IOS)
-	auto ret = RtcEngineProxyClassWrapper::setCameraTorchOn(isOn);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->setCameraTorchOn(isOn);
 	return ret;
 #else
 	return -AGORA_UNREAL_PLUGIN_ERROR_CODE::ERROR_NULLPTR;
@@ -1489,7 +1489,7 @@ int UAgoraRtcEngine::SetCameraTorchOn(bool isOn)
 int UAgoraRtcEngine::SetCameraAutoFocusFaceModeEnabled(bool enabled)
 {
 #if defined(__ANDROID__) || (defined(__APPLE__) && TARGET_OS_IOS)
-	auto ret = RtcEngineProxyClassWrapper::setCameraAutoFocusFaceModeEnabled(enabled);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->setCameraAutoFocusFaceModeEnabled(enabled);
 	return ret;
 #else
 	return -AGORA_UNREAL_PLUGIN_ERROR_CODE::ERROR_NULLPTR;
@@ -1498,7 +1498,7 @@ int UAgoraRtcEngine::SetCameraAutoFocusFaceModeEnabled(bool enabled)
 bool UAgoraRtcEngine::IsCameraExposurePositionSupported()
 {
 #if defined(__ANDROID__) || (defined(__APPLE__) && TARGET_OS_IOS)
-	auto ret = RtcEngineProxyClassWrapper::isCameraExposurePositionSupported();
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->isCameraExposurePositionSupported();
 	return ret;
 #else
 	return false;
@@ -1507,7 +1507,7 @@ bool UAgoraRtcEngine::IsCameraExposurePositionSupported()
 int UAgoraRtcEngine::SetCameraExposurePosition(float positionXinView, float positionYinView)
 {
 #if defined(__ANDROID__) || (defined(__APPLE__) && TARGET_OS_IOS)
-	auto ret = RtcEngineProxyClassWrapper::setCameraExposurePosition(positionXinView, positionYinView);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->setCameraExposurePosition(positionXinView, positionYinView);
 	return ret;
 #else
 	return false;
@@ -1518,7 +1518,7 @@ bool UAgoraRtcEngine::IsCameraAutoExposureFaceModeSupported()
 {
 #if defined(__ANDROID__) || (defined(__APPLE__) && TARGET_OS_IOS)
 #if defined(__APPLE__)
-	return RtcEngineProxyClassWrapper::isCameraAutoExposureFaceModeSupported();
+	return RtcEngineProxyClassWrapper::GetInstance()->isCameraAutoExposureFaceModeSupported();
 #else
 	return false;
 #endif
@@ -1529,7 +1529,7 @@ int UAgoraRtcEngine::SetCameraAutoExposureFaceModeEnabled(bool enabled)
 {
 #if defined(__ANDROID__) || (defined(__APPLE__) && TARGET_OS_IOS)
 #if defined(__APPLE__)
-	auto ret = RtcEngineProxyClassWrapper::setCameraAutoExposureFaceModeEnabled(enabled);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->setCameraAutoExposureFaceModeEnabled(enabled);
 	return ret;
 #else
 	return -AGORA_UNREAL_PLUGIN_ERROR_CODE::ERROR_NULLPTR;
@@ -1540,7 +1540,7 @@ int UAgoraRtcEngine::SetCameraAutoExposureFaceModeEnabled(bool enabled)
 int UAgoraRtcEngine::SetDefaultAudioRouteToSpeakerphone(bool defaultToSpeaker)
 {
 #if defined(__ANDROID__)
-	auto ret = RtcEngineProxyClassWrapper::setDefaultAudioRouteToSpeakerphone(defaultToSpeaker);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->setDefaultAudioRouteToSpeakerphone(defaultToSpeaker);
 	return ret;
 #else
 	return -AGORA_UNREAL_PLUGIN_ERROR_CODE::ERROR_NULLPTR;
@@ -1549,7 +1549,7 @@ int UAgoraRtcEngine::SetDefaultAudioRouteToSpeakerphone(bool defaultToSpeaker)
 int UAgoraRtcEngine::SetEnableSpeakerphone(bool speakerOn)
 {
 #if defined(__ANDROID__)
-	auto ret = RtcEngineProxyClassWrapper::setEnableSpeakerphone(speakerOn);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->setEnableSpeakerphone(speakerOn);
 	return ret;
 #else
 	return -AGORA_UNREAL_PLUGIN_ERROR_CODE::ERROR_NULLPTR;
@@ -1558,7 +1558,7 @@ int UAgoraRtcEngine::SetEnableSpeakerphone(bool speakerOn)
 bool UAgoraRtcEngine::IsSpeakerphoneEnabled()
 {
 #if defined(__ANDROID__)
-	auto ret = RtcEngineProxyClassWrapper::isSpeakerphoneEnabled();
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->isSpeakerphoneEnabled();
 	return ret;
 #else
 	return false;
@@ -1588,7 +1588,7 @@ UIScreenCaptureSourceList* UAgoraRtcEngine::GetScreenCaptureSources(FSIZE thumbS
 	icon.height = iconSize.height;
 #endif
 #if defined(_WIN32) || (defined(__APPLE__) && TARGET_OS_MAC && !TARGET_OS_IPHONE)
-	agora::rtc::IScreenCaptureSourceList* screenCaptureNative = RtcEngineProxyClassWrapper::getScreenCaptureSources(thumb, icon, includeScreen);
+	agora::rtc::IScreenCaptureSourceList* screenCaptureNative = RtcEngineProxyClassWrapper::GetInstance()->getScreenCaptureSources(thumb, icon, includeScreen);
 	if (screenCaptureNative != nullptr)
 	{
 		screenCaptureSourceList->SetScreenCaptureList(screenCaptureNative);
@@ -1600,7 +1600,7 @@ UIScreenCaptureSourceList* UAgoraRtcEngine::GetScreenCaptureSources(FSIZE thumbS
 int UAgoraRtcEngine::SetAudioSessionOperationRestriction(EAUDIO_SESSION_OPERATION_RESTRICTION restriction)
 {
 #if (defined(__APPLE__) && TARGET_OS_IOS)
-	auto ret = RtcEngineProxyClassWrapper::setAudioSessionOperationRestriction((agora::AUDIO_SESSION_OPERATION_RESTRICTION)restriction);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->setAudioSessionOperationRestriction((agora::AUDIO_SESSION_OPERATION_RESTRICTION)restriction);
 	return ret;
 #else
 	return -AGORA_UNREAL_PLUGIN_ERROR_CODE::ERROR_NULLPTR;
@@ -1628,7 +1628,7 @@ int UAgoraRtcEngine::StartScreenCaptureByDisplayId(int displayId, const FRectang
 	screenCaptureParameters.highLightWidth = captureParams.highLightWidth;
 	screenCaptureParameters.highLightColor = captureParams.highLightColor;
 	screenCaptureParameters.enableHighLight = captureParams.enableHighLight;
-	auto ret = RtcEngineProxyClassWrapper::startScreenCaptureByDisplayId(displayId, rectangle, screenCaptureParameters);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->startScreenCaptureByDisplayId(displayId, rectangle, screenCaptureParameters);
 	return ret;
 #else
 	return -AGORA_UNREAL_PLUGIN_ERROR_CODE::ERROR_NULLPTR;
@@ -1657,7 +1657,7 @@ int UAgoraRtcEngine::StartScreenCaptureByScreenRect(const FRectangle& screenRect
 	screenCaptureParameters.highLightWidth = captureParams.highLightWidth;
 	screenCaptureParameters.highLightColor = captureParams.highLightColor;
 	screenCaptureParameters.enableHighLight = captureParams.enableHighLight;
-	auto ret = RtcEngineProxyClassWrapper::startScreenCaptureByScreenRect(rectangle, rectangle, screenCaptureParameters);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->startScreenCaptureByScreenRect(rectangle, rectangle, screenCaptureParameters);
 	return ret;
 #else
 	return -AGORA_UNREAL_PLUGIN_ERROR_CODE::ERROR_NULLPTR;
@@ -1667,7 +1667,7 @@ int UAgoraRtcEngine::GetAudioDeviceInfo(FDeviceInfo& deviceInfo)
 {
 #if defined(__ANDROID__)
 	agora::rtc::DeviceInfo Info;
-	auto ret = RtcEngineProxyClassWrapper::getAudioDeviceInfo(Info);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->getAudioDeviceInfo(Info);
 	if(ret == 0){
 		deviceInfo.isLowLatencyAudioSupported = Info.isLowLatencyAudioSupported;
 	}
@@ -1699,7 +1699,7 @@ int UAgoraRtcEngine::StartScreenCaptureByWindowId(int64 windowId, const FRectang
 	screenCaptureParameters.highLightWidth = captureParams.highLightWidth;
 	screenCaptureParameters.highLightColor = captureParams.highLightColor;
 	screenCaptureParameters.enableHighLight = captureParams.enableHighLight;
-	auto ret = RtcEngineProxyClassWrapper::startScreenCaptureByWindowId((agora::view_t)windowId, rectangle, screenCaptureParameters);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->startScreenCaptureByWindowId((agora::view_t)windowId, rectangle, screenCaptureParameters);
 	return ret;
 #else
 	return -AGORA_UNREAL_PLUGIN_ERROR_CODE::ERROR_NULLPTR;
@@ -1708,7 +1708,7 @@ int UAgoraRtcEngine::StartScreenCaptureByWindowId(int64 windowId, const FRectang
 int UAgoraRtcEngine::SetScreenCaptureContentHint(EVIDEO_CONTENT_HINT contentHint)
 {
 #if defined(_WIN32) || (defined(__APPLE__) && TARGET_OS_MAC && !TARGET_OS_IPHONE)
-	auto ret = RtcEngineProxyClassWrapper::setScreenCaptureContentHint((agora::rtc::VIDEO_CONTENT_HINT)contentHint);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->setScreenCaptureContentHint((agora::rtc::VIDEO_CONTENT_HINT)contentHint);
 	return ret;
 #else
 	return -AGORA_UNREAL_PLUGIN_ERROR_CODE::ERROR_NULLPTR;
@@ -1719,7 +1719,7 @@ int UAgoraRtcEngine::SetScreenCaptureContentHint(EVIDEO_CONTENT_HINT contentHint
 int UAgoraRtcEngine::SetScreenCaptureScenario(ESCREEN_SCENARIO_TYPE screenScenario)
 {
 #if defined(_WIN32) || (defined(__APPLE__) && TARGET_OS_MAC && !TARGET_OS_IPHONE)
-	auto ret = RtcEngineProxyClassWrapper::setScreenCaptureScenario((agora::rtc::SCREEN_SCENARIO_TYPE)screenScenario);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->setScreenCaptureScenario((agora::rtc::SCREEN_SCENARIO_TYPE)screenScenario);
 	return ret;
 #else
 	return -AGORA_UNREAL_PLUGIN_ERROR_CODE::ERROR_NULLPTR;
@@ -1734,7 +1734,7 @@ int UAgoraRtcEngine::UpdateScreenCaptureRegion(const FRectangle& regionRect)
 	rectangle.y = regionRect.y;
 	rectangle.width = regionRect.width;
 	rectangle.height = regionRect.height;
-	auto ret = RtcEngineProxyClassWrapper::updateScreenCaptureRegion(rectangle);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->updateScreenCaptureRegion(rectangle);
 	return ret;
 #else
 	return -AGORA_UNREAL_PLUGIN_ERROR_CODE::ERROR_NULLPTR;
@@ -1757,7 +1757,7 @@ int UAgoraRtcEngine::UpdateScreenCaptureParameters(const FScreenCaptureParameter
 	screenCaptureParameters.highLightWidth = captureParams.highLightWidth;
 	screenCaptureParameters.highLightColor = captureParams.highLightColor;
 	screenCaptureParameters.enableHighLight = captureParams.enableHighLight;
-	auto ret = RtcEngineProxyClassWrapper::updateScreenCaptureParameters(screenCaptureParameters);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->updateScreenCaptureParameters(screenCaptureParameters);
 	return ret;
 #else
 	return -AGORA_UNREAL_PLUGIN_ERROR_CODE::ERROR_NULLPTR;
@@ -1777,7 +1777,7 @@ int UAgoraRtcEngine::StartScreenCapture(const FScreenCaptureParameters2& capture
 	screenCaptureParameters2.videoParams.dimensions.height = captureParams.videoParams.dimensions.height;
 	screenCaptureParameters2.videoParams.dimensions.width = captureParams.videoParams.dimensions.width;
 	screenCaptureParameters2.videoParams.frameRate = captureParams.videoParams.frameRate;
-	auto ret = RtcEngineProxyClassWrapper::startScreenCapture(screenCaptureParameters2);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->startScreenCapture(screenCaptureParameters2);
 	return ret;
 #else
 	return -AGORA_UNREAL_PLUGIN_ERROR_CODE::ERROR_NULLPTR;
@@ -1800,7 +1800,7 @@ int UAgoraRtcEngine::UpdateScreenCapture(const FScreenCaptureParameters2& captur
 	screenCaptureParameters2.videoParams.dimensions.height = captureParams.videoParams.dimensions.height;
 	screenCaptureParameters2.videoParams.dimensions.width = captureParams.videoParams.dimensions.width;
 	screenCaptureParameters2.videoParams.frameRate = captureParams.videoParams.frameRate;
-	auto ret = RtcEngineProxyClassWrapper::updateScreenCapture(screenCaptureParameters2);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->updateScreenCapture(screenCaptureParameters2);
 	return ret;
 #else
 	return -AGORA_UNREAL_PLUGIN_ERROR_CODE::ERROR_NULLPTR;
@@ -1810,7 +1810,7 @@ int UAgoraRtcEngine::UpdateScreenCapture(const FScreenCaptureParameters2& captur
 int UAgoraRtcEngine::StopScreenCapture()
 {
 #if defined(_WIN32) || defined(__APPLE__) || defined(__ANDROID__)
-	auto ret = RtcEngineProxyClassWrapper::stopScreenCapture();
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->stopScreenCapture();
 	return ret;
 #else
 	return -AGORA_UNREAL_PLUGIN_ERROR_CODE::ERROR_NULLPTR;
@@ -1821,7 +1821,7 @@ int UAgoraRtcEngine::GetCallId(FString& callId)
 {
 	agora::util::AString agoraStr;
 
-	auto ret = RtcEngineProxyClassWrapper::getCallId(agoraStr);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->getCallId(agoraStr);
 
 	callId = agoraStr->c_str();
 
@@ -1830,21 +1830,21 @@ int UAgoraRtcEngine::GetCallId(FString& callId)
 int UAgoraRtcEngine::Rate(FString callId, int rating, FString description)
 {
 	std::string CallId = TCHAR_TO_ANSI(*callId);
-	auto ret = RtcEngineProxyClassWrapper::rate(CallId.c_str(), rating, TCHAR_TO_ANSI(*description));
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->rate(CallId.c_str(), rating, TCHAR_TO_ANSI(*description));
 	return ret;
 }
 int UAgoraRtcEngine::Complain(FString callId, FString description)
 {
 	std::string CallId = TCHAR_TO_ANSI(*callId);
 	std::string Description = TCHAR_TO_ANSI(*description);
-	auto ret = RtcEngineProxyClassWrapper::complain(CallId.c_str(), Description.c_str());
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->complain(CallId.c_str(), Description.c_str());
 	return ret;
 }
 int UAgoraRtcEngine::StartRtmpStreamWithoutTranscoding(FString url)
 {
 	std::string Url = TCHAR_TO_ANSI(*url);
 
-	auto ret = RtcEngineProxyClassWrapper::startRtmpStreamWithoutTranscoding(Url.c_str());
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->startRtmpStreamWithoutTranscoding(Url.c_str());
 	return ret;
 }
 int UAgoraRtcEngine::StartRtmpStreamWithTranscoding(FString url, FLiveTranscoding& transcoding)
@@ -1932,7 +1932,7 @@ int UAgoraRtcEngine::StartRtmpStreamWithTranscoding(FString url, FLiveTranscodin
 	liveTranscoding.advancedFeatures = feature;
 	liveTranscoding.advancedFeatureCount = transcoding.advancedFeatureCount;
 	std::string TempUrl = TCHAR_TO_ANSI(*url);
-	auto ret = RtcEngineProxyClassWrapper::startRtmpStreamWithTranscoding(TempUrl.c_str(), liveTranscoding);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->startRtmpStreamWithTranscoding(TempUrl.c_str(), liveTranscoding);
 	delete[] trans;
 	delete[] image;
 	delete[] bgImage;
@@ -2023,7 +2023,7 @@ int UAgoraRtcEngine::UpdateRtmpTranscoding(FLiveTranscoding& transcoding)
 	}
 	liveTranscoding.advancedFeatures = feature;
 	liveTranscoding.advancedFeatureCount = transcoding.advancedFeatureCount;
-	auto ret = RtcEngineProxyClassWrapper::updateRtmpTranscoding(liveTranscoding);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->updateRtmpTranscoding(liveTranscoding);
 	delete[] trans;
 	delete[] image;
 	delete[] bgImage;
@@ -2033,7 +2033,7 @@ int UAgoraRtcEngine::UpdateRtmpTranscoding(FLiveTranscoding& transcoding)
 }
 int UAgoraRtcEngine::StopRtmpStream(FString url)
 {
-	auto ret = RtcEngineProxyClassWrapper::stopRtmpStream(TCHAR_TO_ANSI(*url));
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->stopRtmpStream(TCHAR_TO_ANSI(*url));
 	return ret;
 }
 
@@ -2113,12 +2113,12 @@ int UAgoraRtcEngine::UpdateLocalTranscoderConfiguration(const FLocalTranscoderCo
 	Configration.orientationMode = (agora::rtc::ORIENTATION_MODE)config.videoOutputConfiguration.orientationMode;
 	localTranscoderConfiguration.videoOutputConfiguration = Configration;
 	delete[] videoStream;
-	auto ret = RtcEngineProxyClassWrapper::updateLocalTranscoderConfiguration(localTranscoderConfiguration);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->updateLocalTranscoderConfiguration(localTranscoderConfiguration);
 	return ret;
 }
 int UAgoraRtcEngine::StopLocalVideoTranscoder()
 {
-	auto ret = RtcEngineProxyClassWrapper::stopLocalVideoTranscoder();
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->stopLocalVideoTranscoder();
 	return ret;
 }
 int UAgoraRtcEngine::StartPrimaryCameraCapture(const FCameraCapturerConfiguration& config)
@@ -2135,7 +2135,7 @@ int UAgoraRtcEngine::StartPrimaryCameraCapture(const FCameraCapturerConfiguratio
 	sprintf(cameraCapturerConfiguration.deviceId, "%s", TCHAR_TO_UTF8(*config.deviceId));
 #endif
 
-	auto ret = RtcEngineProxyClassWrapper::startPrimaryCameraCapture(cameraCapturerConfiguration);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->startPrimaryCameraCapture(cameraCapturerConfiguration);
 	return ret;
 }
 int UAgoraRtcEngine::StartSecondaryCameraCapture(const FCameraCapturerConfiguration& config)
@@ -2151,27 +2151,27 @@ int UAgoraRtcEngine::StartSecondaryCameraCapture(const FCameraCapturerConfigurat
 	sprintf(cameraCapturerConfiguration.deviceId, "%s", TCHAR_TO_UTF8(*config.deviceId));
 	//FMemory::Memcpy(cameraCapturerConfiguration.deviceId, *config.deviceId, agora::rtc::MAX_DEVICE_ID_LENGTH_TYPE::MAX_DEVICE_ID_LENGTH);
 #endif
-	auto ret = RtcEngineProxyClassWrapper::startSecondaryCameraCapture(cameraCapturerConfiguration);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->startSecondaryCameraCapture(cameraCapturerConfiguration);
 	return ret;
 }
 int UAgoraRtcEngine::StopPrimaryCameraCapture()
 {
-	auto ret = RtcEngineProxyClassWrapper::stopPrimaryCameraCapture();
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->stopPrimaryCameraCapture();
 	return ret;
 }
 int UAgoraRtcEngine::StopSecondaryCameraCapture()
 {
-	auto ret = RtcEngineProxyClassWrapper::stopSecondaryCameraCapture();
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->stopSecondaryCameraCapture();
 	return ret;
 }
 int UAgoraRtcEngine::SetCameraDeviceOrientation(EVIDEO_SOURCE_TYPE type, EVIDEO_ORIENTATION orientation)
 {
-	auto ret = RtcEngineProxyClassWrapper::setCameraDeviceOrientation((agora::rtc::VIDEO_SOURCE_TYPE)type, (agora::rtc::VIDEO_ORIENTATION)orientation);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->setCameraDeviceOrientation((agora::rtc::VIDEO_SOURCE_TYPE)type, (agora::rtc::VIDEO_ORIENTATION)orientation);
 	return ret;
 }
 int UAgoraRtcEngine::SetScreenCaptureOrientation(EVIDEO_SOURCE_TYPE type, EVIDEO_ORIENTATION orientation)
 {
-	auto ret = RtcEngineProxyClassWrapper::setScreenCaptureOrientation((agora::rtc::VIDEO_SOURCE_TYPE)type, (agora::rtc::VIDEO_ORIENTATION)orientation);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->setScreenCaptureOrientation((agora::rtc::VIDEO_SOURCE_TYPE)type, (agora::rtc::VIDEO_ORIENTATION)orientation);
 	return ret;
 }
 int UAgoraRtcEngine::StartPrimaryScreenCapture(const FScreenCaptureConfiguration& config)
@@ -2208,7 +2208,7 @@ int UAgoraRtcEngine::StartPrimaryScreenCapture(const FScreenCaptureConfiguration
 	tangle.x = config.regionRect.x;
 	tangle.y = config.regionRect.y;
 	screenCaptureConfiguration.regionRect = tangle;
-	auto ret = RtcEngineProxyClassWrapper::startPrimaryScreenCapture(screenCaptureConfiguration);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->startPrimaryScreenCapture(screenCaptureConfiguration);
 	return ret;
 }
 int UAgoraRtcEngine::StartSecondaryScreenCapture(const FScreenCaptureConfiguration& config)
@@ -2249,7 +2249,7 @@ int UAgoraRtcEngine::StartSecondaryScreenCapture(const FScreenCaptureConfigurati
 	tangle.x = config.regionRect.x;
 	tangle.y = config.regionRect.y;
 	screenCaptureConfiguration.regionRect = tangle;
-	auto ret = RtcEngineProxyClassWrapper::startSecondaryScreenCapture(screenCaptureConfiguration);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->startSecondaryScreenCapture(screenCaptureConfiguration);
 	return ret;
 }
 
@@ -2272,36 +2272,36 @@ ECONNECTION_STATE_TYPE UAgoraRtcEngine::GetConnectionState()
 
 bool UAgoraRtcEngine::RegisterEventHandler(UIRtcEngineEventHandler* eventHandler)
 {
-	auto ret = RtcEngineProxyClassWrapper::registerEventHandler(eventHandler);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->registerEventHandler(eventHandler);
 	return ret;
 }
 
 bool UAgoraRtcEngine::UnregisterEventHandler(UIRtcEngineEventHandler* eventHandler)
 {
-	auto ret = RtcEngineProxyClassWrapper::unregisterEventHandler(eventHandler);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->unregisterEventHandler(eventHandler);
 	return ret;
 }
 
 int UAgoraRtcEngine::SetRemoteUserPriority(int64 uid, EPRIORITY_TYPE userPriority)
 {
-	auto ret = RtcEngineProxyClassWrapper::setRemoteUserPriority(uid, (agora::rtc::PRIORITY_TYPE)userPriority);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->setRemoteUserPriority(uid, (agora::rtc::PRIORITY_TYPE)userPriority);
 	return ret;
 }
 int UAgoraRtcEngine::RegisterPacketObserver(UIPacketObserver* observer)
 {
-	auto ret = RtcEngineProxyClassWrapper::registerPacketObserver(observer);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->registerPacketObserver(observer);
 	return ret;
 }
 int UAgoraRtcEngine::SetEncryptionMode(FString encryptionMode)
 {
 	std::string EncryptionMode = TCHAR_TO_ANSI(*encryptionMode);
-	auto ret = RtcEngineProxyClassWrapper::setEncryptionMode(EncryptionMode.c_str());
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->setEncryptionMode(EncryptionMode.c_str());
 	return ret;
 }
 int UAgoraRtcEngine::SetEncryptionSecret(FString secret)
 {
 	std::string Secret = TCHAR_TO_ANSI(*secret);
-	auto ret = RtcEngineProxyClassWrapper::setEncryptionSecret(Secret.c_str());
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->setEncryptionSecret(Secret.c_str());
 	return ret;
 }
 int UAgoraRtcEngine::EnableEncryption(bool enabled, const FEncryptionConfig& config)
@@ -2312,7 +2312,7 @@ int UAgoraRtcEngine::EnableEncryption(bool enabled, const FEncryptionConfig& con
 	encryptionConfig.encryptionKey = EncryptionKey.c_str();
 	std::string encryptionKdfSalt = TCHAR_TO_ANSI(*config.encryptionKdfSalt);
 	FMemory::Memcpy(encryptionConfig.encryptionKdfSalt, encryptionKdfSalt.c_str(), strlen(encryptionKdfSalt.c_str()) + 1);
-	auto ret = RtcEngineProxyClassWrapper::enableEncryption(enabled, encryptionConfig);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->enableEncryption(enabled, encryptionConfig);
 	return ret;
 }
 int UAgoraRtcEngine::CreateDataStream(int& streamId, const FDataStreamConfig& config)
@@ -2320,14 +2320,14 @@ int UAgoraRtcEngine::CreateDataStream(int& streamId, const FDataStreamConfig& co
 	agora::rtc::DataStreamConfig dataStreamConfig;
 	dataStreamConfig.syncWithAudio = config.syncWithAudio;
 	dataStreamConfig.ordered = config.ordered;
-	auto ret = RtcEngineProxyClassWrapper::createDataStream(&streamId, dataStreamConfig);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->createDataStream(&streamId, dataStreamConfig);
 	return ret;
 }
 int UAgoraRtcEngine::SendStreamMessage(int streamId, FString data)
 {
 	const char* Data = TCHAR_TO_UTF8(*data);
 
-	auto ret = RtcEngineProxyClassWrapper::sendStreamMessage(streamId, Data, strlen(Data) + 1);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->sendStreamMessage(streamId, Data, strlen(Data) + 1);
 	return ret;
 }
 int UAgoraRtcEngine::AddVideoWatermark(FString watermarkUrl, const FWatermarkOptions& options)
@@ -2349,29 +2349,29 @@ int UAgoraRtcEngine::AddVideoWatermark(FString watermarkUrl, const FWatermarkOpt
 	watermarkOptions.watermarkRatio = markradio;
 	watermarkOptions.mode = (agora::rtc::WATERMARK_FIT_MODE)options.mode;
 	std::string WatermarkUrl = TCHAR_TO_ANSI(*watermarkUrl);
-	auto ret = RtcEngineProxyClassWrapper::addVideoWatermark(WatermarkUrl.c_str(), watermarkOptions);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->addVideoWatermark(WatermarkUrl.c_str(), watermarkOptions);
 	return ret;
 }
 
 int UAgoraRtcEngine::ClearVideoWatermarks()
 {
-	auto ret = RtcEngineProxyClassWrapper::clearVideoWatermarks();
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->clearVideoWatermarks();
 	return ret;
 }
 
 int UAgoraRtcEngine::PauseAudio()
 {
-	auto ret = RtcEngineProxyClassWrapper::pauseAudio();
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->pauseAudio();
 	return ret;
 }
 int UAgoraRtcEngine::ResumeAudio()
 {
-	auto ret = RtcEngineProxyClassWrapper::resumeAudio();
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->resumeAudio();
 	return ret;
 }
 int UAgoraRtcEngine::EnableWebSdkInteroperability(bool enabled)
 {
-	auto ret = RtcEngineProxyClassWrapper::enableWebSdkInteroperability(enabled);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->enableWebSdkInteroperability(enabled);
 	return ret;
 }
 int UAgoraRtcEngine::SendCustomReportMessage(FString id, FString category, FString event, FString label, int value)
@@ -2380,18 +2380,18 @@ int UAgoraRtcEngine::SendCustomReportMessage(FString id, FString category, FStri
 	std::string Category = TCHAR_TO_ANSI(*category);
 	std::string Event = TCHAR_TO_ANSI(*event);
 	std::string Label = TCHAR_TO_ANSI(*label);
-	auto ret = RtcEngineProxyClassWrapper::sendCustomReportMessage(Id.c_str(), Category.c_str(), Event.c_str(), Label.c_str(), value);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->sendCustomReportMessage(Id.c_str(), Category.c_str(), Event.c_str(), Label.c_str(), value);
 	return ret;
 }
 
 int UAgoraRtcEngine::RegisterMediaMetadataObserver(UIMetadataObserver* observer, EMETADATA_TYPE type)
 {
-	auto ret = RtcEngineProxyClassWrapper::registerMediaMetadataObserver(observer, (agora::rtc::IMetadataObserver::METADATA_TYPE)type);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->registerMediaMetadataObserver(observer, (agora::rtc::IMetadataObserver::METADATA_TYPE)type);
 	return ret;
 }
 int UAgoraRtcEngine::UnregisterMediaMetadataObserver(UIMetadataObserver* observer, EMETADATA_TYPE type)
 {
-	auto ret = RtcEngineProxyClassWrapper::unregisterMediaMetadataObserver(observer, (agora::rtc::IMetadataObserver::METADATA_TYPE)type);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->unregisterMediaMetadataObserver(observer, (agora::rtc::IMetadataObserver::METADATA_TYPE)type);
 	return ret;
 }
 int UAgoraRtcEngine::StartAudioFrameDump(FString channel_id, int64 user_id, FString location, FString uuid, FString passwd, int64 duration_ms, bool auto_upload)
@@ -2400,7 +2400,7 @@ int UAgoraRtcEngine::StartAudioFrameDump(FString channel_id, int64 user_id, FStr
 	std::string Location = TCHAR_TO_ANSI(*location);
 	std::string Uuid = TCHAR_TO_ANSI(*uuid);
 	std::string Passwd = TCHAR_TO_ANSI(*passwd);
-	auto ret = RtcEngineProxyClassWrapper::startAudioFrameDump(Channel_id.c_str(), user_id, Location.c_str(), Uuid.c_str(), Passwd.c_str(), duration_ms, auto_upload);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->startAudioFrameDump(Channel_id.c_str(), user_id, Location.c_str(), Uuid.c_str(), Passwd.c_str(), duration_ms, auto_upload);
 	return ret;
 }
 
@@ -2408,7 +2408,7 @@ int UAgoraRtcEngine::RegisterLocalUserAccount(FString appId, FString userAccount
 {
 	std::string AppId = TCHAR_TO_ANSI(*appId);
 	std::string UserAccount = TCHAR_TO_ANSI(*userAccount);
-	auto ret = RtcEngineProxyClassWrapper::registerLocalUserAccount(AppId.c_str(), UserAccount.c_str());
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->registerLocalUserAccount(AppId.c_str(), UserAccount.c_str());
 	return ret;
 }
 int UAgoraRtcEngine::JoinChannelWithUserAccount(FString token, FString channelId, FString userAccount, const FChannelMediaOptions& options)
@@ -2553,7 +2553,7 @@ int UAgoraRtcEngine::JoinChannelWithUserAccount(FString token, FString channelId
 	std::string Token = TCHAR_TO_ANSI(*token);
 	std::string ChannelId = TCHAR_TO_ANSI(*channelId);
 	std::string UserAccount = TCHAR_TO_ANSI(*userAccount);
-	auto ret = RtcEngineProxyClassWrapper::joinChannelWithUserAccount(Token.c_str(), ChannelId.c_str(), UserAccount.c_str(), channelMediaOptions);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->joinChannelWithUserAccount(Token.c_str(), ChannelId.c_str(), UserAccount.c_str(), channelMediaOptions);
 	return ret;
 }
 
@@ -2699,14 +2699,14 @@ int UAgoraRtcEngine::JoinChannelWithUserAccountEx(FString token, FString channel
 	std::string Token = TCHAR_TO_ANSI(*token);
 	std::string ChannelId = TCHAR_TO_ANSI(*channelId);
 	std::string UserAccount = TCHAR_TO_ANSI(*userAccount);
-	auto ret = RtcEngineProxyClassWrapper::joinChannelWithUserAccountEx(Token.c_str(), ChannelId.c_str(), UserAccount.c_str(), channelMediaOptions, eventHandler);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->joinChannelWithUserAccountEx(Token.c_str(), ChannelId.c_str(), UserAccount.c_str(), channelMediaOptions, eventHandler);
 	return ret;
 }
 int UAgoraRtcEngine::GetUserInfoByUserAccount(FString userAccount, FUserInfo& userInfo)
 {
 	agora::rtc::UserInfo info;
 	std::string UserAccount = TCHAR_TO_ANSI(*userAccount);
-	auto ret = RtcEngineProxyClassWrapper::getUserInfoByUserAccount(UserAccount.c_str(), &info);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->getUserInfoByUserAccount(UserAccount.c_str(), &info);
 	userInfo.uid = info.uid;
 	userInfo.userAccount = info.userAccount;
 	return ret;
@@ -2714,7 +2714,7 @@ int UAgoraRtcEngine::GetUserInfoByUserAccount(FString userAccount, FUserInfo& us
 int UAgoraRtcEngine::GetUserInfoByUid(int64 uid, FUserInfo& userInfo)
 {
 	agora::rtc::UserInfo info;
-	auto ret = RtcEngineProxyClassWrapper::getUserInfoByUid(uid, &info);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->getUserInfoByUid(uid, &info);
 	userInfo.uid = info.uid;
 	userInfo.userAccount = info.userAccount;
 	return ret;
@@ -2741,7 +2741,7 @@ int UAgoraRtcEngine::StartChannelMediaRelay(const FChannelMediaRelayConfiguratio
 	}
 	channelMediaRelayConfiguration.destInfos = mediaInfos;
 	channelMediaRelayConfiguration.destCount = configuration.destCount;
-	auto ret = RtcEngineProxyClassWrapper::startChannelMediaRelay(channelMediaRelayConfiguration);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->startChannelMediaRelay(channelMediaRelayConfiguration);
 	delete mediaInfo;
 	delete[] mediaInfos;
 	return ret;
@@ -2776,22 +2776,22 @@ int UAgoraRtcEngine::UpdateChannelMediaRelay(const FChannelMediaRelayConfigurati
 
 int UAgoraRtcEngine::StopChannelMediaRelay()
 {
-	auto ret = RtcEngineProxyClassWrapper::stopChannelMediaRelay();
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->stopChannelMediaRelay();
 	return ret;
 }
 int UAgoraRtcEngine::PauseAllChannelMediaRelay()
 {
-	auto ret = RtcEngineProxyClassWrapper::pauseAllChannelMediaRelay();
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->pauseAllChannelMediaRelay();
 	return ret;
 }
 int UAgoraRtcEngine::ResumeAllChannelMediaRelay()
 {
-	auto ret = RtcEngineProxyClassWrapper::resumeAllChannelMediaRelay();
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->resumeAllChannelMediaRelay();
 	return ret;
 }
 int UAgoraRtcEngine::SetDirectCdnStreamingAudioConfiguration(EAUDIO_PROFILE_TYPE profile)
 {
-	auto ret = RtcEngineProxyClassWrapper::setDirectCdnStreamingAudioConfiguration((agora::rtc::AUDIO_PROFILE_TYPE)profile);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->setDirectCdnStreamingAudioConfiguration((agora::rtc::AUDIO_PROFILE_TYPE)profile);
 	return ret;
 }
 int UAgoraRtcEngine::SetDirectCdnStreamingVideoConfiguration(const FVideoEncoderConfiguration& config)
@@ -2808,7 +2808,7 @@ int UAgoraRtcEngine::SetDirectCdnStreamingVideoConfiguration(const FVideoEncoder
 	videoEncoderConfiguration.orientationMode = (agora::rtc::ORIENTATION_MODE)config.orientationMode;
 	videoEncoderConfiguration.degradationPreference = (agora::rtc::DEGRADATION_PREFERENCE)config.degradationPreference;
 	videoEncoderConfiguration.mirrorMode = (agora::rtc::VIDEO_MIRROR_MODE_TYPE)config.mirrorMode;
-	auto ret = RtcEngineProxyClassWrapper::setDirectCdnStreamingVideoConfiguration(videoEncoderConfiguration);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->setDirectCdnStreamingVideoConfiguration(videoEncoderConfiguration);
 	return ret;
 }
 int UAgoraRtcEngine::StartDirectCdnStreaming(UIDirectCdnStreamingEventHandler* eventHandler, FString publishUrl, FDirectCdnStreamingMediaOptions& options)
@@ -2843,12 +2843,12 @@ int UAgoraRtcEngine::StartDirectCdnStreaming(UIDirectCdnStreamingEventHandler* e
 		directCdnStreamingMediaOptions.customVideoTrackId = options.customVideoTrackId;
 	}
 	std::string PublishUrl = TCHAR_TO_ANSI(*publishUrl);
-	auto ret = RtcEngineProxyClassWrapper::startDirectCdnStreaming(eventHandler, PublishUrl.c_str(), directCdnStreamingMediaOptions);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->startDirectCdnStreaming(eventHandler, PublishUrl.c_str(), directCdnStreamingMediaOptions);
 	return ret;
 }
 int UAgoraRtcEngine::StopDirectCdnStreaming()
 {
-	auto ret = RtcEngineProxyClassWrapper::stopDirectCdnStreaming();
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->stopDirectCdnStreaming();
 	return ret;
 }
 int UAgoraRtcEngine::UpdateDirectCdnStreamingMediaOptions(const FDirectCdnStreamingMediaOptions& options)
@@ -2882,7 +2882,7 @@ int UAgoraRtcEngine::UpdateDirectCdnStreamingMediaOptions(const FDirectCdnStream
 	{
 		directCdnStreamingMediaOptions.customVideoTrackId = options.customVideoTrackId;
 	}
-	return RtcEngineProxyClassWrapper::updateDirectCdnStreamingMediaOptions(directCdnStreamingMediaOptions);
+	return RtcEngineProxyClassWrapper::GetInstance()->updateDirectCdnStreamingMediaOptions(directCdnStreamingMediaOptions);
 }
 int UAgoraRtcEngine::StartRhythmPlayer(FString sound1, FString sound2, const FAgoraRhythmPlayerConfig& config)
 {
@@ -2891,12 +2891,12 @@ int UAgoraRtcEngine::StartRhythmPlayer(FString sound1, FString sound2, const FAg
 	agoraRhythmPlayerConfig.beatsPerMinute = config.beatsPerMinute;
 	std::string Sound1 = TCHAR_TO_ANSI(*sound1);
 	std::string Sound2 = TCHAR_TO_ANSI(*sound2);
-	auto ret = RtcEngineProxyClassWrapper::startRhythmPlayer(Sound1.c_str(), Sound1.c_str(), agoraRhythmPlayerConfig);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->startRhythmPlayer(Sound1.c_str(), Sound1.c_str(), agoraRhythmPlayerConfig);
 	return ret;
 }
 int UAgoraRtcEngine::StopRhythmPlayer()
 {
-	auto ret = RtcEngineProxyClassWrapper::stopRhythmPlayer();
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->stopRhythmPlayer();
 	return ret;
 }
 int UAgoraRtcEngine::ConfigRhythmPlayer(const FAgoraRhythmPlayerConfig& config)
@@ -2904,14 +2904,14 @@ int UAgoraRtcEngine::ConfigRhythmPlayer(const FAgoraRhythmPlayerConfig& config)
 	agora::rtc::AgoraRhythmPlayerConfig agoraRhythmPlayerConfig;
 	agoraRhythmPlayerConfig.beatsPerMeasure = config.beatsPerMeasure;
 	agoraRhythmPlayerConfig.beatsPerMinute = config.beatsPerMinute;
-	auto ret = RtcEngineProxyClassWrapper::configRhythmPlayer(agoraRhythmPlayerConfig);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->configRhythmPlayer(agoraRhythmPlayerConfig);
 	return ret;
 }
 int UAgoraRtcEngine::TakeSnapshot(int64 uid, FString filePath)
 {
 	std::string Filepath = TCHAR_TO_ANSI(*filePath);
 
-	auto ret = RtcEngineProxyClassWrapper::takeSnapshot(uid, Filepath.c_str());
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->takeSnapshot(uid, Filepath.c_str());
 	return ret;
 }
 int UAgoraRtcEngine::EnableContentInspect(bool enabled, FContentInspectConfig& config)
@@ -2927,26 +2927,26 @@ int UAgoraRtcEngine::EnableContentInspect(bool enabled, FContentInspectConfig& c
 	}
 	FMemory::Memcpy(contentInspectConfig.modules, modules, sizeof(agora::media::ContentInspectModule) * config.moduleCount);
 	contentInspectConfig.moduleCount = config.moduleCount;
-	auto ret = RtcEngineProxyClassWrapper::enableContentInspect(enabled, contentInspectConfig);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->enableContentInspect(enabled, contentInspectConfig);
 	return ret;
 }
 
 int UAgoraRtcEngine::AdjustCustomAudioPublishVolume(int64 trackId, int volume)
 {
-	auto ret = RtcEngineProxyClassWrapper::adjustCustomAudioPublishVolume(trackId, volume);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->adjustCustomAudioPublishVolume(trackId, volume);
 	return ret;
 }
 
 
 int UAgoraRtcEngine::AdjustCustomAudioPlayoutVolume(int64 trackId, int volume)
 {
-	auto ret = RtcEngineProxyClassWrapper::adjustCustomAudioPlayoutVolume(trackId, volume);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->adjustCustomAudioPlayoutVolume(trackId, volume);
 	return ret;
 }
 
 int UAgoraRtcEngine::SetCloudProxy(ECLOUD_PROXY_TYPE proxyType)
 {
-	auto ret = RtcEngineProxyClassWrapper::setCloudProxy((agora::rtc::CLOUD_PROXY_TYPE)proxyType);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->setCloudProxy((agora::rtc::CLOUD_PROXY_TYPE)proxyType);
 	return ret;
 }
 int UAgoraRtcEngine::SetLocalAccessPoint(const FLocalAccessPointConfiguration& config)
@@ -2963,7 +2963,7 @@ int UAgoraRtcEngine::SetLocalAccessPoint(const FLocalAccessPointConfiguration& c
 	std::string VerifyDomainName = TCHAR_TO_ANSI(*config.domainList);
 	localAccessPointConfiguration.verifyDomainName = VerifyDomainName.c_str();
 	localAccessPointConfiguration.mode = (agora::rtc::LOCAL_PROXY_MODE)config.mode;
-	auto ret = RtcEngineProxyClassWrapper::setLocalAccessPoint(localAccessPointConfiguration);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->setLocalAccessPoint(localAccessPointConfiguration);
 	return ret;
 }
 int UAgoraRtcEngine::SetAdvancedAudioOptions(const FAdvancedAudioOptions& options)
@@ -2973,13 +2973,13 @@ int UAgoraRtcEngine::SetAdvancedAudioOptions(const FAdvancedAudioOptions& option
 	{
 		advancedAudioOptions.audioProcessingChannels = options.audioProcessingChannels;
 	}
-	auto ret = RtcEngineProxyClassWrapper::setAdvancedAudioOptions(advancedAudioOptions);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->setAdvancedAudioOptions(advancedAudioOptions);
 	return ret;
 }
 int UAgoraRtcEngine::SetAVSyncSource(FString channelId, int64 uid)
 {
 	std::string ChannelId = TCHAR_TO_ANSI(*channelId);
-	auto ret = RtcEngineProxyClassWrapper::setAVSyncSource(ChannelId.c_str(), uid);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->setAVSyncSource(ChannelId.c_str(), uid);
 	return ret;
 }
 int UAgoraRtcEngine::EnableVideoImageSource(bool enable, const FImageTrackOptions& options)
@@ -2988,7 +2988,7 @@ int UAgoraRtcEngine::EnableVideoImageSource(bool enable, const FImageTrackOption
 	std::string ImageUrl = TCHAR_TO_ANSI(*options.imageUrl);
 	imageTrackOptions.imageUrl = ImageUrl.c_str();
 	imageTrackOptions.fps = options.fps;
-	auto ret = RtcEngineProxyClassWrapper::enableVideoImageSource(enable, imageTrackOptions);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->enableVideoImageSource(enable, imageTrackOptions);
 	return ret;
 }
 int UAgoraRtcEngine::JoinChannelEx(FString token, const FRtcConnection& connection, const FChannelMediaOptions& options, UIRtcEngineEventHandler* eventHandler)
@@ -3137,7 +3137,7 @@ int UAgoraRtcEngine::JoinChannelEx(FString token, const FRtcConnection& connecti
 	}
 	std::string Token = TCHAR_TO_ANSI(*token);
 
-	auto ret = RtcEngineProxyClassWrapper::joinChannelEx(Token.c_str(), rtcConnection, channelMediaOptions, eventHandler);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->joinChannelEx(Token.c_str(), rtcConnection, channelMediaOptions, eventHandler);
 	return ret;
 }
 
@@ -3162,7 +3162,7 @@ int UAgoraRtcEngine::LeaveChannelEx(const FRtcConnection& connection, const FLea
 		leaveChannelOptions.stopMicrophoneRecording = options.stopMicrophoneRecording == AGORAOPTIONAL::AGORA_TRUE_VALUE;
 	}
 
-	auto ret = RtcEngineProxyClassWrapper::leaveChannelEx(rtcConnection, leaveChannelOptions);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->leaveChannelEx(rtcConnection, leaveChannelOptions);
 	return ret;
 }
 
@@ -3309,7 +3309,7 @@ int UAgoraRtcEngine::UpdateChannelMediaOptionsEx(const FChannelMediaOptions& opt
 	std::string ChannelId = TCHAR_TO_ANSI(*connection.channelId);
 	rtcConnection.channelId = ChannelId.c_str();
 	rtcConnection.localUid = connection.localUid;
-	auto ret = RtcEngineProxyClassWrapper::updateChannelMediaOptionsEx(channelMediaOptions, rtcConnection);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->updateChannelMediaOptionsEx(channelMediaOptions, rtcConnection);
 	return ret;
 }
 int UAgoraRtcEngine::SetVideoEncoderConfigurationEx(const FVideoEncoderConfiguration& config, const FRtcConnection& connection)
@@ -3330,7 +3330,7 @@ int UAgoraRtcEngine::SetVideoEncoderConfigurationEx(const FVideoEncoderConfigura
 	std::string ChannelId = TCHAR_TO_ANSI(*connection.channelId);
 	rtcConnection.channelId = ChannelId.c_str();
 	rtcConnection.localUid = connection.localUid;
-	auto ret = RtcEngineProxyClassWrapper::setVideoEncoderConfigurationEx(videoEncoderConfiguration, rtcConnection);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->setVideoEncoderConfigurationEx(videoEncoderConfiguration, rtcConnection);
 	return ret;
 }
 int UAgoraRtcEngine::SetupRemoteVideoEx(const FVideoCanvas& canvas, const FRtcConnection& connection)
@@ -3348,7 +3348,7 @@ int UAgoraRtcEngine::SetupRemoteVideoEx(const FVideoCanvas& canvas, const FRtcCo
 	std::string ChannelId = TCHAR_TO_ANSI(*connection.channelId);
 	rtcConnection.channelId = ChannelId.c_str();
 	//rtcConnection.localUid = connection.localUid;
-	auto ret = RtcEngineProxyClassWrapper::setupRemoteVideoEx(videoCanvas, rtcConnection);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->setupRemoteVideoEx(videoCanvas, rtcConnection);
 	return ret;
 }
 int UAgoraRtcEngine::MuteRemoteAudioStreamEx(int64 uid, bool mute, const FRtcConnection& connection)
@@ -3357,7 +3357,7 @@ int UAgoraRtcEngine::MuteRemoteAudioStreamEx(int64 uid, bool mute, const FRtcCon
 	std::string ChannelId = TCHAR_TO_ANSI(*connection.channelId);
 	rtcConnection.channelId = ChannelId.c_str();
 	rtcConnection.localUid = connection.localUid;
-	auto ret = RtcEngineProxyClassWrapper::muteRemoteAudioStreamEx(uid, mute, rtcConnection);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->muteRemoteAudioStreamEx(uid, mute, rtcConnection);
 	return ret;
 }
 int UAgoraRtcEngine::MuteRemoteVideoStreamEx(int64 uid, bool mute, const FRtcConnection& connection)
@@ -3366,7 +3366,7 @@ int UAgoraRtcEngine::MuteRemoteVideoStreamEx(int64 uid, bool mute, const FRtcCon
 	std::string ChannelId = TCHAR_TO_ANSI(*connection.channelId);
 	rtcConnection.channelId = ChannelId.c_str();
 	rtcConnection.localUid = connection.localUid;
-	auto ret = RtcEngineProxyClassWrapper::muteRemoteVideoStreamEx(uid, mute, rtcConnection);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->muteRemoteVideoStreamEx(uid, mute, rtcConnection);
 	return ret;
 }
 int UAgoraRtcEngine::SetRemoteVideoStreamTypeEx(int64 uid, EVIDEO_STREAM_TYPE streamType, const FRtcConnection& connection)
@@ -3375,7 +3375,7 @@ int UAgoraRtcEngine::SetRemoteVideoStreamTypeEx(int64 uid, EVIDEO_STREAM_TYPE st
 	std::string ChannelId = TCHAR_TO_ANSI(*connection.channelId);
 	rtcConnection.channelId = ChannelId.c_str();
 	rtcConnection.localUid = connection.localUid;
-	auto ret = RtcEngineProxyClassWrapper::setRemoteVideoStreamTypeEx(uid, (agora::rtc::VIDEO_STREAM_TYPE)streamType, rtcConnection);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->setRemoteVideoStreamTypeEx(uid, (agora::rtc::VIDEO_STREAM_TYPE)streamType, rtcConnection);
 	return ret;
 }
 
@@ -3395,7 +3395,7 @@ int UAgoraRtcEngine::SetRemoteVideoSubscriptionOptionsEx(int64 uid, const FVideo
 	std::string ChannelId = TCHAR_TO_ANSI(*connection.channelId);
 	rtcConnection.channelId = ChannelId.c_str();
 	rtcConnection.localUid = connection.localUid;
-	auto ret = RtcEngineProxyClassWrapper::setRemoteVideoSubscriptionOptionsEx(uid, videoSubscriptionOptions, rtcConnection);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->setRemoteVideoSubscriptionOptionsEx(uid, videoSubscriptionOptions, rtcConnection);
 	return ret;
 }
 int UAgoraRtcEngine::SetRemoteVoicePositionEx(int64 uid, float pan, float gain, const FRtcConnection& connection)
@@ -3404,7 +3404,7 @@ int UAgoraRtcEngine::SetRemoteVoicePositionEx(int64 uid, float pan, float gain, 
 	std::string ChannelId = TCHAR_TO_ANSI(*connection.channelId);
 	rtcConnection.channelId = ChannelId.c_str();
 	rtcConnection.localUid = connection.localUid;
-	auto ret = RtcEngineProxyClassWrapper::setRemoteVoicePositionEx(uid, pan, gain, rtcConnection);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->setRemoteVoicePositionEx(uid, pan, gain, rtcConnection);
 	return ret;
 }
 int UAgoraRtcEngine::SetRemoteUserSpatialAudioParamsEx(int64 uid, const FSpatialAudioParams& params, const FRtcConnection& connection)
@@ -3446,7 +3446,7 @@ int UAgoraRtcEngine::SetRemoteUserSpatialAudioParamsEx(int64 uid, const FSpatial
 	std::string ChannelId = TCHAR_TO_ANSI(*connection.channelId);
 	rtcConnection.channelId = ChannelId.c_str();
 	rtcConnection.localUid = connection.localUid;
-	auto ret = RtcEngineProxyClassWrapper::setRemoteUserSpatialAudioParamsEx(uid, spatialAudioParams, rtcConnection);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->setRemoteUserSpatialAudioParamsEx(uid, spatialAudioParams, rtcConnection);
 	return ret;
 }
 int UAgoraRtcEngine::SetRemoteRenderModeEx(int64 uid, ERENDER_MODE_TYPE renderMode, EVIDEO_MIRROR_MODE_TYPE mirrorMode, const FRtcConnection& connection)
@@ -3455,7 +3455,7 @@ int UAgoraRtcEngine::SetRemoteRenderModeEx(int64 uid, ERENDER_MODE_TYPE renderMo
 	std::string ChannelId = TCHAR_TO_ANSI(*connection.channelId);
 	rtcConnection.channelId = ChannelId.c_str();
 	rtcConnection.localUid = connection.localUid;
-	auto ret = RtcEngineProxyClassWrapper::setRemoteRenderModeEx(uid, (agora::media::base::RENDER_MODE_TYPE)renderMode, (agora::rtc::VIDEO_MIRROR_MODE_TYPE)mirrorMode, rtcConnection);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->setRemoteRenderModeEx(uid, (agora::media::base::RENDER_MODE_TYPE)renderMode, (agora::rtc::VIDEO_MIRROR_MODE_TYPE)mirrorMode, rtcConnection);
 	return ret;
 }
 int UAgoraRtcEngine::EnableLoopbackRecordingEx(const FRtcConnection& connection, bool enabled, FString deviceName)
@@ -3464,7 +3464,7 @@ int UAgoraRtcEngine::EnableLoopbackRecordingEx(const FRtcConnection& connection,
 	std::string ChannelId = TCHAR_TO_ANSI(*connection.channelId);
 	rtcConnection.channelId = ChannelId.c_str();
 	rtcConnection.localUid = connection.localUid;
-	auto ret = RtcEngineProxyClassWrapper::enableLoopbackRecordingEx(rtcConnection, enabled, TCHAR_TO_ANSI(*deviceName));
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->enableLoopbackRecordingEx(rtcConnection, enabled, TCHAR_TO_ANSI(*deviceName));
 	return ret;
 }
 ECONNECTION_STATE_TYPE UAgoraRtcEngine::GetConnectionStateEx(const FRtcConnection& connection)
@@ -3473,7 +3473,7 @@ ECONNECTION_STATE_TYPE UAgoraRtcEngine::GetConnectionStateEx(const FRtcConnectio
 	std::string ChannelId = TCHAR_TO_ANSI(*connection.channelId);
 	rtcConnection.channelId = ChannelId.c_str();
 	rtcConnection.localUid = connection.localUid;
-	return (ECONNECTION_STATE_TYPE)RtcEngineProxyClassWrapper::getConnectionStateEx(rtcConnection);
+	return (ECONNECTION_STATE_TYPE)RtcEngineProxyClassWrapper::GetInstance()->getConnectionStateEx(rtcConnection);
 }
 int UAgoraRtcEngine::EnableEncryptionEx(const FRtcConnection& connection, bool enabled, const FEncryptionConfig& config)
 {
@@ -3488,7 +3488,7 @@ int UAgoraRtcEngine::EnableEncryptionEx(const FRtcConnection& connection, bool e
 	std::string encryptionKdfSalt = TCHAR_TO_ANSI(*config.encryptionKdfSalt);
 	FMemory::Memcpy(encryptionConfig.encryptionKdfSalt, encryptionKdfSalt.c_str(), 32);
 
-	auto ret = RtcEngineProxyClassWrapper::enableEncryptionEx(rtcConnection, enabled, encryptionConfig);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->enableEncryptionEx(rtcConnection, enabled, encryptionConfig);
 	return ret;
 }
 
@@ -3501,7 +3501,7 @@ int UAgoraRtcEngine::CreateDataStreamEx(int& streamId, const FDataStreamConfig& 
 	std::string ChannelId = TCHAR_TO_ANSI(*connection.channelId);
 	rtcConnection.channelId = ChannelId.c_str();
 	rtcConnection.localUid = connection.localUid;
-	auto ret = RtcEngineProxyClassWrapper::createDataStreamEx(&streamId, dataStreamConfig, rtcConnection);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->createDataStreamEx(&streamId, dataStreamConfig, rtcConnection);
 	return ret;
 }
 int UAgoraRtcEngine::SendStreamMessageEx(int streamId, FString data, const FRtcConnection& connection)
@@ -3511,7 +3511,7 @@ int UAgoraRtcEngine::SendStreamMessageEx(int streamId, FString data, const FRtcC
 	rtcConnection.channelId = ChannelId.c_str();
 	rtcConnection.localUid = connection.localUid;
 	const char* Data = TCHAR_TO_ANSI(*data);
-	auto ret = RtcEngineProxyClassWrapper::sendStreamMessageEx(streamId, Data, strlen(Data), rtcConnection);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->sendStreamMessageEx(streamId, Data, strlen(Data), rtcConnection);
 	return ret;
 }
 int UAgoraRtcEngine::AddVideoWatermarkEx(FString watermarkUrl, const FWatermarkOptions& options, const FRtcConnection& connection)
@@ -3539,7 +3539,7 @@ int UAgoraRtcEngine::AddVideoWatermarkEx(FString watermarkUrl, const FWatermarkO
 	std::string ChannelId = TCHAR_TO_ANSI(*connection.channelId);
 	rtcConnection.channelId = ChannelId.c_str();
 	rtcConnection.localUid = connection.localUid;
-	auto ret = RtcEngineProxyClassWrapper::addVideoWatermarkEx(TCHAR_TO_ANSI(*watermarkUrl), watermarkOptions, rtcConnection);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->addVideoWatermarkEx(TCHAR_TO_ANSI(*watermarkUrl), watermarkOptions, rtcConnection);
 	return ret;
 }
 int UAgoraRtcEngine::ClearVideoWatermarkEx(const FRtcConnection& connection)
@@ -3548,7 +3548,7 @@ int UAgoraRtcEngine::ClearVideoWatermarkEx(const FRtcConnection& connection)
 	std::string ChannelId = TCHAR_TO_ANSI(*connection.channelId);
 	rtcConnection.channelId = ChannelId.c_str();
 	rtcConnection.localUid = connection.localUid;
-	auto ret = RtcEngineProxyClassWrapper::clearVideoWatermarkEx(rtcConnection);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->clearVideoWatermarkEx(rtcConnection);
 	return ret;
 }
 int UAgoraRtcEngine::SendCustomReportMessageEx(FString id, FString category, FString event, FString label, int value, const FRtcConnection& connection)
@@ -3557,7 +3557,7 @@ int UAgoraRtcEngine::SendCustomReportMessageEx(FString id, FString category, FSt
 	std::string ChannelId = TCHAR_TO_ANSI(*connection.channelId);
 	rtcConnection.channelId = ChannelId.c_str();
 	rtcConnection.localUid = connection.localUid;
-	auto ret = RtcEngineProxyClassWrapper::sendCustomReportMessageEx(TCHAR_TO_ANSI(*id), TCHAR_TO_ANSI(*category), TCHAR_TO_ANSI(*event), TCHAR_TO_ANSI(*label), value, rtcConnection);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->sendCustomReportMessageEx(TCHAR_TO_ANSI(*id), TCHAR_TO_ANSI(*category), TCHAR_TO_ANSI(*event), TCHAR_TO_ANSI(*label), value, rtcConnection);
 	return ret;
 }
 int UAgoraRtcEngine::EnableAudioVolumeIndicationEx(int interval, int smooth, bool reportVad, const FRtcConnection& connection)
@@ -3566,7 +3566,7 @@ int UAgoraRtcEngine::EnableAudioVolumeIndicationEx(int interval, int smooth, boo
 	std::string ChannelId = TCHAR_TO_ANSI(*connection.channelId);
 	rtcConnection.channelId = ChannelId.c_str();
 	rtcConnection.localUid = connection.localUid;
-	auto ret = RtcEngineProxyClassWrapper::enableAudioVolumeIndicationEx(interval, smooth, reportVad, rtcConnection);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->enableAudioVolumeIndicationEx(interval, smooth, reportVad, rtcConnection);
 	return ret;
 }
 int UAgoraRtcEngine::GetUserInfoByUserAccountEx(FString userAccount, FUserInfo& userInfo, const FRtcConnection& connection)
@@ -3577,7 +3577,7 @@ int UAgoraRtcEngine::GetUserInfoByUserAccountEx(FString userAccount, FUserInfo& 
 	std::string ChannelId = TCHAR_TO_ANSI(*connection.channelId);
 	rtcConnection.channelId = ChannelId.c_str();
 	rtcConnection.localUid = connection.localUid;
-	auto ret = RtcEngineProxyClassWrapper::getUserInfoByUserAccountEx(TCHAR_TO_ANSI(*userAccount), &info, rtcConnection);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->getUserInfoByUserAccountEx(TCHAR_TO_ANSI(*userAccount), &info, rtcConnection);
 
 	userInfo.uid = info.uid;
 	userInfo.userAccount = info.userAccount;
@@ -3592,7 +3592,7 @@ int UAgoraRtcEngine::GetUserInfoByUidEx(int64 uid, FUserInfo& userInfo, const FR
 	rtcConnection.channelId = ChannelId.c_str();
 	rtcConnection.localUid = connection.localUid;
 
-	auto ret = RtcEngineProxyClassWrapper::getUserInfoByUidEx(uid, &info, rtcConnection);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->getUserInfoByUidEx(uid, &info, rtcConnection);
 	userInfo.uid = info.uid;
 	userInfo.userAccount = info.userAccount;
 
@@ -3600,7 +3600,7 @@ int UAgoraRtcEngine::GetUserInfoByUidEx(int64 uid, FUserInfo& userInfo, const FR
 }
 int UAgoraRtcEngine::SetVideoProfileEx(int width, int height, int frameRate, int bitrate)
 {
-	return RtcEngineProxyClassWrapper::setVideoProfileEx(width, height, frameRate, bitrate);
+	return RtcEngineProxyClassWrapper::GetInstance()->setVideoProfileEx(width, height, frameRate, bitrate);
 }
 int UAgoraRtcEngine::EnableDualStreamModeEx(bool enabled, const FSimulcastStreamConfig& streamConfig, const FRtcConnection& connection)
 {
@@ -3615,7 +3615,7 @@ int UAgoraRtcEngine::EnableDualStreamModeEx(bool enabled, const FSimulcastStream
 	std::string ChannelId = TCHAR_TO_ANSI(*connection.channelId);
 	rtcConnection.channelId = ChannelId.c_str();
 	rtcConnection.localUid = connection.localUid;
-	auto ret = RtcEngineProxyClassWrapper::enableDualStreamModeEx(enabled, simulcastStreamConfig, rtcConnection);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->enableDualStreamModeEx(enabled, simulcastStreamConfig, rtcConnection);
 	return ret;
 }
 int UAgoraRtcEngine::SetDualStreamModeEx(ESIMULCAST_STREAM_MODE mode, const FSimulcastStreamConfig& streamConfig, const FRtcConnection& connection)
@@ -3631,12 +3631,12 @@ int UAgoraRtcEngine::SetDualStreamModeEx(ESIMULCAST_STREAM_MODE mode, const FSim
 	std::string ChannelId = TCHAR_TO_ANSI(*connection.channelId);
 	rtcConnection.channelId = ChannelId.c_str();
 	rtcConnection.localUid = connection.localUid;
-	auto ret = RtcEngineProxyClassWrapper::setDualStreamModeEx((agora::rtc::SIMULCAST_STREAM_MODE)mode, simulcastStreamConfig, rtcConnection);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->setDualStreamModeEx((agora::rtc::SIMULCAST_STREAM_MODE)mode, simulcastStreamConfig, rtcConnection);
 	return ret;
 }
 int UAgoraRtcEngine::EnableWirelessAccelerate(bool enabled)
 {
-	auto ret = RtcEngineProxyClassWrapper::enableWirelessAccelerate(enabled);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->enableWirelessAccelerate(enabled);
 	return ret;
 }
 int UAgoraRtcEngine::TakeSnapshotEx(const FRtcConnection& connection, int64 uid, FString filePath)
@@ -3646,7 +3646,7 @@ int UAgoraRtcEngine::TakeSnapshotEx(const FRtcConnection& connection, int64 uid,
 	rtcConnection.channelId = ChannelId.c_str();
 	rtcConnection.localUid = connection.localUid;
 	std::string FilePath = TCHAR_TO_ANSI(*filePath);
-	auto ret = RtcEngineProxyClassWrapper::takeSnapshotEx(rtcConnection, uid, FilePath.c_str());
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->takeSnapshotEx(rtcConnection, uid, FilePath.c_str());
 	return ret;
 }
 
@@ -3657,7 +3657,7 @@ int UAgoraRtcEngine::MuteLocalAudioStreamEx(bool mute, const FRtcConnection& con
 	std::string ChannelId = TCHAR_TO_ANSI(*connection.channelId);
 	rtcConnection.channelId = ChannelId.c_str();
 	rtcConnection.localUid = connection.localUid;
-	auto ret = RtcEngineProxyClassWrapper::muteLocalAudioStreamEx(mute, rtcConnection);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->muteLocalAudioStreamEx(mute, rtcConnection);
 	return ret;
 }
 
@@ -3667,7 +3667,7 @@ int UAgoraRtcEngine::MuteLocalVideoStreamEx(bool mute, const FRtcConnection& con
 	std::string ChannelId = TCHAR_TO_ANSI(*connection.channelId);
 	rtcConnection.channelId = ChannelId.c_str();
 	rtcConnection.localUid = connection.localUid;
-	auto ret = RtcEngineProxyClassWrapper::muteLocalVideoStreamEx(mute, rtcConnection);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->muteLocalVideoStreamEx(mute, rtcConnection);
 	return ret;
 }
 
@@ -3677,7 +3677,7 @@ int UAgoraRtcEngine::MuteAllRemoteAudioStreamsEx(bool mute, const FRtcConnection
 	std::string ChannelId = TCHAR_TO_ANSI(*connection.channelId);
 	rtcConnection.channelId = ChannelId.c_str();
 	rtcConnection.localUid = connection.localUid;
-	auto ret = RtcEngineProxyClassWrapper::muteAllRemoteAudioStreamsEx(mute, rtcConnection);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->muteAllRemoteAudioStreamsEx(mute, rtcConnection);
 	return ret;
 }
 
@@ -3687,7 +3687,7 @@ int UAgoraRtcEngine::MuteAllRemoteVideoStreamsEx(bool mute, const FRtcConnection
 	std::string ChannelId = TCHAR_TO_ANSI(*connection.channelId);
 	rtcConnection.channelId = ChannelId.c_str();
 	rtcConnection.localUid = connection.localUid;
-	auto ret = RtcEngineProxyClassWrapper::muteAllRemoteVideoStreamsEx(mute, rtcConnection);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->muteAllRemoteVideoStreamsEx(mute, rtcConnection);
 	return ret;
 }
 
@@ -3702,7 +3702,7 @@ int UAgoraRtcEngine::SetSubscribeAudioBlocklistEx(TArray<int64> uidList, int uid
 	{
 		data[i] = (agora::rtc::uid_t)uidList[i];
 	}
-	auto ret = RtcEngineProxyClassWrapper::setSubscribeAudioBlocklistEx(data, uidNumber, rtcConnection);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->setSubscribeAudioBlocklistEx(data, uidNumber, rtcConnection);
 	return ret;
 }
 
@@ -3717,7 +3717,7 @@ int UAgoraRtcEngine::SetSubscribeAudioAllowlistEx(TArray<int64> uidList, int uid
 	{
 		data[i] = (agora::rtc::uid_t)uidList[i];
 	}
-	auto ret = RtcEngineProxyClassWrapper::setSubscribeAudioAllowlistEx(data, uidNumber, rtcConnection);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->setSubscribeAudioAllowlistEx(data, uidNumber, rtcConnection);
 	return ret;
 }
 
@@ -3732,7 +3732,7 @@ int UAgoraRtcEngine::SetSubscribeVideoBlocklistEx(TArray<int64> uidList, int uid
 	{
 		data[i] = (agora::rtc::uid_t)uidList[i];
 	}
-	auto ret = RtcEngineProxyClassWrapper::setSubscribeVideoBlocklistEx(data, uidNumber, rtcConnection);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->setSubscribeVideoBlocklistEx(data, uidNumber, rtcConnection);
 	return ret;
 }
 
@@ -3747,7 +3747,7 @@ int UAgoraRtcEngine::SetSubscribeVideoAllowlistEx(TArray<int64> uidList, int uid
 	{
 		data[i] = (agora::rtc::uid_t)uidList[i];
 	}
-	auto ret = RtcEngineProxyClassWrapper::setSubscribeVideoAllowlistEx(data, uidNumber, rtcConnection);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->setSubscribeVideoAllowlistEx(data, uidNumber, rtcConnection);
 	return ret;
 }
 
@@ -3757,7 +3757,7 @@ int UAgoraRtcEngine::AdjustUserPlaybackSignalVolumeEx(int64 uid, int volume, con
 	std::string ChannelId = TCHAR_TO_ANSI(*connection.channelId);
 	rtcConnection.channelId = ChannelId.c_str();
 	rtcConnection.localUid = connection.localUid;
-	auto ret = RtcEngineProxyClassWrapper::adjustUserPlaybackSignalVolumeEx(uid, volume, rtcConnection);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->adjustUserPlaybackSignalVolumeEx(uid, volume, rtcConnection);
 	return ret;
 }
 
@@ -3768,7 +3768,7 @@ int UAgoraRtcEngine::StartRtmpStreamWithoutTranscodingEx(FString url, const FRtc
 	rtcConnection.channelId = ChannelId.c_str();
 	rtcConnection.localUid = connection.localUid;
 	std::string Url = TCHAR_TO_ANSI(*url);
-	int ret = RtcEngineProxyClassWrapper::startRtmpStreamWithoutTranscodingEx(Url.c_str(), rtcConnection);
+	int ret = RtcEngineProxyClassWrapper::GetInstance()->startRtmpStreamWithoutTranscodingEx(Url.c_str(), rtcConnection);
 	return ret;
 }
 
@@ -3863,7 +3863,7 @@ int UAgoraRtcEngine::StartRtmpStreamWithTranscodingEx(FString url, const FLiveTr
 	liveTranscoding.advancedFeatures = feature;
 	liveTranscoding.advancedFeatureCount = transcoding.advancedFeatureCount;
 
-	auto ret = RtcEngineProxyClassWrapper::startRtmpStreamWithTranscodingEx(streamUrl.c_str(), liveTranscoding, rtcConnection);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->startRtmpStreamWithTranscodingEx(streamUrl.c_str(), liveTranscoding, rtcConnection);
 	delete[] trans;
 	delete[] image;
 	delete[] bgImage;
@@ -3962,7 +3962,7 @@ int UAgoraRtcEngine::UpdateRtmpTranscodingEx(const FLiveTranscoding& transcoding
 	rtcConnection.channelId = ChannelId.c_str();
 	rtcConnection.localUid = connection.localUid;
 
-	auto ret = RtcEngineProxyClassWrapper::updateRtmpTranscodingEx(liveTranscoding, rtcConnection);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->updateRtmpTranscodingEx(liveTranscoding, rtcConnection);
 	delete[] trans;
 	delete[] image;
 	delete[] bgImage;
@@ -3977,7 +3977,7 @@ int UAgoraRtcEngine::StopRtmpStreamEx(FString url, const FRtcConnection& connect
 	rtcConnection.channelId = ChannelId.c_str();
 	rtcConnection.localUid = connection.localUid;
 	std::string Url = TCHAR_TO_ANSI(*url);
-	auto ret = RtcEngineProxyClassWrapper::startRtmpStreamWithoutTranscodingEx(Url.c_str(), rtcConnection);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->startRtmpStreamWithoutTranscodingEx(Url.c_str(), rtcConnection);
 	return ret;
 }
 
@@ -4008,7 +4008,7 @@ int UAgoraRtcEngine::StartChannelMediaRelayEx(const FChannelMediaRelayConfigurat
 	rtcConnection.channelId = ChannelId.c_str();
 	rtcConnection.localUid = connection.localUid;
 
-	auto ret = RtcEngineProxyClassWrapper::startChannelMediaRelayEx(channelMediaRelayConfiguration, rtcConnection);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->startChannelMediaRelayEx(channelMediaRelayConfiguration, rtcConnection);
 	delete mediaInfo;
 	delete[] mediaInfos;
 	return ret;
@@ -4039,7 +4039,7 @@ int UAgoraRtcEngine::UpdateChannelMediaRelayEx(const FChannelMediaRelayConfigura
 	std::string ChannelId = TCHAR_TO_ANSI(*connection.channelId);
 	rtcConnection.channelId = ChannelId.c_str();
 	rtcConnection.localUid = connection.localUid;
-	auto ret = RtcEngineProxyClassWrapper::updateChannelMediaRelayEx(channelMediaRelayConfiguration, rtcConnection);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->updateChannelMediaRelayEx(channelMediaRelayConfiguration, rtcConnection);
 	delete mediaInfo;
 	delete[] mediaInfos;
 	return ret;
@@ -4051,7 +4051,7 @@ int UAgoraRtcEngine::StopChannelMediaRelayEx(const FRtcConnection& connection)
 	std::string ChannelId = TCHAR_TO_ANSI(*connection.channelId);
 	rtcConnection.channelId = ChannelId.c_str();
 	rtcConnection.localUid = connection.localUid;
-	auto ret = RtcEngineProxyClassWrapper::stopChannelMediaRelayEx(rtcConnection);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->stopChannelMediaRelayEx(rtcConnection);
 	return ret;
 }
 
@@ -4061,7 +4061,7 @@ int UAgoraRtcEngine::PauseAllChannelMediaRelayEx(const FRtcConnection& connectio
 	std::string ChannelId = TCHAR_TO_ANSI(*connection.channelId);
 	rtcConnection.channelId = ChannelId.c_str();
 	rtcConnection.localUid = connection.localUid;
-	auto ret = RtcEngineProxyClassWrapper::pauseAllChannelMediaRelayEx(rtcConnection);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->pauseAllChannelMediaRelayEx(rtcConnection);
 	return ret;
 }
 
@@ -4071,7 +4071,7 @@ int UAgoraRtcEngine::ResumeAllChannelMediaRelayEx(const FRtcConnection& connecti
 	std::string ChannelId = TCHAR_TO_ANSI(*connection.channelId);
 	rtcConnection.channelId = ChannelId.c_str();
 	rtcConnection.localUid = connection.localUid;
-	auto ret = RtcEngineProxyClassWrapper::resumeAllChannelMediaRelayEx(rtcConnection);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->resumeAllChannelMediaRelayEx(rtcConnection);
 	return ret;
 }
 
@@ -4079,7 +4079,7 @@ int UAgoraRtcEngine::SetParameters(FString parameters)
 {
 	std::string parameterstr = TCHAR_TO_ANSI(*parameters);
 
-	auto ret = RtcEngineProxyClassWrapper::setParameters(parameterstr.c_str());
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->setParameters(parameterstr.c_str());
 	return ret;
 }
 
