@@ -1,5 +1,6 @@
 #pragma once
 #include "AgoraHeaderBase.h"
+#include <string>
 #include <memory>
 
 namespace agora {

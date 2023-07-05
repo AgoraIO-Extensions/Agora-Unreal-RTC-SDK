@@ -115,16 +115,19 @@ struct FCacheStatistics {
 USTRUCT(BlueprintType)
 struct FPlayerUpdatedInfo {
 	GENERATED_BODY()
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|PlayerUpdatedInfo")
-	AGORAOPTIONAL playerIdValue;
+	// If the box is unchecked, the value of the corresponding variable (named without _SetValue)  will be ignored.
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ChannelMediaOptions")
+	bool playerId_SetValue;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|PlayerUpdatedInfo")
 	FString playerId;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|PlayerUpdatedInfo")
-	AGORAOPTIONAL deviceIdValue;
+	// If the box is unchecked, the value of the corresponding variable (named without _SetValue)  will be ignored.
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ChannelMediaOptions")
+	bool deviceId_SetValue;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|PlayerUpdatedInfo")
 	FString deviceId;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|PlayerUpdatedInfo")
-	AGORAOPTIONAL cacheStatisticsValue;
+	// If the box is unchecked, the value of the corresponding variable (named without _SetValue)  will be ignored.
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ChannelMediaOptions")
+	bool cacheStatistics_SetValue;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|PlayerUpdatedInfo")
 	FCacheStatistics cacheStatistics;
 };
@@ -142,11 +145,15 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPlayerInfoUpdated, const FPlayerU
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAudioVolumeIndicationSource, int, volume);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnReadData, TArray<int64>, buffer, int, bufferSize);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnSeek, int64, offset, int, whence);
+
+
+class IMediaPlayerSourceObserverClassWrapper : public agora::rtc::IMediaPlayerSourceObserver{};
+
 /**
  * 
  */
 UCLASS(Blueprintable)
-class AGORAPLUGIN_API UIMediaPlayerSourceObserver : public UObject, public agora::rtc::IMediaPlayerSourceObserver
+class AGORAPLUGIN_API UIMediaPlayerSourceObserver : public UObject, public IMediaPlayerSourceObserverClassWrapper
 {
 	GENERATED_BODY()
 public:
@@ -197,8 +204,11 @@ public:
 
 };
 
+
+class IMediaPlayerCustomDataProviderClassWrapper : public agora::media::base::IMediaPlayerCustomDataProvider {};
+
 UCLASS(Blueprintable)
-class AGORAPLUGIN_API UIMediaPlayerCustomDataProvider : public UObject, public agora::media::base::IMediaPlayerCustomDataProvider
+class AGORAPLUGIN_API UIMediaPlayerCustomDataProvider : public UObject, public IMediaPlayerCustomDataProviderClassWrapper
 {
 	GENERATED_BODY()
 public:

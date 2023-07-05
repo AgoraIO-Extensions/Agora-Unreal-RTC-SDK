@@ -167,6 +167,15 @@ void UIRtcEngineEventHandler::onAudioDeviceStateChanged(const char* deviceId, in
 		OnAudioDeviceStateChanged.Broadcast(FString(deviceId), deviceType, deviceState);
 	});
 }
+
+void UIRtcEngineEventHandler::onAudioMixingPositionChanged(int64_t position)
+{
+	AsyncTask(ENamedThreads::GameThread, [=]()
+		{
+		OnAudioMixingPositionChanged.Broadcast(position);
+	});
+}
+
 void UIRtcEngineEventHandler::onAudioMixingFinished()
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -338,13 +347,6 @@ void UIRtcEngineEventHandler::onUserEnableLocalVideo(agora::rtc::uid_t uid, bool
 		OnUserEnableLocalVideo.Broadcast((int64)uid, enabled);
 	});
 }
-void UIRtcEngineEventHandler::onApiCallExecuted(int err, const char* api, const char* result)
-{
-	AsyncTask(ENamedThreads::GameThread, [=]()
-	{
-		OnApiCallExecuted.Broadcast(err, FString(api), FString(result));
-	});
-}
 void UIRtcEngineEventHandler::onLocalAudioStats(const agora::rtc::LocalAudioStats& stats)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -407,7 +409,7 @@ void UIRtcEngineEventHandler::onLocalVideoStats(agora::rtc::VIDEO_SOURCE_TYPE so
 		localVideoStats.encodedFrameCount = stats.encodedFrameCount;
 		localVideoStats.codecType = (EVIDEO_CODEC_TYPE)stats.codecType;
 		localVideoStats.txPacketLossRate = stats.txPacketLossRate;
-		localVideoStats.captureBrightnessLevel = (ECAPTURE_BRIGHTNESS_LEVEL_TYPE)stats.captureBrightnessLevel;
+		localVideoStats.captureBrightnessLevel =stats.captureBrightnessLevel;
 		localVideoStats.dualStreamEnabled = stats.dualStreamEnabled;
 		OnLocalVideoStats.Broadcast((EVIDEO_SOURCE_TYPE)source, localVideoStats);
 	});
@@ -418,6 +420,7 @@ void UIRtcEngineEventHandler::onRemoteVideoStats(const agora::rtc::RemoteVideoSt
 	{
 		FRemoteVideoStats remoteVideoStats;
 		remoteVideoStats.uid = stats.uid;
+		remoteVideoStats.e2eDelay = stats.e2eDelay;
 		remoteVideoStats.width = stats.width;
 		remoteVideoStats.height = stats.height;
 		remoteVideoStats.receivedBitrate = stats.receivedBitrate;
@@ -431,7 +434,6 @@ void UIRtcEngineEventHandler::onRemoteVideoStats(const agora::rtc::RemoteVideoSt
 		remoteVideoStats.avSyncTimeMs = stats.avSyncTimeMs;
 		remoteVideoStats.totalActiveTime = stats.totalActiveTime;
 		remoteVideoStats.publishDuration = stats.publishDuration;
-		remoteVideoStats.superResolutionType = stats.superResolutionType;
 		OnRemoteVideoStats.Broadcast(remoteVideoStats);
 	});
 }
@@ -490,14 +492,14 @@ void UIRtcEngineEventHandler::onAudioMixingStateChanged(agora::rtc::AUDIO_MIXING
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
-		OnAudioMixingStateChanged.Broadcast((EAUDIO_MIXING_STATE_TYPE)state, (EAUDIO_MIXING_REASON_TYPE)reason);
+		OnAudioMixingStateChanged.Broadcast(state,reason);
 	});
 }
 void UIRtcEngineEventHandler::onRhythmPlayerStateChanged(agora::rtc::RHYTHM_PLAYER_STATE_TYPE state, agora::rtc::RHYTHM_PLAYER_ERROR_TYPE errorCode)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
-		OnRhythmPlayerStateChanged.Broadcast((ERHYTHM_PLAYER_STATE_TYPE)state, (ERHYTHM_PLAYER_ERROR_TYPE)errorCode);
+		OnRhythmPlayerStateChanged.Broadcast(state, errorCode);
 	});
 }
 void UIRtcEngineEventHandler::onConnectionLost()
@@ -553,6 +555,15 @@ void UIRtcEngineEventHandler::onTokenPrivilegeWillExpire(const char* token)
 		OnTokenPrivilegeWillExpire.Broadcast(FString(token));
 	});
 }
+
+void UIRtcEngineEventHandler::onLicenseValidationFailure(agora::LICENSE_ERROR_TYPE error)
+{
+	AsyncTask(ENamedThreads::GameThread, [=]()
+		{
+		OnLicenseValidationFailure.Broadcast((ELICENSE_ERROR_TYPE)error);
+	});
+}
+
 void UIRtcEngineEventHandler::onFirstLocalAudioFramePublished(int elapsed)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -629,7 +640,7 @@ void UIRtcEngineEventHandler::onAudioDeviceVolumeChanged(agora::rtc::MEDIA_DEVIC
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
-		OnAudioDeviceVolumeChanged.Broadcast((EMEDIA_DEVICE_TYPE)deviceType, volume, muted);
+		OnAudioDeviceVolumeChanged.Broadcast(deviceType, volume, muted);
 	});
 }
 void UIRtcEngineEventHandler::onRtmpStreamingStateChanged(const char* url, agora::rtc::RTMP_STREAM_PUBLISH_STATE state, agora::rtc::RTMP_STREAM_PUBLISH_ERROR_TYPE errCode)
@@ -735,7 +746,7 @@ void UIRtcEngineEventHandler::onNetworkTypeChanged(agora::rtc::NETWORK_TYPE type
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
-		OnNetworkTypeChanged.Broadcast((ENETWORK_TYPE)type);
+		OnNetworkTypeChanged.Broadcast(type);
 	});
 }
 void UIRtcEngineEventHandler::onEncryptionError(agora::rtc::ENCRYPTION_ERROR_TYPE errorType)
@@ -841,9 +852,40 @@ void UIRtcEngineEventHandler::onUserAccountUpdated(agora::rtc::uid_t uid, const 
 }
 
 
-const char* UIRtcEngineEventHandler::eventHandlerType() const
+void UIRtcEngineEventHandler::onLocalVideoTranscoderError(const agora::rtc::TranscodingVideoStream& stream, agora::rtc::VIDEO_TRANSCODER_ERROR error)
 {
-	 return "event_handler"; 
+	AsyncTask(ENamedThreads::GameThread, [=]()
+		{
+		FTranscodingVideoStream videoStream;
+		videoStream.sourceType = (EMEDIA_SOURCE_TYPE)stream.sourceType;
+		videoStream.remoteUserUid = stream.remoteUserUid;
+		videoStream.imageUrl = FString(stream.imageUrl);
+		videoStream.x = stream.x;
+		videoStream.y = stream.y;
+		videoStream.width = stream.width;
+		videoStream.height = stream.height;
+		videoStream.zOrder = stream.zOrder;
+		videoStream.alpha = stream.alpha;
+		videoStream.mirror = stream.mirror;
+		OnLocalVideoTranscoderError.Broadcast(videoStream, (EVIDEO_TRANSCODER_ERROR)error);
+	});
+}
+
+
+void UIRtcEngineEventHandler::onVideoRenderingTracingResult(agora::rtc::uid_t uid, agora::rtc::MEDIA_TRACE_EVENT currentEvent, agora::rtc::VideoRenderingTracingInfo tracingInfo)
+{
+	AsyncTask(ENamedThreads::GameThread, [=]()
+		{
+			FVideoRenderingTracingInfo videoRenderingTracingInfo;
+			videoRenderingTracingInfo.elapsedTime = tracingInfo.elapsedTime;
+			videoRenderingTracingInfo.start2JoinChannel = tracingInfo.start2JoinChannel;
+			videoRenderingTracingInfo.join2JoinSuccess = tracingInfo.join2JoinSuccess;
+			videoRenderingTracingInfo.joinSuccess2RemoteJoined = tracingInfo.joinSuccess2RemoteJoined;
+			videoRenderingTracingInfo.remoteJoined2SetView = tracingInfo.remoteJoined2SetView;
+			videoRenderingTracingInfo.remoteJoined2UnmuteVideo = tracingInfo.remoteJoined2UnmuteVideo;
+			videoRenderingTracingInfo.remoteJoined2PacketReceived = tracingInfo.remoteJoined2PacketReceived;
+			OnVideoRenderingTracingResult.Broadcast((int64)uid,(EMEDIA_TRACE_EVENT)currentEvent, videoRenderingTracingInfo);
+		});
 }
 
 int UIMetadataObserver::getMaxMetadataSize()

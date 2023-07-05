@@ -78,7 +78,7 @@ bool UIPacketObserver::onReceiveVideoPacket(agora::rtc::IPacketObserver::Packet&
 	return true;
 }
 
-void UIAudioEncodedFrameObserver::OnRecordAudioEncodedFrame(const uint8_t* frameBuffer, int length, const agora::rtc::EncodedAudioFrameInfo& audioEncodedFrameInfo)
+void UIAudioEncodedFrameObserver::onRecordAudioEncodedFrame(const uint8_t* frameBuffer, int length, const agora::rtc::EncodedAudioFrameInfo& audioEncodedFrameInfo)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
@@ -104,7 +104,7 @@ void UIAudioEncodedFrameObserver::OnRecordAudioEncodedFrame(const uint8_t* frame
 	});
 }
 
-void UIAudioEncodedFrameObserver::OnPlaybackAudioEncodedFrame(const uint8_t* frameBuffer, int length, const agora::rtc::EncodedAudioFrameInfo& audioEncodedFrameInfo)
+void UIAudioEncodedFrameObserver::onPlaybackAudioEncodedFrame(const uint8_t* frameBuffer, int length, const agora::rtc::EncodedAudioFrameInfo& audioEncodedFrameInfo)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
@@ -131,7 +131,7 @@ void UIAudioEncodedFrameObserver::OnPlaybackAudioEncodedFrame(const uint8_t* fra
 }
 
 
-void UIAudioEncodedFrameObserver::OnMixedAudioEncodedFrame(const uint8_t* frameBuffer, int length, const agora::rtc::EncodedAudioFrameInfo& audioEncodedFrameInfo)
+void UIAudioEncodedFrameObserver::onMixedAudioEncodedFrame(const uint8_t* frameBuffer, int length, const agora::rtc::EncodedAudioFrameInfo& audioEncodedFrameInfo)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{

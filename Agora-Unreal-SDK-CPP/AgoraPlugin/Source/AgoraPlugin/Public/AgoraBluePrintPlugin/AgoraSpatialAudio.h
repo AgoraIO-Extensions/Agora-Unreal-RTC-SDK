@@ -50,6 +50,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Agora|ILocalSpatialAudioEngine")
 	int ClearRemotePositionsEx(FRtcConnection& connection);
 	UFUNCTION(BlueprintCallable, Category = "Agora|ILocalSpatialAudioEngine")
+	int SetRemoteAudioAttenuation(int64 uid, bool forceSet, FString attenuation = "0.0");
+	UFUNCTION(BlueprintCallable, Category = "Agora|ILocalSpatialAudioEngine")
 	void Release();
 	UFUNCTION(BlueprintCallable, Category = "Agora|ILocalSpatialAudioEngine")
 	int SetMaxAudioRecvCount(int maxCount);
@@ -69,6 +71,14 @@ public:
 	int MuteLocalAudioStream(bool mute);
 	UFUNCTION(BlueprintCallable, Category = "Agora|ILocalSpatialAudioEngine")
 	int MuteAllRemoteAudioStreams(bool mute);
+
+	UFUNCTION(BlueprintCallable, Category = "Agora|ILocalSpatialAudioEngine")
+	int SetZones(TArray<FSpatialAudioZone> zones);
+	UFUNCTION(BlueprintCallable, Category = "Agora|ILocalSpatialAudioEngine")
+		int SetPlayerAttenuation(int playerId, bool forceSet, FString attenuation = "0.0");
+	UFUNCTION(BlueprintCallable, Category = "Agora|ILocalSpatialAudioEngine")
+	int muteRemoteAudioStream(int64 uid, bool mute);
+
 	void SetLocalSpatialAudioEngine(agora::rtc::ILocalSpatialAudioEngine* localSpatialAudioEngine);
 private:
 	agora::rtc::ILocalSpatialAudioEngine* LocalSpatialAudioEngine;

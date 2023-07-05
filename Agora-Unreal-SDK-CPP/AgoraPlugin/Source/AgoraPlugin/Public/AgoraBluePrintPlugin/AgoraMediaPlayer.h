@@ -131,7 +131,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Agora|IMediaPlayer")
 	int SelectAudioTrack(int index);
 	UFUNCTION(BlueprintCallable, Category = "Agora|IMediaPlayer")
-	int SetPlayerOption(FString key, FString value);
+	int SetPlayerOptionInInt(FString key, int value);
+	UFUNCTION(BlueprintCallable, Category = "Agora|IMediaPlayer")
+	int SetPlayerOptionInString(FString key, FString value);
 	UFUNCTION(BlueprintCallable, Category = "Agora|IMediaPlayer")
 	int TakeScreenshot(FString filename);
 	UFUNCTION(BlueprintCallable, Category = "Agora|IMediaPlayer")
@@ -161,9 +163,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Agora|IMediaPlayer")
 	int UnregisterPlayerSourceObserver(UIMediaPlayerSourceObserver* observer);
 	UFUNCTION(BlueprintCallable, Category = "Agora|IMediaPlayer")
-	int RegisterAudioFrameObserver(UIAudioFrameObserver* observer, ERAW_AUDIO_FRAME_OP_MODE_TYPE mode);
+	int RegisterAudioFrameObserver(UIAudioPcmFrameSink* observer, ERAW_AUDIO_FRAME_OP_MODE_TYPE mode = ERAW_AUDIO_FRAME_OP_MODE_TYPE::RAW_AUDIO_FRAME_OP_MODE_READ_ONLY);
 	UFUNCTION(BlueprintCallable, Category = "Agora|IMediaPlayer")
-	int UnregisterAudioFrameObserver(UIAudioFrameObserver* observer);
+	int UnregisterAudioFrameObserver(UIAudioPcmFrameSink* observer);
 	UFUNCTION(BlueprintCallable, Category = "Agora|IMediaPlayer")
 	int RegisterVideoFrameObserver(UIVideoFrameObserver* observer);
 	UFUNCTION(BlueprintCallable, Category = "Agora|IMediaPlayer")

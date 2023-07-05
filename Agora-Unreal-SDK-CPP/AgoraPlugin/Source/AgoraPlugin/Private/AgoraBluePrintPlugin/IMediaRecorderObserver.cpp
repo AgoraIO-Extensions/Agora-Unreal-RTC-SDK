@@ -4,14 +4,14 @@
 #include "AgoraBluePrintPlugin/IMediaRecorderObserver.h"
 
 
-void UIMediaRecorderObserver::onRecorderStateChanged(agora::media::RecorderState state, agora::media::RecorderErrorCode error)
+void UIMediaRecorderObserver::onRecorderStateChanged(const char* channelId, agora::rtc::uid_t uid, agora::media::RecorderState state, agora::media::RecorderErrorCode error)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
-		OnRecorderStateChanged.Broadcast((ERecorderState)state, (ERecorderErrorCode)error);
+		OnRecorderStateChanged.Broadcast((FString)(channelId),(int64)(uid),state, (ERecorderErrorCode)error);
 	});
 }
-void UIMediaRecorderObserver::onRecorderInfoUpdated(const agora::media::RecorderInfo& info)
+void UIMediaRecorderObserver::onRecorderInfoUpdated(const char* channelId, agora::rtc::uid_t uid, const agora::media::RecorderInfo& info)
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
@@ -19,6 +19,6 @@ void UIMediaRecorderObserver::onRecorderInfoUpdated(const agora::media::Recorder
 		recorderInfo.fileName = FString(info.fileName);
 		recorderInfo.durationMs = info.durationMs;
 		recorderInfo.fileSize = info.fileSize;
-		OnRecorderInfoUpdated.Broadcast(recorderInfo);
+		OnRecorderInfoUpdated.Broadcast((FString)(channelId), (int64)(uid), recorderInfo);
 	});
 }

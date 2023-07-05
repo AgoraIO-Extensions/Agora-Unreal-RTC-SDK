@@ -77,15 +77,16 @@ void UIMediaPlayerSourceObserver::onPlayerInfoUpdated(const agora::media::base::
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
 		FPlayerUpdatedInfo playerUpdatedInfo;
-		if (playerUpdatedInfo.playerIdValue != AGORAOPTIONAL::AGORA_NULL_VALUE)
-		{
+		playerUpdatedInfo.playerId_SetValue = info.playerId.has_value();
+		playerUpdatedInfo.deviceId_SetValue = info.deviceId.has_value();
+		playerUpdatedInfo.cacheStatistics_SetValue = info.cacheStatistics.has_value();
+		if(info.playerId.has_value()){
 			playerUpdatedInfo.playerId = FString(*info.playerId);
 		}
-		if (playerUpdatedInfo.deviceIdValue != AGORAOPTIONAL::AGORA_NULL_VALUE)
-		{
+		if (info.deviceId.has_value()) {
 			playerUpdatedInfo.deviceId = FString(*info.deviceId);
 		}
-		if (playerUpdatedInfo.cacheStatisticsValue != AGORAOPTIONAL::AGORA_NULL_VALUE)
+		if (info.deviceId.has_value())
 		{
 			FCacheStatistics Statistics;
 			Statistics.cacheSize = info.cacheStatistics->cacheSize;

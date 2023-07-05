@@ -1,5 +1,4 @@
 #include "AgoraCppPlugin/Include/VideoRender.h"
-#include "AgoraCppPlugin/Include/MediaEngineProxy.h"
 #include "AgoraCppPlugin/Include/AgoraHeaderBase.h"
 #include "AgoraCppPlugin/Include/RtcEngineProxy.h"
 #include "AgoraCppPlugin/Include/VideoObserverInternal.h"
@@ -49,6 +48,7 @@ namespace agora {
 					tex->PlatformData->Mips[0].BulkData.Unlock();
 					tex->UpdateResource();
 					RenderBrush.SetResourceObject(tex);
+					RenderBrush.SetImageSize(FVector2D(RenderVideoFrame->width, RenderVideoFrame->height));
 					if (RenderImage != nullptr) {
 						RenderImage->SetBrush(RenderBrush);
 					}

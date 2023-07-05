@@ -58,7 +58,7 @@ public:
    * - 0: Success.
    * - < 0: Failure.
    */
-  virtual int openWithCustomSource(int64_t startPos,  media::base::IMediaPlayerCustomDataProvider* provider) = 0;
+  virtual int openWithCustomSource(int64_t startPos,  media::base::IMediaPlayerCustomDataProvider* provider) __deprecated = 0;
 
   /**
    * @brief Open a media file with a media file source.
@@ -307,21 +307,21 @@ public:
    * - 0: Success.
    * - < 0: Failure.
    */
-  virtual int registerAudioFrameObserver(media::base::IAudioFrameObserver* observer) = 0;
+  virtual int registerAudioFrameObserver(media::IAudioPcmFrameSink* observer) = 0;
 
   /**
    * Registers an audio observer.
    *
    * @param observer The audio observer, reporting the reception of each audio
    * frame. See
-   * \ref media::base::IAudioFrameObserver "IAudioFrameObserver" for
+   * \ref media::IAudioPcmFrameSink "IAudioFrameObserver" for
    * details.
    * @param mode Use mode of the audio frame. See #RAW_AUDIO_FRAME_OP_MODE_TYPE.
    * @return
    * - 0: Success.
    * - < 0: Failure.
    */
-  virtual int registerAudioFrameObserver(media::base::IAudioFrameObserver* observer,
+  virtual int registerAudioFrameObserver(media::IAudioPcmFrameSink* observer,
                                          RAW_AUDIO_FRAME_OP_MODE_TYPE mode) = 0;
 
   /**
@@ -331,7 +331,7 @@ public:
    * - 0: Success.
    * - < 0: Failure.
    */
-  virtual int unregisterAudioFrameObserver(media::base::IAudioFrameObserver* observer) = 0;
+  virtual int unregisterAudioFrameObserver(media::IAudioPcmFrameSink* observer) = 0;
 
   /**
    * @brief Register the player video observer
@@ -381,6 +381,8 @@ public:
   /**
     * get sdk version and build number of player SDK.
     * @return String of the SDK version.
+    * 
+    * @deprecated This method is deprecated.
    */
   virtual const char* getPlayerSdkVersion() = 0;
 

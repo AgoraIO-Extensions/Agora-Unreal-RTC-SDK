@@ -50,7 +50,6 @@ class IRtcEngineEventHandlerEx : public IRtcEngineEventHandler {
   using IRtcEngineEventHandler::onRtcStats;
   using IRtcEngineEventHandler::onNetworkQuality;
   using IRtcEngineEventHandler::onIntraRequestReceived;
-  using IRtcEngineEventHandler::onFirstLocalVideoFrame;
   using IRtcEngineEventHandler::onFirstLocalVideoFramePublished;
   using IRtcEngineEventHandler::onFirstRemoteVideoDecoded;
   using IRtcEngineEventHandler::onVideoSizeChanged;
@@ -98,6 +97,7 @@ class IRtcEngineEventHandlerEx : public IRtcEngineEventHandler {
   using IRtcEngineEventHandler::onAudioPublishStateChanged;
   using IRtcEngineEventHandler::onVideoPublishStateChanged;
   using IRtcEngineEventHandler::onSnapshotTaken;
+  using IRtcEngineEventHandler::onVideoRenderingTracingResult;
 
   virtual const char* eventHandlerType() const { return "event_handler_ex"; }
 
@@ -144,7 +144,7 @@ class IRtcEngineEventHandlerEx : public IRtcEngineEventHandler {
   @param delay The network delay (ms) from the sender to the receiver, including the delay caused by audio sampling pre-processing, network transmission, and network jitter buffering.
   @param lost The audio packet loss rate (%) from the sender to the receiver.
   */
-  virtual void onAudioQuality(const RtcConnection& connection, uid_t remoteUid, int quality, unsigned short delay, unsigned short lost) {
+  virtual void onAudioQuality(const RtcConnection& connection, uid_t remoteUid, int quality, unsigned short delay, unsigned short lost) __deprecated {
     (void)connection;
     (void)remoteUid;
     (void)quality;
@@ -254,23 +254,6 @@ class IRtcEngineEventHandlerEx : public IRtcEngineEventHandler {
     (void)connection;
   }
 
-  /**
-   * Occurs when the first local video frame is displayed on the video window.
-   *
-   * @deprecated 4.0.0 This callback is deprecated, use void onFirstLocalVideoFrame(VIDEO_SOURCE_TYPE source, int width, int height, int elapsed) instead.
-   *
-   * @param connection The RtcConnection object.
-   * @param width The width (pixels) of the video stream.
-   * @param height The height (pixels) of the video stream.
-   * @param elapsed The time elapsed (ms) from the local user calling \ref IRtcEngine::joinChannel "joinChannel" until this callback is triggered.
-   */
-  virtual void onFirstLocalVideoFrame(const RtcConnection& connection, int width, int height, int elapsed) {
-    (void)connection;
-    (void)width;
-    (void)height;
-    (void)elapsed;
-  }
-
   /** Occurs when the first local video frame is published.
    * The SDK triggers this callback under one of the following circumstances:
    * - The local client enables the video module and calls `joinChannel` successfully.
@@ -324,11 +307,13 @@ class IRtcEngineEventHandlerEx : public IRtcEngineEventHandler {
    */
   virtual void onVideoSizeChanged(const RtcConnection& connection, VIDEO_SOURCE_TYPE sourceType, uid_t uid, int width, int height, int rotation) {
     (void)connection;
+    (void)sourceType;
     (void)uid;
     (void)width;
     (void)height;
     (void)rotation;
   }
+
   /** Occurs when the local video stream state changes.
    *
    * When the state of the local video stream changes (including the state of the video capture and
@@ -497,7 +482,7 @@ class IRtcEngineEventHandlerEx : public IRtcEngineEventHandler {
   - true: The remote user has enabled video.
   - false: The remote user has disabled video.
   */
- virtual void onUserEnableVideo(const RtcConnection& connection, uid_t remoteUid, bool enabled) __deprecated {
+ virtual void onUserEnableVideo(const RtcConnection& connection, uid_t remoteUid, bool enabled) {
     (void)connection;
     (void)remoteUid;
     (void)enabled;
@@ -617,7 +602,7 @@ class IRtcEngineEventHandlerEx : public IRtcEngineEventHandler {
   @param connection The RtcConnection object.
 
   */
-  virtual void onConnectionInterrupted(const RtcConnection& connection) {
+  virtual void onConnectionInterrupted(const RtcConnection& connection) __deprecated {
     (void)connection;
   }
 
@@ -736,7 +721,7 @@ class IRtcEngineEventHandlerEx : public IRtcEngineEventHandler {
    * @param elapsed The time elapsed (ms) from the loca user calling `joinChannel`
    * until this callback is triggered.
    */
-  virtual void onFirstRemoteAudioFrame(const RtcConnection& connection, uid_t userId, int elapsed) {
+  virtual void onFirstRemoteAudioFrame(const RtcConnection& connection, uid_t userId, int elapsed) __deprecated {
     (void)connection;
     (void)userId;
     (void)elapsed;
@@ -759,7 +744,7 @@ class IRtcEngineEventHandlerEx : public IRtcEngineEventHandler {
    * @param elapsed The time elapsed (ms) from the loca user calling `joinChannel`
    * until this callback is triggered.
    */
-  virtual void onFirstRemoteAudioDecoded(const RtcConnection& connection, uid_t uid, int elapsed) {
+  virtual void onFirstRemoteAudioDecoded(const RtcConnection& connection, uid_t uid, int elapsed) __deprecated {
     (void)connection;
     (void)uid;
     (void)elapsed;
@@ -875,7 +860,7 @@ class IRtcEngineEventHandlerEx : public IRtcEngineEventHandler {
   remote user.
   */
   virtual void onRemoteAudioTransportStats(const RtcConnection& connection, uid_t remoteUid, unsigned short delay, unsigned short lost,
-                                           unsigned short rxKBitRate) {
+                                           unsigned short rxKBitRate) __deprecated {
     (void)connection;
     (void)remoteUid;
     (void)delay;
@@ -902,7 +887,7 @@ class IRtcEngineEventHandlerEx : public IRtcEngineEventHandler {
   the remote user.
   */
   virtual void onRemoteVideoTransportStats(const RtcConnection& connection, uid_t remoteUid, unsigned short delay, unsigned short lost,
-                                           unsigned short rxKBitRate) {
+                                           unsigned short rxKBitRate) __deprecated {
     (void)connection;
     (void)remoteUid;
     (void)delay;
@@ -1027,6 +1012,20 @@ class IRtcEngineEventHandlerEx : public IRtcEngineEventHandler {
     (void)width;
     (void)height;
     (void)errCode;
+  }
+
+  /**
+   * Reports the tracing result of video rendering event of the user.
+   * 
+   * @param connection The RtcConnection object.
+   * @param uid The user ID.
+   * @param currentEvent The current event of the tracing result: #MEDIA_TRACE_EVENT.
+   * @param tracingInfo The tracing result: #VideoRenderingTracingInfo.
+   */
+  virtual void onVideoRenderingTracingResult(const RtcConnection& connection, uid_t uid, MEDIA_TRACE_EVENT currentEvent, VideoRenderingTracingInfo tracingInfo) {
+    (void)uid;
+    (void)currentEvent;
+    (void)tracingInfo;
   }
 };
 
@@ -1387,7 +1386,7 @@ public:
     /** Sets remote user parameters for spatial audio
 
     @param uid The ID of the remote user.
-    @param param spatial audio parameters: SpatialAudioParams.
+    @param param Spatial audio parameters. See SpatialAudioParams.
     @param connection The RtcConnection object.
 
     @return int
@@ -1438,6 +1437,37 @@ public:
      * - < 0: Failure.
      */
     virtual int enableLoopbackRecordingEx(const RtcConnection& connection, bool enabled, const char* deviceName = NULL) = 0;
+    
+    /**
+     * Adjusts the recording volume.
+     *
+     * @param volume The recording volume, which ranges from 0 to 400:
+     * - 0  : Mute the recording volume.
+     * - 100: The original volume.
+     * - 400: (Maximum) Four times the original volume with signal clipping protection.
+     *
+     * @param connection The RtcConnection object.
+     *
+     * @return
+     * - 0  : Success.
+     * - < 0: Failure.
+     */
+    virtual int adjustRecordingSignalVolumeEx(int volume, const RtcConnection& connection) = 0;
+    
+    /**
+     * Mute or resume recording signal volume.
+     *
+     * @param mute Determines whether to mute or resume the recording signal volume.
+     * -  true: Mute the recording signal volume.
+     * - false: (Default) Resume the recording signal volume.
+     *
+     * @param connection The RtcConnection object.
+     *
+     * @return
+     * - 0  : Success.
+     * - < 0: Failure.
+     */
+    virtual int muteRecordingSignalEx(bool mute, const RtcConnection& connection) = 0;
 
     /**
      * Adjust the playback signal volume of a specified remote user.
@@ -1684,24 +1714,49 @@ public:
       */
     virtual int stopRtmpStreamEx(const char* url, const RtcConnection& connection) = 0;
   
-    /** Starts to relay media streams across channels.
+    /** Starts relaying media streams across channels or updates the channels for media relay.
      *
+     * @since v4.2.0
      * @param configuration The configuration of the media stream relay:ChannelMediaRelayConfiguration.
      * @param connection RtcConnection.
      * @return
      * - 0: Success.
      * - < 0: Failure.
+     *   - -1(ERR_FAILED): A general error occurs (no specified reason).
+     *   - -2(ERR_INVALID_ARGUMENT): The argument is invalid.
+     *   - -5(ERR_REFUSED): The request is rejected.
+     *   - -8(ERR_INVALID_STATE): The current status is invalid, only allowed to be called when the role is the broadcaster.
      */
-    virtual int startChannelMediaRelayEx(const ChannelMediaRelayConfiguration& configuration, const RtcConnection& connection) = 0;
+    virtual int startOrUpdateChannelMediaRelayEx(const ChannelMediaRelayConfiguration& configuration, const RtcConnection& connection) = 0;
+  
+    /** Starts to relay media streams across channels.
+     *
+     * @deprecated v4.2.0 Use `startOrUpdateChannelMediaRelayEx` instead.
+     * @param configuration The configuration of the media stream relay:ChannelMediaRelayConfiguration.
+     * @param connection RtcConnection.
+     * @return
+     * - 0: Success.
+     * - < 0: Failure.
+     *   - -1(ERR_FAILED): A general error occurs (no specified reason).
+     *   - -2(ERR_INVALID_ARGUMENT): The argument is invalid.
+     *   - -5(ERR_REFUSED): The request is rejected.
+     *   - -8(ERR_INVALID_STATE): The current status is invalid, only allowed to be called when the role is the broadcaster.
+     */
+    virtual int startChannelMediaRelayEx(const ChannelMediaRelayConfiguration& configuration, const RtcConnection& connection) __deprecated = 0;
   
     /** Updates the channels for media stream relay
+     * @deprecated v4.2.0 Use `startOrUpdateChannelMediaRelayEx` instead.
      * @param configuration The media stream relay configuration: ChannelMediaRelayConfiguration.
      * @param connection RtcConnection.
      * @return
      * - 0: Success.
      * - < 0: Failure.
+     *   - -1(ERR_FAILED): A general error occurs (no specified reason).
+     *   - -2(ERR_INVALID_ARGUMENT): The argument is invalid.
+     *   - -5(ERR_REFUSED): The request is rejected.
+     *   - -7(ERR_NOT_INITIALIZED): cross channel media streams are not relayed.
      */
-    virtual int updateChannelMediaRelayEx(const ChannelMediaRelayConfiguration& configuration, const RtcConnection& connection) = 0;
+    virtual int updateChannelMediaRelayEx(const ChannelMediaRelayConfiguration& configuration, const RtcConnection& connection) __deprecated = 0;
   
     /** Stops the media stream relay.
      *
@@ -1712,6 +1767,10 @@ public:
      * @return
      * - 0: Success.
      * - < 0: Failure.
+     *   - -1(ERR_FAILED): A general error occurs (no specified reason).
+     *   - -2(ERR_INVALID_ARGUMENT): The argument is invalid.
+     *   - -5(ERR_REFUSED): The request is rejected.
+     *   - -7(ERR_NOT_INITIALIZED): cross channel media streams are not relayed.
      */
     virtual int stopChannelMediaRelayEx(const RtcConnection& connection) = 0;
   
@@ -1721,6 +1780,10 @@ public:
      * @return
      * - 0: Success.
      * - < 0: Failure.
+     *   - -1(ERR_FAILED): A general error occurs (no specified reason).
+     *   - -2(ERR_INVALID_ARGUMENT): The argument is invalid.
+     *   - -5(ERR_REFUSED): The request is rejected.
+     *   - -7(ERR_NOT_INITIALIZED): cross channel media streams are not relayed.
      */
     virtual int pauseAllChannelMediaRelayEx(const RtcConnection& connection) = 0;
 
@@ -1730,6 +1793,10 @@ public:
      * @return
      * - 0: Success.
      * - < 0: Failure.
+     *   - -1(ERR_FAILED): A general error occurs (no specified reason).
+     *   - -2(ERR_INVALID_ARGUMENT): The argument is invalid.
+     *   - -5(ERR_REFUSED): The request is rejected.
+     *   - -7(ERR_NOT_INITIALIZED): cross channel media streams are not relayed.
      */
     virtual int resumeAllChannelMediaRelayEx(const RtcConnection& connection) = 0;
 
@@ -1763,22 +1830,10 @@ public:
     */
     virtual int getUserInfoByUidEx(uid_t uid, rtc::UserInfo* userInfo, const RtcConnection& connection) = 0;
 
-    /**
-     * Specify video stream parameters based on video profile
-     * @param [in] width
-     *        width of video resolution in pixel
-     * @param [in] height
-     *        height of video resolution in pixel
-     * @param [in] frameRate
-     *        frame rate in fps
-     * @param [in] bitrate
-     *        bit rate in kbps
-     * @return return 0 if success or an error code
-     */
-    virtual int setVideoProfileEx(int width, int height, int frameRate, int bitrate) = 0;
-
      /**
      * Enables or disables the dual video stream mode.
+     *
+     * @deprecated v4.2.0. This method is deprecated. Use setDualStreamModeEx instead
      *
      * If dual-stream mode is enabled, the subscriber can choose to receive the high-stream
      * (high-resolution high-bitrate video stream) or low-stream (low-resolution low-bitrate video
@@ -1806,23 +1861,27 @@ public:
     virtual int setDualStreamModeEx(SIMULCAST_STREAM_MODE mode,
                                    const SimulcastStreamConfig& streamConfig,
                                    const RtcConnection& connection) = 0;
+    
+  /**
+    * Set the high priority user list and their fallback level in weak network condition.
+    *
+    * @note
+    * - This method can be called before and after joining a channel.
+    * - If a subscriber is set to high priority, this stream only fallback to lower stream after all normal priority users fallback to their fallback level on weak network condition if needed.
+    *
+    * @param uidList The high priority user list.
+    * @param uidNum The size of uidList.
+    * @param option The fallback level of high priority users.
+    * @param connection An output parameter which is used to control different connection instances.
+    *
+    * @return int
+    * - 0 : Success.
+    * - <0 : Failure.
+    */
+    virtual int setHighPriorityUserListEx(uid_t* uidList, int uidNum,
+                                          STREAM_FALLBACK_OPTIONS option,
+                                          const RtcConnection& connection) = 0;
 
-    /**
-     * Turns WIFI acceleration on or off.
-     *
-     * @note
-     * - This method is called before and after joining a channel.
-     * - Users check the WIFI router app for information about acceleration. Therefore, if this interface is invoked, the caller accepts that the caller's name will be displayed to the user in the WIFI router application on behalf of the caller.
-     *
-     * @param enabled
-     * - true：Turn WIFI acceleration on.
-     * - false：Turn WIFI acceleration off.
-     *
-     * @return
-     * - 0: Success.
-     * - < 0: Failure.
-     */
-    virtual int enableWirelessAccelerate(bool enabled) = 0;
   /**
    * Takes a snapshot of a video stream.
    *
@@ -1853,6 +1912,24 @@ public:
    * - < 0 : Failure.
    */
     virtual int takeSnapshotEx(const RtcConnection& connection, uid_t uid, const char* filePath)  = 0;
+
+    /**
+     @brief Start tracing media rendering events.
+     @since v4.1.1
+     @discussion
+     - SDK will trace media rendering events when this API is called.
+     - The tracing result can be obtained through callback `IRtcEngineEventHandler(Ex)::onVideoRenderingTracingResult`
+     @param connection The RtcConnection object.
+     @note
+     - By default, SDK will trace media rendering events when `IRtcEngineEx::joinChannelEx` is called.
+     - The start point of event tracing will be reset after leaving channel.
+     @return
+     - 0: Success.
+     - < 0: Failure.
+      - -2(ERR_INVALID_ARGUMENT): The parameter is invalid. Check the channel ID and local uid set by parameter `connection`.
+      - -7(ERR_NOT_INITIALIZED): The SDK is not initialized. Initialize the `IRtcEngine` instance before calling this method.
+     */
+    virtual int startMediaRenderingTracingEx(const RtcConnection& connection) = 0;
 };
 
 }  // namespace rtc

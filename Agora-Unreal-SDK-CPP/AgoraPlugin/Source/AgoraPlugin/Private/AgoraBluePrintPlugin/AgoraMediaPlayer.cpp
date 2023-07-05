@@ -125,10 +125,18 @@ int UIMediaPlayer::SelectAudioTrack(int index)
 	return MediaPlayer->selectAudioTrack(index);
 }
 
-int UIMediaPlayer::SetPlayerOption(FString key, FString value)
+int UIMediaPlayer::SetPlayerOptionInInt(FString key, int value)
 {
-	return MediaPlayer->setPlayerOption(TCHAR_TO_ANSI(*key), TCHAR_TO_ANSI(*value));
+	auto ret = MediaPlayer->setPlayerOption(TCHAR_TO_ANSI(*key), value);
+	return ret;
 }
+
+int UIMediaPlayer::SetPlayerOptionInString(FString key, FString value)
+{
+	auto ret = MediaPlayer->setPlayerOption(TCHAR_TO_ANSI(*key), TCHAR_TO_ANSI(*value));
+	return ret;
+}
+
 int UIMediaPlayer::TakeScreenshot(FString filename)
 {
 	return MediaPlayer->takeScreenshot(TCHAR_TO_ANSI(*filename));
@@ -185,13 +193,13 @@ int UIMediaPlayer::UnregisterPlayerSourceObserver(UIMediaPlayerSourceObserver* o
 {
 	return MediaPlayer->unregisterPlayerSourceObserver(observer);
 }
-int UIMediaPlayer::RegisterAudioFrameObserver(UIAudioFrameObserver* observer, ERAW_AUDIO_FRAME_OP_MODE_TYPE mode)
+int UIMediaPlayer::RegisterAudioFrameObserver(UIAudioPcmFrameSink* observer, ERAW_AUDIO_FRAME_OP_MODE_TYPE mode)
 {
-	return MediaPlayer->registerAudioFrameObserver((agora::media::base::IAudioFrameObserver*)observer, (agora::rtc::RAW_AUDIO_FRAME_OP_MODE_TYPE)mode);
+	return MediaPlayer->registerAudioFrameObserver((agora::media::IAudioPcmFrameSink*)observer, (agora::rtc::RAW_AUDIO_FRAME_OP_MODE_TYPE)mode);
 }
-int UIMediaPlayer::UnregisterAudioFrameObserver(UIAudioFrameObserver* observer)
+int UIMediaPlayer::UnregisterAudioFrameObserver(UIAudioPcmFrameSink* observer)
 {
-	return MediaPlayer->unregisterAudioFrameObserver((agora::media::base::IAudioFrameObserver*)observer);
+	return MediaPlayer->unregisterAudioFrameObserver((agora::media::IAudioPcmFrameSink*)observer);
 }
 int UIMediaPlayer::RegisterVideoFrameObserver(UIVideoFrameObserver* observer)
 {
@@ -268,34 +276,7 @@ int UIMediaPlayer::UnloadSrc(FString src)
 int UIMediaPlayer::SetSpatialAudioParams(FSpatialAudioParams& params)
 {
 	agora::SpatialAudioParams spatialAudioParams;
-	if (params.speaker_azimuthValue != AGORAOPTIONAL::AGORA_NULL_VALUE)
-	{
-		spatialAudioParams.speaker_azimuth = params.speaker_azimuth;
-	}
-	if (params.speaker_elevationValue != AGORAOPTIONAL::AGORA_NULL_VALUE)
-	{
-		spatialAudioParams.speaker_elevation = params.speaker_elevation;
-	}
-	if (params.speaker_distanceValue != AGORAOPTIONAL::AGORA_NULL_VALUE)
-	{
-		spatialAudioParams.speaker_distance = params.speaker_distance;
-	}
-	if (params.speaker_orientationValue != AGORAOPTIONAL::AGORA_NULL_VALUE)
-	{
-		spatialAudioParams.speaker_orientation = params.speaker_orientation;
-	}
-	if (params.enable_blurValue != AGORAOPTIONAL::AGORA_NULL_VALUE)
-	{
-		spatialAudioParams.enable_blur = params.enable_blur;
-	}
-	if (params.enable_air_absorbValue != AGORAOPTIONAL::AGORA_NULL_VALUE)
-	{
-		spatialAudioParams.enable_air_absorb = params.enable_air_absorb;
-	}
-	if (params.speaker_attenuationValue != AGORAOPTIONAL::AGORA_NULL_VALUE)
-	{
-		spatialAudioParams.speaker_attenuation = params.speaker_attenuation;
-	}
+	SET_AGORA_DATA_SPATIALAUDIOPARAMS(spatialAudioParams, params);
 	return MediaPlayer->setSpatialAudioParams(spatialAudioParams);
 }
 int UIMediaPlayer::SetSoundPositionParams(float pan, float gain)

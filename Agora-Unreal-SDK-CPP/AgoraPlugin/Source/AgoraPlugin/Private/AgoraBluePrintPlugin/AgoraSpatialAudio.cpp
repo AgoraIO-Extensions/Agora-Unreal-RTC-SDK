@@ -103,6 +103,19 @@ int UILocalSpatialAudioEngine::ClearRemotePositionsEx(FRtcConnection& connection
 	return -ERROR_NULLPTR;
 }
 
+
+int UILocalSpatialAudioEngine::SetRemoteAudioAttenuation(int64 uid, bool forceSet, FString attenuation /*= "0.0"*/)
+{
+	if (LocalSpatialAudioEngine != nullptr)
+	{
+		double ValAttenuation = FCString::Atod(*attenuation);
+		auto ret = LocalSpatialAudioEngine->setRemoteAudioAttenuation(uid,ValAttenuation, forceSet);
+		return ret;
+	}
+	return -ERROR_NULLPTR;
+
+}
+
 void UILocalSpatialAudioEngine::Release()
 {
 	if (LocalSpatialAudioEngine != nullptr)
@@ -258,6 +271,58 @@ int UILocalSpatialAudioEngine::MuteAllRemoteAudioStreams(bool mute)
 	if (LocalSpatialAudioEngine != nullptr)
 	{
 		return LocalSpatialAudioEngine->muteAllRemoteAudioStreams(mute);
+	}
+	return -ERROR_NULLPTR;
+}
+
+
+int UILocalSpatialAudioEngine::SetZones(TArray<FSpatialAudioZone> zones)
+{
+	int zoneCount = zones.Num();
+	if (LocalSpatialAudioEngine != nullptr)
+	{
+		agora::rtc::SpatialAudioZone* valZones = new agora::rtc::SpatialAudioZone[zoneCount];
+		for (int i = 0; i < zones.Num(); i++) {
+			valZones[i].zoneSetId = zones[i].zoneSetId;
+			valZones[i].position[0] = zones[i].position.X;
+			valZones[i].position[1] = zones[i].position.Y;
+			valZones[i].position[2] = zones[i].position.Z;
+			valZones[i].forward[0] = zones[i].forward.X;
+			valZones[i].forward[1] = zones[i].forward.Y;
+			valZones[i].forward[2] = zones[i].forward.Z;
+			valZones[i].right[0] = zones[i].right.X;
+			valZones[i].right[1] = zones[i].right.Y;
+			valZones[i].right[2] = zones[i].right.Z;
+			valZones[i].up[0] = zones[i].up.X;
+			valZones[i].up[1] = zones[i].up.Y;
+			valZones[i].up[2] = zones[i].up.Z;
+			valZones[i].forwardLength = zones[i].forwardLength;
+			valZones[i].rightLength = zones[i].rightLength;
+			valZones[i].upLength = zones[i].upLength;
+			valZones[i].audioAttenuation = zones[i].audioAttenuation;
+		}
+
+		return LocalSpatialAudioEngine->setZones(valZones, zoneCount);
+	}
+	return -ERROR_NULLPTR;
+}
+
+int UILocalSpatialAudioEngine::SetPlayerAttenuation(int playerId, bool forceSet, FString attenuation /*= "0.0"*/)
+{
+	if (LocalSpatialAudioEngine != nullptr)
+	{
+		double ValAttenuation = FCString::Atod(*attenuation);
+		auto ret = LocalSpatialAudioEngine->setPlayerAttenuation(playerId,ValAttenuation, forceSet);
+		return ret;
+	}
+	return -ERROR_NULLPTR;
+}
+
+int UILocalSpatialAudioEngine::muteRemoteAudioStream(int64 uid, bool mute)
+{
+	if (LocalSpatialAudioEngine != nullptr)
+	{
+		return LocalSpatialAudioEngine->muteRemoteAudioStream(uid, mute);
 	}
 	return -ERROR_NULLPTR;
 }
