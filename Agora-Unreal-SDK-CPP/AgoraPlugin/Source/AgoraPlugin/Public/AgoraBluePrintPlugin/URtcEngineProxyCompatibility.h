@@ -1034,7 +1034,7 @@ struct FRtcEngineContext
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RtcEngineContext")
 	EAUDIO_SCENARIO_TYPE audioScenario = EAUDIO_SCENARIO_TYPE::AUDIO_SCENARIO_DEFAULT;
 	// If the box is unchecked, the value of the corresponding variable (named without _SetValue)  will be ignored.
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ChannelMediaOptions")
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RtcEngineContext")
 	bool threadPriority_SetValue;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RtcEngineContext")
 	ETHREAD_PRIORITY_TYPE threadPriority;
@@ -1065,7 +1065,7 @@ struct FRtcEngineContextEx
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RtcEngineContext")
 	EAUDIO_SCENARIO_TYPE audioScenario = EAUDIO_SCENARIO_TYPE::AUDIO_SCENARIO_DEFAULT;
 	// If the box is unchecked, the value of the corresponding variable (named without _SetValue)  will be ignored.
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ChannelMediaOptions")
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RtcEngineContext")
 	bool threadPriority_SetValue;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RtcEngineContext")
 	ETHREAD_PRIORITY_TYPE threadPriority;
@@ -1116,8 +1116,11 @@ struct FChannelMediaOptions
 	AGORAOPTIONAL publishSecondaryScreenTrack;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ChannelMediaOptions")
 	AGORAOPTIONAL publishCustomAudioTrack;
+	// If the box is unchecked, the value of the corresponding variable (named without _SetValue)  will be ignored.
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ChannelMediaOptions")
-	AGORAOPTIONAL publishCustomAudioTrackId;
+	bool publishCustomAudioTrackId_SetValue;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ChannelMediaOptions")
+	int publishCustomAudioTrackId;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ChannelMediaOptions")
 	AGORAOPTIONAL publishCustomVideoTrack;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ChannelMediaOptions")
@@ -1158,7 +1161,7 @@ struct FChannelMediaOptions
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ChannelMediaOptions")
 	bool channelProfile_SetValue = true;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ChannelMediaOptions")
-	ECHANNEL_PROFILE_TYPE channelProfile;
+	ECHANNEL_PROFILE_TYPE channelProfile = ECHANNEL_PROFILE_TYPE::CHANNEL_PROFILE_LIVE_BROADCASTING;
 	// If the box is unchecked, the value of the corresponding variable (named without _SetValue)  will be ignored.
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ChannelMediaOptions")
 	bool audioDelayMs_SetValue;
@@ -1235,10 +1238,6 @@ struct FChannelMediaOptions
 		{ \
 			Agora_ChannelMediaOptions.publishCustomAudioTrack = UE_FAgora_ChannelMediaOptions.publishCustomAudioTrack == AGORAOPTIONAL::AGORA_TRUE_VALUE; \
 		} \
-		if (UE_FAgora_ChannelMediaOptions.publishCustomAudioTrackId != AGORAOPTIONAL::AGORA_NULL_VALUE) \
-		{ \
-			Agora_ChannelMediaOptions.publishCustomAudioTrackId = UE_FAgora_ChannelMediaOptions.publishCustomAudioTrackId == AGORAOPTIONAL::AGORA_TRUE_VALUE; \
-		} \
 		if (UE_FAgora_ChannelMediaOptions.publishCustomVideoTrack != AGORAOPTIONAL::AGORA_NULL_VALUE) \
 		{ \
 			Agora_ChannelMediaOptions.publishCustomVideoTrack = UE_FAgora_ChannelMediaOptions.publishCustomVideoTrack == AGORAOPTIONAL::AGORA_TRUE_VALUE; \
@@ -1301,7 +1300,7 @@ struct FChannelMediaOptions
 		} \
 		if (UE_FAgora_ChannelMediaOptions.token_SetValue) \
 		{ \
-			std::string Token = TCHAR_TO_ANSI(*UE_FAgora_ChannelMediaOptions.token); \
+			std::string Token = TCHAR_TO_UTF8(*UE_FAgora_ChannelMediaOptions.token); \
  \
 			Agora_ChannelMediaOptions.token = Token.c_str(); \
 		} \
@@ -1376,7 +1375,7 @@ struct FEchoTestConfiguration
 	GENERATED_BODY()
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|EchoTestConfiguration")
-	int64 view;
+	UImage* view;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|EchoTestConfiguration")
 	bool enableAudio = true;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|EchoTestConfiguration")
@@ -1385,6 +1384,8 @@ struct FEchoTestConfiguration
 	FString token;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|EchoTestConfiguration")
 	FString channelId;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|EchoTestConfiguration")
+	int intervalInSeconds = 2;
 };
 
 
@@ -1845,42 +1846,42 @@ struct FSpatialAudioParams
 	GENERATED_BODY()
 
 	// If the box is unchecked, the value of the corresponding variable (named without _SetValue)  will be ignored.
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ChannelMediaOptions")
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|SpatialAudioParams")
 	bool speaker_azimuth_SetValue;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|SpatialAudioParams")
 	float speaker_azimuth;
 	// If the box is unchecked, the value of the corresponding variable (named without _SetValue)  will be ignored.
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ChannelMediaOptions")
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|SpatialAudioParams")
 	bool speaker_elevation_SetValue;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|SpatialAudioParams")
 	float speaker_elevation;
 	// If the box is unchecked, the value of the corresponding variable (named without _SetValue)  will be ignored.
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ChannelMediaOptions")
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|SpatialAudioParams")
 	bool speaker_distance_SetValue;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|SpatialAudioParams")
 	float speaker_distance;
 	// If the box is unchecked, the value of the corresponding variable (named without _SetValue)  will be ignored.
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ChannelMediaOptions")
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|SpatialAudioParams")
 	bool speaker_orientation_SetValue;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|SpatialAudioParams")
 	int speaker_orientation;
 	// If the box is unchecked, the value of the corresponding variable (named without _SetValue)  will be ignored.
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ChannelMediaOptions")
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|SpatialAudioParams")
 	bool enable_blur_SetValue;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|SpatialAudioParams")
 	bool enable_blur;
 	// If the box is unchecked, the value of the corresponding variable (named without _SetValue)  will be ignored.
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ChannelMediaOptions")
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|SpatialAudioParams")
 	bool enable_air_absorb_SetValue;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|SpatialAudioParams")
 	bool enable_air_absorb;
 	// If the box is unchecked, the value of the corresponding variable (named without _SetValue)  will be ignored.
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ChannelMediaOptions")
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|SpatialAudioParams")
 	bool speaker_attenuation_SetValue;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|SpatialAudioParams")
 	float speaker_attenuation;
 	// If the box is unchecked, the value of the corresponding variable (named without _SetValue)  will be ignored.
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ChannelMediaOptions")
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|SpatialAudioParams")
 	bool enable_doppler_SetValue;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|SpatialAudioParams")
 	bool enable_doppler;
@@ -2421,12 +2422,12 @@ struct FDirectCdnStreamingMediaOptions
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|DirectCdnStreamingMediaOptions")
 	AGORAOPTIONAL publishMediaPlayerAudioTrack;
 	// If the box is unchecked, the value of the corresponding variable (named without _SetValue)  will be ignored.
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ChannelMediaOptions")
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|DirectCdnStreamingMediaOptions")
 	bool publishMediaPlayerId_SetValue;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|DirectCdnStreamingMediaOptions")
 	int publishMediaPlayerId;
 	// If the box is unchecked, the value of the corresponding variable (named without _SetValue)  will be ignored.
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ChannelMediaOptions")
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|DirectCdnStreamingMediaOptions")
 	bool customVideoTrackId_SetValue;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|DirectCdnStreamingMediaOptions")
 	int64 customVideoTrackId;
@@ -2540,7 +2541,7 @@ struct FAdvancedAudioOptions
 {
 	GENERATED_BODY()
 	// If the box is unchecked, the value of the corresponding variable (named without _SetValue)  will be ignored.
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ChannelMediaOptions")
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|AdvancedAudioOptions")
 	bool audioProcessingChannels_SetValue;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|AdvancedAudioOptions")
 	int audioProcessingChannels;

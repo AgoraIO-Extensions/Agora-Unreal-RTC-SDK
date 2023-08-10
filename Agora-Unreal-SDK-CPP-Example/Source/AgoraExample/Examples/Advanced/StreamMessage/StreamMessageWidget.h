@@ -4,77 +4,136 @@
 
 #include "CoreMinimal.h"
 #include "../../BaseAgoraUserWidget.h"
-#include "Blueprint/UserWidget.h"
-#include "Components/Image.h"
-#include "Components/Button.h"
-#include "Components/EditableTextBox.h"
 #include "AgoraPluginInterface.h"
+
+// UI
+#include "Components/Button.h"
+#include "Components/EditableText.h"
+#include "Components/CanvasPanel.h"
+
+// UI Utility
+#include "../../../Utility/BFL_Logger.h"
+
 #if PLATFORM_ANDROID
 #include "AndroidPermission/Classes/AndroidPermissionFunctionLibrary.h"
 #endif
-#include <iostream>
-#include <string.h>
+
 #include "StreamMessageWidget.generated.h"
+
 using namespace agora::rtc;
-using namespace agora;
+
 /**
  * 
  */
-UCLASS(Abstract)
-class AGORAEXAMPLE_API UStreamMessageWidget : public UBaseAgoraUserWidget, public agora::rtc::IRtcEngineEventHandler
+UCLASS()
+class AGORAEXAMPLE_API UStreamMessageWidget : public UBaseAgoraUserWidget
 {
 	GENERATED_BODY()
+
+
+#pragma region Event Handler
+
+public:
+
+	class FUserRtcEventHandler : public agora::rtc::IRtcEngineEventHandler
+	{
+	public:
+
+		FUserRtcEventHandler(UStreamMessageWidget* InVideoWidget) : WidgetPtr(InVideoWidget) {};
+
+#pragma region AgoraCallback - IRtcEngineEventHandler
+
+		void onJoinChannelSuccess(const char* channel, agora::rtc::uid_t uid, int elapsed);
+
+		void onLeaveChannel(const agora::rtc::RtcStats& stats) override;
+
+		void onUserJoined(agora::rtc::uid_t uid, int elapsed) override;
+
+		void onUserOffline(agora::rtc::uid_t uid, agora::rtc::USER_OFFLINE_REASON_TYPE reason) override;
+
+		void onStreamMessage(uid_t userId, int streamId, const char* data, size_t length, uint64_t sentTs) override;
+
+		void onStreamMessageError(uid_t userId, int streamId, int code, int missed, int cached) override;
+#pragma endregion
+
+		inline bool IsWidgetValid() { return WidgetPtr.IsValid(); }
+
+	private:
+
+		TWeakObjectPtr<UStreamMessageWidget> WidgetPtr;
+	};
+
+#pragma endregion
+
+
+#pragma region UI
+
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-	UButton* BackHomeBtn = nullptr;
+		UButton* Btn_BackToHome = nullptr;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-	UEditableTextBox* SendTextBox = nullptr;
+	UEditableText* ET_MsgText = nullptr;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-	UButton* SendBtn = nullptr;
+		UButton* Btn_Send = nullptr;
+	
+	UFUNCTION(BlueprintCallable)
+	void OnBtnBackToHomeClicked();
 
-	void CheckAndroidPermission();
+	UFUNCTION(BlueprintCallable)
+	void OnBtnSendClicked();
 
-	void OnJoinChannel();
+#pragma endregion
+
+public:
 
 	void InitAgoraWidget(FString APP_ID, FString TOKEN, FString CHANNEL_NAME) override;
 
-	void NativeDestruct() override;
+#pragma region UI Utility - Log Msg View
 
-	void onUserJoined(agora::rtc::uid_t uid, int elapsed) override;
+public:
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	UCanvasPanel* CanvasPanel_LogMsgView = nullptr;
 
-	void onJoinChannelSuccess(const char* channel, agora::rtc::uid_t uid, int elapsed);
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TSubclassOf<UDraggableLogMsgViewWidget> DraggableLogMsgViewTemplate;
 
-	void onStreamMessage(uid_t userId, int streamId, const char* data, size_t length, uint64_t sentTs) override;
-
-	void onStreamMessageError(uid_t userId, int streamId, int code, int missed, int cached) override;
+public:
+	inline UDraggableLogMsgViewWidget* GetLogMsgViewPtr() {return LogMsgViewPtr;} 
 
 private:
+	UDraggableLogMsgViewWidget* LogMsgViewPtr = nullptr;
 
-	agora::rtc::IRtcEngine* RtcEngineProxy;
+#pragma endregion
 
-	FString AppId;
+public:
+	inline FString GetAppId() { return AppId; };
+	inline FString GetToken() { return Token; };
+	inline FString GetChannelName() { return ChannelName; };
 
-	FString Token;
 
-	FString ChannelName;
+protected:
+	void CheckPermission();
 
 	void InitAgoraEngine(FString APP_ID, FString TOKEN, FString CHANNEL_NAME);
+	void JoinChannel();
 
-	void SetUpUIEvent();
-
-	UFUNCTION(BlueprintCallable)
-	void OnBackHomeButtonClick();
-
-	UFUNCTION(BlueprintCallable)
-	void onSendButtonClick();
+	void NativeDestruct() override;
+	void UnInitAgoraEngine();
 
 	int CreateDataStreamId();
+	void SendStreamMessage(int StreamID, FString Msg);
 
-	void SendStreamMessage(int streamId, const char* message);
+	FString AppId = "";
+	FString Token = "";
+	FString ChannelName = "";
 
 	int StreamId = -1;
 
+	IRtcEngine* RtcEngineProxy;
 
+
+
+	TSharedPtr<FUserRtcEventHandler> UserRtcEventHandler;
 };

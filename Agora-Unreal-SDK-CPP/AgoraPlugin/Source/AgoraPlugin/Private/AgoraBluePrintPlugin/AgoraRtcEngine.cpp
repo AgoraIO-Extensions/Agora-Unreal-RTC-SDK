@@ -241,7 +241,7 @@ int UAgoraRtcEngine::LeaveChannel(const FLeaveChannelOptions& options)
 
 int UAgoraRtcEngine::RenewToken(FString token)
 {
-	std::string Token = TCHAR_TO_ANSI(*token);
+	std::string Token = TCHAR_TO_UTF8(*token);
 
 	auto ret = RtcEngineProxyClassWrapper::GetInstance()->renewToken(Token.c_str());
 	return ret;
@@ -265,10 +265,11 @@ int UAgoraRtcEngine::StartEchoTest(const FEchoTestConfiguration& config)
 	echoTestConfiguration.view = (agora::view_t)config.view;
 	echoTestConfiguration.enableAudio = config.enableAudio;
 	echoTestConfiguration.enableVideo = config.enableVideo;
-	std::string Token = TCHAR_TO_ANSI(*config.token);
+	std::string Token = TCHAR_TO_UTF8(*config.token);
 	echoTestConfiguration.token = Token.c_str();
-	std::string ChannelId = TCHAR_TO_ANSI(*config.channelId);
+	std::string ChannelId = TCHAR_TO_UTF8(*config.channelId);
 	echoTestConfiguration.channelId = ChannelId.c_str();
+	echoTestConfiguration.intervalInSeconds = config.intervalInSeconds;
 	auto ret = RtcEngineProxyClassWrapper::GetInstance()->startEchoTest(echoTestConfiguration);
 	return ret;
 }
@@ -371,7 +372,7 @@ int UAgoraRtcEngine::EnableVirtualBackground(bool enabled, FVirtualBackgroundSou
 	agora::rtc::VirtualBackgroundSource virtualBackgroundSource;
 	virtualBackgroundSource.background_source_type = (agora::rtc::VirtualBackgroundSource::BACKGROUND_SOURCE_TYPE)backgroundSource.background_source_type;
 	virtualBackgroundSource.color = backgroundSource.color;
-	std::string Source = TCHAR_TO_ANSI(*backgroundSource.source);
+	std::string Source = TCHAR_TO_UTF8(*backgroundSource.source);
 	virtualBackgroundSource.source = Source.c_str();
 	virtualBackgroundSource.blur_degree = (agora::rtc::VirtualBackgroundSource::BACKGROUND_BLUR_DEGREE)backgroundSource.blur_degree;
 	agora::rtc::SegmentationProperty segmentationProperty;
@@ -517,7 +518,7 @@ int UAgoraRtcEngine::EnableAudioVolumeIndication(int interval, int smooth, bool 
 int UAgoraRtcEngine::StartAudioRecording(const FAudioRecordingConfiguration& config)
 {
 	agora::rtc::AudioRecordingConfiguration audioRecordingConfiguration;
-	std::string FilePath = TCHAR_TO_ANSI(*config.filePath);
+	std::string FilePath = TCHAR_TO_UTF8(*config.filePath);
 	audioRecordingConfiguration.filePath = FilePath.c_str();
 	audioRecordingConfiguration.encode = config.encode;
 	audioRecordingConfiguration.sampleRate = config.sampleRate;
@@ -568,7 +569,8 @@ int UAgoraRtcEngine::DestroyMediaPlayer(UIMediaPlayer* media_player)
 UIMediaRecorder* UAgoraRtcEngine::CreateMediaRecorder(FRecorderStreamInfo info)
 {
 	agora::rtc::RecorderStreamInfo recorderStreamInfo;
-	recorderStreamInfo.channelId = TCHAR_TO_ANSI(*info.channelId);
+	std::string StdStrChannelId = TCHAR_TO_UTF8(*info.channelId);
+	recorderStreamInfo.channelId = StdStrChannelId.c_str();
 	recorderStreamInfo.uid = info.uid;
 	UIMediaRecorder* ptrMediaRecorder = NewObject<UIMediaRecorder>();
 	ptrMediaRecorder->SetMediaRecorder(RtcEngineProxyClassWrapper::GetInstance()->createMediaRecorder(recorderStreamInfo).get());
@@ -585,7 +587,7 @@ int UAgoraRtcEngine::DestroyMediaRecorder(UIMediaRecorder* ptrmediaRecorder)
 
 int UAgoraRtcEngine::StartAudioMixing(FString filePath, bool loopback, int cycle, int startPos)
 {
-	std::string FilePath = TCHAR_TO_ANSI(*filePath);
+	std::string FilePath = TCHAR_TO_UTF8(*filePath);
 	auto ret = RtcEngineProxyClassWrapper::GetInstance()->startAudioMixing(FilePath.c_str(), loopback, cycle, startPos);
 	return ret;
 }
@@ -671,13 +673,13 @@ int UAgoraRtcEngine::SetEffectsVolume(int volume)
 }
 int UAgoraRtcEngine::PreloadEffect(int soundId, FString filePath, int startPos)
 {
-	std::string FilePath = TCHAR_TO_ANSI(*filePath);
+	std::string FilePath = TCHAR_TO_UTF8(*filePath);
 	auto ret = RtcEngineProxyClassWrapper::GetInstance()->preloadEffect(soundId, FilePath.c_str(), startPos);
 	return ret;
 }
 int UAgoraRtcEngine::PlayEffect(int soundId, FString filePath, int loopCount, float pitch, float pan, int gain, bool publish, int startPos)
 {
-	std::string FilePath = TCHAR_TO_ANSI(*filePath);
+	std::string FilePath = TCHAR_TO_UTF8(*filePath);
 	auto ret = RtcEngineProxyClassWrapper::GetInstance()->playEffect(soundId, FilePath.c_str(), loopCount, pitch, pan, gain, publish, startPos);
 	return ret;
 }
@@ -738,7 +740,7 @@ int UAgoraRtcEngine::UnloadAllEffects()
 }
 int UAgoraRtcEngine::GetEffectDuration(FString filePath)
 {
-	std::string FilePath = TCHAR_TO_ANSI(*filePath);
+	std::string FilePath = TCHAR_TO_UTF8(*filePath);
 	auto ret = RtcEngineProxyClassWrapper::GetInstance()->getEffectDuration(FilePath.c_str());
 	return ret;
 }
@@ -830,7 +832,7 @@ int UAgoraRtcEngine::SetLocalVoiceReverb(EAUDIO_REVERB_TYPE reverbKey, int value
 }
 int UAgoraRtcEngine::SetLogFile(FString filePath)
 {
-	std::string FilePath = TCHAR_TO_ANSI(*filePath);
+	std::string FilePath = TCHAR_TO_UTF8(*filePath);
 	auto ret = RtcEngineProxyClassWrapper::GetInstance()->setLogFile(FilePath.c_str());
 	return ret;
 }
@@ -989,7 +991,7 @@ int UAgoraRtcEngine::SetHighPriorityUserList(TArray<int64> uidList, ESTREAM_FALL
 
 int UAgoraRtcEngine::EnableLoopbackRecording(bool enabled, FString deviceName)
 {
-	std::string Device = TCHAR_TO_ANSI(*deviceName);
+	std::string Device = TCHAR_TO_UTF8(*deviceName);
 	auto ret = RtcEngineProxyClassWrapper::GetInstance()->enableLoopbackRecording(enabled, Device.c_str());
 	return ret;
 }
@@ -1016,7 +1018,7 @@ int UAgoraRtcEngine::SetInEarMonitoringVolume(int volume)
 int UAgoraRtcEngine::LoadExtensionProvider(FString path, bool unload_after_use)
 {
 #if defined (_WIN32) || defined(__linux__) || defined(__ANDROID__)
-	std::string Path = TCHAR_TO_ANSI(*path);
+	std::string Path = TCHAR_TO_UTF8(*path);
 
 	return RtcEngineProxyClassWrapper::GetInstance()->loadExtensionProvider(Path.c_str(), unload_after_use);
 #else
@@ -1026,44 +1028,44 @@ int UAgoraRtcEngine::LoadExtensionProvider(FString path, bool unload_after_use)
 }
 int UAgoraRtcEngine::SetExtensionProviderProperty(FString provider, FString key, FString value)
 {
-	std::string Provider = TCHAR_TO_ANSI(*provider);
-	std::string Key = TCHAR_TO_ANSI(*key);
-	std::string Value = TCHAR_TO_ANSI(*value);
+	std::string Provider = TCHAR_TO_UTF8(*provider);
+	std::string Key = TCHAR_TO_UTF8(*key);
+	std::string Value = TCHAR_TO_UTF8(*value);
 	auto ret = RtcEngineProxyClassWrapper::GetInstance()->setExtensionProviderProperty(Provider.c_str(), Key.c_str(), Value.c_str());
 	return ret;
 }
 int UAgoraRtcEngine::EnableExtension(FString provider, FString extension, bool enable, EMEDIA_SOURCE_TYPE type)
 {
-	std::string Provider = TCHAR_TO_ANSI(*provider);
-	std::string Extension = TCHAR_TO_ANSI(*extension);
+	std::string Provider = TCHAR_TO_UTF8(*provider);
+	std::string Extension = TCHAR_TO_UTF8(*extension);
 	auto ret = RtcEngineProxyClassWrapper::GetInstance()->enableExtension(Provider.c_str(), Extension.c_str(), enable, (agora::media::MEDIA_SOURCE_TYPE)type);
 	return ret;
 }
 int UAgoraRtcEngine::SetExtensionProperty(FString provider, FString extension, FString key, FString value, EMEDIA_SOURCE_TYPE type)
 {
-	std::string Provider = TCHAR_TO_ANSI(*provider);
-	std::string Extension = TCHAR_TO_ANSI(*extension);
-	std::string Key = TCHAR_TO_ANSI(*key);
-	std::string Value = TCHAR_TO_ANSI(*value);
+	std::string Provider = TCHAR_TO_UTF8(*provider);
+	std::string Extension = TCHAR_TO_UTF8(*extension);
+	std::string Key = TCHAR_TO_UTF8(*key);
+	std::string Value = TCHAR_TO_UTF8(*value);
 	auto ret = RtcEngineProxyClassWrapper::GetInstance()->setExtensionProperty(Provider.c_str(), Extension.c_str(), Key.c_str(), Value.c_str(), (agora::media::MEDIA_SOURCE_TYPE)type);
 	return ret;
 }
 int UAgoraRtcEngine::GetExtensionProperty(FString provider, FString extension, FString key, FString value, int buf_len, EMEDIA_SOURCE_TYPE type)
 {
-	std::string Provider = TCHAR_TO_ANSI(*provider);
-	std::string Extension = TCHAR_TO_ANSI(*extension);
-	std::string Key = TCHAR_TO_ANSI(*key);
-	auto ret = RtcEngineProxyClassWrapper::GetInstance()->getExtensionProperty(Provider.c_str(), Extension.c_str(), Key.c_str(), TCHAR_TO_ANSI(*value), buf_len, (agora::media::MEDIA_SOURCE_TYPE)type);
+	std::string Provider = TCHAR_TO_UTF8(*provider);
+	std::string Extension = TCHAR_TO_UTF8(*extension);
+	std::string Key = TCHAR_TO_UTF8(*key);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->getExtensionProperty(Provider.c_str(), Extension.c_str(), Key.c_str(), TCHAR_TO_UTF8(*value), buf_len, (agora::media::MEDIA_SOURCE_TYPE)type);
 	return ret;
 }
 int UAgoraRtcEngine::SetCameraCapturerConfiguration(const FCameraCapturerConfiguration& config)
 {
 	agora::rtc::CameraCapturerConfiguration cameraCapturerConfiguration;
+	std::string StdStrDeviceId = TCHAR_TO_UTF8(*config.deviceId);
 #if defined(__ANDROID__) || (defined(__APPLE__) && TARGET_OS_IOS)
 	cameraCapturerConfiguration.cameraDirection = (agora::rtc::CAMERA_DIRECTION)config.cameraDirection;
 #else
-	sprintf(cameraCapturerConfiguration.deviceId, "%s", TCHAR_TO_UTF8(*config.deviceId));
-	//FMemory::Memcpy(cameraCapturerConfiguration.deviceId, *config.deviceId, agora::rtc::MAX_DEVICE_ID_LENGTH_TYPE::MAX_DEVICE_ID_LENGTH);
+	FMemory::Memcpy(cameraCapturerConfiguration.deviceId,TCHAR_TO_UTF8(*config.deviceId), agora::rtc::MAX_DEVICE_ID_LENGTH_TYPE::MAX_DEVICE_ID_LENGTH);
 #endif
 	agora::rtc::VideoFormat format;
 	format.width = config.format.width;
@@ -1565,20 +1567,20 @@ int UAgoraRtcEngine::GetCallId(FString& callId)
 }
 int UAgoraRtcEngine::Rate(FString callId, int rating, FString description)
 {
-	std::string CallId = TCHAR_TO_ANSI(*callId);
-	auto ret = RtcEngineProxyClassWrapper::GetInstance()->rate(CallId.c_str(), rating, TCHAR_TO_ANSI(*description));
+	std::string CallId = TCHAR_TO_UTF8(*callId);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->rate(CallId.c_str(), rating, TCHAR_TO_UTF8(*description));
 	return ret;
 }
 int UAgoraRtcEngine::Complain(FString callId, FString description)
 {
-	std::string CallId = TCHAR_TO_ANSI(*callId);
-	std::string Description = TCHAR_TO_ANSI(*description);
+	std::string CallId = TCHAR_TO_UTF8(*callId);
+	std::string Description = TCHAR_TO_UTF8(*description);
 	auto ret = RtcEngineProxyClassWrapper::GetInstance()->complain(CallId.c_str(), Description.c_str());
 	return ret;
 }
 int UAgoraRtcEngine::StartRtmpStreamWithoutTranscoding(FString url)
 {
-	std::string Url = TCHAR_TO_ANSI(*url);
+	std::string Url = TCHAR_TO_UTF8(*url);
 
 	auto ret = RtcEngineProxyClassWrapper::GetInstance()->startRtmpStreamWithoutTranscoding(Url.c_str());
 	return ret;
@@ -1609,15 +1611,15 @@ int UAgoraRtcEngine::StartRtmpStreamWithTranscoding(FString url, FLiveTranscodin
 		trans[i].zOrder = transcoding.transcodingUsers[i].zOrder;
 	}
 	liveTranscoding.transcodingUsers = trans;
-	std::string TranscodingExtraInfo = TCHAR_TO_ANSI(*transcoding.transcodingExtraInfo);
+	std::string TranscodingExtraInfo = TCHAR_TO_UTF8(*transcoding.transcodingExtraInfo);
 	liveTranscoding.transcodingExtraInfo = TranscodingExtraInfo.c_str();
-	std::string Metadata = TCHAR_TO_ANSI(*transcoding.metadata);
+	std::string Metadata = TCHAR_TO_UTF8(*transcoding.metadata);
 	liveTranscoding.metadata = Metadata.c_str();
 	agora::rtc::RtcImage* image = new agora::rtc::RtcImage[transcoding.watermarkCount];
 	for (int i = 0; i < transcoding.watermarkCount; i++)
 	{
 		image[i].alpha = transcoding.watermark[i].alpha;
-		std::string Url = TCHAR_TO_ANSI(*transcoding.watermark[i].url);
+		std::string Url = TCHAR_TO_UTF8(*transcoding.watermark[i].url);
 		image[i].url = Url.c_str();
 		image[i].height = transcoding.watermark[i].height;
 		image[i].width = transcoding.watermark[i].width;
@@ -1632,7 +1634,7 @@ int UAgoraRtcEngine::StartRtmpStreamWithTranscoding(FString url, FLiveTranscodin
 	for (int i = 0; i < transcoding.backgroundImageCount; i++)
 	{
 		bgImage[i].alpha = transcoding.backgroundImage[i].alpha;
-		std::string Url = TCHAR_TO_ANSI(*transcoding.backgroundImage[i].url);
+		std::string Url = TCHAR_TO_UTF8(*transcoding.backgroundImage[i].url);
 		bgImage[i].url = Url.c_str();
 		bgImage[i].height = transcoding.backgroundImage[i].height;
 		bgImage[i].width = transcoding.backgroundImage[i].width;
@@ -1661,13 +1663,13 @@ int UAgoraRtcEngine::StartRtmpStreamWithTranscoding(FString url, FLiveTranscodin
 	agora::rtc::LiveStreamAdvancedFeature* feature = new agora::rtc::LiveStreamAdvancedFeature[transcoding.advancedFeatureCount];
 	for (int i = 0; i < transcoding.advancedFeatureCount; i++)
 	{
-		std::string FeatureName = TCHAR_TO_ANSI(*transcoding.advancedFeatures[i].featureName);
+		std::string FeatureName = TCHAR_TO_UTF8(*transcoding.advancedFeatures[i].featureName);
 		feature[i].featureName = FeatureName.c_str();
 		feature[i].opened = transcoding.advancedFeatures[i].opened;
 	}
 	liveTranscoding.advancedFeatures = feature;
 	liveTranscoding.advancedFeatureCount = transcoding.advancedFeatureCount;
-	std::string TempUrl = TCHAR_TO_ANSI(*url);
+	std::string TempUrl = TCHAR_TO_UTF8(*url);
 	auto ret = RtcEngineProxyClassWrapper::GetInstance()->startRtmpStreamWithTranscoding(TempUrl.c_str(), liveTranscoding);
 	delete[] trans;
 	delete[] image;
@@ -1701,15 +1703,15 @@ int UAgoraRtcEngine::UpdateRtmpTranscoding(FLiveTranscoding& transcoding)
 		trans[i].zOrder = transcoding.transcodingUsers[i].zOrder;
 	}
 	liveTranscoding.transcodingUsers = trans;
-	std::string TranscodingExtraInfo = TCHAR_TO_ANSI(*transcoding.transcodingExtraInfo);
+	std::string TranscodingExtraInfo = TCHAR_TO_UTF8(*transcoding.transcodingExtraInfo);
 	liveTranscoding.transcodingExtraInfo = TranscodingExtraInfo.c_str();
-	std::string Metadata = TCHAR_TO_ANSI(*transcoding.metadata);
+	std::string Metadata = TCHAR_TO_UTF8(*transcoding.metadata);
 	liveTranscoding.metadata = Metadata.c_str();
 	agora::rtc::RtcImage* image = new agora::rtc::RtcImage[transcoding.watermarkCount];
 	for (int i = 0; i < transcoding.watermarkCount; i++)
 	{
 		image[i].alpha = transcoding.watermark[i].alpha;
-		std::string Url = TCHAR_TO_ANSI(*transcoding.watermark[i].url);
+		std::string Url = TCHAR_TO_UTF8(*transcoding.watermark[i].url);
 		image[i].url = Url.c_str();
 		image[i].height = transcoding.watermark[i].height;
 		image[i].width = transcoding.watermark[i].width;
@@ -1724,7 +1726,7 @@ int UAgoraRtcEngine::UpdateRtmpTranscoding(FLiveTranscoding& transcoding)
 	for (int i = 0; i < transcoding.backgroundImageCount; i++)
 	{
 		bgImage[i].alpha = transcoding.backgroundImage[i].alpha;
-		std::string Url = TCHAR_TO_ANSI(*transcoding.backgroundImage[i].url);
+		std::string Url = TCHAR_TO_UTF8(*transcoding.backgroundImage[i].url);
 		bgImage[i].url = Url.c_str();
 		bgImage[i].height = transcoding.backgroundImage[i].height;
 		bgImage[i].width = transcoding.backgroundImage[i].width;
@@ -1753,7 +1755,7 @@ int UAgoraRtcEngine::UpdateRtmpTranscoding(FLiveTranscoding& transcoding)
 	agora::rtc::LiveStreamAdvancedFeature* feature = new agora::rtc::LiveStreamAdvancedFeature[transcoding.advancedFeatureCount];
 	for (int i = 0; i < transcoding.advancedFeatureCount; i++)
 	{
-		std::string FeatureName = TCHAR_TO_ANSI(*transcoding.advancedFeatures[i].featureName);
+		std::string FeatureName = TCHAR_TO_UTF8(*transcoding.advancedFeatures[i].featureName);
 		feature[i].featureName = FeatureName.c_str();
 		feature[i].opened = transcoding.advancedFeatures[i].opened;
 	}
@@ -1769,7 +1771,7 @@ int UAgoraRtcEngine::UpdateRtmpTranscoding(FLiveTranscoding& transcoding)
 }
 int UAgoraRtcEngine::StopRtmpStream(FString url)
 {
-	auto ret = RtcEngineProxyClassWrapper::GetInstance()->stopRtmpStream(TCHAR_TO_ANSI(*url));
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->stopRtmpStream(TCHAR_TO_UTF8(*url));
 	return ret;
 }
 
@@ -1806,7 +1808,7 @@ int UAgoraRtcEngine::StartLocalVideoTranscoder(const FLocalTranscoderConfigurati
 	{
 		videoStream[i].alpha = config.VideoInputStreams[i].alpha;
 		videoStream[i].height = config.VideoInputStreams[i].height;
-		std::string ImageUrl = TCHAR_TO_ANSI(*config.VideoInputStreams[i].imageUrl);
+		std::string ImageUrl = TCHAR_TO_UTF8(*config.VideoInputStreams[i].imageUrl);
 		videoStream[i].imageUrl = ImageUrl.c_str();
 		videoStream[i].mirror = config.VideoInputStreams[i].mirror;
 		videoStream[i].remoteUserUid = config.VideoInputStreams[i].remoteUserUid;
@@ -1845,7 +1847,7 @@ int UAgoraRtcEngine::UpdateLocalTranscoderConfiguration(const FLocalTranscoderCo
 	{
 		videoStream[i].alpha = config.VideoInputStreams[i].alpha;
 		videoStream[i].height = config.VideoInputStreams[i].height;
-		std::string ImageUrl = TCHAR_TO_ANSI(*config.VideoInputStreams[i].imageUrl);
+		std::string ImageUrl = TCHAR_TO_UTF8(*config.VideoInputStreams[i].imageUrl);
 		videoStream[i].imageUrl = ImageUrl.c_str();
 		videoStream[i].mirror = config.VideoInputStreams[i].mirror;
 		videoStream[i].remoteUserUid = config.VideoInputStreams[i].remoteUserUid;
@@ -1932,13 +1934,13 @@ int UAgoraRtcEngine::RegisterPacketObserver(UIPacketObserver* observer)
 }
 int UAgoraRtcEngine::SetEncryptionMode(FString encryptionMode)
 {
-	std::string EncryptionMode = TCHAR_TO_ANSI(*encryptionMode);
+	std::string EncryptionMode = TCHAR_TO_UTF8(*encryptionMode);
 	auto ret = RtcEngineProxyClassWrapper::GetInstance()->setEncryptionMode(EncryptionMode.c_str());
 	return ret;
 }
 int UAgoraRtcEngine::SetEncryptionSecret(FString secret)
 {
-	std::string Secret = TCHAR_TO_ANSI(*secret);
+	std::string Secret = TCHAR_TO_UTF8(*secret);
 	auto ret = RtcEngineProxyClassWrapper::GetInstance()->setEncryptionSecret(Secret.c_str());
 	return ret;
 }
@@ -1946,9 +1948,9 @@ int UAgoraRtcEngine::EnableEncryption(bool enabled, const FEncryptionConfig& con
 {
 	agora::rtc::EncryptionConfig encryptionConfig;
 	encryptionConfig.encryptionMode = (agora::rtc::ENCRYPTION_MODE)config.encryptionMode;
-	std::string EncryptionKey = TCHAR_TO_ANSI(*config.encryptionKey);
+	std::string EncryptionKey = TCHAR_TO_UTF8(*config.encryptionKey);
 	encryptionConfig.encryptionKey = EncryptionKey.c_str();
-	std::string encryptionKdfSalt = TCHAR_TO_ANSI(*config.encryptionKdfSalt);
+	std::string encryptionKdfSalt = TCHAR_TO_UTF8(*config.encryptionKdfSalt);
 	FMemory::Memcpy(encryptionConfig.encryptionKdfSalt, encryptionKdfSalt.c_str(), strlen(encryptionKdfSalt.c_str())+1);
 	auto ret = RtcEngineProxyClassWrapper::GetInstance()->enableEncryption(enabled, encryptionConfig);
 	return ret;
@@ -1963,7 +1965,8 @@ int UAgoraRtcEngine::CreateDataStream(int& streamId, const FDataStreamConfig& co
 }
 int UAgoraRtcEngine::SendStreamMessage(int streamId, FString data)
 {
-	const char* Data = TCHAR_TO_UTF8(*data);
+	std::string StdStrData = TCHAR_TO_UTF8(*data);
+	const char* Data = StdStrData.c_str();
 
 	auto ret = RtcEngineProxyClassWrapper::GetInstance()->sendStreamMessage(streamId, Data, strlen(Data)+1);
 	return ret;
@@ -1986,7 +1989,7 @@ int UAgoraRtcEngine::AddVideoWatermark(FString watermarkUrl, const FWatermarkOpt
 	markradio.widthRatio = options.watermarkRatio.widthRatio;
 	watermarkOptions.watermarkRatio = markradio;
 	watermarkOptions.mode = (agora::rtc::WATERMARK_FIT_MODE)options.mode;
-	std::string WatermarkUrl= TCHAR_TO_ANSI(*watermarkUrl);
+	std::string WatermarkUrl= TCHAR_TO_UTF8(*watermarkUrl);
 	auto ret = RtcEngineProxyClassWrapper::GetInstance()->addVideoWatermark(WatermarkUrl.c_str(), watermarkOptions);
 	return ret;
 }
@@ -2014,10 +2017,10 @@ int UAgoraRtcEngine::EnableWebSdkInteroperability(bool enabled)
 }
 int UAgoraRtcEngine::SendCustomReportMessage(FString id, FString category, FString event, FString label, int value)
 {
-	std::string Id = TCHAR_TO_ANSI(*id);
-	std::string Category = TCHAR_TO_ANSI(*category);
-	std::string Event = TCHAR_TO_ANSI(*event);
-	std::string Label = TCHAR_TO_ANSI(*label);
+	std::string Id = TCHAR_TO_UTF8(*id);
+	std::string Category = TCHAR_TO_UTF8(*category);
+	std::string Event = TCHAR_TO_UTF8(*event);
+	std::string Label = TCHAR_TO_UTF8(*label);
 	auto ret = RtcEngineProxyClassWrapper::GetInstance()->sendCustomReportMessage(Id.c_str(), Category.c_str(), Event.c_str(), Label.c_str(), value);
 	return ret;
 }
@@ -2034,10 +2037,10 @@ int UAgoraRtcEngine::UnregisterMediaMetadataObserver(UIMetadataObserver* observe
 }
 int UAgoraRtcEngine::StartAudioFrameDump(FString channel_id, int64 user_id, FString location, FString uuid, FString passwd, int64 duration_ms, bool auto_upload)
 {
-	std::string Channel_id = TCHAR_TO_ANSI(*channel_id);
-	std::string Location = TCHAR_TO_ANSI(*location);
-	std::string Uuid = TCHAR_TO_ANSI(*uuid);
-	std::string Passwd = TCHAR_TO_ANSI(*passwd);
+	std::string Channel_id = TCHAR_TO_UTF8(*channel_id);
+	std::string Location = TCHAR_TO_UTF8(*location);
+	std::string Uuid = TCHAR_TO_UTF8(*uuid);
+	std::string Passwd = TCHAR_TO_UTF8(*passwd);
 	auto ret = RtcEngineProxyClassWrapper::GetInstance()->startAudioFrameDump(Channel_id.c_str(), user_id, Location.c_str(), Uuid.c_str(), Passwd.c_str(), duration_ms, auto_upload);
 	return ret;
 }
@@ -2050,8 +2053,8 @@ int UAgoraRtcEngine::SetAINSMode(bool enabled, EAUDIO_AINS_MODE mode)
 
 int UAgoraRtcEngine::RegisterLocalUserAccount(FString appId, FString userAccount)
 {
-	std::string AppId = TCHAR_TO_ANSI(*appId);
-	std::string UserAccount = TCHAR_TO_ANSI(*userAccount);
+	std::string AppId = TCHAR_TO_UTF8(*appId);
+	std::string UserAccount = TCHAR_TO_UTF8(*userAccount);
 	auto ret = RtcEngineProxyClassWrapper::GetInstance()->registerLocalUserAccount(AppId.c_str(), UserAccount.c_str());
 	return ret;
 }
@@ -2065,9 +2068,9 @@ int UAgoraRtcEngine::JoinChannelWithUserAccount(FString token, FString channelId
 	SET_AGORA_DATA_CHANNELMEDIAOPTIONS_NONMOBILE_PLATFORM(channelMediaOptions, options);
 #endif
 
-	std::string Token = TCHAR_TO_ANSI(*token);
-	std::string ChannelId = TCHAR_TO_ANSI(*channelId);
-	std::string UserAccount = TCHAR_TO_ANSI(*userAccount);
+	std::string Token = TCHAR_TO_UTF8(*token);
+	std::string ChannelId = TCHAR_TO_UTF8(*channelId);
+	std::string UserAccount = TCHAR_TO_UTF8(*userAccount);
 	auto ret = RtcEngineProxyClassWrapper::GetInstance()->joinChannelWithUserAccount(Token.c_str(), ChannelId.c_str(), UserAccount.c_str(), channelMediaOptions);
 	return ret;
 }
@@ -2082,16 +2085,16 @@ int UAgoraRtcEngine::JoinChannelWithUserAccountEx(FString token, FString channel
 	SET_AGORA_DATA_CHANNELMEDIAOPTIONS_NONMOBILE_PLATFORM(channelMediaOptions, options);
 #endif
 
-	std::string Token = TCHAR_TO_ANSI(*token);
-	std::string ChannelId = TCHAR_TO_ANSI(*channelId);
-	std::string UserAccount = TCHAR_TO_ANSI(*userAccount);
+	std::string Token = TCHAR_TO_UTF8(*token);
+	std::string ChannelId = TCHAR_TO_UTF8(*channelId);
+	std::string UserAccount = TCHAR_TO_UTF8(*userAccount);
 	auto ret = RtcEngineProxyClassWrapper::GetInstance()->joinChannelWithUserAccountEx(Token.c_str(), ChannelId.c_str(), UserAccount.c_str(), channelMediaOptions, eventHandler);
 	return ret;
 }
 int UAgoraRtcEngine::GetUserInfoByUserAccount(FString userAccount, FUserInfo& userInfo)
 {
 	agora::rtc::UserInfo info;
-	std::string UserAccount = TCHAR_TO_ANSI(*userAccount);
+	std::string UserAccount = TCHAR_TO_UTF8(*userAccount);
 	auto ret = RtcEngineProxyClassWrapper::GetInstance()->getUserInfoByUserAccount(UserAccount.c_str(), &info);
 	userInfo.uid = info.uid;
 	userInfo.userAccount = info.userAccount;
@@ -2111,18 +2114,18 @@ int UAgoraRtcEngine::StartOrUpdateChannelMediaRelay(const FChannelMediaRelayConf
 {
 	agora::rtc::ChannelMediaRelayConfiguration channelMediaRelayConfiguration;
 	agora::rtc::ChannelMediaInfo* mediaInfo = new agora::rtc::ChannelMediaInfo();
-	std::string ChannelName = TCHAR_TO_ANSI(*configuration.srcInfo.channelName);
+	std::string ChannelName = TCHAR_TO_UTF8(*configuration.srcInfo.channelName);
 	mediaInfo->channelName = ChannelName.c_str();
-	std::string Token = TCHAR_TO_ANSI(*configuration.srcInfo.token);
+	std::string Token = TCHAR_TO_UTF8(*configuration.srcInfo.token);
 	mediaInfo->token = Token.c_str();
 	mediaInfo->uid = configuration.srcInfo.uid;
 	channelMediaRelayConfiguration.srcInfo = mediaInfo;
 	agora::rtc::ChannelMediaInfo* mediaInfos = new agora::rtc::ChannelMediaInfo[configuration.destCount];
 	for (int i = 0; i < configuration.destCount; i++)
 	{
-		std::string ChannelNameTemp = TCHAR_TO_ANSI(*configuration.srcInfo.channelName);
+		std::string ChannelNameTemp = TCHAR_TO_UTF8(*configuration.srcInfo.channelName);
 		mediaInfos[i].channelName = ChannelNameTemp.c_str();
-		std::string TokenTemp = TCHAR_TO_ANSI(*configuration.srcInfo.channelName);
+		std::string TokenTemp = TCHAR_TO_UTF8(*configuration.srcInfo.channelName);
 		mediaInfos[i].token = TokenTemp.c_str();
 		mediaInfos[i].uid = configuration.destInfos[i].uid;
 	}
@@ -2138,18 +2141,18 @@ int UAgoraRtcEngine::StartChannelMediaRelay(const FChannelMediaRelayConfiguratio
 {
 	agora::rtc::ChannelMediaRelayConfiguration channelMediaRelayConfiguration;
 	agora::rtc::ChannelMediaInfo* mediaInfo = new agora::rtc::ChannelMediaInfo();
-	std::string ChannelName = TCHAR_TO_ANSI(*configuration.srcInfo.channelName);
+	std::string ChannelName = TCHAR_TO_UTF8(*configuration.srcInfo.channelName);
 	mediaInfo->channelName = ChannelName.c_str();
-	std::string Token = TCHAR_TO_ANSI(*configuration.srcInfo.token);
+	std::string Token = TCHAR_TO_UTF8(*configuration.srcInfo.token);
 	mediaInfo->token = Token.c_str();
 	mediaInfo->uid = configuration.srcInfo.uid;
 	channelMediaRelayConfiguration.srcInfo = mediaInfo;
 	agora::rtc::ChannelMediaInfo* mediaInfos = new agora::rtc::ChannelMediaInfo[configuration.destCount];
 	for (int i = 0; i < configuration.destCount; i++)
 	{
-		std::string ChannelNameTemp = TCHAR_TO_ANSI(*configuration.srcInfo.channelName);
+		std::string ChannelNameTemp = TCHAR_TO_UTF8(*configuration.srcInfo.channelName);
 		mediaInfos[i].channelName = ChannelNameTemp.c_str();
-		std::string TokenTemp = TCHAR_TO_ANSI(*configuration.srcInfo.channelName);
+		std::string TokenTemp = TCHAR_TO_UTF8(*configuration.srcInfo.channelName);
 		mediaInfos[i].token = TokenTemp.c_str();
 		mediaInfos[i].uid = configuration.destInfos[i].uid;
 	}
@@ -2166,18 +2169,18 @@ int UAgoraRtcEngine::UpdateChannelMediaRelay(const FChannelMediaRelayConfigurati
 {
 	agora::rtc::ChannelMediaRelayConfiguration channelMediaRelayConfiguration;
 	agora::rtc::ChannelMediaInfo* mediaInfo = new agora::rtc::ChannelMediaInfo();
-	std::string ChannelName = TCHAR_TO_ANSI(*configuration.srcInfo.channelName);
+	std::string ChannelName = TCHAR_TO_UTF8(*configuration.srcInfo.channelName);
 	mediaInfo->channelName = ChannelName.c_str();
-	std::string Token = TCHAR_TO_ANSI(*configuration.srcInfo.token);
+	std::string Token = TCHAR_TO_UTF8(*configuration.srcInfo.token);
 	mediaInfo->token = Token.c_str();
 	mediaInfo->uid = configuration.srcInfo.uid;
 	channelMediaRelayConfiguration.srcInfo = mediaInfo;
 	agora::rtc::ChannelMediaInfo* mediaInfos = new agora::rtc::ChannelMediaInfo[configuration.destCount];
 	for (int i = 0; i < configuration.destCount; i++)
 	{
-		std::string ChannelNameTemp = TCHAR_TO_ANSI(*configuration.srcInfo.channelName);
+		std::string ChannelNameTemp = TCHAR_TO_UTF8(*configuration.srcInfo.channelName);
 		mediaInfos[i].channelName = ChannelNameTemp.c_str();
-		std::string TokenTemp = TCHAR_TO_ANSI(*configuration.srcInfo.channelName);
+		std::string TokenTemp = TCHAR_TO_UTF8(*configuration.srcInfo.channelName);
 		mediaInfos[i].token = TokenTemp.c_str();
 		mediaInfos[i].uid = configuration.destInfos[i].uid;
 	}
@@ -2233,7 +2236,7 @@ int UAgoraRtcEngine::StartDirectCdnStreaming(UIDirectCdnStreamingEventHandler* e
 {
 	agora::rtc::DirectCdnStreamingMediaOptions directCdnStreamingMediaOptions;
 	SET_AGORA_DATA_DIRECTCDNSTREAMINGMEDIAOPTIONS(directCdnStreamingMediaOptions, options);
-	std::string PublishUrl = TCHAR_TO_ANSI(*publishUrl);
+	std::string PublishUrl = TCHAR_TO_UTF8(*publishUrl);
 	auto ret = RtcEngineProxyClassWrapper::GetInstance()->startDirectCdnStreaming(eventHandler, PublishUrl.c_str(), directCdnStreamingMediaOptions);
 	return ret;
 }
@@ -2254,8 +2257,8 @@ int UAgoraRtcEngine::StartRhythmPlayer(FString sound1, FString sound2, const FAg
 	agora::rtc::AgoraRhythmPlayerConfig agoraRhythmPlayerConfig;
 	agoraRhythmPlayerConfig.beatsPerMeasure = config.beatsPerMeasure;
 	agoraRhythmPlayerConfig.beatsPerMinute = config.beatsPerMinute;
-	std::string Sound1 = TCHAR_TO_ANSI(*sound1);
-	std::string Sound2 = TCHAR_TO_ANSI(*sound2);
+	std::string Sound1 = TCHAR_TO_UTF8(*sound1);
+	std::string Sound2 = TCHAR_TO_UTF8(*sound2);
 	auto ret = RtcEngineProxyClassWrapper::GetInstance()->startRhythmPlayer(Sound1.c_str(), Sound1.c_str(), agoraRhythmPlayerConfig);
 	return ret;
 }
@@ -2274,7 +2277,7 @@ int UAgoraRtcEngine::ConfigRhythmPlayer(const FAgoraRhythmPlayerConfig& config)
 }
 int UAgoraRtcEngine::TakeSnapshot(int64 uid, FString filePath)
 {
-	std::string Filepath = TCHAR_TO_ANSI(*filePath);
+	std::string Filepath = TCHAR_TO_UTF8(*filePath);
 
 	auto ret = RtcEngineProxyClassWrapper::GetInstance()->takeSnapshot(uid, Filepath.c_str());
 	return ret;
@@ -2282,7 +2285,7 @@ int UAgoraRtcEngine::TakeSnapshot(int64 uid, FString filePath)
 int UAgoraRtcEngine::EnableContentInspect(bool enabled, FContentInspectConfig& config)
 {
 	agora::media::ContentInspectConfig contentInspectConfig;
-	std::string ExtraInfo = TCHAR_TO_ANSI(*config.extraInfo);
+	std::string ExtraInfo = TCHAR_TO_UTF8(*config.extraInfo);
 	contentInspectConfig.extraInfo = ExtraInfo.c_str();
 	agora::media::ContentInspectModule modules[MAX_CONTENT_INSPECT_MODULE_COUNT];
 	for (int i = 0; i < config.moduleCount; i++)
@@ -2317,15 +2320,15 @@ int UAgoraRtcEngine::SetCloudProxy(ECLOUD_PROXY_TYPE proxyType)
 int UAgoraRtcEngine::SetLocalAccessPoint(const FLocalAccessPointConfiguration& config)
 {
 	agora::rtc::LocalAccessPointConfiguration localAccessPointConfiguration;
-	std::string Iplist = TCHAR_TO_ANSI(*config.ipList);
+	std::string Iplist = TCHAR_TO_UTF8(*config.ipList);
 	const char* iplist = Iplist.c_str();
 	localAccessPointConfiguration.ipList = &iplist;
 	localAccessPointConfiguration.ipListSize = config.ipListSize;
-	std::string DomainList = TCHAR_TO_ANSI(*config.domainList);
+	std::string DomainList = TCHAR_TO_UTF8(*config.domainList);
 	const char* domainList = DomainList.c_str();
 	localAccessPointConfiguration.domainList = &domainList;
 	localAccessPointConfiguration.domainListSize = config.domainListSize;
-	std::string VerifyDomainName = TCHAR_TO_ANSI(*config.domainList);
+	std::string VerifyDomainName = TCHAR_TO_UTF8(*config.domainList);
 	localAccessPointConfiguration.verifyDomainName = VerifyDomainName.c_str();
 	localAccessPointConfiguration.mode = (agora::rtc::LOCAL_PROXY_MODE)config.mode;
 	auto ret = RtcEngineProxyClassWrapper::GetInstance()->setLocalAccessPoint(localAccessPointConfiguration);
@@ -2340,14 +2343,14 @@ int UAgoraRtcEngine::SetAdvancedAudioOptions(const FAdvancedAudioOptions& option
 }
 int UAgoraRtcEngine::SetAVSyncSource(FString channelId, int64 uid)
 {
-	std::string ChannelId = TCHAR_TO_ANSI(*channelId);
+	std::string ChannelId = TCHAR_TO_UTF8(*channelId);
 	auto ret = RtcEngineProxyClassWrapper::GetInstance()->setAVSyncSource(ChannelId.c_str(), uid);
 	return ret;
 }
 int UAgoraRtcEngine::EnableVideoImageSource(bool enable, const FImageTrackOptions& options)
 {
 	agora::rtc::ImageTrackOptions imageTrackOptions;
-	std::string ImageUrl = TCHAR_TO_ANSI(*options.imageUrl);
+	std::string ImageUrl = TCHAR_TO_UTF8(*options.imageUrl);
 	imageTrackOptions.imageUrl = ImageUrl.c_str();
 	imageTrackOptions.fps = options.fps;
 	auto ret = RtcEngineProxyClassWrapper::GetInstance()->enableVideoImageSource(enable, imageTrackOptions);
@@ -2356,7 +2359,7 @@ int UAgoraRtcEngine::EnableVideoImageSource(bool enable, const FImageTrackOption
 int UAgoraRtcEngine::JoinChannelEx(FString token, const FRtcConnection& connection, const FChannelMediaOptions& options, UIRtcEngineEventHandler* eventHandler)
 {
 	agora::rtc::RtcConnection rtcConnection;
-	std::string channel = TCHAR_TO_ANSI(*connection.channelId);
+	std::string channel = TCHAR_TO_UTF8(*connection.channelId);
 	rtcConnection.channelId = channel.c_str();
 	rtcConnection.localUid = connection.localUid;
 	agora::rtc::ChannelMediaOptions channelMediaOptions;
@@ -2367,7 +2370,7 @@ int UAgoraRtcEngine::JoinChannelEx(FString token, const FRtcConnection& connecti
 	SET_AGORA_DATA_CHANNELMEDIAOPTIONS_NONMOBILE_PLATFORM(channelMediaOptions, options);
 #endif
 
-	std::string Token = TCHAR_TO_ANSI(*token);
+	std::string Token = TCHAR_TO_UTF8(*token);
 
 	auto ret = RtcEngineProxyClassWrapper::GetInstance()->joinChannelEx(Token.c_str(), rtcConnection, channelMediaOptions, eventHandler);
 	return ret;
@@ -2377,7 +2380,7 @@ int UAgoraRtcEngine::JoinChannelEx(FString token, const FRtcConnection& connecti
 int UAgoraRtcEngine::LeaveChannelEx(const FRtcConnection& connection, const FLeaveChannelOptions& options)
 {
 	agora::rtc::RtcConnection rtcConnection;
-	std::string ChannelId = TCHAR_TO_ANSI(*connection.channelId);
+	std::string ChannelId = TCHAR_TO_UTF8(*connection.channelId);
 	rtcConnection.channelId = ChannelId.c_str();
 	rtcConnection.localUid = connection.localUid;
 	agora::rtc::LeaveChannelOptions leaveChannelOptions;
@@ -2398,7 +2401,7 @@ int UAgoraRtcEngine::UpdateChannelMediaOptionsEx(const FChannelMediaOptions& opt
 #endif
 
 	agora::rtc::RtcConnection rtcConnection;
-	std::string ChannelId = TCHAR_TO_ANSI(*connection.channelId);
+	std::string ChannelId = TCHAR_TO_UTF8(*connection.channelId);
 	rtcConnection.channelId = ChannelId.c_str();
 	rtcConnection.localUid = connection.localUid;
 	auto ret = RtcEngineProxyClassWrapper::GetInstance()->updateChannelMediaOptionsEx(channelMediaOptions, rtcConnection);
@@ -2424,7 +2427,7 @@ int UAgoraRtcEngine::SetVideoEncoderConfigurationEx(const FVideoEncoderConfigura
 	videoEncoderConfiguration.advanceOptions = advanceOptions;
 
 	agora::rtc::RtcConnection rtcConnection;
-	std::string ChannelId = TCHAR_TO_ANSI(*connection.channelId);
+	std::string ChannelId = TCHAR_TO_UTF8(*connection.channelId);
 	rtcConnection.channelId = ChannelId.c_str();
 	rtcConnection.localUid = connection.localUid;
 	auto ret = RtcEngineProxyClassWrapper::GetInstance()->setVideoEncoderConfigurationEx(videoEncoderConfiguration, rtcConnection);
@@ -2442,7 +2445,7 @@ int UAgoraRtcEngine::SetupRemoteVideoEx(const FVideoCanvas& canvas, const FRtcCo
 	//videoCanvas.cropArea = canvas.cropArea;
 	videoCanvas.setupMode = (agora::rtc::VIDEO_VIEW_SETUP_MODE)canvas.setupMode;
 	agora::rtc::RtcConnection rtcConnection;
-	std::string ChannelId = TCHAR_TO_ANSI(*connection.channelId);
+	std::string ChannelId = TCHAR_TO_UTF8(*connection.channelId);
 	rtcConnection.channelId = ChannelId.c_str();
 	//rtcConnection.localUid = connection.localUid;
 	auto ret = RtcEngineProxyClassWrapper::GetInstance()->setupRemoteVideoEx(videoCanvas, rtcConnection);
@@ -2451,7 +2454,7 @@ int UAgoraRtcEngine::SetupRemoteVideoEx(const FVideoCanvas& canvas, const FRtcCo
 int UAgoraRtcEngine::MuteRemoteAudioStreamEx(int64 uid, bool mute, const FRtcConnection& connection)
 {
 	agora::rtc::RtcConnection rtcConnection;
-	std::string ChannelId = TCHAR_TO_ANSI(*connection.channelId);
+	std::string ChannelId = TCHAR_TO_UTF8(*connection.channelId);
 	rtcConnection.channelId = ChannelId.c_str();
 	rtcConnection.localUid = connection.localUid;
 	auto ret = RtcEngineProxyClassWrapper::GetInstance()->muteRemoteAudioStreamEx(uid, mute, rtcConnection);
@@ -2460,7 +2463,7 @@ int UAgoraRtcEngine::MuteRemoteAudioStreamEx(int64 uid, bool mute, const FRtcCon
 int UAgoraRtcEngine::MuteRemoteVideoStreamEx(int64 uid, bool mute, const FRtcConnection& connection)
 {
 	agora::rtc::RtcConnection rtcConnection;
-	std::string ChannelId = TCHAR_TO_ANSI(*connection.channelId);
+	std::string ChannelId = TCHAR_TO_UTF8(*connection.channelId);
 	rtcConnection.channelId = ChannelId.c_str();
 	rtcConnection.localUid = connection.localUid;
 	auto ret = RtcEngineProxyClassWrapper::GetInstance()->muteRemoteVideoStreamEx(uid, mute, rtcConnection);
@@ -2469,7 +2472,7 @@ int UAgoraRtcEngine::MuteRemoteVideoStreamEx(int64 uid, bool mute, const FRtcCon
 int UAgoraRtcEngine::SetRemoteVideoStreamTypeEx(int64 uid, EVIDEO_STREAM_TYPE streamType, const FRtcConnection& connection)
 {
 	agora::rtc::RtcConnection rtcConnection;
-	std::string ChannelId = TCHAR_TO_ANSI(*connection.channelId);
+	std::string ChannelId = TCHAR_TO_UTF8(*connection.channelId);
 	rtcConnection.channelId = ChannelId.c_str();
 	rtcConnection.localUid = connection.localUid;
 	auto ret = RtcEngineProxyClassWrapper::GetInstance()->setRemoteVideoStreamTypeEx(uid, (agora::rtc::VIDEO_STREAM_TYPE)streamType, rtcConnection);
@@ -2481,7 +2484,7 @@ int UAgoraRtcEngine::SetRemoteVideoSubscriptionOptionsEx(int64 uid, const FVideo
 	agora::rtc::VideoSubscriptionOptions videoSubscriptionOptions;
 	SET_AGORA_DATA_VIDEOSUBSCRIPTIONOPTIONS(videoSubscriptionOptions, options);
 	agora::rtc::RtcConnection rtcConnection;
-	std::string ChannelId = TCHAR_TO_ANSI(*connection.channelId);
+	std::string ChannelId = TCHAR_TO_UTF8(*connection.channelId);
 	rtcConnection.channelId = ChannelId.c_str();
 	rtcConnection.localUid = connection.localUid;
 	auto ret = RtcEngineProxyClassWrapper::GetInstance()->setRemoteVideoSubscriptionOptionsEx(uid, videoSubscriptionOptions, rtcConnection);
@@ -2490,7 +2493,7 @@ int UAgoraRtcEngine::SetRemoteVideoSubscriptionOptionsEx(int64 uid, const FVideo
 int UAgoraRtcEngine::SetRemoteVoicePositionEx(int64 uid, float pan, float gain, const FRtcConnection& connection)
 {
 	agora::rtc::RtcConnection rtcConnection;
-	std::string ChannelId = TCHAR_TO_ANSI(*connection.channelId);
+	std::string ChannelId = TCHAR_TO_UTF8(*connection.channelId);
 	rtcConnection.channelId = ChannelId.c_str();
 	rtcConnection.localUid = connection.localUid;
 	auto ret = RtcEngineProxyClassWrapper::GetInstance()->setRemoteVoicePositionEx(uid, pan, gain, rtcConnection);
@@ -2501,7 +2504,7 @@ int UAgoraRtcEngine::SetRemoteUserSpatialAudioParamsEx(int64 uid, const FSpatial
 	agora::SpatialAudioParams spatialAudioParams;
 	SET_AGORA_DATA_SPATIALAUDIOPARAMS(spatialAudioParams, params);
 	agora::rtc::RtcConnection rtcConnection;
-	std::string ChannelId = TCHAR_TO_ANSI(*connection.channelId);
+	std::string ChannelId = TCHAR_TO_UTF8(*connection.channelId);
 	rtcConnection.channelId = ChannelId.c_str();
 	rtcConnection.localUid = connection.localUid;
 	auto ret = RtcEngineProxyClassWrapper::GetInstance()->setRemoteUserSpatialAudioParamsEx(uid, spatialAudioParams, rtcConnection);
@@ -2510,7 +2513,7 @@ int UAgoraRtcEngine::SetRemoteUserSpatialAudioParamsEx(int64 uid, const FSpatial
 int UAgoraRtcEngine::SetRemoteRenderModeEx(int64 uid, ERENDER_MODE_TYPE renderMode, EVIDEO_MIRROR_MODE_TYPE mirrorMode, const FRtcConnection& connection)
 {
 	agora::rtc::RtcConnection rtcConnection;
-	std::string ChannelId = TCHAR_TO_ANSI(*connection.channelId);
+	std::string ChannelId = TCHAR_TO_UTF8(*connection.channelId);
 	rtcConnection.channelId = ChannelId.c_str();
 	rtcConnection.localUid = connection.localUid;
 	auto ret = RtcEngineProxyClassWrapper::GetInstance()->setRemoteRenderModeEx(uid, (agora::media::base::RENDER_MODE_TYPE)renderMode, (agora::rtc::VIDEO_MIRROR_MODE_TYPE)mirrorMode, rtcConnection);
@@ -2519,16 +2522,16 @@ int UAgoraRtcEngine::SetRemoteRenderModeEx(int64 uid, ERENDER_MODE_TYPE renderMo
 int UAgoraRtcEngine::EnableLoopbackRecordingEx(const FRtcConnection& connection, bool enabled, FString deviceName)
 {
 	agora::rtc::RtcConnection rtcConnection;
-	std::string ChannelId = TCHAR_TO_ANSI(*connection.channelId);
+	std::string ChannelId = TCHAR_TO_UTF8(*connection.channelId);
 	rtcConnection.channelId = ChannelId.c_str();
 	rtcConnection.localUid = connection.localUid;
-	auto ret = RtcEngineProxyClassWrapper::GetInstance()->enableLoopbackRecordingEx(rtcConnection, enabled, TCHAR_TO_ANSI(*deviceName));
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->enableLoopbackRecordingEx(rtcConnection, enabled, TCHAR_TO_UTF8(*deviceName));
 	return ret;
 }
 ECONNECTION_STATE_TYPE UAgoraRtcEngine::GetConnectionStateEx(const FRtcConnection& connection)
 {
 	agora::rtc::RtcConnection rtcConnection;
-	std::string ChannelId = TCHAR_TO_ANSI(*connection.channelId);
+	std::string ChannelId = TCHAR_TO_UTF8(*connection.channelId);
 	rtcConnection.channelId = ChannelId.c_str();
 	rtcConnection.localUid = connection.localUid;
 	return (ECONNECTION_STATE_TYPE)RtcEngineProxyClassWrapper::GetInstance()->getConnectionStateEx(rtcConnection);
@@ -2536,14 +2539,14 @@ ECONNECTION_STATE_TYPE UAgoraRtcEngine::GetConnectionStateEx(const FRtcConnectio
 int UAgoraRtcEngine::EnableEncryptionEx(const FRtcConnection& connection, bool enabled, const FEncryptionConfig& config)
 {
 	agora::rtc::RtcConnection rtcConnection;
-	std::string ChannelId = TCHAR_TO_ANSI(*connection.channelId);
+	std::string ChannelId = TCHAR_TO_UTF8(*connection.channelId);
 	rtcConnection.channelId = ChannelId.c_str();
 	rtcConnection.localUid = connection.localUid;
 	agora::rtc::EncryptionConfig encryptionConfig;
 	encryptionConfig.encryptionMode = (agora::rtc::ENCRYPTION_MODE)config.encryptionMode;
-	std::string EncryptionKey = TCHAR_TO_ANSI(*config.encryptionKey);
+	std::string EncryptionKey = TCHAR_TO_UTF8(*config.encryptionKey);
 	encryptionConfig.encryptionKey = EncryptionKey.c_str();
-	std::string encryptionKdfSalt = TCHAR_TO_ANSI(*config.encryptionKdfSalt);
+	std::string encryptionKdfSalt = TCHAR_TO_UTF8(*config.encryptionKdfSalt);
 	FMemory::Memcpy(encryptionConfig.encryptionKdfSalt, encryptionKdfSalt.c_str(), 32);
 
 	auto ret = RtcEngineProxyClassWrapper::GetInstance()->enableEncryptionEx(rtcConnection, enabled, encryptionConfig);
@@ -2556,7 +2559,7 @@ int UAgoraRtcEngine::CreateDataStreamEx(int& streamId, const FDataStreamConfig& 
 	dataStreamConfig.syncWithAudio = config.syncWithAudio;
 	dataStreamConfig.ordered = config.ordered;
 	agora::rtc::RtcConnection rtcConnection;
-	std::string ChannelId = TCHAR_TO_ANSI(*connection.channelId);
+	std::string ChannelId = TCHAR_TO_UTF8(*connection.channelId);
 	rtcConnection.channelId = ChannelId.c_str();
 	rtcConnection.localUid = connection.localUid;
 	auto ret = RtcEngineProxyClassWrapper::GetInstance()->createDataStreamEx(&streamId, dataStreamConfig, rtcConnection);
@@ -2565,10 +2568,11 @@ int UAgoraRtcEngine::CreateDataStreamEx(int& streamId, const FDataStreamConfig& 
 int UAgoraRtcEngine::SendStreamMessageEx(int streamId, FString data, const FRtcConnection& connection)
 {
 	agora::rtc::RtcConnection rtcConnection;
-	std::string ChannelId = TCHAR_TO_ANSI(*connection.channelId);
+	std::string ChannelId = TCHAR_TO_UTF8(*connection.channelId);
 	rtcConnection.channelId = ChannelId.c_str();
 	rtcConnection.localUid = connection.localUid;
-	const char* Data = TCHAR_TO_ANSI(*data);
+	std::string StdStrData = TCHAR_TO_UTF8(*data);
+	const char* Data = StdStrData.c_str();
 	auto ret = RtcEngineProxyClassWrapper::GetInstance()->sendStreamMessageEx(streamId, Data, strlen(Data), rtcConnection);
 	return ret;
 }
@@ -2594,16 +2598,16 @@ int UAgoraRtcEngine::AddVideoWatermarkEx(FString watermarkUrl, const FWatermarkO
 	watermarkOptions.watermarkRatio = markradio;
 	watermarkOptions.mode = (agora::rtc::WATERMARK_FIT_MODE)options.mode;
 	agora::rtc::RtcConnection rtcConnection;
-	std::string ChannelId = TCHAR_TO_ANSI(*connection.channelId);
+	std::string ChannelId = TCHAR_TO_UTF8(*connection.channelId);
 	rtcConnection.channelId = ChannelId.c_str();
 	rtcConnection.localUid = connection.localUid;
-	auto ret = RtcEngineProxyClassWrapper::GetInstance()->addVideoWatermarkEx(TCHAR_TO_ANSI(*watermarkUrl), watermarkOptions, rtcConnection);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->addVideoWatermarkEx(TCHAR_TO_UTF8(*watermarkUrl), watermarkOptions, rtcConnection);
 	return ret;
 }
 int UAgoraRtcEngine::ClearVideoWatermarkEx(const FRtcConnection& connection)
 {
 	agora::rtc::RtcConnection rtcConnection;
-	std::string ChannelId = TCHAR_TO_ANSI(*connection.channelId);
+	std::string ChannelId = TCHAR_TO_UTF8(*connection.channelId);
 	rtcConnection.channelId = ChannelId.c_str();
 	rtcConnection.localUid = connection.localUid;
 	auto ret = RtcEngineProxyClassWrapper::GetInstance()->clearVideoWatermarkEx(rtcConnection);
@@ -2612,16 +2616,16 @@ int UAgoraRtcEngine::ClearVideoWatermarkEx(const FRtcConnection& connection)
 int UAgoraRtcEngine::SendCustomReportMessageEx(FString id, FString category, FString event, FString label, int value, const FRtcConnection& connection)
 {
 	agora::rtc::RtcConnection rtcConnection;
-	std::string ChannelId = TCHAR_TO_ANSI(*connection.channelId);
+	std::string ChannelId = TCHAR_TO_UTF8(*connection.channelId);
 	rtcConnection.channelId = ChannelId.c_str();
 	rtcConnection.localUid = connection.localUid;
-	auto ret = RtcEngineProxyClassWrapper::GetInstance()->sendCustomReportMessageEx(TCHAR_TO_ANSI(*id), TCHAR_TO_ANSI(*category), TCHAR_TO_ANSI(*event), TCHAR_TO_ANSI(*label), value, rtcConnection);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->sendCustomReportMessageEx(TCHAR_TO_UTF8(*id), TCHAR_TO_UTF8(*category), TCHAR_TO_UTF8(*event), TCHAR_TO_UTF8(*label), value, rtcConnection);
 	return ret;
 }
 int UAgoraRtcEngine::EnableAudioVolumeIndicationEx(int interval, int smooth, bool reportVad, const FRtcConnection& connection)
 {
 	agora::rtc::RtcConnection rtcConnection;
-	std::string ChannelId = TCHAR_TO_ANSI(*connection.channelId);
+	std::string ChannelId = TCHAR_TO_UTF8(*connection.channelId);
 	rtcConnection.channelId = ChannelId.c_str();
 	rtcConnection.localUid = connection.localUid;
 	auto ret = RtcEngineProxyClassWrapper::GetInstance()->enableAudioVolumeIndicationEx(interval, smooth, reportVad, rtcConnection);
@@ -2632,10 +2636,10 @@ int UAgoraRtcEngine::GetUserInfoByUserAccountEx(FString userAccount, FUserInfo& 
 	agora::rtc::UserInfo info;
 
 	agora::rtc::RtcConnection rtcConnection;
-	std::string ChannelId = TCHAR_TO_ANSI(*connection.channelId);
+	std::string ChannelId = TCHAR_TO_UTF8(*connection.channelId);
 	rtcConnection.channelId = ChannelId.c_str();
 	rtcConnection.localUid = connection.localUid;
-	auto ret = RtcEngineProxyClassWrapper::GetInstance()->getUserInfoByUserAccountEx(TCHAR_TO_ANSI(*userAccount), &info, rtcConnection);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->getUserInfoByUserAccountEx(TCHAR_TO_UTF8(*userAccount), &info, rtcConnection);
 
 	userInfo.uid = info.uid;
 	userInfo.userAccount = info.userAccount;
@@ -2646,7 +2650,7 @@ int UAgoraRtcEngine::GetUserInfoByUidEx(int64 uid, FUserInfo& userInfo, const FR
 {
 	agora::rtc::UserInfo info;
 	agora::rtc::RtcConnection rtcConnection;
-	std::string ChannelId = TCHAR_TO_ANSI(*connection.channelId);
+	std::string ChannelId = TCHAR_TO_UTF8(*connection.channelId);
 	rtcConnection.channelId = ChannelId.c_str();
 	rtcConnection.localUid = connection.localUid;
 
@@ -2667,7 +2671,7 @@ int UAgoraRtcEngine::EnableDualStreamModeEx(bool enabled, const FSimulcastStream
 	simulcastStreamConfig.kBitrate = streamConfig.bitrate;
 	simulcastStreamConfig.framerate = streamConfig.framerate;
 	agora::rtc::RtcConnection rtcConnection;
-	std::string ChannelId = TCHAR_TO_ANSI(*connection.channelId);
+	std::string ChannelId = TCHAR_TO_UTF8(*connection.channelId);
 	rtcConnection.channelId = ChannelId.c_str();
 	rtcConnection.localUid = connection.localUid;
 	auto ret = RtcEngineProxyClassWrapper::GetInstance()->enableDualStreamModeEx(enabled,simulcastStreamConfig, rtcConnection);
@@ -2683,7 +2687,7 @@ int UAgoraRtcEngine::SetDualStreamModeEx(FENUMWRAP_SIMULCAST_STREAM_MODE mode, c
 	simulcastStreamConfig.kBitrate = streamConfig.bitrate;
 	simulcastStreamConfig.framerate = streamConfig.framerate;
 	agora::rtc::RtcConnection rtcConnection;
-	std::string ChannelId = TCHAR_TO_ANSI(*connection.channelId);
+	std::string ChannelId = TCHAR_TO_UTF8(*connection.channelId);
 	rtcConnection.channelId = ChannelId.c_str();
 	rtcConnection.localUid = connection.localUid;
 	auto ret = RtcEngineProxyClassWrapper::GetInstance()->setDualStreamModeEx(mode.GetRawValue(), simulcastStreamConfig, rtcConnection);
@@ -2697,10 +2701,10 @@ int UAgoraRtcEngine::EnableWirelessAccelerate(bool enabled)
 int UAgoraRtcEngine::TakeSnapshotEx(const FRtcConnection& connection, int64 uid, FString filePath)
 {
 	agora::rtc::RtcConnection rtcConnection;
-	std::string ChannelId = TCHAR_TO_ANSI(*connection.channelId);
+	std::string ChannelId = TCHAR_TO_UTF8(*connection.channelId);
 	rtcConnection.channelId = ChannelId.c_str();
 	rtcConnection.localUid = connection.localUid;
-	std::string FilePath = TCHAR_TO_ANSI(*filePath);
+	std::string FilePath = TCHAR_TO_UTF8(*filePath);
 	auto ret = RtcEngineProxyClassWrapper::GetInstance()->takeSnapshotEx(rtcConnection, uid, FilePath.c_str());
 	return ret;
 }
@@ -2709,7 +2713,7 @@ int UAgoraRtcEngine::TakeSnapshotEx(const FRtcConnection& connection, int64 uid,
 int UAgoraRtcEngine::MuteLocalAudioStreamEx(bool mute, const FRtcConnection& connection)
 {
 	agora::rtc::RtcConnection rtcConnection;
-	std::string ChannelId = TCHAR_TO_ANSI(*connection.channelId);
+	std::string ChannelId = TCHAR_TO_UTF8(*connection.channelId);
 	rtcConnection.channelId = ChannelId.c_str();
 	rtcConnection.localUid = connection.localUid;
 	auto ret = RtcEngineProxyClassWrapper::GetInstance()->muteLocalAudioStreamEx(mute, rtcConnection);
@@ -2719,7 +2723,7 @@ int UAgoraRtcEngine::MuteLocalAudioStreamEx(bool mute, const FRtcConnection& con
 int UAgoraRtcEngine::MuteLocalVideoStreamEx(bool mute, const FRtcConnection& connection)
 {
 	agora::rtc::RtcConnection rtcConnection;
-	std::string ChannelId = TCHAR_TO_ANSI(*connection.channelId);
+	std::string ChannelId = TCHAR_TO_UTF8(*connection.channelId);
 	rtcConnection.channelId = ChannelId.c_str();
 	rtcConnection.localUid = connection.localUid;
 	auto ret = RtcEngineProxyClassWrapper::GetInstance()->muteLocalVideoStreamEx(mute, rtcConnection);
@@ -2729,7 +2733,7 @@ int UAgoraRtcEngine::MuteLocalVideoStreamEx(bool mute, const FRtcConnection& con
 int UAgoraRtcEngine::MuteAllRemoteAudioStreamsEx(bool mute, const FRtcConnection& connection)
 {
 	agora::rtc::RtcConnection rtcConnection;
-	std::string ChannelId = TCHAR_TO_ANSI(*connection.channelId);
+	std::string ChannelId = TCHAR_TO_UTF8(*connection.channelId);
 	rtcConnection.channelId = ChannelId.c_str();
 	rtcConnection.localUid = connection.localUid;
 	auto ret = RtcEngineProxyClassWrapper::GetInstance()->muteAllRemoteAudioStreamsEx(mute, rtcConnection);
@@ -2739,7 +2743,7 @@ int UAgoraRtcEngine::MuteAllRemoteAudioStreamsEx(bool mute, const FRtcConnection
 int UAgoraRtcEngine::MuteAllRemoteVideoStreamsEx(bool mute, const FRtcConnection& connection)
 {
 	agora::rtc::RtcConnection rtcConnection;
-	std::string ChannelId = TCHAR_TO_ANSI(*connection.channelId);
+	std::string ChannelId = TCHAR_TO_UTF8(*connection.channelId);
 	rtcConnection.channelId = ChannelId.c_str();
 	rtcConnection.localUid = connection.localUid;
 	auto ret = RtcEngineProxyClassWrapper::GetInstance()->muteAllRemoteVideoStreamsEx(mute, rtcConnection);
@@ -2749,7 +2753,7 @@ int UAgoraRtcEngine::MuteAllRemoteVideoStreamsEx(bool mute, const FRtcConnection
 int UAgoraRtcEngine::SetSubscribeAudioBlocklistEx(TArray<int64> uidList, int uidNumber, const FRtcConnection& connection)
 {
 	agora::rtc::RtcConnection rtcConnection;
-	std::string ChannelId = TCHAR_TO_ANSI(*connection.channelId);
+	std::string ChannelId = TCHAR_TO_UTF8(*connection.channelId);
 	rtcConnection.channelId = ChannelId.c_str();
 	rtcConnection.localUid = connection.localUid;
 	agora::rtc::uid_t* data = new agora::rtc::uid_t[uidList.Num()];
@@ -2764,7 +2768,7 @@ int UAgoraRtcEngine::SetSubscribeAudioBlocklistEx(TArray<int64> uidList, int uid
 int UAgoraRtcEngine::SetSubscribeAudioAllowlistEx(TArray<int64> uidList, int uidNumber, const FRtcConnection& connection)
 {
 	agora::rtc::RtcConnection rtcConnection;
-	std::string ChannelId = TCHAR_TO_ANSI(*connection.channelId);
+	std::string ChannelId = TCHAR_TO_UTF8(*connection.channelId);
 	rtcConnection.channelId = ChannelId.c_str();
 	rtcConnection.localUid = connection.localUid;
 	agora::rtc::uid_t* data = new agora::rtc::uid_t[uidList.Num()];
@@ -2779,7 +2783,7 @@ int UAgoraRtcEngine::SetSubscribeAudioAllowlistEx(TArray<int64> uidList, int uid
 int UAgoraRtcEngine::SetSubscribeVideoBlocklistEx(TArray<int64> uidList, int uidNumber, const FRtcConnection& connection)
 {
 	agora::rtc::RtcConnection rtcConnection;
-	std::string ChannelId = TCHAR_TO_ANSI(*connection.channelId);
+	std::string ChannelId = TCHAR_TO_UTF8(*connection.channelId);
 	rtcConnection.channelId = ChannelId.c_str();
 	rtcConnection.localUid = connection.localUid;
 	agora::rtc::uid_t* data = new agora::rtc::uid_t[uidList.Num()];
@@ -2794,7 +2798,7 @@ int UAgoraRtcEngine::SetSubscribeVideoBlocklistEx(TArray<int64> uidList, int uid
 int UAgoraRtcEngine::SetSubscribeVideoAllowlistEx(TArray<int64> uidList, int uidNumber, const FRtcConnection& connection)
 {
 	agora::rtc::RtcConnection rtcConnection;
-	std::string ChannelId = TCHAR_TO_ANSI(*connection.channelId);
+	std::string ChannelId = TCHAR_TO_UTF8(*connection.channelId);
 	rtcConnection.channelId = ChannelId.c_str();
 	rtcConnection.localUid = connection.localUid;
 	agora::rtc::uid_t* data = new agora::rtc::uid_t[uidList.Num()];
@@ -2809,7 +2813,7 @@ int UAgoraRtcEngine::SetSubscribeVideoAllowlistEx(TArray<int64> uidList, int uid
 int UAgoraRtcEngine::AdjustUserPlaybackSignalVolumeEx(int64 uid, int volume, const FRtcConnection& connection)
 {
 	agora::rtc::RtcConnection rtcConnection;
-	std::string ChannelId = TCHAR_TO_ANSI(*connection.channelId);
+	std::string ChannelId = TCHAR_TO_UTF8(*connection.channelId);
 	rtcConnection.channelId = ChannelId.c_str();
 	rtcConnection.localUid = connection.localUid;
 	auto ret =  RtcEngineProxyClassWrapper::GetInstance()->adjustUserPlaybackSignalVolumeEx(uid, volume, rtcConnection);
@@ -2819,10 +2823,10 @@ int UAgoraRtcEngine::AdjustUserPlaybackSignalVolumeEx(int64 uid, int volume, con
 int UAgoraRtcEngine::StartRtmpStreamWithoutTranscodingEx(FString url, const FRtcConnection& connection)
 {
 	agora::rtc::RtcConnection rtcConnection;
-	std::string ChannelId = TCHAR_TO_ANSI(*connection.channelId);
+	std::string ChannelId = TCHAR_TO_UTF8(*connection.channelId);
 	rtcConnection.channelId = ChannelId.c_str();
 	rtcConnection.localUid = connection.localUid;
-	std::string Url = TCHAR_TO_ANSI(*url);
+	std::string Url = TCHAR_TO_UTF8(*url);
 	int ret= RtcEngineProxyClassWrapper::GetInstance()->startRtmpStreamWithoutTranscodingEx(Url.c_str(), rtcConnection);
 	return ret;
 }
@@ -2830,10 +2834,10 @@ int UAgoraRtcEngine::StartRtmpStreamWithoutTranscodingEx(FString url, const FRtc
 int UAgoraRtcEngine::StartRtmpStreamWithTranscodingEx(FString url, const FLiveTranscoding& transcoding, const FRtcConnection& connection)
 {
 	agora::rtc::RtcConnection rtcConnection;
-	std::string ChannelId = TCHAR_TO_ANSI(*connection.channelId);
+	std::string ChannelId = TCHAR_TO_UTF8(*connection.channelId);
 	rtcConnection.channelId = ChannelId.c_str();
 	rtcConnection.localUid = connection.localUid;
-	std::string streamUrl = TCHAR_TO_ANSI(*url);
+	std::string streamUrl = TCHAR_TO_UTF8(*url);
 
 	agora::rtc::LiveTranscoding liveTranscoding;
 	liveTranscoding.width = transcoding.width;
@@ -2859,15 +2863,15 @@ int UAgoraRtcEngine::StartRtmpStreamWithTranscodingEx(FString url, const FLiveTr
 		trans[i].zOrder = transcoding.transcodingUsers[i].zOrder;
 	}
 	liveTranscoding.transcodingUsers = trans;
-	std::string TranscodingExtraInfo = TCHAR_TO_ANSI(*transcoding.transcodingExtraInfo);
+	std::string TranscodingExtraInfo = TCHAR_TO_UTF8(*transcoding.transcodingExtraInfo);
 	liveTranscoding.transcodingExtraInfo = TranscodingExtraInfo.c_str();
-	std::string Metadata = TCHAR_TO_ANSI(*transcoding.metadata);
+	std::string Metadata = TCHAR_TO_UTF8(*transcoding.metadata);
 	liveTranscoding.metadata = Metadata.c_str();
 	agora::rtc::RtcImage* image = new agora::rtc::RtcImage[transcoding.watermarkCount];
 	for (int i = 0; i < transcoding.watermarkCount; i++)
 	{
 		image[i].alpha = transcoding.watermark[i].alpha;
-		std::string Url = TCHAR_TO_ANSI(*transcoding.watermark[i].url);
+		std::string Url = TCHAR_TO_UTF8(*transcoding.watermark[i].url);
 		image[i].url = Url.c_str();
 		image[i].height = transcoding.watermark[i].height;
 		image[i].width = transcoding.watermark[i].width;
@@ -2882,7 +2886,7 @@ int UAgoraRtcEngine::StartRtmpStreamWithTranscodingEx(FString url, const FLiveTr
 	for (int i = 0; i < transcoding.backgroundImageCount; i++)
 	{
 		bgImage[i].alpha = transcoding.backgroundImage[i].alpha;
-		std::string Url = TCHAR_TO_ANSI(*transcoding.backgroundImage[i].url);
+		std::string Url = TCHAR_TO_UTF8(*transcoding.backgroundImage[i].url);
 		bgImage[i].url = Url.c_str();
 		bgImage[i].height = transcoding.backgroundImage[i].height;
 		bgImage[i].width = transcoding.backgroundImage[i].width;
@@ -2911,7 +2915,7 @@ int UAgoraRtcEngine::StartRtmpStreamWithTranscodingEx(FString url, const FLiveTr
 	agora::rtc::LiveStreamAdvancedFeature* feature = new agora::rtc::LiveStreamAdvancedFeature[transcoding.advancedFeatureCount];
 	for (int i = 0; i < transcoding.advancedFeatureCount; i++)
 	{
-		std::string FeatureName = TCHAR_TO_ANSI(*transcoding.advancedFeatures[i].featureName);
+		std::string FeatureName = TCHAR_TO_UTF8(*transcoding.advancedFeatures[i].featureName);
 		feature[i].featureName = FeatureName.c_str();
 		feature[i].opened = transcoding.advancedFeatures[i].opened;
 	}
@@ -2953,15 +2957,15 @@ int UAgoraRtcEngine::UpdateRtmpTranscodingEx(const FLiveTranscoding& transcoding
 		trans[i].zOrder = transcoding.transcodingUsers[i].zOrder;
 	}
 	liveTranscoding.transcodingUsers = trans;
-	std::string TranscodingExtraInfo = TCHAR_TO_ANSI(*transcoding.transcodingExtraInfo);
+	std::string TranscodingExtraInfo = TCHAR_TO_UTF8(*transcoding.transcodingExtraInfo);
 	liveTranscoding.transcodingExtraInfo = TranscodingExtraInfo.c_str();
-	std::string Metadata = TCHAR_TO_ANSI(*transcoding.metadata);
+	std::string Metadata = TCHAR_TO_UTF8(*transcoding.metadata);
 	liveTranscoding.metadata = Metadata.c_str();
 	agora::rtc::RtcImage* image = new agora::rtc::RtcImage[transcoding.watermarkCount];
 	for (int i = 0; i < transcoding.watermarkCount; i++)
 	{
 		image[i].alpha = transcoding.watermark[i].alpha;
-		std::string Url = TCHAR_TO_ANSI(*transcoding.watermark[i].url);
+		std::string Url = TCHAR_TO_UTF8(*transcoding.watermark[i].url);
 		image[i].url = Url.c_str();
 		image[i].height = transcoding.watermark[i].height;
 		image[i].width = transcoding.watermark[i].width;
@@ -2976,7 +2980,7 @@ int UAgoraRtcEngine::UpdateRtmpTranscodingEx(const FLiveTranscoding& transcoding
 	for (int i = 0; i < transcoding.backgroundImageCount; i++)
 	{
 		bgImage[i].alpha = transcoding.backgroundImage[i].alpha;
-		std::string Url = TCHAR_TO_ANSI(*transcoding.backgroundImage[i].url);
+		std::string Url = TCHAR_TO_UTF8(*transcoding.backgroundImage[i].url);
 		bgImage[i].url = Url.c_str();
 		bgImage[i].height = transcoding.backgroundImage[i].height;
 		bgImage[i].width = transcoding.backgroundImage[i].width;
@@ -3005,7 +3009,7 @@ int UAgoraRtcEngine::UpdateRtmpTranscodingEx(const FLiveTranscoding& transcoding
 	agora::rtc::LiveStreamAdvancedFeature* feature = new agora::rtc::LiveStreamAdvancedFeature[transcoding.advancedFeatureCount];
 	for (int i = 0; i < transcoding.advancedFeatureCount; i++)
 	{
-		std::string FeatureName = TCHAR_TO_ANSI(*transcoding.advancedFeatures[i].featureName);
+		std::string FeatureName = TCHAR_TO_UTF8(*transcoding.advancedFeatures[i].featureName);
 		feature[i].featureName = FeatureName.c_str();
 		feature[i].opened = transcoding.advancedFeatures[i].opened;
 	}
@@ -3013,7 +3017,7 @@ int UAgoraRtcEngine::UpdateRtmpTranscodingEx(const FLiveTranscoding& transcoding
 	liveTranscoding.advancedFeatureCount = transcoding.advancedFeatureCount;
 
 	agora::rtc::RtcConnection rtcConnection;
-	std::string ChannelId = TCHAR_TO_ANSI(*connection.channelId);
+	std::string ChannelId = TCHAR_TO_UTF8(*connection.channelId);
 	rtcConnection.channelId = ChannelId.c_str();
 	rtcConnection.localUid = connection.localUid;
 
@@ -3028,10 +3032,10 @@ int UAgoraRtcEngine::UpdateRtmpTranscodingEx(const FLiveTranscoding& transcoding
 int UAgoraRtcEngine::StopRtmpStreamEx(FString url, const FRtcConnection& connection)
 {
 	agora::rtc::RtcConnection rtcConnection;
-	std::string ChannelId = TCHAR_TO_ANSI(*connection.channelId);
+	std::string ChannelId = TCHAR_TO_UTF8(*connection.channelId);
 	rtcConnection.channelId = ChannelId.c_str();
 	rtcConnection.localUid = connection.localUid;
-	std::string Url = TCHAR_TO_ANSI(*url);
+	std::string Url = TCHAR_TO_UTF8(*url);
 	auto ret = RtcEngineProxyClassWrapper::GetInstance()->startRtmpStreamWithoutTranscodingEx(Url.c_str(), rtcConnection);
 	return ret;
 }
@@ -3040,18 +3044,18 @@ int UAgoraRtcEngine::StartChannelMediaRelayEx(const FChannelMediaRelayConfigurat
 {
 	agora::rtc::ChannelMediaRelayConfiguration channelMediaRelayConfiguration;
 	agora::rtc::ChannelMediaInfo* mediaInfo = new agora::rtc::ChannelMediaInfo();
-	std::string ChannelName = TCHAR_TO_ANSI(*configuration.srcInfo.channelName);
+	std::string ChannelName = TCHAR_TO_UTF8(*configuration.srcInfo.channelName);
 	mediaInfo->channelName = ChannelName.c_str();
-	std::string Token = TCHAR_TO_ANSI(*configuration.srcInfo.token);
+	std::string Token = TCHAR_TO_UTF8(*configuration.srcInfo.token);
 	mediaInfo->token = Token.c_str();
 	mediaInfo->uid = configuration.srcInfo.uid;
 	channelMediaRelayConfiguration.srcInfo = mediaInfo;
 	agora::rtc::ChannelMediaInfo* mediaInfos = new agora::rtc::ChannelMediaInfo[configuration.destCount];
 	for (int i = 0; i < configuration.destCount; i++)
 	{
-		std::string ChannelNameTemp = TCHAR_TO_ANSI(*configuration.srcInfo.channelName);
+		std::string ChannelNameTemp = TCHAR_TO_UTF8(*configuration.srcInfo.channelName);
 		mediaInfos[i].channelName = ChannelNameTemp.c_str();
-		std::string TokenTemp = TCHAR_TO_ANSI(*configuration.srcInfo.channelName);
+		std::string TokenTemp = TCHAR_TO_UTF8(*configuration.srcInfo.channelName);
 		mediaInfos[i].token = TokenTemp.c_str();
 		mediaInfos[i].uid = configuration.destInfos[i].uid;
 	}
@@ -3059,7 +3063,7 @@ int UAgoraRtcEngine::StartChannelMediaRelayEx(const FChannelMediaRelayConfigurat
 	channelMediaRelayConfiguration.destCount = configuration.destCount;
 
 	agora::rtc::RtcConnection rtcConnection;
-	std::string ChannelId = TCHAR_TO_ANSI(*connection.channelId);
+	std::string ChannelId = TCHAR_TO_UTF8(*connection.channelId);
 	rtcConnection.channelId = ChannelId.c_str();
 	rtcConnection.localUid = connection.localUid;
 
@@ -3073,25 +3077,25 @@ int UAgoraRtcEngine::UpdateChannelMediaRelayEx(const FChannelMediaRelayConfigura
 {
 	agora::rtc::ChannelMediaRelayConfiguration channelMediaRelayConfiguration;
 	agora::rtc::ChannelMediaInfo* mediaInfo = new agora::rtc::ChannelMediaInfo();
-	std::string ChannelName = TCHAR_TO_ANSI(*configuration.srcInfo.channelName);
+	std::string ChannelName = TCHAR_TO_UTF8(*configuration.srcInfo.channelName);
 	mediaInfo->channelName = ChannelName.c_str();
-	std::string Token = TCHAR_TO_ANSI(*configuration.srcInfo.token);
+	std::string Token = TCHAR_TO_UTF8(*configuration.srcInfo.token);
 	mediaInfo->token = Token.c_str();
 	mediaInfo->uid = configuration.srcInfo.uid;
 	channelMediaRelayConfiguration.srcInfo = mediaInfo;
 	agora::rtc::ChannelMediaInfo* mediaInfos = new agora::rtc::ChannelMediaInfo[configuration.destCount];
 	for (int i = 0; i < configuration.destCount; i++)
 	{
-		std::string ChannelNameTemp = TCHAR_TO_ANSI(*configuration.srcInfo.channelName);
+		std::string ChannelNameTemp = TCHAR_TO_UTF8(*configuration.srcInfo.channelName);
 		mediaInfos[i].channelName = ChannelNameTemp.c_str();
-		std::string TokenTemp = TCHAR_TO_ANSI(*configuration.srcInfo.channelName);
+		std::string TokenTemp = TCHAR_TO_UTF8(*configuration.srcInfo.channelName);
 		mediaInfos[i].token = TokenTemp.c_str();
 		mediaInfos[i].uid = configuration.destInfos[i].uid;
 	}
 	channelMediaRelayConfiguration.destInfos = mediaInfos;
 	channelMediaRelayConfiguration.destCount = configuration.destCount;
 	agora::rtc::RtcConnection rtcConnection;
-	std::string ChannelId = TCHAR_TO_ANSI(*connection.channelId);
+	std::string ChannelId = TCHAR_TO_UTF8(*connection.channelId);
 	rtcConnection.channelId = ChannelId.c_str();
 	rtcConnection.localUid = connection.localUid;
 	auto ret = RtcEngineProxyClassWrapper::GetInstance()->updateChannelMediaRelayEx(channelMediaRelayConfiguration, rtcConnection);
@@ -3103,7 +3107,7 @@ int UAgoraRtcEngine::UpdateChannelMediaRelayEx(const FChannelMediaRelayConfigura
 int UAgoraRtcEngine::StopChannelMediaRelayEx(const FRtcConnection& connection)
 {
 	agora::rtc::RtcConnection rtcConnection;
-	std::string ChannelId = TCHAR_TO_ANSI(*connection.channelId);
+	std::string ChannelId = TCHAR_TO_UTF8(*connection.channelId);
 	rtcConnection.channelId = ChannelId.c_str();
 	rtcConnection.localUid = connection.localUid;
 	auto ret = RtcEngineProxyClassWrapper::GetInstance()->stopChannelMediaRelayEx(rtcConnection);
@@ -3113,7 +3117,7 @@ int UAgoraRtcEngine::StopChannelMediaRelayEx(const FRtcConnection& connection)
 int UAgoraRtcEngine::PauseAllChannelMediaRelayEx(const FRtcConnection& connection)
 {
 	agora::rtc::RtcConnection rtcConnection;
-	std::string ChannelId = TCHAR_TO_ANSI(*connection.channelId);
+	std::string ChannelId = TCHAR_TO_UTF8(*connection.channelId);
 	rtcConnection.channelId = ChannelId.c_str();
 	rtcConnection.localUid = connection.localUid;
 	auto ret = RtcEngineProxyClassWrapper::GetInstance()->pauseAllChannelMediaRelayEx(rtcConnection);
@@ -3123,7 +3127,7 @@ int UAgoraRtcEngine::PauseAllChannelMediaRelayEx(const FRtcConnection& connectio
 int UAgoraRtcEngine::ResumeAllChannelMediaRelayEx(const FRtcConnection& connection)
 {
 	agora::rtc::RtcConnection rtcConnection;
-	std::string ChannelId = TCHAR_TO_ANSI(*connection.channelId);
+	std::string ChannelId = TCHAR_TO_UTF8(*connection.channelId);
 	rtcConnection.channelId = ChannelId.c_str();
 	rtcConnection.localUid = connection.localUid;
 	auto ret = RtcEngineProxyClassWrapper::GetInstance()->resumeAllChannelMediaRelayEx(rtcConnection);
@@ -3132,7 +3136,7 @@ int UAgoraRtcEngine::ResumeAllChannelMediaRelayEx(const FRtcConnection& connecti
 
 int UAgoraRtcEngine::SetParameters(FString parameters)
 {
-	std::string parameterstr = TCHAR_TO_ANSI(*parameters);
+	std::string parameterstr = TCHAR_TO_UTF8(*parameters);
 
 	auto ret = RtcEngineProxyClassWrapper::GetInstance()->setParameters(parameterstr.c_str());
 	return ret;

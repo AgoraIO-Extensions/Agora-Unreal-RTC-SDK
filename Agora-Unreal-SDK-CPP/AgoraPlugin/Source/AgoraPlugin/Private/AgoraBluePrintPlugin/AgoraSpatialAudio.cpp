@@ -56,7 +56,8 @@ int UILocalSpatialAudioEngine::UpdateRemotePositionEx(int64 uid, FRemoteVoicePos
 	FMemory::Memcpy(remoteVoicePositionInfo.forward, forward);
 
 	agora::rtc::RtcConnection rtcConnection;
-	rtcConnection.channelId = TCHAR_TO_ANSI(*connection.channelId);
+	std::string StdStrChannelId = TCHAR_TO_UTF8(*connection.channelId);
+	rtcConnection.channelId = StdStrChannelId.c_str();
 	rtcConnection.localUid = connection.localUid;
 	if (LocalSpatialAudioEngine != nullptr)
 	{
@@ -75,7 +76,8 @@ int UILocalSpatialAudioEngine::RemoveRemotePosition(int64 uid)
 int UILocalSpatialAudioEngine::RemoveRemotePositionEx(int64 uid, FRtcConnection& connection)
 {
 	agora::rtc::RtcConnection rtcConnection;
-	rtcConnection.channelId = TCHAR_TO_ANSI(*connection.channelId);
+	std::string StdStrChannelId = TCHAR_TO_UTF8(*connection.channelId);
+	rtcConnection.channelId = StdStrChannelId.c_str();
 	rtcConnection.localUid = connection.localUid;
 	if (LocalSpatialAudioEngine != nullptr)
 	{
@@ -94,7 +96,8 @@ int UILocalSpatialAudioEngine::ClearRemotePositions()
 int UILocalSpatialAudioEngine::ClearRemotePositionsEx(FRtcConnection& connection)
 {
 	agora::rtc::RtcConnection rtcConnection;
-	rtcConnection.channelId = TCHAR_TO_ANSI(*connection.channelId);
+	std::string StdStrChannelId = TCHAR_TO_UTF8(*connection.channelId);
+	rtcConnection.channelId = StdStrChannelId.c_str();
 	rtcConnection.localUid = connection.localUid;
 	if (LocalSpatialAudioEngine != nullptr)
 	{
@@ -211,7 +214,8 @@ int UILocalSpatialAudioEngine::UpdateSelfPositionEx(FVector position, FVector ax
 	up[2] = axisUp.Z;
 
 	agora::rtc::RtcConnection rtcConnection;
-	rtcConnection.channelId = TCHAR_TO_ANSI(*connection.channelId);
+	std::string StdStrChannelId = TCHAR_TO_UTF8(*connection.channelId);
+	rtcConnection.channelId = StdStrChannelId.c_str();
 	rtcConnection.localUid = connection.localUid;
 
 	if (LocalSpatialAudioEngine != nullptr)
@@ -252,7 +256,7 @@ int UILocalSpatialAudioEngine::SetParameters(FString params)
 {
 	if (LocalSpatialAudioEngine != nullptr)
 	{
-		return LocalSpatialAudioEngine->setParameters(TCHAR_TO_ANSI(*params));
+		return LocalSpatialAudioEngine->setParameters(TCHAR_TO_UTF8(*params));
 	}
 	return -ERROR_NULLPTR;
 }

@@ -4,93 +4,153 @@
 
 #include "CoreMinimal.h"
 #include "../../BaseAgoraUserWidget.h"
-#include "Blueprint/UserWidget.h"
-#include "Components/Image.h"
-#include "Components/Button.h"
 #include "AgoraPluginInterface.h"
-#include "Kismet/GameplayStatics.h"
+
+// UI
+#include "Components/Button.h"
+#include "Components/CanvasPanel.h"
+#include "Components/EditableText.h"
+
+// UI Utility
+#include "../../../Utility/BFL_VideoViewManager.h"
+#include "../../../Utility/BFL_Logger.h"
+
 #if PLATFORM_ANDROID
 #include "AndroidPermission/Classes/AndroidPermissionFunctionLibrary.h"
 #endif
-#include <iostream>
-#include <string.h>
-#include "Components/EditableTextBox.h"
+
 #include "EncryptionSampleWidget.generated.h"
+
 using namespace agora::rtc;
-using namespace agora;
+
 /**
  * 
  */
-UCLASS(Abstract)
-class AGORAEXAMPLE_API UEncryptionSampleWidget : public UBaseAgoraUserWidget, public agora::rtc::IRtcEngineEventHandler
+UCLASS()
+class AGORAEXAMPLE_API UEncryptionSampleWidget : public UBaseAgoraUserWidget
 {
 	GENERATED_BODY()
+
+
+#pragma region Event Handler
+
 public:
-	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
-	UImage* remoteVideo = nullptr;
 
-	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
-	UImage* localVideo = nullptr;
+	class FUserRtcEventHandlerEx : public agora::rtc::IRtcEngineEventHandlerEx
+	{
+	public:
+
+		FUserRtcEventHandlerEx(UEncryptionSampleWidget* InVideoWidget) : WidgetPtr(InVideoWidget) {};
+
+#pragma region AgoraCallback - IRtcEngineEventHandlerEx
+
+		void onJoinChannelSuccess(const agora::rtc::RtcConnection& connection, int elapsed) override;
+
+		void onLeaveChannel(const agora::rtc::RtcConnection& connection, const agora::rtc::RtcStats& stats) override;
+
+		void onUserJoined(const agora::rtc::RtcConnection& connection, agora::rtc::uid_t remoteUid, int elapsed) override;
+
+		void onUserOffline(const agora::rtc::RtcConnection& connection, agora::rtc::uid_t remoteUid, agora::rtc::USER_OFFLINE_REASON_TYPE reason) override;
+
+#pragma endregion
+
+		inline bool IsWidgetValid() { return WidgetPtr.IsValid(); }
+
+	private:
+
+		TWeakObjectPtr<UEncryptionSampleWidget> WidgetPtr;
+	};
+
+#pragma endregion
+
+
+#pragma region UI
+
+public:
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
+		UButton* Btn_BackToHome = nullptr;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-	UButton* JoinBtn = nullptr;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget))
-	UButton* LeaveBtn = nullptr;
-
+		UButton* Btn_JoinChannel = nullptr;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-	UButton* BackHomeBtn = nullptr;
-
+		UButton* Btn_LeaveChannel = nullptr;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-	UEditableTextBox* RoomPasswordTextBox = nullptr;
+		UEditableText* ET_RoomPassword = nullptr;
 
 	UFUNCTION(BlueprintCallable)
-	void OnLeaveButtonClick();
+	void OnBtnBackToHomeClicked();
 
 	UFUNCTION(BlueprintCallable)
-	void OnJoinButtonClick();
-
+	void OnBtnJoinChannelClicked();
 	UFUNCTION(BlueprintCallable)
-	void OnBackHomeButtonClick();
+	void OnBtnLeaveChannelClicked();
 
-	void CheckAndroidPermission();
+#pragma endregion
+
+public:
 
 	void InitAgoraWidget(FString APP_ID, FString TOKEN, FString CHANNEL_NAME) override;
 
+
+#pragma region UI Utility - Video View
+
+public:
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	UCanvasPanel* CanvasPanel_VideoView = nullptr;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<UDraggableVideoViewWidget> DraggableVideoViewTemplate;
+	
 protected:
 
-	void NativeDestruct() override;
+	int MakeVideoView(uint32 uid, agora::rtc::VIDEO_SOURCE_TYPE sourceType = VIDEO_SOURCE_CAMERA_PRIMARY,FString channelId = "");
+	int ReleaseVideoView(uint32 uid, agora::rtc::VIDEO_SOURCE_TYPE sourceType = VIDEO_SOURCE_CAMERA_PRIMARY, FString channelId = "");
+
+	TMap<FVideoViewIdentity, UDraggableVideoViewWidget*> VideoViewMap;
+
+
+#pragma endregion
+
+#pragma region UI Utility - Log Msg View
+
+public:
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	UCanvasPanel* CanvasPanel_LogMsgView = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TSubclassOf<UDraggableLogMsgViewWidget> DraggableLogMsgViewTemplate;
+
+public:
+	inline UDraggableLogMsgViewWidget* GetLogMsgViewPtr() {return LogMsgViewPtr;} 
 
 private:
+	UDraggableLogMsgViewWidget* LogMsgViewPtr = nullptr;
 
-	IRtcEngine* RtcEngineProxy;
+#pragma endregion
 
-	std::string AppID;
+public:
+	inline FString GetAppId() { return AppId; };
+	inline FString GetToken() { return Token; };
+	inline FString GetChannelName() { return ChannelName; };
 
-	std::string Token;
 
-	std::string ChannelName;
-
-	const char* secret = "Hello_Unreal";
-
-	ENCRYPTION_MODE EncrytionMode = ENCRYPTION_MODE::AES_128_GCM2;
-
-	FSlateBrush EmptyBrush;
-
+protected:
+	void CheckPermission();
 	void InitAgoraEngine(FString APP_ID, FString TOKEN, FString CHANNEL_NAME);
 
-	void SetUpUIEvent();
-
-
-	void SetRemoteView(UImage* remoteview, agora::rtc::uid_t uid);
-
-	void onUserJoined(agora::rtc::uid_t uid, int elapsed) override;
-
-	void onJoinChannelSuccess(const char* channel, agora::rtc::uid_t uid, int elapsed);
-
-	void onLeaveChannel(const agora::rtc::RtcStats& stats) override;
-
-	void onUserOffline(agora::rtc::uid_t uid, agora::rtc::USER_OFFLINE_REASON_TYPE reason) override;
+	void NativeDestruct() override;
+	void UnInitAgoraEngine();
 
 	void SetEncryption();
+
+	FString AppId = "";
+	FString Token = "";
+	FString ChannelName = "";
+
+	IRtcEngineEx* RtcEngineProxy;
+
+
+
+	TSharedPtr<FUserRtcEventHandlerEx> UserRtcEventHandlerEx;
 };

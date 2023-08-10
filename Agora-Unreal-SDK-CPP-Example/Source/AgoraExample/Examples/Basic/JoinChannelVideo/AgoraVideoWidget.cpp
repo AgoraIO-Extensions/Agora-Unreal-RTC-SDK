@@ -5,102 +5,22 @@
 
 void UAgoraVideoWidget::InitAgoraWidget(FString APP_ID, FString TOKEN, FString CHANNEL_NAME)
 {
-	CheckAndroidPermission();
+	LogMsgViewPtr = UBFL_Logger::CreateLogView(CanvasPanel_LogMsgView, DraggableLogMsgViewTemplate);
+
+	CheckPermission();
 
 	InitAgoraEngine(APP_ID, TOKEN, CHANNEL_NAME);
-
-	SetUpUIEvent();
-
-	InitUI();
-
-	int ret = RtcEngineProxy->setParameters("{\"che.video.local.camera_index\":1024}");
-	UE_LOG(LogTemp, Warning, TEXT("UVideoWidget setParameters che.video.local.camera_index ======%d"), ret);
-
-	ret = RtcEngineProxy->setParameters("{\"rtc.video.degradation_preference\":100}");
-	UE_LOG(LogTemp, Warning, TEXT("UVideoWidget setParameters rtc.video.degradation_preference ======%d"), ret);
 }
 
-
-
-void UAgoraVideoWidget::InitAgoraEngine(FString APP_ID, FString TOKEN, FString CHANNEL_NAME) {
-
-	RtcEngineContext RtcEngineContext;
-	std::string APP_IDStr(TCHAR_TO_ANSI(*APP_ID));
-	AppID = APP_IDStr;
-	std::string TOKENStr(TCHAR_TO_ANSI(*TOKEN));
-	Token = TOKENStr;
-	std::string CHANNEL_NAMEStr(TCHAR_TO_ANSI(*CHANNEL_NAME));
-	ChannelName = CHANNEL_NAMEStr;
-
-	RtcEngineContext.appId = AppID.c_str();
-	RtcEngineContext.eventHandler = this;
-	RtcEngineContext.channelProfile = CHANNEL_PROFILE_TYPE::CHANNEL_PROFILE_LIVE_BROADCASTING;
-
-	RtcEngineProxy = agora::rtc::ue::createAgoraRtcEngine();
-	RtcEngineProxy->initialize(RtcEngineContext);
-}
-
-void UAgoraVideoWidget::SetUpUIEvent() {
-
-	JoinBtn->OnClicked.AddDynamic(this, &UAgoraVideoWidget::OnJoinButtonClick);
-	LeaveBtn->OnClicked.AddDynamic(this, &UAgoraVideoWidget::OnLeaveButtonClick);
-	ConfirmBtn->OnClicked.AddDynamic(this, &UAgoraVideoWidget::OnConfirmButtonClick);
-	BackHomeBtn->OnClicked.AddDynamic(this, &UAgoraVideoWidget::OnBackHomeButtonClick);
-}
-
-void UAgoraVideoWidget::OnConfirmButtonClick() {
-
-	int ret = RtcEngineProxy->setChannelProfile(AgoraChannelProfileEnumMap[ProfileComboBox->GetSelectedOption()]);
-	UE_LOG(LogTemp, Warning, TEXT("UVideoWidget setChannelProfile ret: %d ChannelProfile : %s"), ret, *ProfileComboBox->GetSelectedOption());
-
-	ret = RtcEngineProxy->setAudioScenario(AgoraAudioScenarioEnumMap[ScenarioComboBox->GetSelectedOption()]);
-	UE_LOG(LogTemp, Warning, TEXT("UVideoWidget setAudioScenario ret: %d AudioScenario : %s"), ret, *ScenarioComboBox->GetSelectedOption());
-
-	VideoEncoderConfiguration videoEncoderConfiguration;
-	videoEncoderConfiguration.frameRate = FCString::Atoi(*FPSComboBox->GetSelectedOption());
-	UE_LOG(LogTemp, Warning, TEXT("UVideoWidget frameRate ======%s"), *FPSComboBox->GetSelectedOption());
-
-	VideoDimensions videoDimensions(FCString::Atoi(*WidthTextBox->GetText().ToString()), FCString::Atoi(*HeightTextBox->GetText().ToString()));
-	videoEncoderConfiguration.dimensions = videoDimensions;
-	videoEncoderConfiguration.bitrate = FCString::Atoi(*BitRateTextBox->GetText().ToString());
-	UE_LOG(LogTemp, Warning, TEXT("UVideoWidget Width:%d Height:%d"), FCString::Atoi(*WidthTextBox->GetText().ToString()), FCString::Atoi(*HeightTextBox->GetText().ToString()));
-	UE_LOG(LogTemp, Warning, TEXT("UVideoWidget Bitrate %d"), FCString::Atoi(*BitRateTextBox->GetText().ToString()));
-
-	ret = RtcEngineProxy->setVideoEncoderConfiguration(videoEncoderConfiguration);
-
-	UE_LOG(LogTemp, Warning, TEXT("UVideoWidget setVideoEncoderConfiguration ret %d"), ret);
-}
-
-void UAgoraVideoWidget::OnBackHomeButtonClick()
-{
-	if (RtcEngineProxy != nullptr)
-	{
-		RtcEngineProxy->unregisterEventHandler(this);
-		RtcEngineProxy->release();
-		delete RtcEngineProxy;
-		RtcEngineProxy = nullptr;
-	}
-	UGameplayStatics::OpenLevel(UGameplayStatics::GetPlayerController(GWorld, 0)->GetWorld(), FName("MainLevel"));
-}
-
-void UAgoraVideoWidget::OnJoinButtonClick() {
-
-	UE_LOG(LogTemp, Warning, TEXT("UVideoWidget OnJoinButtonClick ======"));
-	RtcEngineProxy->enableAudio();
-	RtcEngineProxy->enableVideo();
-	RtcEngineProxy->joinChannel(Token.c_str(), ChannelName.c_str(), "", 0);
-	RtcEngineProxy->setClientRole(agora::rtc::CLIENT_ROLE_TYPE::CLIENT_ROLE_BROADCASTER);
-
-}
-
-
-void UAgoraVideoWidget::CheckAndroidPermission() {
+void UAgoraVideoWidget::CheckPermission() {
 #if PLATFORM_ANDROID
-	FString pathfromName = UGameplayStatics::GetPlatformName();
-	if (pathfromName == "Android")
+	FString TargetPlatformName = UGameplayStatics::GetPlatformName();
+	if (TargetPlatformName == "Android")
 	{
 		TArray<FString> AndroidPermission;
+#if !AGORA_UESDK_AUDIO_ONLY || (!(PLATFORM_ANDROID || PLATFORM_IOS))
 		AndroidPermission.Add(FString("android.permission.CAMERA"));
+#endif
 		AndroidPermission.Add(FString("android.permission.RECORD_AUDIO"));
 		AndroidPermission.Add(FString("android.permission.READ_PHONE_STATE"));
 		AndroidPermission.Add(FString("android.permission.WRITE_EXTERNAL_STORAGE"));
@@ -109,222 +29,298 @@ void UAgoraVideoWidget::CheckAndroidPermission() {
 #endif
 }
 
-void UAgoraVideoWidget::OnLeaveButtonClick() {
-	UE_LOG(LogTemp, Warning, TEXT("UVideoWidget OnLeaveButtonClick ======"));
+void UAgoraVideoWidget::InitAgoraEngine(FString APP_ID, FString TOKEN, FString CHANNEL_NAME) {
 
-	RtcEngineProxy->leaveChannel();
-	for (int i = 0; i < NotUseArray.Num(); i++)
-	{
-		NotUseArray[i].image->SetBrush(EmptyBrush);
-	}
-	for (int i = 0; i < UsedArray.Num(); i++)
-	{
-		UsedArray[i].image->SetBrush(EmptyBrush);
-	}
-	localVideo->SetBrush(EmptyBrush);
-	NotUseArray.Empty();
-	UsedArray.Empty();
-	InitUI();
+	AppId = APP_ID;
+	Token = TOKEN;
+	ChannelName = CHANNEL_NAME;
+
+	UserRtcEventHandler = MakeShared<FUserRtcEventHandler>(this);
+	RtcEngineContext RtcEngineContext;
+	std::string StdStrAppId = TCHAR_TO_UTF8(*AppId);
+	RtcEngineContext.appId = StdStrAppId.c_str();
+	RtcEngineContext.eventHandler = UserRtcEventHandler.Get();
+	RtcEngineContext.channelProfile = CHANNEL_PROFILE_TYPE::CHANNEL_PROFILE_LIVE_BROADCASTING;
+
+	RtcEngineProxy = agora::rtc::ue::createAgoraRtcEngine();
+	int SDKBuild = 0;
+	FString SDKInfo = FString::Printf(TEXT("SDK Version: %s Build: %d"), UTF8_TO_TCHAR(RtcEngineProxy->getVersion(&SDKBuild)), SDKBuild);
+	UBFL_Logger::Print(FString::Printf(TEXT("SDK Info:  %s"), *SDKInfo), LogMsgViewPtr);
+
+	int ret = RtcEngineProxy->initialize(RtcEngineContext);
+	UBFL_Logger::Print(FString::Printf(TEXT("%s initialize ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 }
 
-#pragma region RtcEngineCallBack
-void UAgoraVideoWidget::onJoinChannelSuccess(const char* channel, agora::rtc::uid_t uid, int elapsed) {
-	AsyncTask(ENamedThreads::GameThread, [=]()
-	{
-		UE_LOG(LogTemp, Warning, TEXT("JoinChannelSuccess uid: %u"), uid);
-		agora::rtc::VideoCanvas videoCanvas;
-		videoCanvas.view = localVideo;
-		videoCanvas.uid = 0;
-		videoCanvas.sourceType = agora::rtc::VIDEO_SOURCE_TYPE::VIDEO_SOURCE_CAMERA;
-		RtcEngineProxy->setupLocalVideo(videoCanvas);
-	});
-}
 
-void UAgoraVideoWidget::onUserJoined(agora::rtc::uid_t uid, int elapsed) {
-
-	AsyncTask(ENamedThreads::GameThread, [=]()
-	{
-		UE_LOG(LogTemp, Warning, TEXT("UVideoWidget::onUserJoined  uid: %u"), uid);
-		UserImageData ImageData = GetUImageNoData(uid);
-		if (ImageData.image ==nullptr)
-		{
-			return;
-		}
-		agora::rtc::VideoCanvas videoCanvas;
-		videoCanvas.view = ImageData.image;
-		videoCanvas.uid = uid;
-		videoCanvas.sourceType = agora::rtc::VIDEO_SOURCE_TYPE::VIDEO_SOURCE_REMOTE;
-
-		agora::rtc::RtcConnection connection;
-		connection.channelId = ChannelName.c_str();
-
-		((agora::rtc::IRtcEngineEx*)RtcEngineProxy)->setupRemoteVideoEx(videoCanvas, connection);
-	});
-}
-
-void UAgoraVideoWidget::onUserOffline(agora::rtc::uid_t uid, agora::rtc::USER_OFFLINE_REASON_TYPE reason) {
-	AsyncTask(ENamedThreads::GameThread, [=]()
-	{
-		UE_LOG(LogTemp, Warning, TEXT("UVideoWidget::onUserOffline  uid: %u"), uid);
-		UserImageData ImageData = RemoveUImageData(uid);
-
-		if (ImageData.image != nullptr)
-		{
-			ImageData.image->SetBrush(EmptyBrush);
-		}
-		agora::rtc::VideoCanvas videoCanvas;
-		videoCanvas.view = nullptr;
-		videoCanvas.uid = uid;
-		videoCanvas.sourceType = agora::rtc::VIDEO_SOURCE_TYPE::VIDEO_SOURCE_REMOTE;
-
-		agora::rtc::RtcConnection connection;
-		connection.channelId = ChannelName.c_str();
-
-		if (RtcEngineProxy != nullptr)
-		{
-			((agora::rtc::IRtcEngineEx*)RtcEngineProxy)->setupRemoteVideoEx(videoCanvas, connection);
-		}
-	});
-}
-
-void UAgoraVideoWidget::onLeaveChannel(const agora::rtc::RtcStats& stats) {
-	AsyncTask(ENamedThreads::GameThread, [=]()
-	{
-		if (bIsDestruct)
-		{
-			UE_LOG(LogTemp, Warning, TEXT("UVideoWidget::onLeaveChannel bIsDestruct"));
-			return;
-		}
-		UE_LOG(LogTemp, Warning, TEXT("UVideoWidget::onLeaveChannel"));
-		agora::rtc::VideoCanvas videoCanvas;
-		videoCanvas.view = nullptr;
-		videoCanvas.uid = 0;
-		videoCanvas.sourceType = agora::rtc::VIDEO_SOURCE_TYPE::VIDEO_SOURCE_CAMERA;
-		if (RtcEngineProxy != nullptr)
-		{
-			RtcEngineProxy->setupLocalVideo(videoCanvas);
-		}
-	});
-}
-#pragma endregion RtcEngineCallBack
-
-
-UserImageData UAgoraVideoWidget::GetUImageNoData(agora::rtc::uid_t uid) {
-
-	UserImageData data;
-
-	if (NotUseArray.Num() == 0)
-	{
-		return data;
-	}
-
-	for (int i = 0; i < NotUseArray.Num(); i++)
-	{
-		if (NotUseArray[i].uid == 0)
-		{
-			data = NotUseArray[i];
-
-			data.uid = uid;
-
-			UsedArray.Add(data);
-
-			NotUseArray.Remove(data);
-
-			return data;
-		}
-	}
-	return data;
-}
-
-UserImageData UAgoraVideoWidget::RemoveUImageData(agora::rtc::uid_t uid) {
-
-	UserImageData data;
-
-	if (UsedArray.Num() == 0)
-	{
-		return data;
-	}
-
-	for (int i = 0; i < UsedArray.Num(); i++)
-	{
-		if (UsedArray[i].uid == uid)
-		{
-			data = UsedArray[i];
-
-			data.uid = 0;
-
-			NotUseArray.Add(data);
-
-			UsedArray.Remove(data);
-
-			return data;
-		}
-	}
-	return data;
-}
-
-void UAgoraVideoWidget::InitUI()
+void UAgoraVideoWidget::UnInitAgoraEngine()
 {
-	NotUseArray.Empty();
+	if (RtcEngineProxy)
+	{
+		RtcEngineProxy->leaveChannel();
+		RtcEngineProxy->unregisterEventHandler(UserRtcEventHandler.Get());
+		RtcEngineProxy->release();
+		RtcEngineProxy = nullptr;
+		UBFL_Logger::Print(FString::Printf(TEXT("%s release agora engine"), *FString(FUNCTION_MACRO)), LogMsgViewPtr);
+	}
+}
 
-	NotUseArray.Add(UserImageData(remoteVideoUser1, 0));
-	NotUseArray.Add(UserImageData(remoteVideoUser2, 0));
-	NotUseArray.Add(UserImageData(remoteVideoUser3, 0));
-	NotUseArray.Add(UserImageData(remoteVideoUser4, 0));
-	NotUseArray.Add(UserImageData(remoteVideoUser5, 0));
-	NotUseArray.Add(UserImageData(remoteVideoUser6, 0));
+void UAgoraVideoWidget::OnBtnJoinChannelClicked()
+{
+	RtcEngineProxy->enableAudio();
+	RtcEngineProxy->enableVideo();
+	int ret = RtcEngineProxy->joinChannel(TCHAR_TO_UTF8(*Token), TCHAR_TO_UTF8(*ChannelName), "", 0);
+	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
+	RtcEngineProxy->setClientRole(agora::rtc::CLIENT_ROLE_TYPE::CLIENT_ROLE_BROADCASTER);
+}
 
-	UsedArray.Empty();
+void UAgoraVideoWidget::OnBtnLeaveChannelClicked()
+{
+	int ret = RtcEngineProxy->leaveChannel();
+	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
+}
 
-	ProfileComboBox->AddOption("BROADCASTING");
-	ProfileComboBox->AddOption("COMMUNICATION");
+void UAgoraVideoWidget::OnBtnStartPublishClicked()
+{
+	ChannelMediaOptions options;
+	options.publishMicrophoneTrack = true;
+	options.publishCameraTrack = true;
+	int ret = RtcEngineProxy->updateChannelMediaOptions(options);
+}
 
-	ProfileComboBox->SetSelectedOption(FString("BROADCASTING"));
+void UAgoraVideoWidget::OnBtnStopPublishClicked()
+{
+	ChannelMediaOptions options;
+	options.publishMicrophoneTrack = false;
+	options.publishCameraTrack = false;
+	int ret = RtcEngineProxy->updateChannelMediaOptions(options);
+	UBFL_Logger::Print(FString::Printf(TEXT("%s updateChannelMediaOptions ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
+}
 
-	ScenarioComboBox->AddOption("DEFAULT");
-	ScenarioComboBox->AddOption("GAME_STREAMING");
-	ScenarioComboBox->AddOption("CHATROOM");
-	ScenarioComboBox->AddOption("CHORUS");
-	ScenarioComboBox->AddOption("MEETING");
-	ScenarioComboBox->AddOption("NUM");
-	ScenarioComboBox->SetSelectedOption(FString("DEFAULT"));
+void UAgoraVideoWidget::OnBtnVideoConfigConfirmClicked()
+{
+	VideoEncoderConfiguration videoEncoderConfiguration;
 
+	FString TxtFPS = ET_FPS->GetText().ToString();
+	int ValFPS = FCString::Atoi(*TxtFPS);
+	videoEncoderConfiguration.frameRate = ValFPS;
+	UBFL_Logger::Print(FString::Printf(TEXT("%s frameRate=%d"), *FString(FUNCTION_MACRO), ValFPS), LogMsgViewPtr);
 
-	FPSComboBox->AddOption("5");
-	FPSComboBox->AddOption("15");
-	FPSComboBox->AddOption("24");
-	FPSComboBox->AddOption("30");
-	FPSComboBox->AddOption("60");
-	FPSComboBox->SetSelectedOption(FString("15"));
+	FString TxtWidth = ET_Width->GetText().ToString();
+	FString TxtHeight = ET_Height->GetText().ToString();
+	FString TxtBitRate = ET_BitRate->GetText().ToString();
+	int ValWidth = FCString::Atoi(*TxtWidth);
+	int ValHeight = FCString::Atoi(*TxtHeight);
+	int ValBitRate = FCString::Atoi(*TxtBitRate);
+	VideoDimensions videoDimensions(ValWidth, ValHeight);
+	videoEncoderConfiguration.dimensions = videoDimensions;
+	videoEncoderConfiguration.bitrate = ValBitRate;
 
-	AgoraChannelProfileEnumMap.Add(FString("BROADCASTING"), CHANNEL_PROFILE_TYPE::CHANNEL_PROFILE_LIVE_BROADCASTING);
-	AgoraChannelProfileEnumMap.Add(FString("COMMUNICATION"), CHANNEL_PROFILE_TYPE::CHANNEL_PROFILE_COMMUNICATION);
+	UBFL_Logger::Print(FString::Printf(TEXT("%s Width=%d Height=%d"), *FString(FUNCTION_MACRO), ValWidth, ValHeight), LogMsgViewPtr);
+	UBFL_Logger::Print(FString::Printf(TEXT("%s Bitrate=%d"), *FString(FUNCTION_MACRO), ValBitRate), LogMsgViewPtr);
 
-	AgoraAudioScenarioEnumMap.Add(FString("DEFAULT"), AUDIO_SCENARIO_TYPE::AUDIO_SCENARIO_DEFAULT);
-	AgoraAudioScenarioEnumMap.Add(FString("GAME_STREAMING"), AUDIO_SCENARIO_TYPE::AUDIO_SCENARIO_GAME_STREAMING);
-	AgoraAudioScenarioEnumMap.Add(FString("CHATROOM"), AUDIO_SCENARIO_TYPE::AUDIO_SCENARIO_CHATROOM);
-	AgoraAudioScenarioEnumMap.Add(FString("CHORUS"), AUDIO_SCENARIO_TYPE::AUDIO_SCENARIO_CHORUS);
-	AgoraAudioScenarioEnumMap.Add(FString("MEETING"), AUDIO_SCENARIO_TYPE::AUDIO_SCENARIO_MEETING);
-	AgoraAudioScenarioEnumMap.Add(FString("NUM"), AUDIO_SCENARIO_TYPE::AUDIO_SCENARIO_NUM);
+	int ret = RtcEngineProxy->setVideoEncoderConfiguration(videoEncoderConfiguration);
+
+	FVideoViewIdentity LocalVideoFrameIdentity(VIDEO_SOURCE_CAMERA);
+	UBFL_VideoViewManager::ChangeSizeForOneVideoView(LocalVideoFrameIdentity,ValWidth,ValHeight, VideoViewMap);
+	
+	UBFL_Logger::Print(FString::Printf(TEXT("%s setVideoEncoderConfiguration ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 
 }
 
-
+void UAgoraVideoWidget::OnBtnBackToHomeClicked()
+{
+	UnInitAgoraEngine();
+	UGameplayStatics::OpenLevel(UGameplayStatics::GetPlayerController(GWorld, 0)->GetWorld(), FName("MainLevel"));
+}
 
 
 void UAgoraVideoWidget::NativeDestruct() {
 
 	Super::NativeDestruct();
-	UE_LOG(LogTemp, Warning, TEXT("UVideoWidget::NativeDestruct"));
-	if (RtcEngineProxy != nullptr)
-	{
-		RtcEngineProxy->unregisterEventHandler(this);
-		RtcEngineProxy->release();
-		delete RtcEngineProxy;
 
-		RtcEngineProxy = nullptr;
+	UnInitAgoraEngine();
 
-		bIsDestruct = true;
-	}
-
+	
 }
+
+
+#pragma region UI Utility
+
+int UAgoraVideoWidget::MakeVideoView(uint32 uid, agora::rtc::VIDEO_SOURCE_TYPE sourceType /*= VIDEO_SOURCE_CAMERA_PRIMARY*/, FString channelId /*= ""*/)
+{
+	/*
+		For local view:
+			please reference the callback function Ex.[onCaptureVideoFrame]
+
+		For remote view:
+			please reference the callback function [onRenderVideoFrame]
+
+		channelId will be set in [setupLocalVideo] / [setupRemoteVideo]
+	*/
+
+	int ret = -ERROR_NULLPTR;
+
+	if (RtcEngineProxy == nullptr)
+		return ret;
+
+	agora::rtc::VideoCanvas videoCanvas;
+	videoCanvas.uid = uid;
+	videoCanvas.sourceType = sourceType;
+
+	if (uid == 0) {
+		FVideoViewIdentity VideoViewIdentity(uid, sourceType, "");
+		videoCanvas.view = UBFL_VideoViewManager::CreateOneVideoViewToCanvasPanel(VideoViewIdentity, CanvasPanel_VideoView, VideoViewMap, DraggableVideoViewTemplate);
+		ret = RtcEngineProxy->setupLocalVideo(videoCanvas);
+	}
+	else
+	{
+
+		FVideoViewIdentity VideoViewIdentity(uid, sourceType, channelId);
+		videoCanvas.view = UBFL_VideoViewManager::CreateOneVideoViewToCanvasPanel(VideoViewIdentity, CanvasPanel_VideoView, VideoViewMap, DraggableVideoViewTemplate);
+		
+		if(channelId == ""){
+			ret = RtcEngineProxy->setupRemoteVideo(videoCanvas);
+		}
+		else{
+			agora::rtc::RtcConnection connection;
+			std::string StdStrChannelId = TCHAR_TO_UTF8(*channelId);
+			connection.channelId = StdStrChannelId.c_str();
+			ret = ((agora::rtc::IRtcEngineEx*)RtcEngineProxy)->setupRemoteVideoEx(videoCanvas, connection);
+		}
+	}
+	
+	return ret;
+}
+
+int UAgoraVideoWidget::ReleaseVideoView(uint32 uid, agora::rtc::VIDEO_SOURCE_TYPE sourceType /*= VIDEO_SOURCE_CAMERA_PRIMARY*/, FString channelId /*= ""*/)
+{
+	int ret = -ERROR_NULLPTR;
+
+	if(RtcEngineProxy == nullptr)
+		return ret;
+
+	agora::rtc::VideoCanvas videoCanvas;
+	videoCanvas.view = nullptr;
+	videoCanvas.uid = uid;
+	videoCanvas.sourceType = sourceType;
+
+	if (uid == 0) {
+		FVideoViewIdentity VideoViewIdentity(uid, sourceType, "");
+		UBFL_VideoViewManager::ReleaseOneVideoView(VideoViewIdentity, VideoViewMap);
+		ret = RtcEngineProxy->setupLocalVideo(videoCanvas);
+	}
+	else
+	{
+		FVideoViewIdentity VideoViewIdentity(uid, sourceType, channelId);
+		UBFL_VideoViewManager::ReleaseOneVideoView(VideoViewIdentity, VideoViewMap);
+		if (channelId == "") {
+			ret = RtcEngineProxy->setupRemoteVideo(videoCanvas);
+		}
+		else {
+			agora::rtc::RtcConnection connection;
+			std::string StdStrChannelId = TCHAR_TO_UTF8(*channelId);
+			connection.channelId = StdStrChannelId.c_str();
+			ret = ((agora::rtc::IRtcEngineEx*)RtcEngineProxy)->setupRemoteVideoEx(videoCanvas, connection);
+		}
+	}
+	return ret;
+}
+
+#pragma endregion
+
+
+
+#pragma region AgoraCallback - IRtcEngineEventHandler
+
+void UAgoraVideoWidget::FUserRtcEventHandler::onJoinChannelSuccess(const char* channel, agora::rtc::uid_t uid, int elapsed) {
+	
+	if (!IsWidgetValid())
+		return;
+
+	AsyncTask(ENamedThreads::GameThread, [=]()
+	{
+			if (!IsWidgetValid())
+			{
+				UBFL_Logger::PrintError(FString::Printf(TEXT("%s bIsDestruct "), *FString(FUNCTION_MACRO)));
+				return;
+			}
+			UBFL_Logger::Print(FString::Printf(TEXT("%s "), *FString(FUNCTION_MACRO)), WidgetPtr->GetLogMsgViewPtr());
+			WidgetPtr->MakeVideoView(0, agora::rtc::VIDEO_SOURCE_TYPE::VIDEO_SOURCE_CAMERA);
+
+	});
+}
+
+
+void UAgoraVideoWidget::FUserRtcEventHandler::onUserJoined(agora::rtc::uid_t uid, int elapsed) 
+{
+	if (!IsWidgetValid())
+		return;
+
+	AsyncTask(ENamedThreads::GameThread, [=]()
+	{
+			if (!IsWidgetValid())
+			{
+				UBFL_Logger::PrintError(FString::Printf(TEXT("%s bIsDestruct "), *FString(FUNCTION_MACRO)));
+				return;
+			}
+			UBFL_Logger::Print(FString::Printf(TEXT("%s "), *FString(FUNCTION_MACRO)), WidgetPtr->GetLogMsgViewPtr());
+			WidgetPtr->MakeVideoView(uid, agora::rtc::VIDEO_SOURCE_TYPE::VIDEO_SOURCE_REMOTE);
+	});
+}
+
+void UAgoraVideoWidget::FUserRtcEventHandler::onUserOffline(agora::rtc::uid_t uid, agora::rtc::USER_OFFLINE_REASON_TYPE reason) 
+{
+	if (!IsWidgetValid())
+		return;
+	
+	AsyncTask(ENamedThreads::GameThread, [=]()
+	{
+			if (!IsWidgetValid())
+			{
+				UBFL_Logger::PrintError(FString::Printf(TEXT("%s bIsDestruct "), *FString(FUNCTION_MACRO)));
+				return;
+			}
+			UBFL_Logger::Print(FString::Printf(TEXT("%s "), *FString(FUNCTION_MACRO)), WidgetPtr->GetLogMsgViewPtr());
+			WidgetPtr->ReleaseVideoView(uid, VIDEO_SOURCE_REMOTE);
+	});
+}
+
+void UAgoraVideoWidget::FUserRtcEventHandler::onVideoSizeChanged(VIDEO_SOURCE_TYPE sourceType, uid_t uid, int width, int height, int rotation)
+{
+	if (!IsWidgetValid())
+		return;
+
+	AsyncTask(ENamedThreads::GameThread, [=]()
+		{
+			if (!IsWidgetValid())
+			{
+				UBFL_Logger::PrintError(FString::Printf(TEXT("%s bIsDestruct "), *FString(FUNCTION_MACRO)));
+				return;
+			}
+			UBFL_Logger::Print(FString::Printf(TEXT("%s uid=%d width=%d height=%d "), *FString(FUNCTION_MACRO), uid, width, height), WidgetPtr->GetLogMsgViewPtr());
+			
+			FVideoViewIdentity VideoViewIdentity(uid, sourceType, "");
+			UBFL_VideoViewManager::ChangeSizeForOneVideoView(VideoViewIdentity, width, height, WidgetPtr->VideoViewMap);
+			
+		});
+}
+
+void UAgoraVideoWidget::FUserRtcEventHandler::onLeaveChannel(const agora::rtc::RtcStats& stats) 
+{
+	if (!IsWidgetValid())
+		return;
+
+	AsyncTask(ENamedThreads::GameThread, [=]()
+	{
+			if (!IsWidgetValid())
+			{
+				UBFL_Logger::PrintError(FString::Printf(TEXT("%s bIsDestruct "), *FString(FUNCTION_MACRO)));
+				return;
+			}
+			UBFL_Logger::Print(FString::Printf(TEXT("%s "), *FString(FUNCTION_MACRO)), WidgetPtr->GetLogMsgViewPtr());
+
+		WidgetPtr->ReleaseVideoView(0, agora::rtc::VIDEO_SOURCE_TYPE::VIDEO_SOURCE_CAMERA);
+	});
+}
+#pragma endregion
+

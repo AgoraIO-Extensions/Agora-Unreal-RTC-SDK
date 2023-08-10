@@ -4,135 +4,36 @@
 #include "MediaplayerWidget.h"
 
 
-
 void UMediaplayerWidget::InitAgoraWidget(FString APP_ID, FString TOKEN, FString CHANNEL_NAME)
 {
-	CheckAndroidPermission();
+	LogMsgViewPtr = UBFL_Logger::CreateLogView(CanvasPanel_LogMsgView, DraggableLogMsgViewTemplate);
 
-	InitAgoraEngine(APP_ID ,TOKEN ,CHANNEL_NAME);
+	InitUI();
 
-	SetUpUIEvent();
+	CheckPermission();
 
-	InitMediaPlayer();
-
+	InitAgoraEngine(APP_ID, TOKEN, CHANNEL_NAME);
+	
+	InitAgoraMediaPlayer();
+	
 	JoinChannelWithMPK();
-
-	bURLOpen = true;
 }
 
-
-void UMediaplayerWidget::onVideoSizeChanged(VIDEO_SOURCE_TYPE sourceType, uid_t uid, int width, int height, int rotation)
+void UMediaplayerWidget::InitUI()
 {
-	AsyncTask(ENamedThreads::GameThread, [=]()
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Black, FString::Printf(TEXT("onVideoSizeChanged uid:%u ,width:%d ,height:%d"), uid, width, height));
-
-
-		if (uid == 0)
-		{
-#if ENGINE_MAJOR_VERSION > 4
-				UCanvasPanelSlot* imageSlot = dynamic_cast<UCanvasPanelSlot*>(remoteVideo->Slot.Get());
-#else
-				UCanvasPanelSlot* imageSlot = dynamic_cast<UCanvasPanelSlot*>(remoteVideo->Slot);
-#endif
-				imageSlot->SetSize(FVector2D(width, height));
-		}
-
-	});
+	ET_URL->SetText(FText::FromString(MPK_URL));
 }
 
-
-void UMediaplayerWidget::InitAgoraEngine(FString APP_ID, FString TOKEN, FString CHANNEL_NAME)
-{
-	agora::rtc::RtcEngineContext RtcEngineContext;
-	std::string APP_IDStr(TCHAR_TO_ANSI(*APP_ID));
-	AppID = APP_IDStr;
-	std::string TOKENStr(TCHAR_TO_ANSI(*TOKEN));
-	Token = TOKENStr;
-	std::string CHANNEL_NAMEStr(TCHAR_TO_ANSI(*CHANNEL_NAME));
-	ChannelName = CHANNEL_NAMEStr;
-
-	RtcEngineContext.appId = AppID.c_str();
-	RtcEngineContext.eventHandler = this;
-	RtcEngineContext.channelProfile = agora::CHANNEL_PROFILE_TYPE::CHANNEL_PROFILE_LIVE_BROADCASTING;
-
-	RtcEngineProxy = agora::rtc::ue::createAgoraRtcEngine();
-	RtcEngineProxy->initialize(RtcEngineContext);
-}
-
-void UMediaplayerWidget::SetUpUIEvent() 
-{
-	PlayButton->OnClicked.AddDynamic(this, &UMediaplayerWidget::OnPlayButtonClick);
-	StopButton->OnClicked.AddDynamic(this, &UMediaplayerWidget::OnStopButtonClick);
-	PauseButton->OnClicked.AddDynamic(this, &UMediaplayerWidget::OnPauseButtonClick);
-	ResumeButton->OnClicked.AddDynamic(this, &UMediaplayerWidget::OnResumeButtonClick);
-	OpenButton->OnClicked.AddDynamic(this, &UMediaplayerWidget::OnOpenButtonClick);
-	CheckBoxUrl->OnCheckStateChanged.AddDynamic(this, &UMediaplayerWidget::CheckBoxValueChange);
-	BackHomeBtn->OnClicked.AddDynamic(this, &UMediaplayerWidget::OnBackHomeButtonClick);
-}
-void UMediaplayerWidget::OnBackHomeButtonClick()
-{
-	if (RtcEngineProxy != nullptr)
-	{
-		MediaPlayer->unregisterPlayerSourceObserver(handler);
-		RtcEngineProxy->destroyMediaPlayer(MediaPlayer);
-		MediaPlayer.reset();
-		if (handler != nullptr)
-		{
-			delete handler;
-			handler = nullptr;
-		}
-		RtcEngineProxy->unregisterEventHandler(this);
-		RtcEngineProxy->release();
-		delete RtcEngineProxy;
-		RtcEngineProxy = nullptr;
-	}
-	UGameplayStatics::OpenLevel(UGameplayStatics::GetPlayerController(GWorld, 0)->GetWorld(), FName("MainLevel"));
-}
-void UMediaplayerWidget::InitMediaPlayer()
-{
-	MediaPlayer = RtcEngineProxy->createMediaPlayer();
-	if (MediaPlayer == nullptr)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Black, FString::Printf(TEXT("CreateMediaPlayer failed!")));
-		return;
-	}
-	handler = new MpkEventHandler(this);
-
-	MediaPlayer->registerPlayerSourceObserver(handler);
-
-	GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Black, FString::Printf(TEXT("playerId id: %d"), MediaPlayer->getMediaPlayerId()));
-}
-
-void UMediaplayerWidget::JoinChannelWithMPK()
-{
-	RtcEngineProxy->enableAudio();
-	RtcEngineProxy->enableVideo();
-	RtcEngineProxy->setClientRole(agora::rtc::CLIENT_ROLE_TYPE::CLIENT_ROLE_BROADCASTER);
-
-	agora::rtc::ChannelMediaOptions options;
-	options.autoSubscribeAudio = true;
-	options.autoSubscribeVideo = true;
-	options.publishMicrophoneTrack = false;
-	options.publishCameraTrack = false;
-	options.publishMediaPlayerAudioTrack = true;
-	options.publishMediaPlayerVideoTrack = true;
-	options.publishMediaPlayerId = MediaPlayer->getMediaPlayerId();
-	options.clientRoleType = agora::rtc::CLIENT_ROLE_TYPE::CLIENT_ROLE_BROADCASTER;
-
-	auto ret = RtcEngineProxy->joinChannel(Token.c_str(), ChannelName.c_str(), 0, options);
-
-	GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Black, FString::Printf(TEXT("RtcEngineController JoinChannel_MPK returns:  %d"), ret));
-}
-
-void UMediaplayerWidget::CheckAndroidPermission()
+void UMediaplayerWidget::CheckPermission()
 {
 #if PLATFORM_ANDROID
-	FString pathfromName = UGameplayStatics::GetPlatformName();
-	if (pathfromName == "Android")
+	FString TargetPlatformName = UGameplayStatics::GetPlatformName();
+	if (TargetPlatformName == "Android")
 	{
 		TArray<FString> AndroidPermission;
+#if !AGORA_UESDK_AUDIO_ONLY || (!(PLATFORM_ANDROID || PLATFORM_IOS))
 		AndroidPermission.Add(FString("android.permission.CAMERA"));
+#endif
 		AndroidPermission.Add(FString("android.permission.RECORD_AUDIO"));
 		AndroidPermission.Add(FString("android.permission.READ_PHONE_STATE"));
 		AndroidPermission.Add(FString("android.permission.WRITE_EXTERNAL_STORAGE"));
@@ -141,162 +42,401 @@ void UMediaplayerWidget::CheckAndroidPermission()
 #endif
 }
 
-void UMediaplayerWidget::CheckBoxValueChange(bool isOn)
+void UMediaplayerWidget::InitAgoraEngine(FString APP_ID, FString TOKEN, FString CHANNEL_NAME)
 {
-	bURLOpen = isOn;
+	agora::rtc::RtcEngineContext RtcEngineContext;
 
-	UE_LOG(LogTemp, Warning, TEXT("TCheckBoxValueChange is %s"), (bURLOpen ? TEXT("true") : TEXT("false")));
+	UserRtcEventHandler = MakeShared<FUserRtcEventHandler>(this);
+	std::string StdStrAppId = TCHAR_TO_UTF8(*APP_ID);
+	RtcEngineContext.appId = StdStrAppId.c_str();
+	RtcEngineContext.eventHandler = UserRtcEventHandler.Get();
+	RtcEngineContext.channelProfile = agora::CHANNEL_PROFILE_TYPE::CHANNEL_PROFILE_LIVE_BROADCASTING;
+	RtcEngineContext.audioScenario = agora::rtc::AUDIO_SCENARIO_TYPE::AUDIO_SCENARIO_GAME_STREAMING;
+
+	AppId = APP_ID;
+	Token = TOKEN;
+	ChannelName = CHANNEL_NAME;
+
+	RtcEngineProxy = agora::rtc::ue::createAgoraRtcEngine();
+
+	int SDKBuild = 0;
+	FString SDKInfo = FString::Printf(TEXT("SDK Version: %s Build: %d"), UTF8_TO_TCHAR(RtcEngineProxy->getVersion(&SDKBuild)), SDKBuild);
+	UBFL_Logger::Print(FString::Printf(TEXT("SDK Info:  %s"), *SDKInfo), LogMsgViewPtr);
+
+	int ret = RtcEngineProxy->initialize(RtcEngineContext);
+	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 }
 
 
-void UMediaplayerWidget::OnPlayButtonClick()
+void UMediaplayerWidget::InitAgoraMediaPlayer()
 {
-	auto ret = MediaPlayer->play();
-	GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Black, FString::Printf(TEXT("Play return %d"), ret));
+	MediaPlayer = RtcEngineProxy->createMediaPlayer();
+	UserIMediaPlayerSourceObserver = MakeShared<FUserIMediaPlayerSourceObserver>(this);
+	MediaPlayer->registerPlayerSourceObserver(UserIMediaPlayerSourceObserver.Get());
+	UBFL_Logger::Print(FString::Printf(TEXT("%s PlayerID=%d"), *FString(FUNCTION_MACRO), MediaPlayer->getMediaPlayerId()), LogMsgViewPtr);
 }
 
-void UMediaplayerWidget::OnStopButtonClick()
+void UMediaplayerWidget::JoinChannelWithMPK()
 {
-	auto ret = MediaPlayer->stop();
-	GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Black, FString::Printf(TEXT("stop return %d"), ret));
+
+	RtcEngineProxy->enableAudio();
+	RtcEngineProxy->enableVideo();
+	RtcEngineProxy->setClientRole(CLIENT_ROLE_BROADCASTER);
+
+	ChannelMediaOptions Options;
+	Options.autoSubscribeAudio = true;
+	Options.autoSubscribeVideo = true;
+	Options.publishCustomAudioTrack = false;
+	Options.publishCameraTrack = false;
+	Options.publishMediaPlayerAudioTrack = true;
+	Options.publishMediaPlayerVideoTrack = true;
+	Options.publishMediaPlayerId = MediaPlayer->getMediaPlayerId();
+	Options.enableAudioRecordingOrPlayout = true;
+	Options.clientRoleType = CLIENT_ROLE_TYPE::CLIENT_ROLE_BROADCASTER;
+
+	int ret = RtcEngineProxy->joinChannel(TCHAR_TO_UTF8(*Token), TCHAR_TO_UTF8(*ChannelName), 0, Options);
+	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
+
 }
 
-void UMediaplayerWidget::OnPauseButtonClick()
+void UMediaplayerWidget::OnBtnBackToHomeClicked()
 {
-	auto ret = MediaPlayer->pause();
-	GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Black, FString::Printf(TEXT("Pause return %d"), ret));
+	UnInitAgoraEngine();
+	UGameplayStatics::OpenLevel(UGameplayStatics::GetPlayerController(GWorld, 0)->GetWorld(), FName("MainLevel"));
 }
 
-void UMediaplayerWidget::OnResumeButtonClick()
-{
-	auto ret = MediaPlayer->resume();
-	GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Black, FString::Printf(TEXT("Resume return %d"), ret));
-}
 
-void UMediaplayerWidget::OnOpenButtonClick()
+void UMediaplayerWidget::OnBtnOpenClicked()
 {
 	const char* path = nullptr;
-	if (bURLOpen)
+	std::string StdStrPath = "";
+	if (CB_URL->IsChecked())
 	{
-		path = MPK_URL;
+		StdStrPath = TCHAR_TO_UTF8(*(ET_URL->GetText().ToString()));
+		path = StdStrPath.c_str();
 	}
 	else
 	{
-		FString LoadDir = FPaths::ProjectContentDir() / TEXT("Movies/MPK.mp4");  
+		FString ValPath = FPaths::ProjectContentDir() / TEXT("Movies/MPK.mp4");
+		
+		
+#if PLATFORM_ANDROID || PLATFORM_IOS
+		UBFL_Logger::Print(FString::Printf(TEXT("%s SrcPath=%s"), *FString(FUNCTION_MACRO), *ValPath), LogMsgViewPtr);
 
-		path = TCHAR_TO_ANSI(*LoadDir);
+		FString ValSavedFilePath = FPaths::ProjectSavedDir() / TEXT("Tmp.mp4");
+		ValSavedFilePath = UBFL_UtilityTool::ConvertToAbsolutePath(ValSavedFilePath, false);
+		UBFL_Logger::Print(FString::Printf(TEXT("%s DstPath=%s"), *FString(FUNCTION_MACRO), *ValSavedFilePath), LogMsgViewPtr);
+		UBFL_UtilityTool::CreateMediaFileWithSource(ValPath, ValSavedFilePath);
+		ValPath = ValSavedFilePath;
+#endif 
+		StdStrPath = TCHAR_TO_UTF8(*ValPath);
+		path = StdStrPath.c_str();
 	}
+
 	auto ret = MediaPlayer->open(path, 0);
-
-	GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Black, FString::Printf(TEXT("Open return %d"), ret));
+	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 }
 
 
-#pragma region MPKEventHandler
-
-MpkEventHandler::MpkEventHandler(UMediaplayerWidget* MediaPlayer)
+void UMediaplayerWidget::OnBtnPlayClicked()
 {
-	this->MediaplayerWidget = MediaPlayer;
-}
-
-void MpkEventHandler::onPlayerSourceStateChanged(media::base::MEDIA_PLAYER_STATE state, media::base::MEDIA_PLAYER_ERROR ec)
-{
-	AsyncTask(ENamedThreads::GameThread, [=]()
+	if(CB_Loop->CheckedState == ECheckBoxState::Checked){
+		MediaPlayer->setLoopCount(-1);
+	}
+	else
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Black, FString::Printf(TEXT("OnPlayerSourceStateChanged playId: %d"),MediaplayerWidget->MediaPlayer->getMediaPlayerId()));
-
-		UE_LOG(LogTemp, Warning, TEXT("OnPlayerSourceStateChanged"));
-
-		if (state == media::base::MEDIA_PLAYER_STATE::PLAYER_STATE_OPEN_COMPLETED)
-		{
-			agora::rtc::VideoCanvas videoCanvas;
-			videoCanvas.view = MediaplayerWidget->remoteVideo;
-			videoCanvas.uid = MediaplayerWidget->MediaPlayer->getMediaPlayerId();
-			videoCanvas.sourceType = agora::rtc::VIDEO_SOURCE_TYPE::VIDEO_SOURCE_MEDIA_PLAYER;
-			MediaplayerWidget->RtcEngineProxy->setupLocalVideo(videoCanvas);
-			GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Black, FString::Printf(TEXT("Open Complete. Click start to play media")));
-		}
-		else if (state == media::base::MEDIA_PLAYER_STATE::PLAYER_STATE_STOPPED)
-		{
-			agora::rtc::VideoCanvas videoCanvas;
-			videoCanvas.view = nullptr;
-			videoCanvas.uid = MediaplayerWidget->MediaPlayer->getMediaPlayerId();
-			videoCanvas.sourceType = agora::rtc::VIDEO_SOURCE_TYPE::VIDEO_SOURCE_MEDIA_PLAYER;
-			MediaplayerWidget->RtcEngineProxy->setupLocalVideo(videoCanvas);
-			MediaplayerWidget->remoteVideo->SetBrush(MediaplayerWidget->EmptyBrush);
-		}
-	});
+		MediaPlayer->setLoopCount(0);
+	}
+	auto ret = MediaPlayer->play();
+	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 }
 
-void MpkEventHandler::onPlayerEvent(media::base::MEDIA_PLAYER_EVENT eventCode, int64_t elapsedTime, const char* message)
+void UMediaplayerWidget::OnBtnStopClicked()
 {
-
+	auto ret = MediaPlayer->stop();
+	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 }
 
-void MpkEventHandler::onPositionChanged(int64_t position_ms)
+void UMediaplayerWidget::OnBtnPauseClicked()
 {
-	
+	auto ret = MediaPlayer->pause();
+	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 }
 
-void MpkEventHandler::onMetaData(const void* data, int length)
+void UMediaplayerWidget::OnBtnResumeClicked()
 {
-	
+	auto ret = MediaPlayer->resume();
+	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 }
-
-void MpkEventHandler::onPlayBufferUpdated(int64_t playCachedBuffer)
-{
-	
-}
-
-void MpkEventHandler::onPreloadEvent(const char* src, media::base::PLAYER_PRELOAD_EVENT event)
-{
-	
-}
-
-void MpkEventHandler::onCompleted()
-{
-	
-}
-
-void MpkEventHandler::onAgoraCDNTokenWillExpire()
-{
-	
-}
-
-void MpkEventHandler::onPlayerSrcInfoChanged(const media::base::SrcInfo& from, const media::base::SrcInfo& to)
-{
-	
-}
-
-void MpkEventHandler::onPlayerInfoUpdated(const media::base::PlayerUpdatedInfo& info)
-{
-	
-}
-
-void MpkEventHandler::onAudioVolumeIndication(int volume)
-{
-	
-}
-
-#pragma endregion MPKEventHandler
-
 
 void UMediaplayerWidget::NativeDestruct()
 {
 	Super::NativeDestruct();
+
+	UnInitAgoraEngine();
+
+}
+
+
+void UMediaplayerWidget::UnInitAgoraEngine()
+{
 	if (RtcEngineProxy != nullptr)
 	{
-		MediaPlayer->unregisterPlayerSourceObserver(handler);
+		if(MediaPlayer)
+			MediaPlayer->unregisterPlayerSourceObserver(UserIMediaPlayerSourceObserver.Get());
+		
 		RtcEngineProxy->destroyMediaPlayer(MediaPlayer);
-		MediaPlayer.reset();
-		if (handler != nullptr)
-		{
-			delete handler;
-			handler = nullptr;
-		}
-		RtcEngineProxy->unregisterEventHandler(this);
+
+		RtcEngineProxy->leaveChannel();
+		RtcEngineProxy->unregisterEventHandler(UserRtcEventHandler.Get());
 		RtcEngineProxy->release();
-		delete RtcEngineProxy;
 		RtcEngineProxy = nullptr;
+
+		UBFL_Logger::Print(FString::Printf(TEXT("%s release agora engine"), *FString(FUNCTION_MACRO)), LogMsgViewPtr);
 	}
 }
+
+#pragma region UI Utility
+
+int UMediaplayerWidget::MakeVideoView(uint32 uid, agora::rtc::VIDEO_SOURCE_TYPE sourceType /*= VIDEO_SOURCE_CAMERA_PRIMARY*/, FString channelId /*= ""*/)
+{
+	/*
+		For local view:
+			please reference the callback function Ex.[onCaptureVideoFrame]
+
+		For remote view:
+			please reference the callback function [onRenderVideoFrame]
+
+		channelId will be set in [setupLocalVideo] / [setupRemoteVideo]
+	*/
+
+	int ret = -ERROR_NULLPTR;
+
+	if (RtcEngineProxy == nullptr)
+		return ret;
+
+	agora::rtc::VideoCanvas videoCanvas;
+	videoCanvas.uid = uid;
+	videoCanvas.sourceType = sourceType;
+
+	if (uid == 0) {
+		FVideoViewIdentity VideoViewIdentity(uid, sourceType, "");
+		videoCanvas.view = UBFL_VideoViewManager::CreateOneVideoViewToCanvasPanel(VideoViewIdentity, CanvasPanel_VideoView, VideoViewMap, DraggableVideoViewTemplate);
+		ret = RtcEngineProxy->setupLocalVideo(videoCanvas);
+	}
+	else
+	{
+
+		FVideoViewIdentity VideoViewIdentity(uid, sourceType, channelId);
+		videoCanvas.view = UBFL_VideoViewManager::CreateOneVideoViewToCanvasPanel(VideoViewIdentity, CanvasPanel_VideoView, VideoViewMap, DraggableVideoViewTemplate);
+
+		if (channelId == "") {
+			ret = RtcEngineProxy->setupRemoteVideo(videoCanvas);
+		}
+		else {
+			agora::rtc::RtcConnection connection;
+			std::string StdStrChannelId = TCHAR_TO_UTF8(*channelId);
+			connection.channelId = StdStrChannelId.c_str();
+			ret = ((agora::rtc::IRtcEngineEx*)RtcEngineProxy)->setupRemoteVideoEx(videoCanvas, connection);
+		}
+	}
+
+	return ret;
+}
+
+int UMediaplayerWidget::ReleaseVideoView(uint32 uid, agora::rtc::VIDEO_SOURCE_TYPE sourceType /*= VIDEO_SOURCE_CAMERA_PRIMARY*/, FString channelId /*= ""*/)
+{
+	int ret = -ERROR_NULLPTR;
+
+	if (RtcEngineProxy == nullptr)
+		return ret;
+
+	agora::rtc::VideoCanvas videoCanvas;
+	videoCanvas.view = nullptr;
+	videoCanvas.uid = uid;
+	videoCanvas.sourceType = sourceType;
+
+	if (uid == 0) {
+		FVideoViewIdentity VideoViewIdentity(uid, sourceType, "");
+		UBFL_VideoViewManager::ReleaseOneVideoView(VideoViewIdentity, VideoViewMap);
+		ret = RtcEngineProxy->setupLocalVideo(videoCanvas);
+	}
+	else
+	{
+		FVideoViewIdentity VideoViewIdentity(uid, sourceType, channelId);
+		UBFL_VideoViewManager::ReleaseOneVideoView(VideoViewIdentity, VideoViewMap);
+		if (channelId == "") {
+			ret = RtcEngineProxy->setupRemoteVideo(videoCanvas);
+		}
+		else {
+			agora::rtc::RtcConnection connection;
+			std::string StdStrChannelId = TCHAR_TO_UTF8(*channelId);
+			connection.channelId = StdStrChannelId.c_str();
+			ret = ((agora::rtc::IRtcEngineEx*)RtcEngineProxy)->setupRemoteVideoEx(videoCanvas, connection);
+		}
+	}
+	return ret;
+}
+
+#pragma endregion
+
+
+#pragma region AgoraCallback - IRtcEngineEventHandler
+
+void UMediaplayerWidget::FUserRtcEventHandler::onJoinChannelSuccess(const char* channel, agora::rtc::uid_t uid, int elapsed) {
+
+	if (!IsWidgetValid())
+		return;
+
+	AsyncTask(ENamedThreads::GameThread, [=]()
+		{
+			if (!IsWidgetValid())
+			{
+				UBFL_Logger::PrintError(FString::Printf(TEXT("%s bIsDestruct "), *FString(FUNCTION_MACRO)));
+				return;
+			}
+			UBFL_Logger::Print(FString::Printf(TEXT("%s "), *FString(FUNCTION_MACRO)), WidgetPtr->GetLogMsgViewPtr());
+			// WidgetPtr->MakeVideoView(0, agora::rtc::VIDEO_SOURCE_TYPE::VIDEO_SOURCE_CAMERA);
+
+		});
+}
+
+
+void UMediaplayerWidget::FUserRtcEventHandler::onUserJoined(agora::rtc::uid_t uid, int elapsed)
+{
+	if (!IsWidgetValid())
+		return;
+
+	AsyncTask(ENamedThreads::GameThread, [=]()
+		{
+			if (!IsWidgetValid())
+			{
+				UBFL_Logger::PrintError(FString::Printf(TEXT("%s bIsDestruct "), *FString(FUNCTION_MACRO)));
+				return;
+			}
+			UBFL_Logger::Print(FString::Printf(TEXT("%s "), *FString(FUNCTION_MACRO)), WidgetPtr->GetLogMsgViewPtr());
+			//WidgetPtr->MakeVideoView(uid, agora::rtc::VIDEO_SOURCE_TYPE::VIDEO_SOURCE_REMOTE);
+		});
+}
+
+void UMediaplayerWidget::FUserRtcEventHandler::onUserOffline(agora::rtc::uid_t uid, agora::rtc::USER_OFFLINE_REASON_TYPE reason)
+{
+	if (!IsWidgetValid())
+		return;
+
+	AsyncTask(ENamedThreads::GameThread, [=]()
+		{
+			if (!IsWidgetValid())
+			{
+				UBFL_Logger::PrintError(FString::Printf(TEXT("%s bIsDestruct "), *FString(FUNCTION_MACRO)));
+				return;
+			}
+			UBFL_Logger::Print(FString::Printf(TEXT("%s "), *FString(FUNCTION_MACRO)), WidgetPtr->GetLogMsgViewPtr());
+			WidgetPtr->ReleaseVideoView(uid, VIDEO_SOURCE_REMOTE);
+		});
+}
+
+void UMediaplayerWidget::FUserRtcEventHandler::onLeaveChannel(const agora::rtc::RtcStats& stats)
+{
+	if (!IsWidgetValid())
+		return;
+
+	AsyncTask(ENamedThreads::GameThread, [=]()
+		{
+			if (!IsWidgetValid())
+			{
+				UBFL_Logger::PrintError(FString::Printf(TEXT("%s bIsDestruct "), *FString(FUNCTION_MACRO)));
+				return;
+			}
+			UBFL_Logger::Print(FString::Printf(TEXT("%s "), *FString(FUNCTION_MACRO)), WidgetPtr->GetLogMsgViewPtr());
+
+			WidgetPtr->ReleaseVideoView(0, agora::rtc::VIDEO_SOURCE_TYPE::VIDEO_SOURCE_CAMERA);
+		});
+}
+#pragma endregion
+
+
+#pragma region AgoraCallback - IMediaPlayerSourceObserver
+
+void UMediaplayerWidget::FUserIMediaPlayerSourceObserver::onPlayerSourceStateChanged(media::base::MEDIA_PLAYER_STATE state, media::base::MEDIA_PLAYER_ERROR ec)
+{
+	if (!IsWidgetValid())
+		return;
+
+	AsyncTask(ENamedThreads::GameThread, [=]()
+		{
+			if (!IsWidgetValid())
+			{
+				UBFL_Logger::PrintError(FString::Printf(TEXT("%s bIsDestruct "), *FString(FUNCTION_MACRO)));
+				return;
+			}
+			if (state == media::base::MEDIA_PLAYER_STATE::PLAYER_STATE_OPEN_COMPLETED)
+			{
+				int id = WidgetPtr->GetMediaPlayer()->getMediaPlayerId();
+				WidgetPtr->MakeVideoView(id, agora::rtc::VIDEO_SOURCE_TYPE::VIDEO_SOURCE_MEDIA_PLAYER, "");
+			}
+			else if (state == media::base::MEDIA_PLAYER_STATE::PLAYER_STATE_STOPPED)
+			{
+				int id = WidgetPtr->GetMediaPlayer()->getMediaPlayerId();
+				WidgetPtr->ReleaseVideoView(id, agora::rtc::VIDEO_SOURCE_TYPE::VIDEO_SOURCE_MEDIA_PLAYER, "");
+			}
+			else if (state == media::base::MEDIA_PLAYER_STATE::PLAYER_STATE_PLAYBACK_ALL_LOOPS_COMPLETED)
+			{
+				UBFL_Logger::Print(FString::Printf(TEXT("%s Play Completed! "), *FString(FUNCTION_MACRO)), WidgetPtr->GetLogMsgViewPtr());
+			}
+		});
+}
+
+void UMediaplayerWidget::FUserIMediaPlayerSourceObserver::onPositionChanged(int64_t position_ms)
+{
+
+}
+
+void UMediaplayerWidget::FUserIMediaPlayerSourceObserver::onPlayerEvent(media::base::MEDIA_PLAYER_EVENT eventCode, int64_t elapsedTime, const char* message)
+{
+
+}
+
+void UMediaplayerWidget::FUserIMediaPlayerSourceObserver::onMetaData(const void* data, int length)
+{
+
+}
+
+void UMediaplayerWidget::FUserIMediaPlayerSourceObserver::onPlayBufferUpdated(int64_t playCachedBuffer)
+{
+
+}
+
+void UMediaplayerWidget::FUserIMediaPlayerSourceObserver::onPreloadEvent(const char* src, media::base::PLAYER_PRELOAD_EVENT event)
+{
+
+}
+
+void UMediaplayerWidget::FUserIMediaPlayerSourceObserver::onCompleted()
+{
+
+}
+
+void UMediaplayerWidget::FUserIMediaPlayerSourceObserver::onAgoraCDNTokenWillExpire()
+{
+
+}
+
+void UMediaplayerWidget::FUserIMediaPlayerSourceObserver::onPlayerSrcInfoChanged(const media::base::SrcInfo& from, const media::base::SrcInfo& to)
+{
+
+}
+
+void UMediaplayerWidget::FUserIMediaPlayerSourceObserver::onPlayerInfoUpdated(const media::base::PlayerUpdatedInfo& info)
+{
+
+}
+
+void UMediaplayerWidget::FUserIMediaPlayerSourceObserver::onAudioVolumeIndication(int volume)
+{
+
+}
+
+
+#pragma endregion
+

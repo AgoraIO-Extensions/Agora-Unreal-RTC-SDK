@@ -5,76 +5,118 @@
 #include "CoreMinimal.h"
 #include "../../BaseAgoraUserWidget.h"
 #include "AgoraPluginInterface.h"
-#include "Components/Image.h"
-#include "Components/CanvasPanelSlot.h"
-#include "../Private/Misc/MediaTextureResource.h"
-#include <iostream>
-#include <string.h>
-#include <chrono> 
+
+// UI
 #include "Components/Button.h"
+#include "Components/CanvasPanel.h"
+
+// UI Utility
+#include "../../../Utility/BFL_VideoViewManager.h"
+#include "../../../Utility/BFL_Logger.h"
+
 #if PLATFORM_ANDROID
 #include "AndroidPermission/Classes/AndroidPermissionFunctionLibrary.h"
 #endif
-#include "Kismet/GameplayStatics.h"
-#include "Engine/SceneCapture2D.h"
-#include "Camera/CameraActor.h"
-#include <mutex>
-#include "CustomCaptureVideoScene.generated.h"
-using namespace agora::rtc;
-using namespace agora;
 
+#include "CustomCaptureVideoScene.generated.h"
+
+using namespace agora::rtc;
 
 /**
  * 
  */
-UCLASS(Abstract)
-class AGORAEXAMPLE_API UCustomCaptureVideoScene : public UBaseAgoraUserWidget, public agora::rtc::IRtcEngineEventHandler
+UCLASS()
+class AGORAEXAMPLE_API UCustomCaptureVideoScene : public UBaseAgoraUserWidget
 {
 	GENERATED_BODY()
-	
+
+
+#pragma region Event Handler
+
 public:
 
-	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
-	UButton* BackHomeBtn = nullptr;
+	class FUserRtcEventHandler : public agora::rtc::IRtcEngineEventHandler
+	{
+	public:
+
+		FUserRtcEventHandler(UCustomCaptureVideoScene* InVideoWidget) : WidgetPtr(InVideoWidget) {};
+
+#pragma region AgoraCallback - IRtcEngineEventHandler
+
+#pragma endregion
+
+		inline bool IsWidgetValid() { return WidgetPtr.IsValid(); }
+
+	private:
+
+		TWeakObjectPtr<UCustomCaptureVideoScene> WidgetPtr;
+	};
+
+#pragma endregion
+
+
+#pragma region UI
+
+public:
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
+		UButton* Btn_BackToHome = nullptr;
 
 	UFUNCTION(BlueprintCallable)
-	void OnBackHomeButtonClick();
+	void OnBtnBackToHomeClicked();
 
-	IRtcEngine* RtcEngineProxy;
+#pragma endregion
 
-	agora::media::base::ExternalVideoFrame* externalVideoFrame;
+public:
 
 	void InitAgoraWidget(FString APP_ID, FString TOKEN, FString CHANNEL_NAME) override;
+
+#pragma region UI Utility - Log Msg View
+
+public:
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	UCanvasPanel* CanvasPanel_LogMsgView = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TSubclassOf<UDraggableLogMsgViewWidget> DraggableLogMsgViewTemplate;
+
+public:
+	inline UDraggableLogMsgViewWidget* GetLogMsgViewPtr() {return LogMsgViewPtr;} 
+
+private:
+	UDraggableLogMsgViewWidget* LogMsgViewPtr = nullptr;
+
+#pragma endregion
+
+public:
+	inline FString GetAppId() { return AppId; };
+	inline FString GetToken() { return Token; };
+	inline FString GetChannelName() { return ChannelName; };
+
+protected:
+	void CheckPermission();
+	void InitAgoraEngine(FString APP_ID, FString TOKEN, FString CHANNEL_NAME);
+	void SetExternalVideoSource();
+	void JoinChannel();
 
 
 	void OnBackBufferReady_RenderThread(SWindow& window, const FTexture2DRHIRef& ref);
 
-	std::string AppID;
-
-	std::string Token;
-
-	std::string ChannelName;
-
-	FDelegateHandle eventId;
-
-protected:
-
-	void NativeDestruct();
-
-	void CheckAndroidPermission();
-
-	void InitAgoraEngine(FString APP_ID, FString TOKEN, FString CHANNEL_NAME);
-
-	void SetExternalVideoSource();
-
-	void JoinChannel();
-
 	std::time_t getTimeStamp();
 
+	void NativeDestruct() override;
+	void UnInitAgoraEngine();
+
+	FString AppId = "";
+	FString Token = "";
+	FString ChannelName = "";
+
+	IRtcEngine* RtcEngineProxy;
 	agora::media::IMediaEngine* MediaEngineManager;
+	
+	FDelegateHandle eventId;
 
-	void NativeConstruct() override;
 
+	TSharedPtr<FUserRtcEventHandler> UserRtcEventHandler;
+
+	agora::media::base::ExternalVideoFrame* UserExternalVideoFrame;
 };
-
-

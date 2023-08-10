@@ -99,15 +99,10 @@ namespace agora
 				if (RtcEngine != nullptr && ret == 0)
 				{
 					AppType appType = kAppTypeUnreal;
-					char parametersType[512] = "";
-					sprintf(parametersType, "{\"rtc.set_app_type\": %d}", appType);
+
+					FString ParamType = FString::Printf(TEXT("{\"rtc.set_app_type\": %d}"), appType);
 					agora::base::AParameter apm(RtcEngine);
-					apm->setParameters(parametersType);
-#if PLATFORM_ANDROID
-					char parametersDataOutput[512] = "";
-					sprintf(parametersDataOutput, "{\"che.video.android_camera_output_type\":0}");
-					apm->setParameters(parametersDataOutput);
-#endif
+					apm->setParameters(TCHAR_TO_UTF8(*ParamType));
 
 					// Our client can also use addVideoFrameRenderer to listen to VideoFrameObserver
 					queryInterface(AGORA_IID_MEDIA_ENGINE, (void**)&MediaEngine);

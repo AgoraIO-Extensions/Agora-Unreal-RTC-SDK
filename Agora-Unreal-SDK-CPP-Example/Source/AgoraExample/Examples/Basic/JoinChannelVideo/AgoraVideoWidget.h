@@ -3,161 +3,186 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
 #include "../../BaseAgoraUserWidget.h"
-#include "Blueprint/UserWidget.h"
-#include "Components/Image.h"
-#include "Components/Button.h"
 #include "AgoraPluginInterface.h"
-#include "Kismet/GameplayStatics.h"
+
 #if PLATFORM_ANDROID
 #include "AndroidPermission/Classes/AndroidPermissionFunctionLibrary.h"
 #endif
-#include <iostream>
-#include <string.h>
+
+// UI
+#include "Components/CanvasPanel.h"
 #include "Components/ComboBoxString.h"
-#include "Components/EditableTextBox.h"
+#include "Components/Image.h"
+#include "Components/Button.h"
+#include "Components/EditableText.h"
+
+//UI Utility
+#include "../../../Utility/BFL_VideoViewManager.h"
+#include "../../../Utility/BFL_Logger.h"
+
 #include "AgoraVideoWidget.generated.h"
+
 using namespace agora::rtc;
 using namespace agora;
-
-struct UserImageData
-{
-	UImage* image;
-
-	uid_t uid;
-
-	UserImageData(UImage* image, uid_t uid)
-	{
-		this->image = image;
-		this->uid = uid;
-	}
-
-	UserImageData()
-	{
-		this->image = nullptr;
-		this->uid = 0;
-	}
-	bool operator==(const UserImageData& s)
-	{
-		if (this->image == s.image)
-		{
-			return true;
-		}
-		return false;
-	}
-};
 
 /**
  * 
  */
 UCLASS(Abstract)
-class AGORAEXAMPLE_API UAgoraVideoWidget : public UBaseAgoraUserWidget, public agora::rtc::IRtcEngineEventHandler
+class AGORAEXAMPLE_API UAgoraVideoWidget : public UBaseAgoraUserWidget
 {
 	GENERATED_BODY()
+
 public:
-			
-	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
-	UImage* remoteVideoUser1 = nullptr;
-	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
-	UImage* remoteVideoUser2 = nullptr;
-	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
-	UImage* remoteVideoUser3 = nullptr;
-	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
-	UImage* remoteVideoUser4 = nullptr;
-	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
-	UImage* remoteVideoUser5 = nullptr;
-	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
-	UImage* remoteVideoUser6 = nullptr;
 
-	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
-	UImage* localVideo = nullptr;
+#pragma region Event Handler
 
+	class FUserRtcEventHandler : public agora::rtc::IRtcEngineEventHandler
+	{
+	public:
+
+		FUserRtcEventHandler(UAgoraVideoWidget* InVideoWidget) : WidgetPtr(InVideoWidget) {};
+
+#pragma region AgoraCallback - IRtcEngineEventHandler
+
+		void onJoinChannelSuccess(const char* channel, agora::rtc::uid_t uid, int elapsed);
+
+		void onLeaveChannel(const agora::rtc::RtcStats& stats) override;
+
+		void onUserJoined(agora::rtc::uid_t uid, int elapsed) override;
+
+		void onUserOffline(agora::rtc::uid_t uid, agora::rtc::USER_OFFLINE_REASON_TYPE reason) override;
+
+		void onVideoSizeChanged(VIDEO_SOURCE_TYPE sourceType, uid_t uid, int width, int height, int rotation) override;
+
+#pragma endregion
+
+		inline bool IsWidgetValid() { return WidgetPtr.IsValid(); }
+
+	private:
+
+		TWeakObjectPtr<UAgoraVideoWidget> WidgetPtr;
+
+	};
+#pragma endregion
+
+public:
+		
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-	UButton* JoinBtn = nullptr;
+	UButton* Btn_BackToHome = nullptr;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	UButton* Btn_JoinChannel = nullptr;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget))
-	UButton* LeaveBtn = nullptr;										
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-	UButton* BackHomeBtn = nullptr;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-	UButton* ConfirmBtn = nullptr;
+	UButton* Btn_LeaveChannel = nullptr;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget))
+	UButton* Btn_StartPublish = nullptr;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget))
-	UComboBoxString* ScenarioComboBox = nullptr;
+	UButton* Btn_StopPublish = nullptr;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget))
-	UComboBoxString* ProfileComboBox = nullptr;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget))
-	UComboBoxString* FPSComboBox = nullptr;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-	UEditableTextBox* WidthTextBox = nullptr;
+	UEditableText* ET_FPS = nullptr;
+
+		UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	UEditableText* ET_Width = nullptr;
+
+		UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	UEditableText* ET_Height = nullptr;
+
+
+		UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	UEditableText* ET_BitRate = nullptr;
+
+		UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	UEditableText* ET_MinBitRate = nullptr;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-	UEditableTextBox* HeightTextBox = nullptr;
+	UButton* Btn_VideoConfigConfirm = nullptr;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-	UEditableTextBox* BitRateTextBox = nullptr;
 
-	UFUNCTION(BlueprintCallable)
-	void OnLeaveButtonClick();
 
 	UFUNCTION(BlueprintCallable)
-	void OnJoinButtonClick();
+	void OnBtnJoinChannelClicked();
 
 	UFUNCTION(BlueprintCallable)
-	void OnConfirmButtonClick();
+	void OnBtnLeaveChannelClicked();
+
 
 	UFUNCTION(BlueprintCallable)
-	void OnBackHomeButtonClick();
+	void OnBtnStartPublishClicked();
+	
+	UFUNCTION(BlueprintCallable)
+	void OnBtnStopPublishClicked();
+
+	UFUNCTION(BlueprintCallable)
+	void OnBtnVideoConfigConfirmClicked();
+
+	UFUNCTION(BlueprintCallable)
+	void OnBtnBackToHomeClicked();
 
 	void InitAgoraWidget(FString APP_ID, FString TOKEN, FString CHANNEL_NAME) override;
 
+
+
+#pragma region UI Utility - Log Msg View
+public:
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	UCanvasPanel* CanvasPanel_LogMsgView = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TSubclassOf<UDraggableLogMsgViewWidget> DraggableLogMsgViewTemplate;
+public:
+	inline UDraggableLogMsgViewWidget* GetLogMsgViewPtr() {return LogMsgViewPtr;} 
 private:
+	UDraggableLogMsgViewWidget* LogMsgViewPtr = nullptr;
+#pragma endregion
+
+
+#pragma region UI Utility - Video View
+
+public:
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	UCanvasPanel* CanvasPanel_VideoView = nullptr;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<UDraggableVideoViewWidget> DraggableVideoViewTemplate;
+
+protected:
+
+	int MakeVideoView(uint32 uid, agora::rtc::VIDEO_SOURCE_TYPE sourceType = VIDEO_SOURCE_CAMERA_PRIMARY, FString channelId = "");
+	int ReleaseVideoView(uint32 uid, agora::rtc::VIDEO_SOURCE_TYPE sourceType = VIDEO_SOURCE_CAMERA_PRIMARY, FString channelId = "");
+
+	TMap<FVideoViewIdentity, UDraggableVideoViewWidget*> VideoViewMap;
+#pragma endregion
+
+
+public:
+	inline FString GetAppId() { return AppId; };
+	inline FString GetToken() { return Token; };
+	inline FString GetChannelName() { return ChannelName; };
+
+	
+protected:
 
 	IRtcEngine* RtcEngineProxy;
 
-	std::string AppID;
+	FString AppId;
+	FString Token;
+	FString ChannelName;
 
-	std::string Token;
-
-	std::string ChannelName;
-
-	TArray<UserImageData> NotUseArray;
-
-	TArray<UserImageData> UsedArray;
-
-	UserImageData GetUImageNoData(agora::rtc::uid_t uid);
-
-	UserImageData RemoveUImageData(agora::rtc::uid_t uid);
-
-	TMap<FString, CHANNEL_PROFILE_TYPE> AgoraChannelProfileEnumMap;
-
-	TMap<FString, AUDIO_SCENARIO_TYPE> AgoraAudioScenarioEnumMap;
-
-	FSlateBrush EmptyBrush;
-
-	bool bIsDestruct = false;
+	void CheckPermission();
 
 	void InitAgoraEngine(FString APP_ID, FString TOKEN, FString CHANNEL_NAME);
-
-	void SetUpUIEvent();
-
-	void CheckAndroidPermission();
-
-	void InitUI();
-
+	void UnInitAgoraEngine();
 	void NativeDestruct() override;
 
-	void onUserJoined(agora::rtc::uid_t uid, int elapsed) override;
 
-	void onJoinChannelSuccess(const char* channel, agora::rtc::uid_t uid, int elapsed);
-
-	void onLeaveChannel(const agora::rtc::RtcStats& stats) override;
-
-	void onUserOffline(agora::rtc::uid_t uid, agora::rtc::USER_OFFLINE_REASON_TYPE reason) override;
+	TSharedPtr<FUserRtcEventHandler> UserRtcEventHandler;
 
 };

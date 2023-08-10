@@ -4,79 +4,135 @@
 
 #include "CoreMinimal.h"
 #include "../../BaseAgoraUserWidget.h"
-#include "Blueprint/UserWidget.h"
-#include "Components/Image.h"
-#include "Components/Button.h"
 #include "AgoraPluginInterface.h"
+
+// UI
+#include "Components/Button.h"
+#include "Components/CanvasPanel.h"
+
+// UI Utility
+#include "../../../Utility/BFL_VideoViewManager.h"
+#include "../../../Utility/BFL_Logger.h"
+
+#include <ctime>
+
 #if PLATFORM_ANDROID
 #include "AndroidPermission/Classes/AndroidPermissionFunctionLibrary.h"
 #endif
-#include "Kismet/GameplayStatics.h"
-#include "AudioDevice.h"
-#include <mutex>
-#include "HAL/Runnable.h"
-#include <chrono>
+
 #include "CustomCaptureAudioWidget.generated.h"
 
 using namespace agora::rtc;
-using namespace agora::util;
-
 
 /**
  * 
  */
-UCLASS(Abstract)
-class AGORAEXAMPLE_API UCustomCaptureAudioWidget : public UBaseAgoraUserWidget, public agora::rtc::IRtcEngineEventHandler
+UCLASS()
+class AGORAEXAMPLE_API UCustomCaptureAudioWidget : public UBaseAgoraUserWidget
 {
 	GENERATED_BODY()
+
+
+
+#pragma region Event Handler
+
 public:
 
+	class FUserRtcEventHandler : public agora::rtc::IRtcEngineEventHandler
+	{
+	public:
+
+		FUserRtcEventHandler(UCustomCaptureAudioWidget* InVideoWidget) : WidgetPtr(InVideoWidget) {};
+
+#pragma region AgoraCallback - IRtcEngineEventHandler
+
+		void onJoinChannelSuccess(const char* channel, agora::rtc::uid_t uid, int elapsed);
+
+		void onLeaveChannel(const agora::rtc::RtcStats& stats) override;
+
+		void onUserJoined(agora::rtc::uid_t uid, int elapsed) override;
+
+		void onUserOffline(agora::rtc::uid_t uid, agora::rtc::USER_OFFLINE_REASON_TYPE reason) override;
+
+#pragma endregion
+
+		inline bool IsWidgetValid() { return WidgetPtr.IsValid(); }
+
+	private:
+
+		TWeakObjectPtr<UCustomCaptureAudioWidget> WidgetPtr;
+	};
+
+#pragma endregion
+
+
+#pragma region UI
+
+public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-	UButton* BackHomeBtn = nullptr;
+		UButton* Btn_BackToHome = nullptr;
+
 	UFUNCTION(BlueprintCallable)
-	void OnBackHomeButtonClick();
+	void OnBtnBackToHomeClicked();
 
-	void CheckAndroidPermission();
+#pragma endregion
 
-	void JoinChannel();
+public:
 
 	void InitAgoraWidget(FString APP_ID, FString TOKEN, FString CHANNEL_NAME) override;
 
 
-	void SetExternalAudioSource();
 
-	void NativeDestruct() override;
+#pragma region UI Utility - Log Msg View
 
-	void onUserJoined(agora::rtc::uid_t uid, int elapsed) override;
+public:
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	UCanvasPanel* CanvasPanel_LogMsgView = nullptr;
 
-	void onJoinChannelSuccess(const char* channel, agora::rtc::uid_t uid, int elapsed);
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TSubclassOf<UDraggableLogMsgViewWidget> DraggableLogMsgViewTemplate;
 
-	void StartPushAudio();
+public:
+	inline UDraggableLogMsgViewWidget* GetLogMsgViewPtr() {return LogMsgViewPtr;} 
 
 private:
+	UDraggableLogMsgViewWidget* LogMsgViewPtr = nullptr;
 
-	agora::rtc::IRtcEngine* RtcEngineProxy;
+#pragma endregion
 
-	FString AppId;
+public:
+	inline FString GetAppId() { return AppId; };
+	inline FString GetToken() { return Token; };
+	inline FString GetChannelName() { return ChannelName; };
 
-	FString Token;
+protected:
+	void CheckPermission();
+	void InitAgoraEngine(FString APP_ID, FString TOKEN, FString CHANNEL_NAME);
+	void SetExternalAudioSource();
+	void JoinChannel();
+	void StartPushAudio();
 
-	FString ChannelName;
+	void NativeDestruct() override;
+	void UnInitAgoraEngine();
 
-	TArray<uint8> RecordingBuffer;
+	FString AppId = "";
+	FString Token = "";
+	FString ChannelName = "";
 
+	IRtcEngineEx* RtcEngineProxy;
 	agora::media::IMediaEngine* MediaEngine;
 
-	void InitAgoraEngine(FString APP_ID, FString TOKEN, FString CHANNEL_NAME);
+	TSharedPtr<FUserRtcEventHandler> UserRtcEventHandler;
 
+
+	TArray<uint8> RecordingBuffer;
 	int AudioDataLength;
-
 	int SAMPLE_RATE = 48000;
-
 	int CHANNEL = 2;
 
 	FRunnable* Runnable;
 };
+
 
 
 #pragma region AgoraThread
@@ -99,14 +155,17 @@ public:
 protected:
 
 	TArray<int32> ProcessedNumbers;
-
 	bool bStopThread = false;
+	std::time_t getTimeStamp();
+	void* sendByte;
 
+	
 	agora::media::IMediaEngine* MediaEngine;
 
 	uint8* audioData;
 
 	int dataLength;
+
 
 	int CHANNEL = 2;
 
@@ -114,12 +173,7 @@ protected:
 
 	int PUSH_FREQ_PER_SEC = 100;
 
-	std::time_t getTimeStamp();
 
-	void* sendByte;
 };
 
 #pragma endregion
-
-
-

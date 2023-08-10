@@ -5,155 +5,27 @@
 
 void USpatialAudioWidget::InitAgoraWidget(FString APP_ID, FString TOKEN, FString CHANNEL_NAME)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 60.f, FColor::Yellow, FString::Printf(TEXT("If you want to test this case ,please add another User join")));
+	LogMsgViewPtr = UBFL_Logger::CreateLogView(CanvasPanel_LogMsgView, DraggableLogMsgViewTemplate);
 
-	CheckAndroidPermission();
+	InitUI();
+
+	CheckPermission();
 
 	InitAgoraEngine(APP_ID, TOKEN, CHANNEL_NAME);
-
-	SetUpUIEvent();
 
 	InitSpatialAudioEngine(RtcEngineProxy);
 }
 
-void USpatialAudioWidget::InitAgoraEngine(FString APP_ID, FString TOKEN, FString CHANNEL_NAME)
-{
-	agora::rtc::RtcEngineContext RtcEngineContext;
-	RtcEngineContext.appId = TCHAR_TO_ANSI(*APP_ID);
-	RtcEngineContext.eventHandler = this;
-	RtcEngineContext.channelProfile = agora::CHANNEL_PROFILE_TYPE::CHANNEL_PROFILE_LIVE_BROADCASTING;
-
-	Appid = APP_ID;
-	Token = TOKEN;
-	ChannelName = CHANNEL_NAME;
-
-	RtcEngineProxy = agora::rtc::ue::createAgoraRtcEngine();
-	RtcEngineProxy->initialize(RtcEngineContext);
-}
-
-
-void USpatialAudioWidget::SetUpUIEvent()
-{
-	JoinBtn->OnClicked.AddDynamic(this, &USpatialAudioWidget::OnJoinButtonClick);
-	LeftMoveBtn->OnClicked.AddDynamic(this, &USpatialAudioWidget::LeftMoveButtonClick);
-	RightMoveBtn->OnClicked.AddDynamic(this, &USpatialAudioWidget::RightMoveButtonClick);
-	BackHomeBtn->OnClicked.AddDynamic(this, &USpatialAudioWidget::OnBackHomeButtonClick);
-}
-
-void USpatialAudioWidget::OnBackHomeButtonClick()
-{
-	if (RtcEngineProxy!=nullptr)
-	{
-		if (LocalSpatialAudioEngine != nullptr)
-		{
-			LocalSpatialAudioEngine->release();
-			LocalSpatialAudioEngine = nullptr;
-		}
-		RtcEngineProxy->unregisterEventHandler(this);
-		RtcEngineProxy->release();
-		delete RtcEngineProxy;
-		RtcEngineProxy = nullptr;
-	}
-	UGameplayStatics::OpenLevel(UGameplayStatics::GetPlayerController(GWorld, 0)->GetWorld(), FName("MainLevel"));
-}
-
-void USpatialAudioWidget::onJoinChannelSuccess(const char* channel, uid_t uid, int elapsed)
-{
-	float f1[3] = { 0.0f, 0.0f, 0.0f };
-	float f2[3] = { 1.0f, 0.0f, 0.0f };
-	float f3[3] = { 0.0f, 1.0f, 0.0f };
-	float f4[3] = { 0.0f, 0.0f, 1.0f };
-	GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Black, FString::Printf(TEXT("OnJoinChannelSuccess channelName: %s, uid: %u, elapsed: %d"), UTF8_TO_TCHAR(channel), uid, elapsed));
-	if (LocalSpatialAudioEngine)
-	{
-		LocalSpatialAudioEngine->updateSelfPosition(f1, f2, f3, f4);
-	}
-}
-
-void USpatialAudioWidget::onUserJoined(uid_t uid, int elapsed)
-{
-	GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Black, FString::Printf(TEXT("OnUserJoined uid: %d elapsed: %d"), (int64)uid, elapsed));
-
-	RemoteUid = uid;
-}
-
-
-void USpatialAudioWidget::OnJoinButtonClick()
-{
-	UE_LOG(LogTemp, Warning, TEXT("USpatialAudioWidget OnJoinButtonClick ======"));
-
-	RtcEngineProxy->joinChannel(TCHAR_TO_ANSI(*Token), TCHAR_TO_ANSI(*ChannelName), "", 0);
-
-	RtcEngineProxy->setClientRole(agora::rtc::CLIENT_ROLE_TYPE::CLIENT_ROLE_BROADCASTER);
-
-	agora::rtc::ChannelMediaOptions options;
-	options.autoSubscribeAudio = false;
-	options.autoSubscribeVideo = false;
-	options.publishCameraTrack = false;
-	options.publishMicrophoneTrack = true;
-#if PLATFORM_WINDOWS || PLATFORM_MAC
-	options.publishScreenTrack = false;
-#elif PLATFORM_ANDROID
-	options.publishScreenCaptureAudio = false;
-	options.publishScreenCaptureVideo = false;
-#endif
-	options.enableAudioRecordingOrPlayout = true;
-	options.clientRoleType = agora::rtc::CLIENT_ROLE_TYPE::CLIENT_ROLE_BROADCASTER;
-
-	RtcEngineProxy->updateChannelMediaOptions(options);
-}
-
-void USpatialAudioWidget::RightMoveButtonClick()
-{	
-	RemoteVoicePositionInfo remoteVoicePos{ { 0.0f, 1.0f, 0.0f }, { 0.0f, 0.0f, 0.0f } };
-
-	auto ret = LocalSpatialAudioEngine->updateRemotePosition(RemoteUid, remoteVoicePos);
-
-	UE_LOG(LogTemp, Warning, TEXT("LocalSpatialAudioEngine->updateSelfPosition returns: %d"), ret);
-}
-
-void USpatialAudioWidget::LeftMoveButtonClick()
-{
-	RemoteVoicePositionInfo remoteVoicePos{ { 0.0f, -1.0f, 0.0f }, { 0.0f, 0.0f, 0.0f } };
-
-	auto ret = LocalSpatialAudioEngine->updateRemotePosition(RemoteUid, remoteVoicePos);
-
-	UE_LOG(LogTemp, Warning, TEXT("LocalSpatialAudioEngine->updateSelfPosition returns: %d"), ret);
-}
-
-
-void USpatialAudioWidget::NativeConstruct()
-{
-	Super::NativeConstruct();
-
-	LocalSpatialAudioEngine = nullptr;
-}
-
-void USpatialAudioWidget::NativeDestruct()
-{
-	Super::NativeDestruct();
-	if (RtcEngineProxy!=nullptr)
-	{
-		if (LocalSpatialAudioEngine != nullptr)
-		{
-			LocalSpatialAudioEngine->release();
-			LocalSpatialAudioEngine = nullptr;
-		}
-		RtcEngineProxy->unregisterEventHandler(this);
-		RtcEngineProxy->release();
-		delete RtcEngineProxy;
-		RtcEngineProxy = nullptr;
-	}
-}
-
-void USpatialAudioWidget::CheckAndroidPermission()
+void USpatialAudioWidget::CheckPermission()
 {
 #if PLATFORM_ANDROID
-	FString pathfromName = UGameplayStatics::GetPlatformName();
-	if (pathfromName == "Android")
+	FString TargetPlatformName = UGameplayStatics::GetPlatformName();
+	if (TargetPlatformName == "Android")
 	{
 		TArray<FString> AndroidPermission;
+#if !AGORA_UESDK_AUDIO_ONLY || (!(PLATFORM_ANDROID || PLATFORM_IOS))
 		AndroidPermission.Add(FString("android.permission.CAMERA"));
+#endif
 		AndroidPermission.Add(FString("android.permission.RECORD_AUDIO"));
 		AndroidPermission.Add(FString("android.permission.READ_PHONE_STATE"));
 		AndroidPermission.Add(FString("android.permission.WRITE_EXTERNAL_STORAGE"));
@@ -163,8 +35,40 @@ void USpatialAudioWidget::CheckAndroidPermission()
 }
 
 
+void USpatialAudioWidget::InitUI()
+{
+	Txt_Distance->SetText(FText::FromString(FString::Printf(TEXT("%.2f"), Slider_Distance->GetValue())));
+}
+
+void USpatialAudioWidget::InitAgoraEngine(FString APP_ID, FString TOKEN, FString CHANNEL_NAME)
+{
+	agora::rtc::RtcEngineContext RtcEngineContext;
+
+	UserRtcEventHandlerEx = MakeShared<FUserRtcEventHandlerEx>(this);
+	std::string StdStrAppId = TCHAR_TO_UTF8(*APP_ID);
+	RtcEngineContext.appId = StdStrAppId.c_str();
+	RtcEngineContext.eventHandler = UserRtcEventHandlerEx.Get();
+	RtcEngineContext.channelProfile = agora::CHANNEL_PROFILE_TYPE::CHANNEL_PROFILE_LIVE_BROADCASTING;
+
+	AppId = APP_ID;
+	Token = TOKEN;
+	ChannelName = CHANNEL_NAME;
+
+	RtcEngineProxy = agora::rtc::ue::createAgoraRtcEngineEx();
+
+	int SDKBuild = 0;
+	FString SDKInfo = FString::Printf(TEXT("SDK Version: %s Build: %d"), UTF8_TO_TCHAR(RtcEngineProxy->getVersion(&SDKBuild)), SDKBuild);
+	UBFL_Logger::Print(FString::Printf(TEXT("SDK Info:  %s"), *SDKInfo), LogMsgViewPtr);
+
+	int ret = RtcEngineProxy->initialize(RtcEngineContext);
+	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
+
+}
+
+
 void USpatialAudioWidget::InitSpatialAudioEngine(IRtcEngine* engine)
 {
+
 	if (LocalSpatialAudioEngine == nullptr)
 	{
 		engine->queryInterface(AGORA_IID_LOCAL_SPATIAL_AUDIO, (void**)&LocalSpatialAudioEngine);
@@ -178,8 +82,164 @@ void USpatialAudioWidget::InitSpatialAudioEngine(IRtcEngine* engine)
 
 		auto ret = LocalSpatialAudioEngine->initialize(AudioConfig);
 
-		UE_LOG(LogTemp, Warning, TEXT("LocalSpatialAudioEngine: Initialize %d"), ret);
+		UBFL_Logger::Print(FString::Printf(TEXT("%s  LocalSpatialAudioEngine->initialize ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 
-		LocalSpatialAudioEngine->setAudioRecvRange(30);
+		LocalSpatialAudioEngine->setAudioRecvRange(50);
+
+		LocalSpatialAudioEngine->setDistanceUnit(1);
+
+		float pos[3] = {0,0,0};
+		float forward[3] = {1,0,0 };
+		float right[3] = { 0,1,0 };
+		float up[3] = { 0,0,1 };
+
+		LocalSpatialAudioEngine->updateSelfPosition(pos, forward, right, up);
 	}
 }
+
+int USpatialAudioWidget::UpdateRemotePositionWithCurrentDistanceVal()
+{
+	float Val = Slider_Distance->GetValue();
+	RemoteVoicePositionInfo ValRemotePositionInfo{ { 0.0f , Val, 0.0f },{ 0.0f ,0.0f , 0.0f } };
+	int ret = LocalSpatialAudioEngine->updateRemotePosition(RemoteUID, ValRemotePositionInfo);
+	return ret;
+}
+
+void USpatialAudioWidget::OnBtnJoinChannelClicked()
+{
+	RtcEngineProxy->enableAudio();
+	RtcEngineProxy->setClientRole(CLIENT_ROLE_BROADCASTER);
+	int ret = RtcEngineProxy->joinChannel(TCHAR_TO_UTF8(*Token), TCHAR_TO_UTF8(*ChannelName), "", 0);
+	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
+
+}
+
+void USpatialAudioWidget::OnBtnLeaveChannelClicked()
+{
+	int ret = RtcEngineProxy->leaveChannel();
+	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
+}
+
+void USpatialAudioWidget::OnSliderDistanceValChanged(float val)
+{
+	Txt_Distance->SetText(FText::FromString(FString::Printf(TEXT("%.2f"), val)));
+	
+	if(RemoteUID == 0)
+		return;
+
+	int ret = UpdateRemotePositionWithCurrentDistanceVal();
+	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
+}
+
+void USpatialAudioWidget::OnBtnBackToHomeClicked()
+{
+	UnInitAgoraEngine();
+	UGameplayStatics::OpenLevel(UGameplayStatics::GetPlayerController(GWorld, 0)->GetWorld(), FName("MainLevel"));
+}
+
+void USpatialAudioWidget::NativeDestruct()
+{
+	Super::NativeDestruct();
+
+	UnInitAgoraEngine();
+}
+
+
+
+void USpatialAudioWidget::UnInitAgoraEngine()
+{
+	if (RtcEngineProxy != nullptr)
+	{
+
+		if (LocalSpatialAudioEngine != nullptr)
+		{
+			LocalSpatialAudioEngine->release();
+			LocalSpatialAudioEngine = nullptr;
+		}
+
+		RtcEngineProxy->leaveChannel();
+		RtcEngineProxy->unregisterEventHandler(UserRtcEventHandlerEx.Get());
+		RtcEngineProxy->release();
+		RtcEngineProxy = nullptr;
+
+		UBFL_Logger::Print(FString::Printf(TEXT("%s release agora engine"), *FString(FUNCTION_MACRO)), LogMsgViewPtr);
+	}
+}
+
+
+#pragma region AgoraCallback - IRtcEngineEventHandlerEx
+
+void USpatialAudioWidget::FUserRtcEventHandlerEx::onJoinChannelSuccess(const agora::rtc::RtcConnection& connection, int elapsed)
+{
+	if (!IsWidgetValid())
+		return;
+
+	AsyncTask(ENamedThreads::GameThread, [=]()
+		{
+			if (!IsWidgetValid())
+			{
+				UBFL_Logger::Print(FString::Printf(TEXT("%s bIsDestruct "), *FString(FUNCTION_MACRO)));
+				return;
+			}
+
+			UBFL_Logger::Print(FString::Printf(TEXT("%s"), *FString(FUNCTION_MACRO)), WidgetPtr->GetLogMsgViewPtr());
+
+		});
+}
+
+void USpatialAudioWidget::FUserRtcEventHandlerEx::onLeaveChannel(const agora::rtc::RtcConnection& connection, const agora::rtc::RtcStats& stats)
+{
+	if (!IsWidgetValid())
+		return;
+
+	AsyncTask(ENamedThreads::GameThread, [=]()
+		{
+			if (!IsWidgetValid())
+			{
+				UBFL_Logger::Print(FString::Printf(TEXT("%s bIsDestruct "), *FString(FUNCTION_MACRO)));
+				return;
+			}
+			UBFL_Logger::Print(FString::Printf(TEXT("%s"), *FString(FUNCTION_MACRO)), WidgetPtr->GetLogMsgViewPtr());
+
+		});
+}
+
+void USpatialAudioWidget::FUserRtcEventHandlerEx::onUserJoined(const agora::rtc::RtcConnection& connection, agora::rtc::uid_t remoteUid, int elapsed)
+{
+	if (!IsWidgetValid())
+		return;
+
+	AsyncTask(ENamedThreads::GameThread, [=]()
+		{
+			if (!IsWidgetValid())
+			{
+				UBFL_Logger::Print(FString::Printf(TEXT("%s bIsDestruct "), *FString(FUNCTION_MACRO)));
+				return;
+			}
+
+			WidgetPtr->SetRemoteUID(remoteUid);
+			int ret = WidgetPtr->UpdateRemotePositionWithCurrentDistanceVal();
+			UBFL_Logger::Print(FString::Printf(TEXT("%s remote uid=%d update position ret=%d"), *FString(FUNCTION_MACRO), remoteUid,ret), WidgetPtr->GetLogMsgViewPtr());
+
+		});
+}
+
+void USpatialAudioWidget::FUserRtcEventHandlerEx::onUserOffline(const agora::rtc::RtcConnection& connection, agora::rtc::uid_t remoteUid, agora::rtc::USER_OFFLINE_REASON_TYPE reason)
+{
+	if (!IsWidgetValid())
+		return;
+
+	AsyncTask(ENamedThreads::GameThread, [=]()
+		{
+			if (!IsWidgetValid())
+			{
+				UBFL_Logger::Print(FString::Printf(TEXT("%s bIsDestruct "), *FString(FUNCTION_MACRO)));
+				return;
+			}
+			WidgetPtr->SetRemoteUID(0);
+			UBFL_Logger::Print(FString::Printf(TEXT("%s remote uid=%d"), *FString(FUNCTION_MACRO), remoteUid), WidgetPtr->GetLogMsgViewPtr());
+
+		});
+}
+
+#pragma endregion

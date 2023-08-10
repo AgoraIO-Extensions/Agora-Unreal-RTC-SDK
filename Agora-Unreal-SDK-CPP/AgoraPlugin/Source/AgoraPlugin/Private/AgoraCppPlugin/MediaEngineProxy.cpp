@@ -24,109 +24,100 @@ MediaEngineProxy::MediaEngineProxy(IRtcEngine* Engine)
 }
 
 
-int MediaEngineProxy::registerVideoFrameObserver(media::IVideoFrameObserver* Observer)
-{
-	if (VideoObserver != nullptr)
-	{
-		VideoObserver->registerVideoFrameObserver(Observer);
-	}
-	return 0;
-}
-
-
 int MediaEngineProxy::registerAudioFrameObserver(IAudioFrameObserver* observer)
 {
 	if (AgoraMediaEngine != nullptr)
 	{
-		return AgoraMediaEngine->registerAudioFrameObserver(observer);
+		int ret = AgoraMediaEngine->registerAudioFrameObserver(observer);
+		return ret;
 	}
 	return -ERROR_NULLPTR;
 }
+
+
+int MediaEngineProxy::registerVideoFrameObserver(IVideoFrameObserver* observer)
+{
+	if (AgoraMediaEngine != nullptr)
+	{
+		int ret = AgoraMediaEngine->registerVideoFrameObserver(observer);
+		return ret;
+	}
+	return -ERROR_NULLPTR;
+}
+
 
 int MediaEngineProxy::registerVideoEncodedFrameObserver(IVideoEncodedFrameObserver* observer)
 {
 	if (AgoraMediaEngine != nullptr)
 	{
-		return AgoraMediaEngine->registerVideoEncodedFrameObserver(observer);
+		int ret = AgoraMediaEngine->registerVideoEncodedFrameObserver(observer);
+		return ret;
 	}
 	return -ERROR_NULLPTR;
 }
 
 
-int MediaEngineProxy::pushAudioFrame(MEDIA_SOURCE_TYPE type, IAudioFrameObserver::AudioFrame* frame, bool wrap /*= false*/, int sourceId /*= 0*/)
-{
-	if (VideoObserver != nullptr)
-	{
-		return AgoraMediaEngine->pushAudioFrame(type,frame,wrap,sourceId);
-	}
-
-	return -ERROR_NULLPTR;
-}
-
-
-
-int MediaEngineProxy::pushCaptureAudioFrame(IAudioFrameObserver::AudioFrame* frame)
+int MediaEngineProxy::pushAudioFrame(IAudioFrameObserver::AudioFrame* frame, rtc::track_id_t trackId /*= 0*/)
 {
 	if (AgoraMediaEngine != nullptr)
 	{
-		return AgoraMediaEngine->pushCaptureAudioFrame(frame);
+		int ret = AgoraMediaEngine->pushAudioFrame(frame, trackId);
+		return ret;
 	}
 	return -ERROR_NULLPTR;
 }
-
-
-
-int MediaEngineProxy::pushReverseAudioFrame(IAudioFrameObserver::AudioFrame* frame)
-{
-	if (AgoraMediaEngine != nullptr)
-	{
-		return AgoraMediaEngine->pushReverseAudioFrame(frame);
-	}
-	return -ERROR_NULLPTR;
-}
-
-
-
-
-int MediaEngineProxy::pushDirectAudioFrame(IAudioFrameObserver::AudioFrame* frame)
-{
-	if (AgoraMediaEngine != nullptr)
-	{
-		return AgoraMediaEngine->pushDirectAudioFrame(frame);
-	}
-	return -ERROR_NULLPTR;
-}
-
-
 
 
 int MediaEngineProxy::pullAudioFrame(IAudioFrameObserver::AudioFrame* frame)
 {
 	if (AgoraMediaEngine != nullptr)
 	{
-		return AgoraMediaEngine->pullAudioFrame(frame);
+		int ret = AgoraMediaEngine->pullAudioFrame(frame);
+		return ret;
 	}
 	return -ERROR_NULLPTR;
 }
-
-
 
 
 int MediaEngineProxy::setExternalVideoSource(bool enabled, bool useTexture, EXTERNAL_VIDEO_SOURCE_TYPE sourceType /*= VIDEO_FRAME*/, rtc::SenderOptions encodedVideoOption /*= rtc::SenderOptions()*/)
 {
 	if (AgoraMediaEngine != nullptr)
 	{
-		return AgoraMediaEngine->setExternalVideoSource(enabled,useTexture,sourceType,encodedVideoOption);
+		int ret = AgoraMediaEngine->setExternalVideoSource(enabled, useTexture, sourceType ,  encodedVideoOption);
+		return ret;
 	}
 	return -ERROR_NULLPTR;
 }
 
 
-int MediaEngineProxy::setExternalAudioSource(bool enabled, int sampleRate, int channels, int sourceNumber /*= 1*/, bool localPlayback /*= false*/, bool publish /*= true*/)
+int MediaEngineProxy::setExternalAudioSource(bool enabled, int sampleRate, int channels, bool localPlayback /*= false*/, bool publish /*= true*/) __deprecated
 {
 	if (AgoraMediaEngine != nullptr)
 	{
-		return AgoraMediaEngine->setExternalAudioSource(enabled,sampleRate,channels,sourceNumber,localPlayback,publish);
+		int ret = AgoraMediaEngine->setExternalAudioSource(enabled, sampleRate, channels, localPlayback, publish);
+		return ret;
+	}
+	return -ERROR_NULLPTR;
+}
+
+
+agora::rtc::track_id_t MediaEngineProxy::createCustomAudioTrack(rtc::AUDIO_TRACK_TYPE trackType, const rtc::AudioTrackConfig& config)
+{
+	if (AgoraMediaEngine != nullptr)
+	{
+		int ret = AgoraMediaEngine->createCustomAudioTrack(trackType, config);
+		return ret;
+	}
+	return -ERROR_NULLPTR;
+}
+
+
+int MediaEngineProxy::destroyCustomAudioTrack(rtc::track_id_t trackId)
+{
+	if (AgoraMediaEngine != nullptr)
+	{
+		int ret = AgoraMediaEngine->destroyCustomAudioTrack(trackId);
+		return ret;
 	}
 	return -ERROR_NULLPTR;
 }
@@ -136,27 +127,19 @@ int MediaEngineProxy::setExternalAudioSink(bool enabled, int sampleRate, int cha
 {
 	if (AgoraMediaEngine != nullptr)
 	{
-		return AgoraMediaEngine->setExternalAudioSink(enabled,sampleRate,channels);
+		int ret = AgoraMediaEngine->setExternalAudioSink(enabled, sampleRate, channels);
+		return ret;
 	}
 	return -ERROR_NULLPTR;
 }
 
 
-int MediaEngineProxy::enableCustomAudioLocalPlayback(int sourceId, bool enabled)
+int MediaEngineProxy::enableCustomAudioLocalPlayback(rtc::track_id_t trackId, bool enabled)
 {
 	if (AgoraMediaEngine != nullptr)
 	{
-		return AgoraMediaEngine->enableCustomAudioLocalPlayback(sourceId,enabled);
-	}
-	return -ERROR_NULLPTR;
-}
-
-
-int MediaEngineProxy::setDirectExternalAudioSource(bool enable, bool localPlayback /*= false*/)
-{
-	if (AgoraMediaEngine != nullptr)
-	{
-		return AgoraMediaEngine->setDirectExternalAudioSource(enable,localPlayback);
+		int ret = AgoraMediaEngine->enableCustomAudioLocalPlayback(trackId, enabled);
+		return ret;
 	}
 	return -ERROR_NULLPTR;
 }
@@ -166,7 +149,8 @@ int MediaEngineProxy::pushVideoFrame(agora::media::base::ExternalVideoFrame* fra
 {
 	if (AgoraMediaEngine != nullptr)
 	{
-		return AgoraMediaEngine->pushVideoFrame(frame,videoTrackId);
+		int ret = AgoraMediaEngine->pushVideoFrame(frame, videoTrackId);
+		return ret;
 	}
 	return -ERROR_NULLPTR;
 }
@@ -176,11 +160,33 @@ int MediaEngineProxy::pushEncodedVideoImage(const uint8_t* imageBuffer, size_t l
 {
 	if (AgoraMediaEngine != nullptr)
 	{
-		return AgoraMediaEngine->pushEncodedVideoImage(imageBuffer,length,videoEncodedFrameInfo,videoTrackId);
+		int ret = AgoraMediaEngine->pushEncodedVideoImage(imageBuffer,length, videoEncodedFrameInfo, videoTrackId);
+		return ret;
 	}
 	return -ERROR_NULLPTR;
 }
 
+
+int MediaEngineProxy::addVideoFrameRenderer(IVideoFrameObserver* renderer)
+{
+	if (AgoraMediaEngine != nullptr)
+	{
+		int ret = AgoraMediaEngine->addVideoFrameRenderer(renderer);
+		return ret;
+	}
+	return -ERROR_NULLPTR;
+}
+
+
+int MediaEngineProxy::removeVideoFrameRenderer(IVideoFrameObserver* renderer)
+{
+	if (AgoraMediaEngine != nullptr)
+	{
+		int ret = AgoraMediaEngine->removeVideoFrameRenderer(renderer);
+		return ret;
+	}
+	return -ERROR_NULLPTR;
+}
 
 void MediaEngineProxy::release()
 {

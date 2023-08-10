@@ -4,102 +4,197 @@
 
 #include "CoreMinimal.h"
 #include "../../BaseAgoraUserWidget.h"
-#include "Blueprint/UserWidget.h"
-#include "Components/Image.h"
-#include "Components/Button.h"
 #include "AgoraPluginInterface.h"
+
+// UI
+#include "Components/Button.h"
+#include "Components/CanvasPanel.h"
+
+// UI Utility
+#include "../../../Utility/BFL_VideoViewManager.h"
+#include "../../../Utility/BFL_Logger.h"
+
+// UAgoraSoundWaveProcedural
+#include "Misc/ScopeLock.h" 
 #include "Sound/SoundWaveProcedural.h"
 #include "AgoraSoundWaveProcedural.h"
-#include "Components/AudioComponent.h"
+
 #if PLATFORM_ANDROID
 #include "AndroidPermission/Classes/AndroidPermissionFunctionLibrary.h"
 #endif
-#include <string>
-#if PLATFORM_IOS
-#import <Foundation/Foundation.h>
-#endif
+
 #include "ProcessAudioRawDataWidget.generated.h"
 
 using namespace agora::rtc;
-using namespace agora;
+
+class UAudioComponent;
+
 /**
  * 
  */
-UCLASS(Abstract)
-class AGORAEXAMPLE_API UProcessAudioRawDataWidget : public UBaseAgoraUserWidget, public agora::rtc::IRtcEngineEventHandlerEx, public agora::media::IAudioFrameObserver
+UCLASS()
+class AGORAEXAMPLE_API UProcessAudioRawDataWidget : public UBaseAgoraUserWidget
 {
 	GENERATED_BODY()
+
+
+#pragma region Event Handler
+
 public:
 
+	class FUserRtcEventHandlerEx : public agora::rtc::IRtcEngineEventHandlerEx
+	{
+	public:
+
+		FUserRtcEventHandlerEx(UProcessAudioRawDataWidget* InVideoWidget) : WidgetPtr(InVideoWidget) {};
+
+#pragma region AgoraCallback - IRtcEngineEventHandlerEx
+
+		void onJoinChannelSuccess(const agora::rtc::RtcConnection& connection, int elapsed) override;
+
+		void onLeaveChannel(const agora::rtc::RtcConnection& connection, const agora::rtc::RtcStats& stats) override;
+
+		void onUserJoined(const agora::rtc::RtcConnection& connection, agora::rtc::uid_t remoteUid, int elapsed) override;
+
+		void onUserOffline(const agora::rtc::RtcConnection& connection, agora::rtc::uid_t remoteUid, agora::rtc::USER_OFFLINE_REASON_TYPE reason) override;
+
+#pragma endregion
+
+		inline bool IsWidgetValid() { return WidgetPtr.IsValid(); }
+
+	private:
+
+		TWeakObjectPtr<UProcessAudioRawDataWidget> WidgetPtr;
+	};
+
+
+	class FUserAudioFrameObserver : public agora::media::IAudioFrameObserver
+	{
+
+	public:
+
+		FUserAudioFrameObserver(UProcessAudioRawDataWidget* InVideoWidget) : WidgetPtr(InVideoWidget) {
+		};
+
+#pragma region AgoraCallback - IAudioFrameObserver
+
+		bool onPlaybackAudioFrameBeforeMixing(const char* channelId, agora::rtc::uid_t uid, AudioFrame& audioFrame) override;
+
+
+		bool onRecordAudioFrame(const char* channelId, AudioFrame& audioFrame) override;
+
+
+		bool onPlaybackAudioFrame(const char* channelId, AudioFrame& audioFrame) override;
+
+
+		bool onMixedAudioFrame(const char* channelId, AudioFrame& audioFrame) override;
+
+
+		bool onEarMonitoringAudioFrame(AudioFrame& audioFrame) override;
+
+
+		int getObservedAudioFramePosition() override;
+
+
+		AudioParams getPlaybackAudioParams() override;
+
+
+		AudioParams getRecordAudioParams() override;
+
+
+		AudioParams getMixedAudioParams() override;
+
+
+		AudioParams getEarMonitoringAudioParams() override;
+		
+#pragma endregion
+
+		inline bool IsWidgetValid() { return WidgetPtr.IsValid(); }
+
+	private:
+		TWeakObjectPtr<UProcessAudioRawDataWidget> WidgetPtr;
+	};
+
+#pragma endregion
+
+
+#pragma region UI
+
+public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-	UButton* JoinBtn = nullptr;
+		UButton* Btn_BackToHome = nullptr;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	UButton* Btn_JoinChannel = nullptr;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget))
-	UButton* LeaveBtn = nullptr;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-	UButton* BackHomeBtn = nullptr;
-
-	void CheckAndroidPermission();
+	UButton* Btn_LeaveChannel = nullptr;
+	
+	UFUNCTION(BlueprintCallable)
+	void OnBtnBackToHomeClicked();
 
 	UFUNCTION(BlueprintCallable)
-	void OnJoinButtonClick();
+	void OnBtnJoinChannelClicked();
 
 	UFUNCTION(BlueprintCallable)
-	void OnLeaveButtonClick();
-	UFUNCTION(BlueprintCallable)
-	void OnBackHomeButtonClick();
+	void OnBtnLeaveChannelClicked();
 
-	class UAgoraSoundWaveProcedural* AgoraSoundWaveProcedural;
+#pragma endregion
 
-	class UAudioComponent* AgoraSound;
+public:
 
 	void InitAgoraWidget(FString APP_ID, FString TOKEN, FString CHANNEL_NAME) override;
 
-	void NativeDestruct() override;
+#pragma region UI Utility - Log Msg View
 
-	void onUserJoined(const RtcConnection& connection,agora::rtc::uid_t uid, int elapsed) override;
+public:
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	UCanvasPanel* CanvasPanel_LogMsgView = nullptr;
 
-	void onJoinChannelSuccess(const RtcConnection& connection, int elapsed) override;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TSubclassOf<UDraggableLogMsgViewWidget> DraggableLogMsgViewTemplate;
 
-	bool onPlaybackAudioFrameBeforeMixing(const char* channelId, agora::rtc::uid_t uid, agora::media::IAudioFrameObserverBase::AudioFrame& audioFrame) override;
-	bool onRecordAudioFrame(const char* channelId, agora::media::IAudioFrameObserverBase::AudioFrame& audioFrame) override;
-	bool onPlaybackAudioFrame(const char* channelId, agora::media::IAudioFrameObserverBase::AudioFrame& audioFrame) override;
-	bool onMixedAudioFrame(const char* channelId, agora::media::IAudioFrameObserverBase::AudioFrame& audioFrame) override;
-	bool onEarMonitoringAudioFrame(AudioFrame& audioFrame) override;
-	AudioParams getEarMonitoringAudioParams() override;
-	int getObservedAudioFramePosition() override;
-	agora::media::IAudioFrameObserverBase::AudioParams getPlaybackAudioParams() override;
-	agora::media::IAudioFrameObserverBase::AudioParams getRecordAudioParams() override;
-	agora::media::IAudioFrameObserverBase::AudioParams getMixedAudioParams() override;
-
+public:
+	inline UDraggableLogMsgViewWidget* GetLogMsgViewPtr() {return LogMsgViewPtr;} 
 
 private:
+	UDraggableLogMsgViewWidget* LogMsgViewPtr = nullptr;
 
-	agora::rtc::IRtcEngine* RtcEngineProxy;
+#pragma endregion
 
-	agora::media::IMediaEngine* MediaEngine;
+public:
+	inline FString GetAppId() { return AppId; };
+	inline FString GetToken() { return Token; };
+	inline FString GetChannelName() { return ChannelName; };
 
-	FString AppId;
+	inline agora::media::IAudioFrameObserverBase::AudioParams GetAudioParams() { return audioParams; };
+	inline 	UAgoraSoundWaveProcedural* GetAgoraSoundWaveProcedural() { return AgoraSoundWaveProcedural; };
 
-	FString Token;
-
-	FString ChannelName;
-
-	FString time;
-
-	agora::media::IAudioFrameObserverBase::AudioParams audioParams;
-
-	void SetButtonClickAble(bool enable);
-
+protected:
+	void CheckPermission();
+	void InitConfig();
 	void InitAgoraEngine(FString APP_ID, FString TOKEN, FString CHANNEL_NAME);
 
-	void SetUpUIEvent();
+	void NativeDestruct() override;
+	void UnInitAgoraEngine();
 
-	void InitConfig();
+	FString AppId = "";
+	FString Token = "";
+	FString ChannelName = "";
 
-	int SAMPLE_RATE = 48000; // this should = CLIP_SAMPLES x PULL_FREQ_PER_SEC
+	IRtcEngineEx* RtcEngineProxy;
+	agora::media::IMediaEngine* MediaEngine;
 
-	int CHANNEL = 2; 
+
+
+	TSharedPtr<FUserRtcEventHandlerEx> UserRtcEventHandlerEx;
+	TSharedPtr<FUserAudioFrameObserver> UserAudioFrameObserver;
+	agora::media::IAudioFrameObserverBase::AudioParams audioParams;
+	UAgoraSoundWaveProcedural* AgoraSoundWaveProcedural = nullptr;
+	UAudioComponent* AgoraSound = nullptr;
 
 };
+
+
+
+
