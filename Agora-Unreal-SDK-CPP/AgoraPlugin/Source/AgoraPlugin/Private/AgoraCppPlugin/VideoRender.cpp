@@ -48,7 +48,6 @@ namespace agora {
 					tex->PlatformData->Mips[0].BulkData.Unlock();
 					tex->UpdateResource();
 					RenderBrush.SetResourceObject(tex);
-					RenderBrush.SetImageSize(FVector2D(RenderVideoFrame->width, RenderVideoFrame->height));
 					if (RenderImage != nullptr) {
 						RenderImage->SetBrush(RenderBrush);
 					}

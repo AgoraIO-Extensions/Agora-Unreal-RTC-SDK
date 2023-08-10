@@ -2,6 +2,7 @@
 
 
 #include "AgoraBluePrintPlugin/AgoraAudioDeviceManager.h"
+#include <string>
 
 int UIAudioDeviceCollection::GetCount()
 {
@@ -34,11 +35,7 @@ int UIAudioDeviceCollection::SetDevice(FString deviceId)
 {
 	if (AudioDeviceCollection != nullptr)
 	{
-		char tempDeviceId[agora::rtc::MAX_DEVICE_ID_LENGTH_TYPE::MAX_DEVICE_ID_LENGTH];
-
-		sprintf(tempDeviceId, "%s",TCHAR_TO_UTF8(*deviceId));
-
-		int ret = AudioDeviceCollection->setDevice(tempDeviceId);
+		int ret = AudioDeviceCollection->setDevice(TCHAR_TO_UTF8(*deviceId));
 
 		return ret;
 	}
@@ -54,9 +51,11 @@ int UIAudioDeviceCollection::GetDefaultDevice(FString& deviceName, FString& devi
 
 		int ret = AudioDeviceCollection->getDefaultDevice(tempDeviceName, tempDeviceId);
 
-		deviceName = UTF8_TO_TCHAR(tempDeviceName);
+		std::string StdStrDeviceName = tempDeviceName;
+		std::string StdStrDeviceId = tempDeviceId;
 
-		deviceId = UTF8_TO_TCHAR(tempDeviceId);
+		deviceName = StdStrDeviceName.c_str();
+		deviceId = StdStrDeviceId.c_str();
 			
 		return ret;
 	}
@@ -139,11 +138,7 @@ int UIAudioDeviceManager::SetPlaybackDevice(FString deviceId)
 {
 	if (AudioDeviceManager != nullptr)
 	{
-		char tempDeviceId[agora::rtc::MAX_DEVICE_ID_LENGTH_TYPE::MAX_DEVICE_ID_LENGTH];
-
-		sprintf(tempDeviceId,"%s", TCHAR_TO_UTF8(*deviceId));
-
-		int ret = AudioDeviceManager->setPlaybackDevice(tempDeviceId);
+		int ret = AudioDeviceManager->setPlaybackDevice(TCHAR_TO_UTF8(*deviceId));
 
 		return ret;
 	}
@@ -202,11 +197,7 @@ int UIAudioDeviceManager::SetRecordingDevice(FString deviceId)
 {
 	if (AudioDeviceManager != nullptr)
 	{
-		char tempDeviceId[agora::rtc::MAX_DEVICE_ID_LENGTH_TYPE::MAX_DEVICE_ID_LENGTH];
-
-		sprintf(tempDeviceId,"%s", TCHAR_TO_UTF8(*deviceId));
-
-		int ret = AudioDeviceManager->setRecordingDevice(tempDeviceId);
+		int ret = AudioDeviceManager->setRecordingDevice(TCHAR_TO_UTF8(*deviceId));
 		
 		return ret;
 	}
@@ -296,7 +287,7 @@ int UIAudioDeviceManager::StartPlaybackDeviceTest(FString testAudioFilePath)
 {
 	if (AudioDeviceManager != nullptr)
 	{
-		return AudioDeviceManager->startPlaybackDeviceTest(TCHAR_TO_ANSI(*testAudioFilePath));
+		return AudioDeviceManager->startPlaybackDeviceTest(TCHAR_TO_UTF8(*testAudioFilePath));
 	}
 	return -ERROR_NULLPTR;
 }

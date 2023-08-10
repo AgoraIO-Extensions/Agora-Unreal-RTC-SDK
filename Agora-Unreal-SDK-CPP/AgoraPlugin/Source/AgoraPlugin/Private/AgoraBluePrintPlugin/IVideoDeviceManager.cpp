@@ -15,11 +15,7 @@ int UIVideoDeviceCollection::SetDevice(FString& deviceIdUTF8)
 {
 	if (VideoDeviceCollection != nullptr)
 	{
-		char tempDeviceId[agora::rtc::MAX_DEVICE_ID_LENGTH_TYPE::MAX_DEVICE_ID_LENGTH];
-
-		sprintf(tempDeviceId,"%s", TCHAR_TO_UTF8(*deviceIdUTF8));
-
-		int ret = VideoDeviceCollection->setDevice(tempDeviceId);
+		int ret = VideoDeviceCollection->setDevice(TCHAR_TO_UTF8(*deviceIdUTF8));
 
 		return ret;
 	}
@@ -73,11 +69,7 @@ int UIVideoDeviceManager::SetDevice(FString deviceIdUTF8)
 {
 	if (VideoDeviceManager != nullptr)
 	{
-		char tempDeviceId[agora::rtc::MAX_DEVICE_ID_LENGTH_TYPE::MAX_DEVICE_ID_LENGTH];
-
-		sprintf(tempDeviceId, "%s", TCHAR_TO_UTF8(*deviceIdUTF8));
-
-		int ret = VideoDeviceManager->setDevice(tempDeviceId);
+		int ret = VideoDeviceManager->setDevice(TCHAR_TO_UTF8(*deviceIdUTF8));
 
 		return ret;
 	}
@@ -102,7 +94,7 @@ int UIVideoDeviceManager::NumberOfCapabilities(FString deviceIdUTF8)
 #if defined(_WIN32) || (defined(__linux__) && !defined(__ANDROID__)) || (defined(__APPLE__) && TARGET_OS_MAC && !TARGET_OS_IPHONE)
 	if (VideoDeviceManager != nullptr)
 	{
-		return VideoDeviceManager->numberOfCapabilities(TCHAR_TO_ANSI(*deviceIdUTF8));
+		return VideoDeviceManager->numberOfCapabilities(TCHAR_TO_UTF8(*deviceIdUTF8));
 	}
 #endif
 	return -ERROR_NULLPTR;
@@ -116,7 +108,7 @@ int UIVideoDeviceManager::GetCapability(FString deviceIdUTF8, int deviceCapabili
 	videoFormat.fps = capability.fps;
 	if (VideoDeviceManager != nullptr)
 	{
-		return VideoDeviceManager->getCapability(TCHAR_TO_ANSI(*deviceIdUTF8), deviceCapabilityNumber, videoFormat);
+		return VideoDeviceManager->getCapability(TCHAR_TO_UTF8(*deviceIdUTF8), deviceCapabilityNumber, videoFormat);
 	}
 #endif
 	return -ERROR_NULLPTR;

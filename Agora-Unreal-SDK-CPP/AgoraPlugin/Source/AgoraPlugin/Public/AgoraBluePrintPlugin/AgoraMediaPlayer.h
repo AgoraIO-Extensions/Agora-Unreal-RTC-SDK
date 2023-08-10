@@ -103,7 +103,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Agora|IMediaPlayer")
 	int OpenWithCustomSource(int64 startPos, UIMediaPlayerCustomDataProvider* provider);
 	UFUNCTION(BlueprintCallable, Category = "Agora|IMediaPlayer")
-	int OpenWithMediaSource(FAgoraMediaSource& source);
+	int OpenWithMediaSource(const FAgoraMediaSource& source);
 	UFUNCTION(BlueprintCallable, Category = "Agora|IMediaPlayer")
 	int Play();
 	UFUNCTION(BlueprintCallable, Category = "Agora|IMediaPlayer")
@@ -203,7 +203,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Agora|IMediaPlayer")
 	int UnloadSrc(FString src);
 	UFUNCTION(BlueprintCallable, Category = "Agora|IMediaPlayer")
-	int SetSpatialAudioParams(FSpatialAudioParams& params);
+	int SetSpatialAudioParams(const FSpatialAudioParams& params);
 	UFUNCTION(BlueprintCallable, Category = "Agora|IMediaPlayer")
 	int SetSoundPositionParams(float pan, float gain);
 	void SetMediaPlayer(agora::agora_refptr<agora::rtc::IMediaPlayer> mediaPlayer);

@@ -7,7 +7,7 @@ void UIMediaPlayerSourceObserver::onPlayerSourceStateChanged(agora::media::base:
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
-		OnPlayerSourceStateChanged.Broadcast((EMEDIA_PLAYER_STATE)state, (EMEDIA_PLAYER_ERROR)ec);
+		OnPlayerSourceStateChanged.Broadcast((EMEDIA_PLAYER_STATE)state, FENUMWRAP_MEDIA_PLAYER_ERROR(ec));
 	});
 }
 void UIMediaPlayerSourceObserver::onPositionChanged(int64_t position_ms)

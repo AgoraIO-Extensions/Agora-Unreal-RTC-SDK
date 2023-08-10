@@ -2,6 +2,7 @@
 
 
 #include "AgoraBluePrintPlugin/AgoraMediaRecorder.h"
+#include <string>
 
 int UIMediaRecorder::SetMediaRecorderObserver(UIMediaRecorderObserver* callback)
 {
@@ -14,7 +15,8 @@ int UIMediaRecorder::SetMediaRecorderObserver(UIMediaRecorderObserver* callback)
 int UIMediaRecorder::StartRecording(FMediaRecorderConfiguration& config)
 {
 	agora::media::MediaRecorderConfiguration mediaRecorderConfiguration;
-	mediaRecorderConfiguration.storagePath = TCHAR_TO_ANSI(*config.storagePath);
+	std::string StdStrStoragePath = TCHAR_TO_UTF8(*config.storagePath);
+	mediaRecorderConfiguration.storagePath = StdStrStoragePath.c_str();
 	mediaRecorderConfiguration.containerFormat = (agora::media::MediaRecorderContainerFormat)config.containerFormat;
 	mediaRecorderConfiguration.streamType = (agora::media::MediaRecorderStreamType)config.streamType;
 	mediaRecorderConfiguration.maxDurationMs = config.maxDurationMs;
