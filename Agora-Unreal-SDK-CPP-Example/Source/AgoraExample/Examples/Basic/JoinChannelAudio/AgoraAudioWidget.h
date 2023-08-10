@@ -3,94 +3,178 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
 #include "../../BaseAgoraUserWidget.h"
-#include "Blueprint/UserWidget.h"
-#include "Components/Image.h"
-#include "Components/Button.h"
 #include "AgoraPluginInterface.h"
+
 #if PLATFORM_ANDROID
 #include "AndroidPermission/Classes/AndroidPermissionFunctionLibrary.h"
 #endif
+
+// UI
+#include "Components/Image.h"
+#include "Components/Button.h"
+#include "Components/Slider.h"
+#include "Components/TextBlock.h"
 #include "Components/ComboBoxString.h"
+
+//UI Utility
+#include "../../../Utility/BFL_Logger.h"
+
 #include "AgoraAudioWidget.generated.h"
+
 using namespace agora::rtc;
 using namespace agora;
 /**
  * 
  */
 UCLASS(Abstract)
-class AGORAEXAMPLE_API UAgoraAudioWidget : public UBaseAgoraUserWidget, public agora::rtc::IRtcEngineEventHandler
+class AGORAEXAMPLE_API UAgoraAudioWidget : public UBaseAgoraUserWidget
 {
 	GENERATED_BODY()
+
+
+#pragma region Event Handler
+
 public:
 
+	class FUserRtcEventHandler : public agora::rtc::IRtcEngineEventHandler 
+	{
+	public:
+
+		FUserRtcEventHandler(UAgoraAudioWidget* InVideoWidget) : WidgetPtr(InVideoWidget) {};
+
+#pragma region AgoraCallback - IRtcEngineEventHandler
+
+		void onJoinChannelSuccess(const char* channel, agora::rtc::uid_t uid, int elapsed);
+
+		void onLeaveChannel(const agora::rtc::RtcStats& stats) override;
+
+		void onUserJoined(agora::rtc::uid_t uid, int elapsed) override;
+
+		void onUserOffline(agora::rtc::uid_t uid, agora::rtc::USER_OFFLINE_REASON_TYPE reason) override;
+
+		void onAudioVolumeIndication(const agora::rtc::AudioVolumeInfo* speakers, unsigned int speakerNumber, int totalVolume) override;
+
+#pragma endregion
+
+		inline bool IsWidgetValid() { return WidgetPtr.IsValid(); }
+
+	private:
+
+		TWeakObjectPtr<UAgoraAudioWidget> WidgetPtr;
+	};
+
+#pragma endregion
+
+
+
+public:
+
+#pragma region UI
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-	UButton* JoinBtn = nullptr;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget))
-	UButton* LeaveBtn = nullptr;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget))
-	UButton* VolumeIndicationBtn = nullptr;
+		UButton* Btn_BackToHome = nullptr;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-	UButton* BackHomeBtn = nullptr;
+		UButton* Btn_StartEchoTest = nullptr;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
+		UButton* Btn_StopEchoTest = nullptr;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
+		UButton* Btn_JoinChannel = nullptr;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
+		UButton* Btn_LeaveChannel = nullptr;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
+		UButton* Btn_StartPublish = nullptr;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
+		UButton* Btn_StopPublish = nullptr;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
+		USlider* Slider_PlaybackSignalVolume = nullptr;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
+		USlider* Slider_RecordingSignalVolume = nullptr;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-	UButton* ConfirmBtn = nullptr;
+		UTextBlock* Txt_PlaybackSignalVolume = nullptr;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
+		UTextBlock* Txt_RecordingSignalVolume = nullptr;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
+		UButton* Btn_EnableAudioIndication = nullptr;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget))
-	UComboBoxString* ScenarioComboBox = nullptr;
-
+		UComboBoxString* CBS_AudioProfile = nullptr;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget))
-	UComboBoxString* ProfileComboBox = nullptr;
+		UComboBoxString* CBS_AudioSenario = nullptr;
 
 	UFUNCTION(BlueprintCallable)
-	void OnJoinButtonClick();
+	void OnBtnBackToHomeClicked();
 
 	UFUNCTION(BlueprintCallable)
-	void OnLeaveButtonClick();
+	void OnBtnStartEchoTestClicked();
+	UFUNCTION(BlueprintCallable)
+	void OnBtnStopEchoTestClicked();
+	UFUNCTION(BlueprintCallable)
+	void OnBtnJoinChannelClicked();
+	UFUNCTION(BlueprintCallable)
+	void OnBtnLeaveChannelClicked();
+	UFUNCTION(BlueprintCallable)
+	void OnBtnStartPublishClicked();
+	UFUNCTION(BlueprintCallable)
+	void OnBtnStopPublishClicked();
 
 	UFUNCTION(BlueprintCallable)
-	void OnVolumeIndicationClick();
+	void OnSliderPlaybackSignalVolumeValChanged(float val);
+	UFUNCTION(BlueprintCallable)
+	void OnSliderRecordingSignalVolumeValChanged(float val);
 
 	UFUNCTION(BlueprintCallable)
-	void OnConfirmButtonClick();
+	void OnBtnEnableAudioIndicationClicked();
 
 	UFUNCTION(BlueprintCallable)
-	void OnBackHomeButtonClick();
+	void OnCBSAudioProfileSelectionChanged(FString SelectedItem, ESelectInfo::Type SelectionType);
+	UFUNCTION(BlueprintCallable)
+	void OnCBSAudioSenarioSelectionChanged(FString SelectedItem, ESelectInfo::Type SelectionType);
+#pragma endregion
+
 
 	void InitAgoraWidget(FString APP_ID, FString TOKEN, FString CHANNEL_NAME) override;
 
+
+#pragma region UI Utility - Log Msg View
+public:
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	UCanvasPanel* CanvasPanel_LogMsgView = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TSubclassOf<UDraggableLogMsgViewWidget> DraggableLogMsgViewTemplate;
+public:
+	inline UDraggableLogMsgViewWidget* GetLogMsgViewPtr() {return LogMsgViewPtr;} 
 private:
+	UDraggableLogMsgViewWidget* LogMsgViewPtr = nullptr;
+#pragma endregion
 
-	agora::rtc::IRtcEngine* RtcEngineProxy;
+public:
+	inline FString GetAppId() { return AppId; };
+	inline FString GetToken() { return Token; };
+	inline FString GetChannelName() { return ChannelName; };
 
-	FString AppId;
 
-	FString Token;
+protected:
 
-	FString ChannelName;
-
-	void SetButtonClickAble(bool enable);
-
+	void InitUI();
+	void CheckPermission();
 	void InitAgoraEngine(FString APP_ID, FString TOKEN, FString CHANNEL_NAME);
-
-	void SetUpUIEvent();
-
-	TMap<FString, CHANNEL_PROFILE_TYPE> AgoraChannelProfileEnumMap;
-
-	TMap<FString, AUDIO_SCENARIO_TYPE> AgoraAudioScenarioEnumMap;
+	void UnInitAgoraEngine();
 
 	void NativeDestruct() override;
 
-	void onUserJoined(agora::rtc::uid_t uid, int elapsed) override;
+	FString AppId;
+	FString Token;
+	FString ChannelName;
 
-	void CheckAndroidPermission();
+	IRtcEngine* RtcEngineProxy;
 
-	void InitUI();
 
-	void onJoinChannelSuccess(const char* channel, agora::rtc::uid_t uid, int elapsed);
-
-	void onAudioVolumeIndication(const agora::rtc::AudioVolumeInfo* speakers, unsigned int speakerNumber, int totalVolume) override;
+	
+	TSharedPtr<FUserRtcEventHandler> UserRtcEventHandler;
 };

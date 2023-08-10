@@ -4,80 +4,121 @@
 
 #include "CoreMinimal.h"
 #include "../../BaseAgoraUserWidget.h"
-#include "Components/Image.h"
-#include "Components/Button.h"
 #include "AgoraPluginInterface.h"
-#include "Kismet/GameplayStatics.h"
-#if PLATFORM_ANDROID
-#include "AndroidPermission/Classes/AndroidPermissionFunctionLibrary.h"
-#endif
+
+// UI
+#include "Components/Button.h"
+#include "Components/CanvasPanel.h"
+
+// UI Utility
+#include "../../../Utility/BFL_VideoViewManager.h"
+#include "../../../Utility/BFL_Logger.h"
+
 #include "DeviceManagerUserWidget.generated.h"
 
 using namespace agora::rtc;
-using namespace agora::util;
+
 /**
  * 
  */
-UCLASS(Abstract)
-class AGORAEXAMPLE_API UDeviceManagerUserWidget : public UBaseAgoraUserWidget, public agora::rtc::IRtcEngineEventHandler
+UCLASS()
+class AGORAEXAMPLE_API UDeviceManagerUserWidget : public UBaseAgoraUserWidget
 {
 	GENERATED_BODY()
-	
+
+
+#pragma region Event Handler
+
 public:
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-	UButton* CallBtn = nullptr;
+	class FUserRtcEventHandler : public agora::rtc::IRtcEngineEventHandler
+	{
+	public:
 
+		FUserRtcEventHandler(UDeviceManagerUserWidget* InVideoWidget) : WidgetPtr(InVideoWidget) {};
+
+#pragma region AgoraCallback - IRtcEngineEventHandler
+
+
+#pragma endregion
+
+		inline bool IsWidgetValid() { return WidgetPtr.IsValid(); }
+
+	private:
+
+		TWeakObjectPtr<UDeviceManagerUserWidget> WidgetPtr;
+	};
+
+#pragma endregion
+
+
+#pragma region UI
+
+public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-	UButton* BackHomeBtn = nullptr;
+		UButton* Btn_BackToHome = nullptr;
 
 	UFUNCTION(BlueprintCallable)
-	void CallDeviceManagerApi();
+	void OnBtnBackToHomeClicked();
 
-	UFUNCTION(BlueprintCallable)
-	void OnBackHomeButtonClick();
+#pragma endregion
+
+public:
 
 	void InitAgoraWidget(FString APP_ID, FString TOKEN, FString CHANNEL_NAME) override;
 
+
+
+#pragma region UI Utility - Log Msg View
+
+public:
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	UCanvasPanel* CanvasPanel_LogMsgView = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TSubclassOf<UDraggableLogMsgViewWidget> DraggableLogMsgViewTemplate;
+
+public:
+	inline UDraggableLogMsgViewWidget* GetLogMsgViewPtr() {return LogMsgViewPtr;} 
+
 private:
+	UDraggableLogMsgViewWidget* LogMsgViewPtr = nullptr;
 
-	AutoPtr<IAudioDeviceManager> AudioDeviceManager;
+#pragma endregion
 
-	AutoPtr<IVideoDeviceManager> VideoDeviceManager;
+public:
+	inline FString GetAppId() { return AppId; };
+	inline FString GetToken() { return Token; };
+	inline FString GetChannelName() { return ChannelName; };
+
+protected:
+	void InitAgoraEngine(FString APP_ID, FString TOKEN, FString CHANNEL_NAME);
+
+	void NativeDestruct() override;
+	void UnInitAgoraEngine();
+
+	void CallDeviceManagerApi();
+	void GetAudioRecordingDevice();
+	void GetAudioPlaybackDevice();
+	void GetVideoDeviceManager();
+	void SetCurrentDevice();
+	void SetCurrentDeviceVolume();
+
+	FString AppId = "";
+	FString Token = "";
+	FString ChannelName = "";
+
+	IRtcEngineEx* RtcEngineProxy;
+
+	TSharedPtr<FUserRtcEventHandler> UserRtcEventHandler;
+
+	IAudioDeviceManager* AudioDeviceManager;
+
+	IVideoDeviceManager* VideoDeviceManager;
 
 	IAudioDeviceCollection* AudioRecordingDeviceInfos;
 
 	IAudioDeviceCollection* AudioPlaybackDeviceInfos;
 
 	IVideoDeviceCollection* VideoDeviceInfos;
-
-	FString AppId;
-
-	FString Token;
-
-	FString ChannelName;
-
-	IRtcEngine* RtcEngineProxy;
-
-	const int DEVICE_INDEX = 0;
-
-	void InitAgoraEngine(FString APP_ID, FString TOKEN, FString CHANNEL_NAME);
-
-	void SetUpUIEvent();
-
-
-	void GetAudioRecordingDevice();
-
-	void GetAudioPlaybackDevice();
-
-	void GetVideoDeviceManager();
-
-	void SetCurrentDevice();
-
-	void SetCurrentDeviceVolume();
-
-protected:
-
-	void NativeDestruct() override;
-
 };

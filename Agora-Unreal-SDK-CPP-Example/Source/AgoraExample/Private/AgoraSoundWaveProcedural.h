@@ -17,19 +17,23 @@ class UAgoraSoundWaveProcedural : public USoundWaveProcedural
 	GENERATED_BODY()
 	
 public:
-    UAgoraSoundWaveProcedural(const FObjectInitializer& ObjectInitializer);
+    UAgoraSoundWaveProcedural(const FObjectInitializer& ObjectInitializer):USoundWaveProcedural(ObjectInitializer){}
 
     virtual int32 OnGeneratePCMAudio(TArray<uint8>& OutAudio, int32 NumSamples) override;
 
     virtual Audio::EAudioMixerStreamDataFormat::Type GetGeneratedPCMDataFormat() const override;
 
     void AddToFrames(agora::media::IAudioFrameObserverBase::AudioFrame& frames);
+    
+    void Init(TArray<uint8>& InData);
 
     void BeginDestroy() override;
 
 private:
 
     TArray<agora::media::IAudioFrameObserverBase::AudioFrame> AudioFrames;
+
+    int lastpos = 0;
 
     FCriticalSection CriticalSectionOfAudioFrames;
 };

@@ -4,103 +4,161 @@
 
 #include "CoreMinimal.h"
 #include "../../BaseAgoraUserWidget.h"
-#include "Blueprint/UserWidget.h"
-#include "Components/Image.h"
-#include "Components/Button.h"
-#include "Components/EditableTextBox.h"
 #include "AgoraPluginInterface.h"
-#include "Kismet/GameplayStatics.h"
+
+// UI
+#include "Components/Button.h"
+#include "Components/CanvasPanel.h"
+#include "Components/EditableText.h"
+
+// UI Utility
+#include "../../../Utility/BFL_VideoViewManager.h"
+#include "../../../Utility/BFL_Logger.h"
+
 #if PLATFORM_ANDROID
 #include "AndroidPermission/Classes/AndroidPermissionFunctionLibrary.h"
 #endif
-#include <iostream>
-#include <string.h>
-#include "AgoraPluginInterface.h"
+
 #include "RtmpStreamWithTranscodingWidget.generated.h"
+
 using namespace agora::rtc;
-using namespace agora;
+
 /**
  * 
  */
-UCLASS(Abstract)
-class AGORAEXAMPLE_API URtmpStreamWithTranscodingWidget : public UBaseAgoraUserWidget, public agora::rtc::IRtcEngineEventHandler
+UCLASS()
+class AGORAEXAMPLE_API URtmpStreamWithTranscodingWidget : public UBaseAgoraUserWidget
 {
 	GENERATED_BODY()
+
+
+#pragma region Event Handler
+
 public:
-	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
-	UImage* remoteVideo = nullptr;
 
-	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
-	UImage* localVideo = nullptr;
+	class FUserRtcEventHandler : public agora::rtc::IRtcEngineEventHandler
+	{
+	public:
+
+		FUserRtcEventHandler(URtmpStreamWithTranscodingWidget* InVideoWidget) : WidgetPtr(InVideoWidget) {};
+
+#pragma region AgoraCallback - IRtcEngineEventHandler
+
+		void onJoinChannelSuccess(const char* channel, agora::rtc::uid_t uid, int elapsed);
+
+		void onLeaveChannel(const agora::rtc::RtcStats& stats) override;
+
+		void onUserJoined(agora::rtc::uid_t uid, int elapsed) override;
+
+		void onUserOffline(agora::rtc::uid_t uid, agora::rtc::USER_OFFLINE_REASON_TYPE reason) override;
+
+		void onTranscodingUpdated() override;
+
+		void onRtmpStreamingStateChanged(const char* url, RTMP_STREAM_PUBLISH_STATE state, RTMP_STREAM_PUBLISH_ERROR_TYPE errCode) override;
+
+#pragma endregion
+
+		inline bool IsWidgetValid() { return WidgetPtr.IsValid(); }
+
+	private:
+
+		TWeakObjectPtr<URtmpStreamWithTranscodingWidget> WidgetPtr;
+	};
+
+#pragma endregion
+
+
+#pragma region UI
+
+public:
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
+		UButton* Btn_BackToHome = nullptr;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-	UButton* StartBtn = nullptr;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget))
-	UButton* UpdateBtn = nullptr;
+	UButton* Btn_Start = nullptr;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	UButton* Btn_Update = nullptr;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	UButton* Btn_Stop = nullptr;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-	UButton* StopBtn = nullptr;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-	UButton* BackHomeBtn = nullptr;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-	UEditableTextBox* RtmpTextBox = nullptr;
+	UEditableText* ET_URL = nullptr;
 
 	UFUNCTION(BlueprintCallable)
-	void OnUpdateButtonClick();
-
+	void OnBtnBackToHomeClicked();
 	UFUNCTION(BlueprintCallable)
-	void OnStartButtonClick();
-
+	void OnBtnStartClicked();
 	UFUNCTION(BlueprintCallable)
-	void OnStopButtonClick();
-
+	void OnBtnUpdateClicked();
 	UFUNCTION(BlueprintCallable)
-	void OnBackHomeButtonClick();
+	void OnBtnStopClicked();
 
-	void JoinChannel();
+#pragma endregion
 
-	void CheckAndroidPermission();
+public:
 
 	void InitAgoraWidget(FString APP_ID, FString TOKEN, FString CHANNEL_NAME) override;
 
+
+#pragma region UI Utility - Video View
+
+public:
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	UCanvasPanel* CanvasPanel_VideoView = nullptr;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<UDraggableVideoViewWidget> DraggableVideoViewTemplate;
+	
 protected:
 
-	void NativeDestruct() override;
+	int MakeVideoView(uint32 uid, agora::rtc::VIDEO_SOURCE_TYPE sourceType = VIDEO_SOURCE_CAMERA_PRIMARY,FString channelId = "");
+	int ReleaseVideoView(uint32 uid, agora::rtc::VIDEO_SOURCE_TYPE sourceType = VIDEO_SOURCE_CAMERA_PRIMARY, FString channelId = "");
+
+	TMap<FVideoViewIdentity, UDraggableVideoViewWidget*> VideoViewMap;
+
+#pragma endregion
+
+#pragma region UI Utility - Log Msg View
+
+public:
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	UCanvasPanel* CanvasPanel_LogMsgView = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TSubclassOf<UDraggableLogMsgViewWidget> DraggableLogMsgViewTemplate;
+
+public:
+	inline UDraggableLogMsgViewWidget* GetLogMsgViewPtr() {return LogMsgViewPtr;} 
 
 private:
+	UDraggableLogMsgViewWidget* LogMsgViewPtr = nullptr;
+
+#pragma endregion
+
+public:
+	inline FString GetAppId() { return AppId; };
+	inline FString GetToken() { return Token; };
+	inline FString GetChannelName() { return ChannelName; };
+	inline void SetLocalUID(uint32 val){ UID = val;}
+
+protected:
+	void CheckPermission();
+	void InitAgoraEngine(FString APP_ID, FString TOKEN, FString CHANNEL_NAME);
+	void JoinChannel();
+
+	void NativeDestruct() override;
+	void UnInitAgoraEngine();
+
+	FString AppId = "";
+	FString Token = "";
+	FString ChannelName = "";
+
+	uint32 UID = 0;
 
 	IRtcEngine* RtcEngineProxy;
 
-	std::string AppID;
-
-	std::string Token;
-
-	std::string ChannelName;
-
-	FSlateBrush EmptyBrush;
-
-	unsigned int Uid = 0;
-
-	void InitAgoraEngine(FString APP_ID, FString TOKEN, FString CHANNEL_NAME);
-
-	void SetUpUIEvent();
 
 
-
-	void SetRemoteView(UImage* remoteview, agora::rtc::uid_t uid);
-
-	void onUserJoined(agora::rtc::uid_t uid, int elapsed) override;
-
-	void onJoinChannelSuccess(const char* channel, agora::rtc::uid_t uid, int elapsed);
-
-	void onLeaveChannel(const agora::rtc::RtcStats& stats) override;
-
-	void onUserOffline(agora::rtc::uid_t uid, agora::rtc::USER_OFFLINE_REASON_TYPE reason) override;
-
-	void onTranscodingUpdated() override;
-
-	void onRtmpStreamingStateChanged(const char* url, RTMP_STREAM_PUBLISH_STATE state, RTMP_STREAM_PUBLISH_ERROR_TYPE errCode) override;
+	TSharedPtr<FUserRtcEventHandler> UserRtcEventHandler;
 };

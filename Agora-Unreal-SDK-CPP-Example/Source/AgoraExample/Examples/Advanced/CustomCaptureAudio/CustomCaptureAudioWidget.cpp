@@ -2,11 +2,13 @@
 
 
 #include "CustomCaptureAudioWidget.h"
-
+#include <chrono>
 
 void UCustomCaptureAudioWidget::InitAgoraWidget(FString APP_ID, FString TOKEN, FString CHANNEL_NAME)
 {
-	CheckAndroidPermission();
+	LogMsgViewPtr = UBFL_Logger::CreateLogView(CanvasPanel_LogMsgView, DraggableLogMsgViewTemplate);
+
+	CheckPermission();
 
 	InitAgoraEngine(APP_ID, TOKEN, CHANNEL_NAME);
 
@@ -15,58 +17,14 @@ void UCustomCaptureAudioWidget::InitAgoraWidget(FString APP_ID, FString TOKEN, F
 	JoinChannel();
 
 	StartPushAudio();
-
-	BackHomeBtn->OnClicked.AddDynamic(this, &UCustomCaptureAudioWidget::OnBackHomeButtonClick);
-}
-
-void UCustomCaptureAudioWidget::OnBackHomeButtonClick()
-{
-	if (Runnable != nullptr)
-	{
-		Runnable->Exit();
-		Runnable = nullptr;
-	}
-	if (RtcEngineProxy != nullptr)
-	{
-		RtcEngineProxy->unregisterEventHandler(this);
-		RtcEngineProxy->release();
-		delete RtcEngineProxy;
-		RtcEngineProxy = nullptr;
-	}
-	UGameplayStatics::OpenLevel(UGameplayStatics::GetPlayerController(GWorld, 0)->GetWorld(), FName("MainLevel"));
-}
-void UCustomCaptureAudioWidget::SetExternalAudioSource()
-{
-	int ret = MediaEngine->setExternalAudioSource(true, SAMPLE_RATE, CHANNEL, 1);
-
-	GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Blue, FString::Printf(TEXT("UCustomCaptureAudioWidget::setExternalAudioSource ret: %d"), ret));
 }
 
 
-void UCustomCaptureAudioWidget::InitAgoraEngine(FString APP_ID, FString TOKEN, FString CHANNEL_NAME)
-{
-	agora::rtc::RtcEngineContext RtcEngineContext;
-
-	RtcEngineContext.appId = TCHAR_TO_ANSI(*APP_ID);
-	RtcEngineContext.eventHandler = this;
-	RtcEngineContext.channelProfile = agora::CHANNEL_PROFILE_TYPE::CHANNEL_PROFILE_LIVE_BROADCASTING;
-
-	AppId = APP_ID;
-	Token = TOKEN;
-	ChannelName = CHANNEL_NAME;
-
-	RtcEngineProxy = agora::rtc::ue::createAgoraRtcEngine();
-
-	RtcEngineProxy->initialize(RtcEngineContext);
-
-	RtcEngineProxy->queryInterface(AGORA_IID_MEDIA_ENGINE, (void**)&MediaEngine);
-}
-
-void UCustomCaptureAudioWidget::CheckAndroidPermission()
+void UCustomCaptureAudioWidget::CheckPermission()
 {
 #if PLATFORM_ANDROID
-	FString pathfromName = UGameplayStatics::GetPlatformName();
-	if (pathfromName == "Android")
+	FString TargetPlatformName = UGameplayStatics::GetPlatformName();
+	if (TargetPlatformName == "Android")
 	{
 		TArray<FString> AndroidPermission;
 		AndroidPermission.Add(FString("android.permission.RECORD_AUDIO"));
@@ -77,59 +35,168 @@ void UCustomCaptureAudioWidget::CheckAndroidPermission()
 #endif
 }
 
-void UCustomCaptureAudioWidget::JoinChannel() {
-	UE_LOG(LogTemp, Warning, TEXT("UCustomCaptureAudioWidget OnJoinButtonClick ======"));
-	RtcEngineProxy->setAudioProfile(AUDIO_PROFILE_TYPE::AUDIO_PROFILE_MUSIC_HIGH_QUALITY, AUDIO_SCENARIO_TYPE::AUDIO_SCENARIO_DEFAULT);
-	RtcEngineProxy->enableAudio();
-	RtcEngineProxy->setClientRole(agora::rtc::CLIENT_ROLE_TYPE::CLIENT_ROLE_BROADCASTER);
-	RtcEngineProxy->joinChannel(TCHAR_TO_ANSI(*Token), TCHAR_TO_ANSI(*ChannelName), "", 0);
+void UCustomCaptureAudioWidget::InitAgoraEngine(FString APP_ID, FString TOKEN, FString CHANNEL_NAME)
+{
+	agora::rtc::RtcEngineContext RtcEngineContext;
+
+	UserRtcEventHandler = MakeShared<FUserRtcEventHandler>(this);
+	std::string StdStrAppId = TCHAR_TO_UTF8(*APP_ID);
+	RtcEngineContext.appId = StdStrAppId.c_str();
+	RtcEngineContext.eventHandler = UserRtcEventHandler.Get();
+	RtcEngineContext.channelProfile = agora::CHANNEL_PROFILE_TYPE::CHANNEL_PROFILE_LIVE_BROADCASTING;
+
+	AppId = APP_ID;
+	Token = TOKEN;
+	ChannelName = CHANNEL_NAME;
+
+	RtcEngineProxy = agora::rtc::ue::createAgoraRtcEngineEx();
+
+	int SDKBuild = 0;
+	FString SDKInfo = FString::Printf(TEXT("SDK Version: %s Build: %d"), UTF8_TO_TCHAR(RtcEngineProxy->getVersion(&SDKBuild)), SDKBuild);
+	UBFL_Logger::Print(FString::Printf(TEXT("SDK Info:  %s"), *SDKInfo), LogMsgViewPtr);
+
+	int ret = RtcEngineProxy->initialize(RtcEngineContext);
+	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
+
+	RtcEngineProxy->queryInterface(AGORA_IID_MEDIA_ENGINE, (void**)&MediaEngine);
 }
+
+void UCustomCaptureAudioWidget::SetExternalAudioSource()
+{
+	int ret = MediaEngine->setExternalAudioSource(true, SAMPLE_RATE, CHANNEL, 1);
+	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
+}
+
+
+void UCustomCaptureAudioWidget::JoinChannel()
+{
+	RtcEngineProxy->enableAudio();
+	RtcEngineProxy->setClientRole(CLIENT_ROLE_BROADCASTER);
+	int ret = RtcEngineProxy->joinChannel(TCHAR_TO_UTF8(*Token), TCHAR_TO_UTF8(*ChannelName), "", 0);
+	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
+}
+
 void UCustomCaptureAudioWidget::StartPushAudio()
 {
-	FString LoadDir = FPaths::ProjectContentDir() / TEXT("Audio/Agora.io-Interactions.wav");  
-	TArray<uint8> result;
-	FFileHelper::LoadFileToArray(result, *LoadDir, 0);
-	Runnable = new FAgoraCaptureRunnable(MediaEngine, result.GetData(), result.Num() * sizeof(uint8));
+	FString LoadDir = FPaths::ProjectContentDir() / TEXT("Audio/Agora.io-Interactions.wav");
+	TArray<uint8> AudioData;
+	FFileHelper::LoadFileToArray(AudioData, *LoadDir, 0);
+	Runnable = new FAgoraCaptureRunnable(MediaEngine, AudioData.GetData(), AudioData.Num() * sizeof(uint8));
 	FRunnableThread* RunnableThread = FRunnableThread::Create(Runnable, TEXT("Agora"));
 }
 
-#pragma region RtcEngineCallBack
-void UCustomCaptureAudioWidget::onJoinChannelSuccess(const char* channel, agora::rtc::uid_t uid, int elapsed)
+void UCustomCaptureAudioWidget::OnBtnBackToHomeClicked()
 {
-	AsyncTask(ENamedThreads::GameThread, [=]()
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Blue, FString::Printf(TEXT("UCustomCaptureAudioWidget::JoinChannelSuccess uid: %u"), uid));
-	});
+	UnInitAgoraEngine();
+	UGameplayStatics::OpenLevel(UGameplayStatics::GetPlayerController(GWorld, 0)->GetWorld(), FName("MainLevel"));
 }
-
-void UCustomCaptureAudioWidget::onUserJoined(agora::rtc::uid_t uid, int elapsed)
-{
-	AsyncTask(ENamedThreads::GameThread, [=]()
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Blue, FString::Printf(TEXT("UCustomCaptureAudioWidget::onUserJoined uid: %u"), uid));
-	});
-}
-#pragma endregion RtcEngineCallBack
-
 
 
 void UCustomCaptureAudioWidget::NativeDestruct()
 {
 	Super::NativeDestruct();
 
-	if (Runnable!=nullptr)
+	UnInitAgoraEngine();
+}
+
+
+
+void UCustomCaptureAudioWidget::UnInitAgoraEngine()
+{
+	if (Runnable != nullptr)
 	{
 		Runnable->Exit();
-		Runnable=nullptr;
+		Runnable = nullptr;
 	}
+
 	if (RtcEngineProxy != nullptr)
 	{
-		RtcEngineProxy->unregisterEventHandler(this);
+		RtcEngineProxy->leaveChannel();
+		RtcEngineProxy->unregisterEventHandler(UserRtcEventHandler.Get());
 		RtcEngineProxy->release();
-		delete RtcEngineProxy;
 		RtcEngineProxy = nullptr;
+
+		UBFL_Logger::Print(FString::Printf(TEXT("%s release agora engine"), *FString(FUNCTION_MACRO)), LogMsgViewPtr);
 	}
 }
+
+
+
+#pragma region AgoraCallback - IRtcEngineEventHandler
+
+void UCustomCaptureAudioWidget::FUserRtcEventHandler::onJoinChannelSuccess(const char* channel, agora::rtc::uid_t uid, int elapsed)
+{
+	if (!IsWidgetValid())
+		return;
+
+	AsyncTask(ENamedThreads::GameThread, [=]()
+		{
+			if (!IsWidgetValid())
+			{
+				UBFL_Logger::PrintError(FString::Printf(TEXT("%s bIsDestruct "), *FString(FUNCTION_MACRO)));
+				return;
+			}
+			UBFL_Logger::Print(FString::Printf(TEXT("%s uid=%d"), *FString(FUNCTION_MACRO), uid), WidgetPtr->GetLogMsgViewPtr());
+
+		});
+}
+
+void UCustomCaptureAudioWidget::FUserRtcEventHandler::onLeaveChannel(const agora::rtc::RtcStats& stats)
+{
+	if (!IsWidgetValid())
+		return;
+	AsyncTask(ENamedThreads::GameThread, [=]()
+		{
+			if (!IsWidgetValid())
+			{
+				UBFL_Logger::PrintError(FString::Printf(TEXT("%s bIsDestruct "), *FString(FUNCTION_MACRO)));
+				return;
+			}
+			UBFL_Logger::Print(FString::Printf(TEXT("%s"), *FString(FUNCTION_MACRO)), WidgetPtr->GetLogMsgViewPtr());
+
+		});
+
+}
+
+
+void UCustomCaptureAudioWidget::FUserRtcEventHandler::onUserJoined(agora::rtc::uid_t uid, int elapsed)
+{
+	if (!IsWidgetValid())
+		return;
+	AsyncTask(ENamedThreads::GameThread, [=]()
+		{
+			if (!IsWidgetValid())
+			{
+				UBFL_Logger::PrintError(FString::Printf(TEXT("%s bIsDestruct "), *FString(FUNCTION_MACRO)));
+				return;
+			}
+			UBFL_Logger::Print(FString::Printf(TEXT("%s uid=%d"), *FString(FUNCTION_MACRO), uid), WidgetPtr->GetLogMsgViewPtr());
+
+		});
+
+}
+
+void UCustomCaptureAudioWidget::FUserRtcEventHandler::onUserOffline(agora::rtc::uid_t uid, agora::rtc::USER_OFFLINE_REASON_TYPE reason)
+{
+	if (!IsWidgetValid())
+		return;
+
+	AsyncTask(ENamedThreads::GameThread, [=]()
+		{
+
+			if (!IsWidgetValid())
+			{
+				UBFL_Logger::PrintError(FString::Printf(TEXT("%s bIsDestruct "), *FString(FUNCTION_MACRO)));
+				return;
+			}
+			UBFL_Logger::Print(FString::Printf(TEXT("%s uid=%d"), *FString(FUNCTION_MACRO), uid), WidgetPtr->GetLogMsgViewPtr());
+
+		});
+}
+
+#pragma endregion
+
+
 
 #pragma region AgoraThread
 
@@ -173,7 +240,7 @@ uint32 FAgoraCaptureRunnable::Run()
 					OnCompleteDelegate.Broadcast();
 					break;
 				}
-				if (sendByte==nullptr)
+				if (sendByte == nullptr)
 				{
 					sendByte = FMemory::Malloc(SAMPLE_RATE / PUSH_FREQ_PER_SEC * agora::rtc::BYTES_PER_SAMPLE::TWO_BYTES_PER_SAMPLE * CHANNEL);
 				}
@@ -186,7 +253,8 @@ uint32 FAgoraCaptureRunnable::Run()
 				externalAudioFrame.channels = CHANNEL;
 				externalAudioFrame.buffer = (void*)sendByte;
 				externalAudioFrame.renderTimeMs = 10;
-				int ret = MediaEngine->pushAudioFrame(agora::media::AUDIO_PLAYOUT_SOURCE, &externalAudioFrame);
+				agora::rtc::track_id_t trackId = 0;
+				int ret = MediaEngine->pushAudioFrame(&externalAudioFrame, trackId);
 				//UE_LOG(LogTemp, Warning, TEXT("UCustomCaptureAudioWidget pushAudioFrame ====== %d"), ret);
 				Ptr += SAMPLE_RATE / PUSH_FREQ_PER_SEC * 2 * CHANNEL;
 				dataLength -= SAMPLE_RATE / PUSH_FREQ_PER_SEC * 2 * CHANNEL;
@@ -223,3 +291,5 @@ std::time_t FAgoraCaptureRunnable::getTimeStamp()
 	return timestamp;
 }
 #pragma endregion
+
+

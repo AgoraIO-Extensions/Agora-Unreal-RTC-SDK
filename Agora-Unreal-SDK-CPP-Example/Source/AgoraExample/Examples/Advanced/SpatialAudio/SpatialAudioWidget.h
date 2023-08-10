@@ -4,77 +4,149 @@
 
 #include "CoreMinimal.h"
 #include "../../BaseAgoraUserWidget.h"
-#include "Components/Button.h"
 #include "AgoraPluginInterface.h"
+
+// UI
+#include "Components/Button.h"
+#include "Components/CanvasPanel.h"
+#include "Components/Slider.h"
+#include "Components/TextBlock.h"
+
+// UI Utility
+#include "../../../Utility/BFL_VideoViewManager.h"
+#include "../../../Utility/BFL_Logger.h"
+
 #if PLATFORM_ANDROID
 #include "AndroidPermission/Classes/AndroidPermissionFunctionLibrary.h"
 #endif
+
 #include "SpatialAudioWidget.generated.h"
+
 using namespace agora::rtc;
-using namespace agora::util;
+
 /**
  * 
  */
-UCLASS(Abstract)
-class AGORAEXAMPLE_API USpatialAudioWidget : public UBaseAgoraUserWidget, public agora::rtc::IRtcEngineEventHandler
+UCLASS()
+class AGORAEXAMPLE_API USpatialAudioWidget : public UBaseAgoraUserWidget
 {
 	GENERATED_BODY()
+
+
+#pragma region Event Handler
+
+public:
+
+	class FUserRtcEventHandlerEx : public agora::rtc::IRtcEngineEventHandlerEx
+	{
+	public:
+
+		FUserRtcEventHandlerEx(USpatialAudioWidget* InVideoWidget) : WidgetPtr(InVideoWidget) {};
+
+#pragma region AgoraCallback - IRtcEngineEventHandlerEx
+
+		void onJoinChannelSuccess(const agora::rtc::RtcConnection& connection, int elapsed) override;
+
+		void onLeaveChannel(const agora::rtc::RtcConnection& connection, const agora::rtc::RtcStats& stats) override;
+
+		void onUserJoined(const agora::rtc::RtcConnection& connection, agora::rtc::uid_t remoteUid, int elapsed) override;
+
+		void onUserOffline(const agora::rtc::RtcConnection& connection, agora::rtc::uid_t remoteUid, agora::rtc::USER_OFFLINE_REASON_TYPE reason) override;
+
+#pragma endregion
+
+		inline bool IsWidgetValid() { return WidgetPtr.IsValid(); }
+
+	private:
+
+		TWeakObjectPtr<USpatialAudioWidget> WidgetPtr;
+	};
+
+#pragma endregion
+
+
+#pragma region UI
+
+public:
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
+		UButton* Btn_BackToHome = nullptr;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
+		UButton* Btn_JoinChannel = nullptr;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
+		UButton* Btn_LeaveChannel = nullptr;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
+		USlider* Slider_Distance = nullptr;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
+		UTextBlock* Txt_Distance = nullptr;
+
+	UFUNCTION(BlueprintCallable)
+	void OnBtnBackToHomeClicked();
 	
+	UFUNCTION(BlueprintCallable)
+		void OnBtnJoinChannelClicked();
+	UFUNCTION(BlueprintCallable)
+		void OnBtnLeaveChannelClicked();
+	UFUNCTION(BlueprintCallable)
+	void OnSliderDistanceValChanged(float val);
+
+#pragma endregion
+
 public:
 
 	void InitAgoraWidget(FString APP_ID, FString TOKEN, FString CHANNEL_NAME) override;
 
-	void onJoinChannelSuccess(const char* channel, uid_t uid, int elapsed) override;
 
-	void onUserJoined(uid_t uid, int elapsed) override;
+#pragma region UI Utility - Log Msg View
 
+public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-	UButton* JoinBtn = nullptr;
+	UCanvasPanel* CanvasPanel_LogMsgView = nullptr;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-	UButton* LeftMoveBtn = nullptr;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TSubclassOf<UDraggableLogMsgViewWidget> DraggableLogMsgViewTemplate;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-	UButton* RightMoveBtn = nullptr;
+public:
+	inline UDraggableLogMsgViewWidget* GetLogMsgViewPtr() {return LogMsgViewPtr;} 
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-	UButton* BackHomeBtn = nullptr;
+private:
+	UDraggableLogMsgViewWidget* LogMsgViewPtr = nullptr;
 
-	UFUNCTION(BlueprintCallable)
-	void OnJoinButtonClick();
+#pragma endregion
 
-	UFUNCTION(BlueprintCallable)
-	void LeftMoveButtonClick();
+public:
+	inline FString GetAppId() { return AppId; };
+	inline FString GetToken() { return Token; };
+	inline FString GetChannelName() { return ChannelName; };
 
-	UFUNCTION(BlueprintCallable)
-	void RightMoveButtonClick();
+	inline ILocalSpatialAudioEngine* GetLocalSpatialAudioEngine() { return LocalSpatialAudioEngine; }
 
-	UFUNCTION(BlueprintCallable)
-	void OnBackHomeButtonClick();
+	inline void SetRemoteUID(uint32 uid) { RemoteUID = uid; }
+	int UpdateRemotePositionWithCurrentDistanceVal();
 protected:
-
-	agora::rtc::IRtcEngine* RtcEngineProxy;
-
-	FString Appid;
-
-	FString Token;
-
-	FString ChannelName;
-
-	uid_t RemoteUid;
-
-	ILocalSpatialAudioEngine* LocalSpatialAudioEngine;
 	
-	void NativeConstruct() override;
-
-	void NativeDestruct() override;
-
-	void CheckAndroidPermission();
-
+	void CheckPermission();
+	void InitUI();
 	void InitAgoraEngine(FString APP_ID, FString TOKEN, FString CHANNEL_NAME);
-
-	void SetUpUIEvent();
-
 	void InitSpatialAudioEngine(IRtcEngine* engine);
 
+
+	void NativeDestruct() override;
+	void UnInitAgoraEngine();
+
+	FString AppId = "";
+	FString Token = "";
+	FString ChannelName = "";
+
+	uint32 UID = 123;
+	uint32 UID_UsedInMPK = 67890;
+
+	IRtcEngineEx* RtcEngineProxy;
+	ILocalSpatialAudioEngine* LocalSpatialAudioEngine = nullptr;
+
+
+
+	TSharedPtr<FUserRtcEventHandlerEx> UserRtcEventHandlerEx;
+
+	uint32 RemoteUID = 0;
 };
