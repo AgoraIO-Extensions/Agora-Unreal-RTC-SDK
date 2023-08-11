@@ -6,19 +6,33 @@
 
 void UIMediaRecorderObserver::onRecorderStateChanged(agora::media::RecorderState state, agora::media::RecorderErrorCode error)
 {
+	TWeakObjectPtr<UIMediaRecorderObserver> SelfWeakPtr(this);
+	if (!SelfWeakPtr.IsValid())
+		return;
+	
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
-		OnRecorderStateChanged.Broadcast((ERecorderState)state, (ERecorderErrorCode)error);
-	});
+		if (!SelfWeakPtr.IsValid())
+			return;
+			
+			OnRecorderStateChanged.Broadcast(state, (ERecorderErrorCode)error);
+		});
 }
 void UIMediaRecorderObserver::onRecorderInfoUpdated(const agora::media::RecorderInfo& info)
 {
+	TWeakObjectPtr<UIMediaRecorderObserver> SelfWeakPtr(this);
+	if (!SelfWeakPtr.IsValid())
+		return;
+	
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
-		FRecorderInfo recorderInfo;
-		recorderInfo.fileName = FString(info.fileName);
-		recorderInfo.durationMs = info.durationMs;
-		recorderInfo.fileSize = info.fileSize;
-		OnRecorderInfoUpdated.Broadcast(recorderInfo);
-	});
+		if (!SelfWeakPtr.IsValid())
+			return;
+			
+			FRecorderInfo recorderInfo;
+			recorderInfo.fileName = FString(info.fileName);
+			recorderInfo.durationMs = info.durationMs;
+			recorderInfo.fileSize = info.fileSize;
+			OnRecorderInfoUpdated.Broadcast(recorderInfo);
+		});
 }

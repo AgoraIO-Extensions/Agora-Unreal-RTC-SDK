@@ -427,10 +427,26 @@ struct MediaSource {
   /**
    * Determines whether to enable cache streaming to local files. If enable cached, the media player will
    * use the url or uri as the cache index.
+   *
+   * @note
+   * The local cache function only supports on-demand video/audio streams and does not support live streams.
+   * Caching video and audio files based on the HLS protocol (m3u8) to your local device is not supported.
+   *
    * - true: Enable cache.
    * - false: (Default) Disable cache.
    */
   bool enableCache;
+  /**
+   * Determines whether to enable multi-track audio stream decoding.
+   * Then you can select multi audio track of the media file for playback or publish to channel
+   *
+   * @note
+   * If you use the selectMultiAudioTrack API, you must set enableMultiAudioTrack to true.
+   *
+   * - true: Enable MultiAudioTrack;.
+   * - false: (Default) Disable MultiAudioTrack;.
+   */
+  bool enableMultiAudioTrack;
   /**
    * Determines whether the opened media resource is a stream through the Agora Broadcast Streaming Network(CDN).
    * - true: It is a stream through the Agora Broadcast Streaming Network.
@@ -449,7 +465,7 @@ struct MediaSource {
   IMediaPlayerCustomDataProvider* provider;
 
   MediaSource() : url(NULL), uri(NULL), startPos(0), autoPlay(true), enableCache(false),
-                  provider(NULL){
+                  enableMultiAudioTrack(false), provider(NULL){
   }
 };
 

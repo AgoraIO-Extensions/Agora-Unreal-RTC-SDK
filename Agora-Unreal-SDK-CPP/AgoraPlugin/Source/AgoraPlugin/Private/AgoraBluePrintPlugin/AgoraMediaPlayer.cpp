@@ -18,7 +18,7 @@ int UIMediaPlayer::OpenWithCustomSource(int64 startPos, UIMediaPlayerCustomDataP
 {
 	return MediaPlayer->openWithCustomSource(startPos, provider);
 }
-int UIMediaPlayer::OpenWithMediaSource(FAgoraMediaSource& source)
+int UIMediaPlayer::OpenWithMediaSource(const FAgoraMediaSource& source)
 {
 	agora::media::base::MediaSource mediaSource;
 	mediaSource.url = TCHAR_TO_ANSI(*source.url);
@@ -123,6 +123,12 @@ int UIMediaPlayer::SetPlaybackSpeed(int speed)
 int UIMediaPlayer::SelectAudioTrack(int index)
 {
 	return MediaPlayer->selectAudioTrack(index);
+}
+
+
+int UIMediaPlayer::SelectMultiAudioTrack(int playoutTrackIndex, int publishTrackIndex)
+{
+	return MediaPlayer->selectMultiAudioTrack(playoutTrackIndex, publishTrackIndex);
 }
 
 int UIMediaPlayer::SetPlayerOption(FString key, FString value)
@@ -265,43 +271,22 @@ int UIMediaPlayer::UnloadSrc(FString src)
 {
 	return MediaPlayer->unloadSrc(TCHAR_TO_ANSI(*src));
 }
-int UIMediaPlayer::SetSpatialAudioParams(FSpatialAudioParams& params)
+int UIMediaPlayer::SetSpatialAudioParams(const FSpatialAudioParams& params)
 {
 	agora::SpatialAudioParams spatialAudioParams;
-	if (params.speaker_azimuthValue != AGORAOPTIONAL::AGORA_NULL_VALUE)
-	{
-		spatialAudioParams.speaker_azimuth = params.speaker_azimuth;
-	}
-	if (params.speaker_elevationValue != AGORAOPTIONAL::AGORA_NULL_VALUE)
-	{
-		spatialAudioParams.speaker_elevation = params.speaker_elevation;
-	}
-	if (params.speaker_distanceValue != AGORAOPTIONAL::AGORA_NULL_VALUE)
-	{
-		spatialAudioParams.speaker_distance = params.speaker_distance;
-	}
-	if (params.speaker_orientationValue != AGORAOPTIONAL::AGORA_NULL_VALUE)
-	{
-		spatialAudioParams.speaker_orientation = params.speaker_orientation;
-	}
-	if (params.enable_blurValue != AGORAOPTIONAL::AGORA_NULL_VALUE)
-	{
-		spatialAudioParams.enable_blur = params.enable_blur;
-	}
-	if (params.enable_air_absorbValue != AGORAOPTIONAL::AGORA_NULL_VALUE)
-	{
-		spatialAudioParams.enable_air_absorb = params.enable_air_absorb;
-	}
-	if (params.speaker_attenuationValue != AGORAOPTIONAL::AGORA_NULL_VALUE)
-	{
-		spatialAudioParams.speaker_attenuation = params.speaker_attenuation;
-	}
+	SET_AGORA_DATA_SPATIALAUDIOPARAMS(spatialAudioParams, params);
 	return MediaPlayer->setSpatialAudioParams(spatialAudioParams);
 }
 int UIMediaPlayer::SetSoundPositionParams(float pan, float gain)
 {
 	return MediaPlayer->setSoundPositionParams(pan, gain);
 }
+
+int UIMediaPlayer::SetAudioPlaybackDelay(int delay_ms)
+{
+	return MediaPlayer->setAudioPlaybackDelay(delay_ms);
+}
+
 void UIMediaPlayer::SetMediaPlayer(agora::agora_refptr<agora::rtc::IMediaPlayer> mediaPlayer)
 {
 	this->MediaPlayer = mediaPlayer;

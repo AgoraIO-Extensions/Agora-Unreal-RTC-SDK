@@ -158,12 +158,29 @@ public:
 
   /**
    * Slect playback audio track of the media file
-   * @param speed the index of the audio track in meia file
+   * @param index the index of the audio track in media file
    * @return
    * - 0: Success.
    * - < 0: Failure.
    */
   virtual int selectAudioTrack(int index) = 0;
+
+  /**
+   * Selects multi audio track of the media file for playback or publish to channel.
+   * @param playoutTrackIndex The index of the audio track in media file for local playback.
+   * @param publishTrackIndex The index of the audio track in the media file published to the remote.
+   * 
+   * @note
+   * You can obtain the streamIndex of the audio track by calling getStreamInfo..
+   * If you want to use selectMultiAudioTrack, you need to open the media file with openWithMediaSource and set enableMultiAudioTrack to true.
+   *
+   * @return
+   * - 0: Success.
+   * - < 0: Failure. See {@link media::base::MEDIA_PLAYER_ERROR MEDIA_PLAYER_ERROR}.
+   * - -2: Invalid argument. Argument must be greater than or equal to zero.
+   * - -8: Invalid State.You must open the media file with openWithMediaSource and set enableMultiAudioTrack to true
+   */
+  virtual int selectMultiAudioTrack(int playoutTrackIndex, int publishTrackIndex) = 0;
 
   /**
    * change player option before play a file
@@ -520,6 +537,18 @@ public:
    * - < 0: Failure.
    */
   virtual int setSoundPositionParams(float pan, float gain) = 0;
+
+  /**
+   * Set delay of playback to local device.
+   *
+   *@param delay_ms The delay_ms for playback to local device:
+   * - for default, the pipeline default is 160ms, 16 buffer before pipeline start consuming
+   * - for playeffect, it need to play as soon as possible for short file, sugguest to used 50ms
+   * @return
+   * - 0: Success.
+   * - < 0: Failure.
+   */
+  virtual int setAudioPlaybackDelay(int delay_ms) = 0;
 
 };
 

@@ -8,6 +8,9 @@ public class AgoraPlugin : ModuleRules
 	{
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
 
+		// Notice: In current version, the audio only plugin is only for Android / IOS.
+        PublicDefinitions.Add("AGORA_UESDK_AUDIO_ONLY=1");
+
 		PublicIncludePaths.AddRange(
 			new string[] {
 				// ... add public include paths required here ...

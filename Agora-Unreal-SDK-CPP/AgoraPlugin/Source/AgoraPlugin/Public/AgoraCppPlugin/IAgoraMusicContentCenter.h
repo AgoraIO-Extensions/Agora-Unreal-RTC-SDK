@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <AgoraRefPtr.h>
+#include "AgoraRefPtr.h"
 #include "IAgoraMediaPlayer.h"
 
 namespace agora {
@@ -26,9 +26,13 @@ typedef enum
     kPreloadStatusFailed = 1,
 
     /**
-     * 2: The media is preloading.
+     * 2: The media file is preloading.
      */
     kPreloadStatusPreloading = 2,
+        /**
+     * 3: The media file is removed.
+     */
+    kPreloadStatusRemoved = 3,
 } PreloadStatusCode;
 
 typedef enum
@@ -40,7 +44,36 @@ typedef enum
     /**
      * 1: A general error occurs.
      */
-    kMusicContentCenterStatusErr = 1,
+     kMusicContentCenterStatusErr = 1,
+    /**
+     * 2: The gateway error. There are several possible reasons:
+     *  - Token is expired. Check if your token is expired.
+     *  - Token is invalid. Check the type of token you passed in.
+     *  - Network error. Check your network.
+     */
+    kMusicContentCenterStatusErrGateway = 2,
+    /**
+     * 3: Permission and resource error. There are several possible reasons:
+     *  - Your appid may not have the mcc permission. Please contact technical support 
+     *  - The resource may not exist. Please contact technical support
+     */
+    kMusicContentCenterStatusErrPermissionAndResource = 3,
+    /**
+     * 4: Internal data parse error. Please contact technical support
+     */
+    kMusicContentCenterStatusErrInternalDataParse = 4,
+    /**
+     * 5: Music loading error. Please contact technical support
+     */
+    kMusicContentCenterStatusErrMusicLoading = 5,
+    /**
+     * 6: Music decryption error. Please contact technical support
+     */
+    kMusicContentCenterStatusErrMusicDecryption = 6, 
+    /**
+     * 7: Http internal error. suggest retry later.
+     */
+    kMusicContentCenterStatusErHttpInternalError = 7, 
 } MusicContentCenterStatusCode;
 
 typedef struct 
@@ -54,6 +87,29 @@ typedef struct
      */
     int32_t id;
 } MusicChartInfo;
+
+enum MUSIC_CACHE_STATUS_TYPE {
+    /**
+     * 0: Music is already cached.
+     */
+    MUSIC_CACHE_STATUS_TYPE_CACHED = 0,
+    /**
+     * 1: Music is being cached.
+     */
+    MUSIC_CACHE_STATUS_TYPE_CACHING = 1
+};
+
+struct MusicCacheInfo {
+    /**
+     * The songCode of music.
+     */
+    int64_t songCode;
+    /**
+     * The cache status of the music.
+     */
+    MUSIC_CACHE_STATUS_TYPE status;
+    MusicCacheInfo():songCode(0), status(MUSIC_CACHE_STATUS_TYPE_CACHED) {}
+};
 
 class MusicChartCollection : public RefCountInterface {
 public:
@@ -175,36 +231,53 @@ class IMusicContentCenterEventHandler {
 public:
     /**
      * The music chart result callback; occurs when getMusicCharts method is called.
-     * @param requestId The request id same with return from getMusicCharts.
-     * @param status The status of the request. See MusicContentCenterStatusCode
+     * 
+     * @param requestId The request id is same as that returned by getMusicCharts.
      * @param result The result of music chart collection
+     * @param errorCode The status of the request. See MusicContentCenterStatusCode
      */
-    virtual void onMusicChartsResult(const char* requestId, MusicContentCenterStatusCode status, agora_refptr<MusicChartCollection> result) = 0;
+    virtual void onMusicChartsResult(const char* requestId, agora_refptr<MusicChartCollection> result, MusicContentCenterStatusCode errorCode) = 0;
 
     /**
      * Music collection, occurs when getMusicCollectionByMusicChartId or searchMusic method is called.
-     * @param requestId The request id same with return from getMusicCollectionByMusicChartId or searchMusic
-     * @param status The status of the request. See MusicContentCenterStatusCode
+     * 
+     * @param requestId The request id is same as that returned by getMusicCollectionByMusicChartId or searchMusic
      * @param result The result of music collection
+     * @param errorCode The status of the request. See MusicContentCenterStatusCode
      */
-    virtual void onMusicCollectionResult(const char* requestId, MusicContentCenterStatusCode status, agora_refptr<MusicCollection> result) = 0;
+    virtual void onMusicCollectionResult(const char* requestId, agora_refptr<MusicCollection> result, MusicContentCenterStatusCode errorCode) = 0;
 
     /**
      * Lyric url callback of getLyric, occurs when getLyric is called
-     * @param requestId The request id same with return from getLyric
+     * 
+     * @param requestId The request id is same as that returned by getLyric
+     * @param songCode Song code
      * @param lyricUrl  The lyric url of this music
+     * @param errorCode The status of the request. See MusicContentCenterStatusCode
      */
-    virtual void onLyricResult(const char* requestId, const char* lyricUrl) = 0;
+    virtual void onLyricResult(const char* requestId, int64_t songCode, const char* lyricUrl, MusicContentCenterStatusCode errorCode) = 0;
+
     /**
-     * preload process callback, occurs when preload is called
-     *
+     * Simple info callback of getSongSimpleInfo, occurs when getSongSimpleInfo is called
+     * 
+     * @param requestId The request id is same as that returned by getSongSimpleInfo.
+     * @param songCode Song code
+     * @param simpleinfo The metadata of the music.
+     * @param errorCode The status of the request. See MusicContentCenterStatusCode
+     */
+    virtual void onSongSimpleInfoResult(const char* requestId, int64_t songCode, const char* simpleInfo, MusicContentCenterStatusCode errorCode) = 0;
+
+    /**
+     * Preload process callback, occurs when preload is called
+     * 
+     * @param requestId The request id is same as that returned by preload.
      * @param songCode Song code
      * @param percent Preload progress (0 ~ 100)
-     * @param status Preload status; see PreloadStatusCode.
-     * @param msg The extra information
      * @param lyricUrl  The lyric url of this music
+     * @param status Preload status; see PreloadStatusCode.
+     * @param errorCode The status of the request. See MusicContentCenterStatusCode
      */
-    virtual void onPreLoadEvent(int64_t songCode, int percent, PreloadStatusCode status, const char* msg, const char* lyricUrl = nullptr) = 0;
+    virtual void onPreLoadEvent(const char* requestId, int64_t songCode, int percent, const char* lyricUrl, PreloadStatusCode status, MusicContentCenterStatusCode errorCode) = 0;
 
     virtual ~IMusicContentCenterEventHandler() {};
 };
@@ -215,7 +288,7 @@ struct MusicContentCenterConfiguration {
      */
     const char *appId;
     /**
-     * music content center need token to connect with server
+     * Music content center need token to connect with server
      */
     const char *token;
     /**
@@ -223,12 +296,16 @@ struct MusicContentCenterConfiguration {
      */
     int64_t mccUid;
     /**
-     * event handler to get callback result.
+     * The max number which the music content center caches cannot exceed 50.
+     */
+    int32_t maxCacheSize;
+    /**
+     * Event handler to get callback result.
      */
     IMusicContentCenterEventHandler* eventHandler;
-    MusicContentCenterConfiguration():appId(nullptr),token(nullptr),eventHandler(nullptr),mccUid(0){}
-    MusicContentCenterConfiguration(const char*appid,const char* token,int64_t id,IMusicContentCenterEventHandler* handler):
-        appId(appid),token(token),mccUid(id),eventHandler(handler){}
+    MusicContentCenterConfiguration():appId(nullptr),token(nullptr),eventHandler(nullptr),mccUid(0),maxCacheSize(10){}
+    MusicContentCenterConfiguration(const char*appid,const char* token,int64_t id,IMusicContentCenterEventHandler* handler,int32_t maxSize = 10):
+        appId(appid),token(token),mccUid(id),eventHandler(handler),maxCacheSize(maxSize){}
 };
 
 class IMusicPlayer : public IMediaPlayer {
@@ -237,8 +314,9 @@ protected:
 
 public:
     IMusicPlayer() {};
+    using IMediaPlayer::open;
     /**
-    * open a media file with specified parameters.
+    * Open a media file with specified parameters.
     *
     * @param songCode The identifier of the media file that you want to play.
     * @param startPos The playback position (ms) of the music file.
@@ -347,18 +425,65 @@ public:
     virtual int searchMusic(agora::util::AString& requestId, const char* keyWord, int32_t page, int32_t pageSize, const char* jsonOption = nullptr) = 0;
     
     /**
-     * preload a media file with specified parameters.
+     * Preload a media file with specified parameters.
      *
+     * @deprecated This method is deprecated. Use preload(int64_t songCode) instead.
+     * 
      * @param songCode The identifier of the media file that you want to play.
      * @param jsonOption The ext param, default is null.
      * @return
      * - 0: Success.
      * - < 0: Failure.
      */
-    virtual int preload(int64_t songCode, const char* jsonOption = nullptr) = 0;
-    
+    virtual int preload(int64_t songCode, const char* jsonOption) __deprecated = 0;
+
     /**
-     * check if the media file is preloaded
+     * Preload a media file with specified parameters.
+     * 
+     * @param requestId The request id you will get of this query, format is uuid.
+     * @param songCode The identifier of the media file that you want to play.
+     * @return
+     * - 0: Success.
+     * - < 0: Failure.
+     */
+    virtual int preload(agora::util::AString& requestId, int64_t songCode) = 0;
+
+    /**
+     * Remove a media file cache
+     *
+     * @param songCode The identifier of the media file that you want to play.
+     * @return
+     * - 0: Success; the cached media file is removed.
+     * - < 0: Failure.
+     */
+    virtual int removeCache(int64_t songCode) = 0;
+
+    /**
+     * Get cached media files.
+     * Before calling this API, you should allocate a memory buffer that stores the cached media file information, and pass the pointer of the buffer as the input parameter cacheInfo, and set the size of the memory buffer to cacheInfoSize.
+     * The sample code below illustrates how to request the cached media file information:
+     *
+     *    cacheInfoSize = 10                                                                    // Allocate a memory buffer of 10 MusicCacheInfo size
+     *    agora::rtc::MusicCacheInfo *infos = new agora::rtc::MusicCacheInfo[cacheInfoSize];
+     *    int ret = self.imcc->getCaches(infos, cacheInfoSize);
+     *    if (ret < 0) {                                                                        // error occurred!
+     *        return; 
+     *    }
+     *    std::cout << "the cache size:" << cacheInfoSize << std::endl;                         // The cache size: 5
+     *
+     *
+     * @param cacheInfo An output parameter; A pointer to the memory buffer that stores the cached media file information. The memory buffer pointed to by cacheInfo should be allocated by yourself before calling this API.
+     * @param cacheInfoSize
+     * - Input: The number of MusicCacheInfo's size that you get from the memory. 
+     * - Output: The actual number of MusicCacheInfo struct that is returned.
+     * @return
+     * - 0: Success.
+     * - < 0: Failure.
+     */
+    virtual int getCaches(MusicCacheInfo *cacheInfo, int32_t* cacheInfoSize) = 0;
+
+    /**
+     * Check if the media file is preloaded
      *
      * @param songCode The identifier of the media file that you want to play.
      * @return
@@ -368,8 +493,9 @@ public:
     virtual int isPreloaded(int64_t songCode) = 0;
 
     /**
-     * get lyric of the music.
+     * Get lyric of the music.
      *
+     * @param requestId The request id you will get of this query, format is uuid.
      * @param songCode The identifier of the media file that you want to play.
      * @param LyricType The type of the lyric file. 0:xml or 1:lrc.
      * @return
@@ -377,6 +503,31 @@ public:
      * - < 0: Failure.
      */
     virtual int getLyric(agora::util::AString& requestId, int64_t songCode, int32_t LyricType = 0) = 0;
+
+    /**
+     * Gets the metadata of a specific music. Once this method is called, the SDK triggers the onSongSimpleInfoResult callback to report the metadata of the music.
+     *
+     * @param requestId The request id you will get of this query, format is uuid.
+     * @param songCode The identifier of the media file.
+     * @return
+     * - 0: Success.
+     * - < 0: Failure.
+     */
+    virtual int getSongSimpleInfo(agora::util::AString& requestId, int64_t songCode) = 0;
+
+    /**
+     * Get internal songCodeKey from songCode and jsonOption
+     *
+     * @param songCode The identifier of the media file.
+     * @param jsonOption An extention parameter. The default value is null. it’s a json-format string and the `key` and `value` can be customized according to your scenarios.
+     * @param internalSongCode The identifier of internal 
+     * @return
+     * - 0: Success.
+     * - < 0: Failure.
+     */
+
+    virtual int getInternalSongCode(int64_t songCode, const char* jsonOption, int64_t& internalSongCode) = 0;
+
 };
 
 }  // namespace rtc

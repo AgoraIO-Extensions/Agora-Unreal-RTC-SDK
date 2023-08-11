@@ -2,8 +2,8 @@
 
 
 #include "AgoraHeaderBase.h"
-#include "MediaEngineProxy.h"
 #include "VideoRenderManager.h"
+#include "VideoObserverInternal.h"
 #if PLATFORM_ANDROID
 #include "Android/AndroidApplication.h"
 #include "Android/AndroidJni.h"
@@ -17,18 +17,27 @@ namespace agora
 	{
 		namespace ue
 		{
-			class MediaEngineProxy;
 			class AGORAPLUGIN_API RtcEngineProxy : public IRtcEngineEx
 			{
-			protected:
+			public:
+				static RtcEngineProxy* GetInstance();
+				static void ReleaseInstance(bool sync = false);
 
+			protected:
+				static std::mutex MutexLock;
+				static RtcEngineProxy* Instance;
+				
 				IRtcEngine* RtcEngine;
-				TSharedPtr<class MediaEngineProxy> MediaProxy;
 				TSharedPtr<class VideoRenderManager> VideoRenderMgr;
+
+			private:
+				void InitInstance();
+				void UnInitInstance(bool sync = false);
 
 			public:
 
 				RtcEngineProxy();
+				~RtcEngineProxy();
 
 				util::AutoPtr<agora::media::IMediaEngine> MediaEngine;
 				virtual int queryInterface(rtc::INTERFACE_ID_TYPE iid, void** inter) override;
@@ -36,6 +45,11 @@ namespace agora
 				virtual int initialize(const RtcEngineContext& context) override;
 				virtual const char* getVersion(int* build) override;
 				virtual const char* getErrorDescription(int code) override;
+				virtual int queryCodecCapability(CodecCapInfo* codecInfo, int& size) override;
+				virtual int queryDeviceScore() override;
+				virtual int preloadChannel(const char* token, const char* channelId, uid_t uid) override;
+				virtual int preloadChannel(const char* token, const char* channelId, const char* userAccount) override;
+				virtual int updatePreloadChannelToken(const char* token) override;
 				virtual int joinChannel(const char* token, const char* channelId, const char* info, uid_t uid) override;
 				virtual int joinChannel(const char* token, const char* channelId, uid_t uid, const ChannelMediaOptions& options) override;
 				virtual int updateChannelMediaOptions(const ChannelMediaOptions& options) override;
@@ -66,7 +80,6 @@ namespace agora
 				virtual int setVideoDenoiserOptions(bool enabled, const VideoDenoiserOptions& options, agora::media::MEDIA_SOURCE_TYPE type = agora::media::PRIMARY_CAMERA_SOURCE) override;
 				virtual int setColorEnhanceOptions(bool enabled, const ColorEnhanceOptions& options, agora::media::MEDIA_SOURCE_TYPE type = agora::media::PRIMARY_CAMERA_SOURCE) override;
 				virtual int enableVirtualBackground(bool enabled, VirtualBackgroundSource backgroundSource, SegmentationProperty segproperty, agora::media::MEDIA_SOURCE_TYPE type = agora::media::PRIMARY_CAMERA_SOURCE) override;
-				virtual int enableRemoteSuperResolution(uid_t userId, bool enable) override;
 				virtual int setupRemoteVideo(const VideoCanvas& canvas) override;
 				virtual int setupLocalVideo(const VideoCanvas& canvas) override;
 				virtual int enableAudio() override;
@@ -162,14 +175,11 @@ namespace agora
 				virtual int enableDualStreamMode(bool enabled) override;
 				virtual int setDualStreamMode(SIMULCAST_STREAM_MODE mode) override;
 				virtual int setDualStreamMode(SIMULCAST_STREAM_MODE mode, const SimulcastStreamConfig& streamConfig) override;
+				virtual int enableCustomAudioLocalPlayback(track_id_t trackId, bool enabled) override;
 				virtual int enableEchoCancellationExternal(bool enabled, int audioSourceDelay) override;
-				virtual int enableCustomAudioLocalPlayback(int sourceId, bool enabled) override;
-				virtual int startPrimaryCustomAudioTrack(const AudioTrackConfig& config) override;
-				virtual int stopPrimaryCustomAudioTrack() override;
-				virtual int startSecondaryCustomAudioTrack(const AudioTrackConfig& config) override;
-				virtual int stopSecondaryCustomAudioTrack() override;
 				virtual int setRecordingAudioFrameParameters(int sampleRate, int channel, RAW_AUDIO_FRAME_OP_MODE_TYPE mode, int samplesPerCall) override;
 				virtual int setPlaybackAudioFrameParameters(int sampleRate, int channel, RAW_AUDIO_FRAME_OP_MODE_TYPE mode, int samplesPerCall) override;
+				virtual int setPublishAudioFrameParameters(int sampleRate, int channel, int samplesPerCall) override;
 				virtual int setMixedAudioFrameParameters(int sampleRate, int channel, int samplesPerCall) override;
 				virtual int setEarMonitoringAudioFrameParameters(int sampleRate, int channel, RAW_AUDIO_FRAME_OP_MODE_TYPE mode, int samplesPerCall) override;
 				virtual int setPlaybackAudioFrameBeforeMixingParameters(int sampleRate, int channel) override;
@@ -195,10 +205,11 @@ namespace agora
 				virtual int registerExtension(const char* provider, const char* extension, agora::media::MEDIA_SOURCE_TYPE type = agora::media::UNKNOWN_MEDIA_SOURCE) override;
 				virtual int enableExtension(const char* provider, const char* extension, bool enable = true, agora::media::MEDIA_SOURCE_TYPE type = agora::media::UNKNOWN_MEDIA_SOURCE) override;
 				virtual int enableExtension(const char* provider, const char* extension, const ExtensionInfo& extensionInfo, bool enable = true) override;
-				virtual int setExtensionProperty(const char* provider, const char* extension, const ExtensionInfo& extensionInfo, const char* key, const char* value) override;
-				virtual int getExtensionProperty(const char* provider, const char* extension, const ExtensionInfo& extensionInfo, const char* key, char* value, int buf_len) override;
 				virtual int setExtensionProperty(const char* provider, const char* extension, const char* key, const char* value, agora::media::MEDIA_SOURCE_TYPE type = agora::media::UNKNOWN_MEDIA_SOURCE) override;
 				virtual int getExtensionProperty(const char* provider, const char* extension, const char* key, char* value, int buf_len, agora::media::MEDIA_SOURCE_TYPE type = agora::media::UNKNOWN_MEDIA_SOURCE) override;
+				virtual int setExtensionProperty(const char* provider, const char* extension, const ExtensionInfo& extensionInfo, const char* key, const char* value) override;
+				virtual int getExtensionProperty(const char* provider, const char* extension, const ExtensionInfo& extensionInfo, const char* key, char* value, int buf_len) override;
+			
 				virtual int setCameraCapturerConfiguration(const CameraCapturerConfiguration& config) override;
 				virtual video_track_id_t createCustomVideoTrack() override;
 				virtual video_track_id_t createCustomEncodedVideoTrack(const SenderOptions& sender_option) override;
@@ -246,16 +257,17 @@ namespace agora
 #if defined(_WIN32) || (defined(__APPLE__) && TARGET_OS_MAC && !TARGET_OS_IPHONE)
 				virtual int startScreenCaptureByWindowId(view_t windowId, const Rectangle& regionRect, const ScreenCaptureParameters& captureParams) override;
 				virtual int setScreenCaptureContentHint(VIDEO_CONTENT_HINT contentHint) override;
-				virtual int setScreenCaptureScenario(SCREEN_SCENARIO_TYPE screenScenario) override;
 				virtual int updateScreenCaptureRegion(const Rectangle& regionRect) override;
 				virtual int updateScreenCaptureParameters(const ScreenCaptureParameters& captureParams) override;
 #endif
 #if defined(__ANDROID__) || (defined(__APPLE__) && TARGET_OS_IOS) 
 				virtual int startScreenCapture(const ScreenCaptureParameters2& captureParams) override;
 				virtual int updateScreenCapture(const ScreenCaptureParameters2& captureParams) override;
+				virtual int queryScreenCaptureCapability() override;
 #endif
 #if defined(_WIN32) || defined(__APPLE__) || defined(__ANDROID__)
 				virtual int stopScreenCapture() override;
+				virtual int setScreenCaptureScenario(SCREEN_SCENARIO_TYPE screenScenario) override;
 #endif
 				virtual int getCallId(agora::util::AString& callId) override;
 				virtual int rate(const char* callId, int rating, const char* description) override;
@@ -267,16 +279,12 @@ namespace agora
 				virtual int startLocalVideoTranscoder(const LocalTranscoderConfiguration& config) override;
 				virtual int updateLocalTranscoderConfiguration(const LocalTranscoderConfiguration& config) override;
 				virtual int stopLocalVideoTranscoder() override;
-				virtual int startPrimaryCameraCapture(const CameraCapturerConfiguration& config) override;
-				virtual int startSecondaryCameraCapture(const CameraCapturerConfiguration& config) override;
-				virtual int stopPrimaryCameraCapture() override;
-				virtual int stopSecondaryCameraCapture() override;
+				virtual int startCameraCapture(VIDEO_SOURCE_TYPE type, const CameraCapturerConfiguration& config) override;
+				virtual int stopCameraCapture(VIDEO_SOURCE_TYPE type) override;
 				virtual int setCameraDeviceOrientation(VIDEO_SOURCE_TYPE type, VIDEO_ORIENTATION orientation) override;
 				virtual int setScreenCaptureOrientation(VIDEO_SOURCE_TYPE type, VIDEO_ORIENTATION orientation) override;
-				virtual int startPrimaryScreenCapture(const ScreenCaptureConfiguration& config) override;
-				virtual int startSecondaryScreenCapture(const ScreenCaptureConfiguration& config) override;
-				virtual int stopPrimaryScreenCapture() override;
-				virtual int stopSecondaryScreenCapture() override;
+				virtual int startScreenCapture(VIDEO_SOURCE_TYPE type, const ScreenCaptureConfiguration& config) override;
+				virtual int stopScreenCapture(VIDEO_SOURCE_TYPE type) override;
 				virtual CONNECTION_STATE_TYPE getConnectionState() override;
 				virtual bool registerEventHandler(IRtcEngineEventHandler* eventHandler) override;
 				virtual bool unregisterEventHandler(IRtcEngineEventHandler* eventHandler) override;
@@ -320,8 +328,8 @@ namespace agora
 				virtual int configRhythmPlayer(const AgoraRhythmPlayerConfig& config) override;
 				virtual int takeSnapshot(uid_t uid, const char* filePath) override;
 				virtual int enableContentInspect(bool enabled, const media::ContentInspectConfig& config) override;
-				virtual int adjustCustomAudioPublishVolume(int32_t sourceId, int volume) override;
-				virtual int adjustCustomAudioPlayoutVolume(int32_t sourceId, int volume) override;
+				virtual int adjustCustomAudioPublishVolume(track_id_t trackId, int volume) override;
+				virtual int adjustCustomAudioPlayoutVolume(track_id_t trackId, int volume) override;
 				virtual int setCloudProxy(CLOUD_PROXY_TYPE proxyType) override;
 				virtual int setLocalAccessPoint(const LocalAccessPointConfiguration& config) override;
 				virtual int setAdvancedAudioOptions(AdvancedAudioOptions& options, int sourceType = 0) override;
@@ -350,6 +358,8 @@ namespace agora
 				virtual int setRemoteUserSpatialAudioParamsEx(uid_t uid, const agora::SpatialAudioParams& params, const RtcConnection& connection) override;
 				virtual int setRemoteRenderModeEx(uid_t uid, media::base::RENDER_MODE_TYPE renderMode, VIDEO_MIRROR_MODE_TYPE mirrorMode, const RtcConnection& connection) override;
 				virtual int enableLoopbackRecordingEx(const RtcConnection& connection, bool enabled, const char* deviceName = NULL) override;
+				virtual int adjustRecordingSignalVolumeEx(int volume, const RtcConnection& connection) override;
+				virtual int muteRecordingSignalEx(bool mute, const RtcConnection& connection) override;
 				virtual int adjustUserPlaybackSignalVolumeEx(unsigned int uid, int volume, const RtcConnection& connection) override;
 				virtual CONNECTION_STATE_TYPE getConnectionStateEx(const RtcConnection& connection) override;
 				virtual int enableEncryptionEx(const RtcConnection& connection, bool enabled, const EncryptionConfig& config) override;
@@ -377,9 +387,13 @@ namespace agora
 				virtual int enableWirelessAccelerate(bool enabled) override;
 				virtual int getNetworkType() override;
 				virtual int setParameters(const char* parameters) override;
+				virtual int startMediaRenderingTracing() override;
+				virtual int enableInstantMediaRendering() override;
+				virtual uint64_t getNtpWallTimeInMs() override;
+				virtual bool isFeatureAvailableOnDevice(FeatureType type) override;
 				virtual int takeSnapshotEx(const RtcConnection& connection, uid_t uid, const char* filePath) override;
-
-
+				virtual int enableContentInspectEx(bool enabled, const media::ContentInspectConfig& config, const RtcConnection& connection) override;
+				virtual int startMediaRenderingTracingEx(const RtcConnection& connection)  override;
 			};
 		};
 

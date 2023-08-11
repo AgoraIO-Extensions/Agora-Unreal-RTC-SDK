@@ -98,6 +98,7 @@ class IRtcEngineEventHandlerEx : public IRtcEngineEventHandler {
   using IRtcEngineEventHandler::onAudioPublishStateChanged;
   using IRtcEngineEventHandler::onVideoPublishStateChanged;
   using IRtcEngineEventHandler::onSnapshotTaken;
+  using IRtcEngineEventHandler::onVideoRenderingTracingResult;
 
   virtual const char* eventHandlerType() const { return "event_handler_ex"; }
 
@@ -1028,6 +1029,20 @@ class IRtcEngineEventHandlerEx : public IRtcEngineEventHandler {
     (void)height;
     (void)errCode;
   }
+
+  /**
+   * Reports the tracing result of video rendering event of the user.
+   * 
+   * @param connection The RtcConnection object.
+   * @param uid The user ID.
+   * @param currentEvent The current event of the tracing result: #MEDIA_TRACE_EVENT.
+   * @param tracingInfo The tracing result: #VideoRenderingTracingInfo.
+   */
+  virtual void onVideoRenderingTracingResult(const RtcConnection& connection, uid_t uid, MEDIA_TRACE_EVENT currentEvent, VideoRenderingTracingInfo tracingInfo) {
+    (void)uid;
+    (void)currentEvent;
+    (void)tracingInfo;
+  }
 };
 
 class IRtcEngineEx : public IRtcEngine {
@@ -1438,6 +1453,37 @@ public:
      * - < 0: Failure.
      */
     virtual int enableLoopbackRecordingEx(const RtcConnection& connection, bool enabled, const char* deviceName = NULL) = 0;
+    
+    /**
+     * Adjusts the recording volume.
+     *
+     * @param volume The recording volume, which ranges from 0 to 400:
+     * - 0  : Mute the recording volume.
+     * - 100: The original volume.
+     * - 400: (Maximum) Four times the original volume with signal clipping protection.
+     *
+     * @param connection The RtcConnection object.
+     *
+     * @return
+     * - 0  : Success.
+     * - < 0: Failure.
+     */
+    virtual int adjustRecordingSignalVolumeEx(int volume, const RtcConnection& connection) = 0;
+    
+    /**
+     * Mute or resume recording signal volume.
+     *
+     * @param mute Determines whether to mute or resume the recording signal volume.
+     * -  true: Mute the recording signal volume.
+     * - false: (Default) Resume the recording signal volume.
+     *
+     * @param connection The RtcConnection object.
+     *
+     * @return
+     * - 0  : Success.
+     * - < 0: Failure.
+     */
+    virtual int muteRecordingSignalEx(bool mute, const RtcConnection& connection) = 0;
 
     /**
      * Adjust the playback signal volume of a specified remote user.
@@ -1853,6 +1899,36 @@ public:
    * - < 0 : Failure.
    */
     virtual int takeSnapshotEx(const RtcConnection& connection, uid_t uid, const char* filePath)  = 0;
+
+    /** Enables the content inspect.
+    @param enabled Whether to enable content inspect:
+    - `true`: Yes.
+    - `false`: No.
+    @param config The configuration for the content inspection.
+    @param connection The RtcConnection object.
+    @return
+    - 0: Success.
+    - < 0: Failure.
+    */
+    virtual int enableContentInspectEx(bool enabled, const media::ContentInspectConfig &config, const RtcConnection& connection) = 0;
+
+    /**
+     @brief Start tracing media rendering events.
+     @since v4.1.1
+     @discussion
+     - SDK will trace media rendering events when this API is called.
+     - The tracing result can be obtained through callback `IRtcEngineEventHandler(Ex)::onVideoRenderingTracingResult`
+     @param connection The RtcConnection object.
+     @note
+     - By default, SDK will trace media rendering events when `IRtcEngineEx::joinChannelEx` is called.
+     - The start point of event tracing will be reset after leaving channel.
+     @return
+     - 0: Success.
+     - < 0: Failure.
+      - -2(ERR_INVALID_ARGUMENT): The parameter is invalid. Check the channel ID and local uid set by parameter `connection`.
+      - -7(ERR_NOT_INITIALIZED): The SDK is not initialized. Initialize the `IRtcEngine` instance before calling this method.
+     */
+    virtual int startMediaRenderingTracingEx(const RtcConnection& connection) = 0;
 };
 
 }  // namespace rtc

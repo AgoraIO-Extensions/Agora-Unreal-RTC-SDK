@@ -156,3 +156,29 @@ void UIAudioEncodedFrameObserver::OnMixedAudioEncodedFrame(const uint8_t* frameB
 		OnMixedAudioEncoded.Broadcast(buffer, length, encodedAudioFrameInfo);
 	});
 }
+
+void UIAudioEncodedFrameObserver::OnPublishAudioEncodedFrame(const uint8_t* frameBuffer, int length, const agora::rtc::EncodedAudioFrameInfo& audioEncodedFrameInfo)
+{
+	AsyncTask(ENamedThreads::GameThread, [=]()
+		{
+			FEncodedAudioFrameInfo encodedAudioFrameInfo;
+			encodedAudioFrameInfo.codec = (EAUDIO_CODEC_TYPE)audioEncodedFrameInfo.codec;
+			encodedAudioFrameInfo.sampleRateHz = audioEncodedFrameInfo.sampleRateHz;
+			encodedAudioFrameInfo.samplesPerChannel = audioEncodedFrameInfo.samplesPerChannel;
+			encodedAudioFrameInfo.numberOfChannels = audioEncodedFrameInfo.numberOfChannels;
+			FEncodedAudioFrameAdvancedSettings advancedSettings;
+			advancedSettings.sendEvenIfEmpty = audioEncodedFrameInfo.advancedSettings.sendEvenIfEmpty;
+			advancedSettings.speech = audioEncodedFrameInfo.advancedSettings.speech;
+			encodedAudioFrameInfo.advancedSettings = advancedSettings;
+			encodedAudioFrameInfo.captureTimeMs = audioEncodedFrameInfo.captureTimeMs;
+			unsigned char* tempdata = new unsigned char[length];
+			FMemory::Memcpy(tempdata, frameBuffer, length);
+			TArray<int64> buffer;
+			for (int i = 0; i < length; i++)
+			{
+				buffer.Add(tempdata[i]);
+			}
+			delete[] tempdata;
+			OnPublishAudioEncoded.Broadcast(buffer, length, encodedAudioFrameInfo);
+		});
+}

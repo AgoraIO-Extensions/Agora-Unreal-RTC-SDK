@@ -80,10 +80,13 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnReceiveVideoPacket, const FPacket
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnRecordAudioEncodedFrame, const TArray<int64>, frameBuffer, int, length, const FEncodedAudioFrameInfo&, audioEncodedFrameInfo);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnPlaybackAudioEncodedFrame, const TArray<int64>, frameBuffer, int, length, const FEncodedAudioFrameInfo&, audioEncodedFrameInfo);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnMixedAudioEncodedFrame, const TArray<int64>, frameBuffer, int, length, const FEncodedAudioFrameInfo&, audioEncodedFrameInfo);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnPublishAudioEncodedFrame, const TArray<int64>, frameBuffer, int, length, const FEncodedAudioFrameInfo&, audioEncodedFrameInfo);
 
+
+class IPacketObserverClassWrapper : public agora::rtc::IPacketObserver{};
 
 UCLASS(Blueprintable)
-class AGORAPLUGIN_API UIPacketObserver : public UObject, public agora::rtc::IPacketObserver
+class AGORAPLUGIN_API UIPacketObserver : public UObject, public IPacketObserverClassWrapper
 {
 	GENERATED_BODY()
 public:
@@ -107,18 +110,22 @@ public:
 };
 
 
+class IAudioEncodedFrameObserverClassWrapper : public agora::rtc::IAudioEncodedFrameObserver {};
+
 UCLASS(Blueprintable)
-class AGORAPLUGIN_API UIAudioEncodedFrameObserver : public UObject, public agora::rtc::IAudioEncodedFrameObserver
+class AGORAPLUGIN_API UIAudioEncodedFrameObserver : public UObject, public IAudioEncodedFrameObserverClassWrapper
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(BlueprintAssignable, Category = "Agora|Event")
-	FOnRecordAudioEncodedFrame OnRecordAudioEncoded;
+		FOnRecordAudioEncodedFrame OnRecordAudioEncoded;
 	UPROPERTY(BlueprintAssignable, Category = "Agora|Event")
-	FOnPlaybackAudioEncodedFrame OnPlaybackAudioEncoded;
+		FOnPlaybackAudioEncodedFrame OnPlaybackAudioEncoded;
 	UPROPERTY(BlueprintAssignable, Category = "Agora|Event")
-	FOnMixedAudioEncodedFrame OnMixedAudioEncoded;
+		FOnMixedAudioEncodedFrame OnMixedAudioEncoded;
+	UPROPERTY(BlueprintAssignable, Category = "Agora|Event")
+		FOnPublishAudioEncodedFrame OnPublishAudioEncoded;
 
 	void OnRecordAudioEncodedFrame(const uint8_t* frameBuffer, int length, const agora::rtc::EncodedAudioFrameInfo& audioEncodedFrameInfo) override;
 
@@ -126,5 +133,6 @@ public:
 
 	void OnMixedAudioEncodedFrame(const uint8_t* frameBuffer, int length, const agora::rtc::EncodedAudioFrameInfo& audioEncodedFrameInfo) override;
 
+	void OnPublishAudioEncodedFrame(const uint8_t* frameBuffer, int length, const agora::rtc::EncodedAudioFrameInfo& audioEncodedFrameInfo) override;
 };
 

@@ -103,7 +103,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Agora|IMediaPlayer")
 	int OpenWithCustomSource(int64 startPos, UIMediaPlayerCustomDataProvider* provider);
 	UFUNCTION(BlueprintCallable, Category = "Agora|IMediaPlayer")
-	int OpenWithMediaSource(FAgoraMediaSource& source);
+	int OpenWithMediaSource(const FAgoraMediaSource& source);
 	UFUNCTION(BlueprintCallable, Category = "Agora|IMediaPlayer")
 	int Play();
 	UFUNCTION(BlueprintCallable, Category = "Agora|IMediaPlayer")
@@ -130,6 +130,8 @@ public:
 	int SetPlaybackSpeed(int speed);
 	UFUNCTION(BlueprintCallable, Category = "Agora|IMediaPlayer")
 	int SelectAudioTrack(int index);
+	UFUNCTION(BlueprintCallable, Category = "Agora|IMediaPlayer")
+	int SelectMultiAudioTrack(int playoutTrackIndex, int publishTrackIndex);
 	UFUNCTION(BlueprintCallable, Category = "Agora|IMediaPlayer")
 	int SetPlayerOption(FString key, FString value);
 	UFUNCTION(BlueprintCallable, Category = "Agora|IMediaPlayer")
@@ -201,9 +203,11 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Agora|IMediaPlayer")
 	int UnloadSrc(FString src);
 	UFUNCTION(BlueprintCallable, Category = "Agora|IMediaPlayer")
-	int SetSpatialAudioParams(FSpatialAudioParams& params);
+	int SetSpatialAudioParams(const FSpatialAudioParams& params);
 	UFUNCTION(BlueprintCallable, Category = "Agora|IMediaPlayer")
 	int SetSoundPositionParams(float pan, float gain);
+	UFUNCTION(BlueprintCallable, Category = "Agora|IMediaPlayer")
+	int SetAudioPlaybackDelay(int delay_ms);
 	void SetMediaPlayer(agora::agora_refptr<agora::rtc::IMediaPlayer> mediaPlayer);
 	agora::agora_refptr<agora::rtc::IMediaPlayer> GetMediaPlayer();
 private:

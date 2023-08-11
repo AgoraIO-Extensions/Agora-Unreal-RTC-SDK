@@ -9,7 +9,7 @@
 #include "AgoraBluePrintPlugin/AgoraIRtcEngineEventHandler.h"
 #include "AgoraIRtcEngineEventHandlerEx.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FEventHandlerTypeEx);
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnJoinChannelSuccessEx, const FRtcConnection&, connection, int, elapsed);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnRejoinChannelSuccessEx, const FRtcConnection&, connection, int, elapsed);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_FiveParams(FOnAudioQualityEx, const FRtcConnection&, connection, int64, remoteUid, int, quality, int, delay, int, lost);
@@ -22,7 +22,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnFirstLocalVideoFrameEx, const F
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnFirstLocalVideoFramePublishedEx, const FRtcConnection&, connection, int, elapsed);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnVideoSourceFrameSizeChangedEx, const FRtcConnection&, connection, EVIDEO_SOURCE_TYPE, sourceType, int, width, int, height);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_FiveParams(FOnFirstRemoteVideoDecodedEx, const FRtcConnection&, connection, int64, remoteUid, int, width, int, height, int, elapsed);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_SixParams(FOnVideoSizeChangedEx, const FRtcConnection&, connection,EVIDEO_SOURCE_TYPE, sourceType, int64, uid, int, width, int, height, int, rotation);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_SixParams(FOnVideoSizeChangedEx, const FRtcConnection&, connection, EVIDEO_SOURCE_TYPE, sourceType, int64, uid, int, width, int, height, int, rotation);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnLocalVideoStateChangedEx, const FRtcConnection&, connection, ELOCAL_VIDEO_STREAM_STATE, state, ELOCAL_VIDEO_STREAM_ERROR, errorCode);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_FiveParams(FOnRemoteVideoStateChangedEx, const FRtcConnection&, connection, int64, remoteUid, EREMOTE_VIDEO_STATE, state, EREMOTE_VIDEO_STATE_REASON, reason, int, elapsed);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_FiveParams(FOnFirstRemoteVideoFrameEx, const FRtcConnection&, connection, int64, remoteUid, int, width, int, height, int, elapsed);
@@ -50,188 +50,137 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnFirstRemoteAudioDecodedEx, con
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnLocalAudioStateChangedEx, const FRtcConnection&, connection, ELOCAL_AUDIO_STREAM_STATE, state, ELOCAL_AUDIO_STREAM_ERROR, error);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_FiveParams(FOnRemoteAudioStateChangedEx, const FRtcConnection&, connection, int64, remoteUid, EREMOTE_AUDIO_STATE, state, EREMOTE_AUDIO_STATE_REASON, reason, int, elapsed);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnActiveSpeakerEx, const FRtcConnection&, connection, int64, uid);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnClientRoleChangedEx, const FRtcConnection&, connection, ECLIENT_ROLE_TYPE, oldRole, ECLIENT_ROLE_TYPE, newRole,const FClientRoleOptions&,newRoleOptions);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnClientRoleChangedEx, const FRtcConnection&, connection, ECLIENT_ROLE_TYPE, oldRole, ECLIENT_ROLE_TYPE, newRole, const FClientRoleOptions&, newRoleOptions);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnClientRoleChangeFailedEx, const FRtcConnection&, connection, ECLIENT_ROLE_CHANGE_FAILED_REASON, reason, ECLIENT_ROLE_TYPE, currentRole);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_FiveParams(FOnRemoteAudioTransportStatsEx, const FRtcConnection&, connection, int64, remoteUid, int, delay, int, lost, int, rxKBitRate);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_FiveParams(FOnRemoteVideoTransportStatsEx, const FRtcConnection&, connection, int64, remoteUid, int, delay, int, lost, int, rxKBitRate);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnConnectionStateChangedEx, const FRtcConnection&, connection, ECONNECTION_STATE_TYPE, state, ECONNECTION_CHANGED_REASON_TYPE, reason);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnWlAccMessageEx, const FRtcConnection&, connection, EWLACC_MESSAGE_REASON, reason, EWLACC_SUGGEST_ACTION, action, const FString, wlAccMsg);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnWlAccStatsEx, const FRtcConnection&, connection, FWlAccStats, currentStats, FWlAccStats, averageStats);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNetworkTypeChangedEx, const FRtcConnection&, connection, ENETWORK_TYPE, type);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNetworkTypeChangedEx, const FRtcConnection&, connection, FENUMWRAP_NETWORK_TYPE, type);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnEncryptionErrorEx, const FRtcConnection&, connection, EENCRYPTION_ERROR_TYPE, errorType);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnUploadLogResultEx, const FRtcConnection&, connection, const FString, requestId, bool, success, EUPLOAD_ERROR_REASON, reason);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnUserAccountUpdatedEx, const FRtcConnection&, connection, int64, remoteUid, const FString, userAccount);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_SixParams(FOnSnapshotTakenEx, const FRtcConnection&, connection, int64, uid, const FString, filePath, int, width, int, height, int, errCode);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnVideoRenderingTracingResultEx, const FRtcConnection&, connection, int64, uid, EMEDIA_TRACE_EVENT, currentEvent, FVideoRenderingTracingInfo, tracingInfo);
 
+class IRtcEngineEventHandlerExClassWrapper : public agora::rtc::IRtcEngineEventHandlerEx {};
 
 UCLASS(Blueprintable)
-class AGORAPLUGIN_API UIRtcEngineEventHandlerEx : public UIRtcEngineEventHandler
+class AGORAPLUGIN_API UIRtcEngineEventHandlerEx : public UObject, public IRtcEngineEventHandlerExClassWrapper
 {
 
 	GENERATED_BODY()
-	using UIRtcEngineEventHandler::eventHandlerType;
-	using UIRtcEngineEventHandler::onJoinChannelSuccess;
-	using UIRtcEngineEventHandler::onRejoinChannelSuccess;
-	using UIRtcEngineEventHandler::onAudioQuality;
-	using UIRtcEngineEventHandler::onAudioVolumeIndication;
-	using UIRtcEngineEventHandler::onLeaveChannel;
-	using UIRtcEngineEventHandler::onRtcStats;
-	using UIRtcEngineEventHandler::onNetworkQuality;
-	using UIRtcEngineEventHandler::onIntraRequestReceived;
-	using UIRtcEngineEventHandler::onFirstLocalVideoFrame;
-	using UIRtcEngineEventHandler::onFirstLocalVideoFramePublished;
-	using UIRtcEngineEventHandler::onFirstRemoteVideoDecoded;
-	using UIRtcEngineEventHandler::onVideoSizeChanged;
-	using UIRtcEngineEventHandler::onLocalVideoStateChanged;
-	using UIRtcEngineEventHandler::onRemoteVideoStateChanged;
-	using UIRtcEngineEventHandler::onFirstRemoteVideoFrame;
-	using UIRtcEngineEventHandler::onUserJoined;
-	using UIRtcEngineEventHandler::onUserOffline;
-	using UIRtcEngineEventHandler::onUserMuteAudio;
-	using UIRtcEngineEventHandler::onUserMuteVideo;
-	using UIRtcEngineEventHandler::onUserEnableVideo;
-	using UIRtcEngineEventHandler::onUserEnableLocalVideo;
-	using UIRtcEngineEventHandler::onUserStateChanged;
-	using UIRtcEngineEventHandler::onLocalAudioStats;
-	using UIRtcEngineEventHandler::onRemoteAudioStats;
-	using UIRtcEngineEventHandler::onLocalVideoStats;
-	using UIRtcEngineEventHandler::onRemoteVideoStats;
-	using UIRtcEngineEventHandler::onConnectionLost;
-	using UIRtcEngineEventHandler::onConnectionInterrupted;
-	using UIRtcEngineEventHandler::onConnectionBanned;
-	using UIRtcEngineEventHandler::onStreamMessage;
-	using UIRtcEngineEventHandler::onStreamMessageError;
-	using UIRtcEngineEventHandler::onRequestToken;
-	using UIRtcEngineEventHandler::onTokenPrivilegeWillExpire;
-	using UIRtcEngineEventHandler::onFirstLocalAudioFramePublished;
-	using UIRtcEngineEventHandler::onFirstRemoteAudioFrame;
-	using UIRtcEngineEventHandler::onFirstRemoteAudioDecoded;
-	using UIRtcEngineEventHandler::onLocalAudioStateChanged;
-	using UIRtcEngineEventHandler::onRemoteAudioStateChanged;
-	using UIRtcEngineEventHandler::onActiveSpeaker;
-	using UIRtcEngineEventHandler::onClientRoleChanged;
-	using UIRtcEngineEventHandler::onClientRoleChangeFailed;
-	using UIRtcEngineEventHandler::onRemoteAudioTransportStats;
-	using UIRtcEngineEventHandler::onRemoteVideoTransportStats;
-	using UIRtcEngineEventHandler::onConnectionStateChanged;
-	using UIRtcEngineEventHandler::onWlAccMessage;
-	using UIRtcEngineEventHandler::onWlAccStats;
-	using UIRtcEngineEventHandler::onNetworkTypeChanged;
-	using UIRtcEngineEventHandler::onEncryptionError;
-	using UIRtcEngineEventHandler::onUploadLogResult;
-	using UIRtcEngineEventHandler::onUserAccountUpdated;
-	using UIRtcEngineEventHandler::onAudioSubscribeStateChanged;
-	using UIRtcEngineEventHandler::onVideoSubscribeStateChanged;
-	using UIRtcEngineEventHandler::onAudioPublishStateChanged;
-	using UIRtcEngineEventHandler::onVideoPublishStateChanged;
-	using UIRtcEngineEventHandler::onSnapshotTaken;
+
 public:
-	const char* eventHandlerType() const { return "event_handler_ex"; }
+	using IRtcEngineEventHandlerEx::eventHandlerType;
 
 	UPROPERTY(BlueprintAssignable, Category = "Agora|Event")
-	FOnJoinChannelSuccessEx OnJoinChannelSuccessEx;
+		FOnJoinChannelSuccessEx OnJoinChannelSuccessEx;
 	UPROPERTY(BlueprintAssignable, Category = "Agora|Event")
-	FOnRejoinChannelSuccessEx OnRejoinChannelSuccessEx;
+		FOnRejoinChannelSuccessEx OnRejoinChannelSuccessEx;
 	UPROPERTY(BlueprintAssignable, Category = "Agora|Event")
-	FOnAudioQualityEx OnAudioQualityEx;
+		FOnAudioQualityEx OnAudioQualityEx;
 	UPROPERTY(BlueprintAssignable, Category = "Agora|Event")
-	FOnAudioVolumeIndicationEx OnAudioVolumeIndicationEx;
+		FOnAudioVolumeIndicationEx OnAudioVolumeIndicationEx;
 	UPROPERTY(BlueprintAssignable, Category = "Agora|Event")
-	FOnLeaveChannelEx OnLeaveChannelEx;
+		FOnLeaveChannelEx OnLeaveChannelEx;
 	UPROPERTY(BlueprintAssignable, Category = "Agora|Event")
-	FOnRtcStatsEx OnRtcStatsEx;
+		FOnRtcStatsEx OnRtcStatsEx;
 	UPROPERTY(BlueprintAssignable, Category = "Agora|Event")
-	FOnNetworkQualityEx OnNetworkQualityEx;
+		FOnNetworkQualityEx OnNetworkQualityEx;
 	UPROPERTY(BlueprintAssignable, Category = "Agora|Event")
-	FOnIntraRequestReceivedEx OnIntraRequestReceivedEx;
+		FOnIntraRequestReceivedEx OnIntraRequestReceivedEx;
 	UPROPERTY(BlueprintAssignable, Category = "Agora|Event")
-	FOnFirstLocalVideoFrameEx OnFirstLocalVideoFrameEx;
+		FOnFirstLocalVideoFrameEx OnFirstLocalVideoFrameEx;
 	UPROPERTY(BlueprintAssignable, Category = "Agora|Event")
-	FOnFirstLocalVideoFramePublishedEx OnFirstLocalVideoFramePublishedEx;
+		FOnFirstLocalVideoFramePublishedEx OnFirstLocalVideoFramePublishedEx;
 	UPROPERTY(BlueprintAssignable, Category = "Agora|Event")
-	FOnVideoSourceFrameSizeChangedEx OnVideoSourceFrameSizeChangedEx;
+		FOnVideoSourceFrameSizeChangedEx OnVideoSourceFrameSizeChangedEx;
 	UPROPERTY(BlueprintAssignable, Category = "Agora|Event")
-	FOnFirstRemoteVideoDecodedEx OnFirstRemoteVideoDecodedEx;
+		FOnFirstRemoteVideoDecodedEx OnFirstRemoteVideoDecodedEx;
 	UPROPERTY(BlueprintAssignable, Category = "Agora|Event")
-	FOnVideoSizeChangedEx OnVideoSizeChangedEx;
+		FOnVideoSizeChangedEx OnVideoSizeChangedEx;
 	UPROPERTY(BlueprintAssignable, Category = "Agora|Event")
-	FOnLocalVideoStateChangedEx OnLocalVideoStateChangedEx;
+		FOnLocalVideoStateChangedEx OnLocalVideoStateChangedEx;
 	UPROPERTY(BlueprintAssignable, Category = "Agora|Event")
-	FOnRemoteVideoStateChangedEx OnRemoteVideoStateChangedEx;
+		FOnRemoteVideoStateChangedEx OnRemoteVideoStateChangedEx;
 	UPROPERTY(BlueprintAssignable, Category = "Agora|Event")
-	FOnFirstRemoteVideoFrameEx OnFirstRemoteVideoFrameEx;
+		FOnFirstRemoteVideoFrameEx OnFirstRemoteVideoFrameEx;
 	UPROPERTY(BlueprintAssignable, Category = "Agora|Event")
-	FOnUserJoinedEx OnUserJoinedEx;
+		FOnUserJoinedEx OnUserJoinedEx;
 	UPROPERTY(BlueprintAssignable, Category = "Agora|Event")
-	FOnUserOfflineEx OnUserOfflineEx;
+		FOnUserOfflineEx OnUserOfflineEx;
 	UPROPERTY(BlueprintAssignable, Category = "Agora|Event")
-	FOnUserMuteAudioEx OnUserMuteAudioEx;
+		FOnUserMuteAudioEx OnUserMuteAudioEx;
 	UPROPERTY(BlueprintAssignable, Category = "Agora|Event")
-	FOnUserMuteVideoEx OnUserMuteVideoEx;
+		FOnUserMuteVideoEx OnUserMuteVideoEx;
 	UPROPERTY(BlueprintAssignable, Category = "Agora|Event")
-	FOnUserEnableVideoEx OnUserEnableVideoEx;
+		FOnUserEnableVideoEx OnUserEnableVideoEx;
 	UPROPERTY(BlueprintAssignable, Category = "Agora|Event")
-	FOnUserEnableLocalVideoEx OnUserEnableLocalVideoEx;
+		FOnUserEnableLocalVideoEx OnUserEnableLocalVideoEx;
 	UPROPERTY(BlueprintAssignable, Category = "Agora|Event")
-	FOnUserStateChangedEx OnUserStateChangedEx;
+		FOnUserStateChangedEx OnUserStateChangedEx;
 	UPROPERTY(BlueprintAssignable, Category = "Agora|Event")
-	FOnLocalAudioStatsEx OnLocalAudioStatsEx;
+		FOnLocalAudioStatsEx OnLocalAudioStatsEx;
 	UPROPERTY(BlueprintAssignable, Category = "Agora|Event")
-	FOnRemoteAudioStatsEx OnRemoteAudioStatsEx;
+		FOnRemoteAudioStatsEx OnRemoteAudioStatsEx;
 	UPROPERTY(BlueprintAssignable, Category = "Agora|Event")
-	FOnLocalVideoStatsEx OnLocalVideoStatsEx;
+		FOnLocalVideoStatsEx OnLocalVideoStatsEx;
 	UPROPERTY(BlueprintAssignable, Category = "Agora|Event")
-	FOnRemoteVideoStatsEx OnRemoteVideoStatsEx;
+		FOnRemoteVideoStatsEx OnRemoteVideoStatsEx;
 	UPROPERTY(BlueprintAssignable, Category = "Agora|Event")
-	FOnConnectionLostEx OnConnectionLostEx;
+		FOnConnectionLostEx OnConnectionLostEx;
 	UPROPERTY(BlueprintAssignable, Category = "Agora|Event")
-	FOnConnectionInterruptedEx OnConnectionInterruptedEx;
+		FOnConnectionInterruptedEx OnConnectionInterruptedEx;
 	UPROPERTY(BlueprintAssignable, Category = "Agora|Event")
-	FOnConnectionBannedEx OnConnectionBannedEx;
+		FOnConnectionBannedEx OnConnectionBannedEx;
 	UPROPERTY(BlueprintAssignable, Category = "Agora|Event")
-	FOnStreamMessageEx OnStreamMessageEx;
+		FOnStreamMessageEx OnStreamMessageEx;
 	UPROPERTY(BlueprintAssignable, Category = "Agora|Event")
-	FOnStreamMessageErrorEx OnStreamMessageErrorEx;
+		FOnStreamMessageErrorEx OnStreamMessageErrorEx;
 	UPROPERTY(BlueprintAssignable, Category = "Agora|Event")
-	FOnRequestTokenEx OnRequestTokenEx;
+		FOnRequestTokenEx OnRequestTokenEx;
 	UPROPERTY(BlueprintAssignable, Category = "Agora|Event")
-	FOnTokenPrivilegeWillExpireEx OnTokenPrivilegeWillExpireEx;
+		FOnTokenPrivilegeWillExpireEx OnTokenPrivilegeWillExpireEx;
 	UPROPERTY(BlueprintAssignable, Category = "Agora|Event")
-	FOnFirstLocalAudioFramePublishedEx OnFirstLocalAudioFramePublishedEx;
+		FOnFirstLocalAudioFramePublishedEx OnFirstLocalAudioFramePublishedEx;
 	UPROPERTY(BlueprintAssignable, Category = "Agora|Event")
-	FOnFirstRemoteAudioFrameEx OnFirstRemoteAudioFrameEx;
+		FOnFirstRemoteAudioFrameEx OnFirstRemoteAudioFrameEx;
 	UPROPERTY(BlueprintAssignable, Category = "Agora|Event")
-	FOnFirstRemoteAudioDecodedEx OnFirstRemoteAudioDecodedEx;
+		FOnFirstRemoteAudioDecodedEx OnFirstRemoteAudioDecodedEx;
 	UPROPERTY(BlueprintAssignable, Category = "Agora|Event")
-	FOnLocalAudioStateChangedEx OnLocalAudioStateChangedEx;
+		FOnLocalAudioStateChangedEx OnLocalAudioStateChangedEx;
 	UPROPERTY(BlueprintAssignable, Category = "Agora|Event")
-	FOnRemoteAudioStateChangedEx OnRemoteAudioStateChangedEx;
+		FOnRemoteAudioStateChangedEx OnRemoteAudioStateChangedEx;
 	UPROPERTY(BlueprintAssignable, Category = "Agora|Event")
-	FOnActiveSpeakerEx OnActiveSpeakerEx;
+		FOnActiveSpeakerEx OnActiveSpeakerEx;
 	UPROPERTY(BlueprintAssignable, Category = "Agora|Event")
-	FOnClientRoleChangedEx OnClientRoleChangedEx;
+		FOnClientRoleChangedEx OnClientRoleChangedEx;
 	UPROPERTY(BlueprintAssignable, Category = "Agora|Event")
-	FOnClientRoleChangeFailedEx OnClientRoleChangeFailedEx;
+		FOnClientRoleChangeFailedEx OnClientRoleChangeFailedEx;
 	UPROPERTY(BlueprintAssignable, Category = "Agora|Event")
-	FOnRemoteAudioTransportStatsEx OnRemoteAudioTransportStatsEx;
+		FOnRemoteAudioTransportStatsEx OnRemoteAudioTransportStatsEx;
 	UPROPERTY(BlueprintAssignable, Category = "Agora|Event")
-	FOnRemoteVideoTransportStatsEx OnRemoteVideoTransportStatsEx;
+		FOnRemoteVideoTransportStatsEx OnRemoteVideoTransportStatsEx;
 	UPROPERTY(BlueprintAssignable, Category = "Agora|Event")
-	FOnConnectionStateChangedEx OnConnectionStateChangedEx;
+		FOnConnectionStateChangedEx OnConnectionStateChangedEx;
 	UPROPERTY(BlueprintAssignable, Category = "Agora|Event")
-	FOnWlAccMessageEx OnWlAccMessageEx;
+		FOnWlAccMessageEx OnWlAccMessageEx;
 	UPROPERTY(BlueprintAssignable, Category = "Agora|Event")
-	FOnWlAccStatsEx OnWlAccStatsEx;
+		FOnWlAccStatsEx OnWlAccStatsEx;
 	UPROPERTY(BlueprintAssignable, Category = "Agora|Event")
-	FOnNetworkTypeChangedEx OnNetworkTypeChangedEx;
+		FOnNetworkTypeChangedEx OnNetworkTypeChangedEx;
 	UPROPERTY(BlueprintAssignable, Category = "Agora|Event")
-	FOnEncryptionErrorEx OnEncryptionErrorEx;
+		FOnEncryptionErrorEx OnEncryptionErrorEx;
 	UPROPERTY(BlueprintAssignable, Category = "Agora|Event")
-	FOnUploadLogResultEx OnUploadLogResultEx;
+		FOnUploadLogResultEx OnUploadLogResultEx;
 	UPROPERTY(BlueprintAssignable, Category = "Agora|Event")
-	FOnUserAccountUpdatedEx OnUserAccountUpdatedEx;
+		FOnUserAccountUpdatedEx OnUserAccountUpdatedEx;
 	UPROPERTY(BlueprintAssignable, Category = "Agora|Event")
-	FOnSnapshotTakenEx OnSnapshotTakenEx;
+		FOnSnapshotTakenEx OnSnapshotTakenEx;
+	UPROPERTY(BlueprintAssignable, Category = "Agora|Event")
+		FOnVideoRenderingTracingResultEx OnVideoRenderingTracingResultEx;
 
 	void onJoinChannelSuccess(const agora::rtc::RtcConnection& connection, int elapsed) override;
 
@@ -311,7 +260,7 @@ public:
 
 	void onActiveSpeaker(const agora::rtc::RtcConnection& connection, agora::rtc::uid_t uid) override;
 
-	void onClientRoleChanged(const agora::rtc::RtcConnection& connection, agora::rtc::CLIENT_ROLE_TYPE oldRole, agora::rtc::CLIENT_ROLE_TYPE newRole, const agora::rtc::ClientRoleOptions & newRoleOptions) override;
+	void onClientRoleChanged(const agora::rtc::RtcConnection& connection, agora::rtc::CLIENT_ROLE_TYPE oldRole, agora::rtc::CLIENT_ROLE_TYPE newRole, const agora::rtc::ClientRoleOptions& newRoleOptions) override;
 
 	void onClientRoleChangeFailed(const agora::rtc::RtcConnection& connection, agora::rtc::CLIENT_ROLE_CHANGE_FAILED_REASON reason, agora::rtc::CLIENT_ROLE_TYPE currentRole) override;
 
@@ -335,5 +284,5 @@ public:
 
 	void onSnapshotTaken(const agora::rtc::RtcConnection& connection, agora::rtc::uid_t uid, const char* filePath, int width, int height, int errCode) override;
 
-
+	void onVideoRenderingTracingResult(const agora::rtc::RtcConnection& connection, agora::rtc::uid_t uid, agora::rtc::MEDIA_TRACE_EVENT currentEvent, agora::rtc::VideoRenderingTracingInfo tracingInfo) override;
 };
