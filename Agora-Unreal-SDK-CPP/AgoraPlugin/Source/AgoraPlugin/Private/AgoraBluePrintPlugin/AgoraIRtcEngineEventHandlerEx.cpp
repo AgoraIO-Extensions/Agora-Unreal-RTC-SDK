@@ -9,8 +9,16 @@ void UIRtcEngineEventHandlerEx::onJoinChannelSuccess(const agora::rtc::RtcConnec
 	FRtcConnection rtcConnection;
 	rtcConnection.channelId=FString(connection.channelId);
 	rtcConnection.localUid=connection.localUid;
+	
+	TWeakObjectPtr<UIRtcEngineEventHandlerEx> SelfWeakPtr(this);
+	if (!SelfWeakPtr.IsValid())
+		return;
+	
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
+		if (!SelfWeakPtr.IsValid())
+			return;
+		
 		OnJoinChannelSuccessEx.Broadcast(rtcConnection, elapsed);
 	});
 }
@@ -19,8 +27,16 @@ void UIRtcEngineEventHandlerEx::onRejoinChannelSuccess(const agora::rtc::RtcConn
 	FRtcConnection rtcConnection;
 	rtcConnection.channelId=FString(connection.channelId);
 	rtcConnection.localUid=connection.localUid;
+	
+	TWeakObjectPtr<UIRtcEngineEventHandlerEx> SelfWeakPtr(this);
+	if (!SelfWeakPtr.IsValid())
+		return;
+	
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
+		if (!SelfWeakPtr.IsValid())
+			return;
+		
 		OnRejoinChannelSuccessEx.Broadcast(rtcConnection, elapsed);
 	});
 }
@@ -29,8 +45,16 @@ void UIRtcEngineEventHandlerEx::onAudioQuality(const agora::rtc::RtcConnection& 
 	FRtcConnection rtcConnection;
 	rtcConnection.channelId=FString(connection.channelId);
 	rtcConnection.localUid=connection.localUid;
+	
+	TWeakObjectPtr<UIRtcEngineEventHandlerEx> SelfWeakPtr(this);
+	if (!SelfWeakPtr.IsValid())
+		return;
+	
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
+		if (!SelfWeakPtr.IsValid())
+			return;
+		
 		OnAudioQualityEx.Broadcast(rtcConnection, (int64)remoteUid, quality, delay, lost);
 	});
 }
@@ -49,8 +73,16 @@ void UIRtcEngineEventHandlerEx::onAudioVolumeIndication(const agora::rtc::RtcCon
 		info.volume = speakers[i].volume;
 		audioVolumeInfo.Add(info);
 	}
+	
+	TWeakObjectPtr<UIRtcEngineEventHandlerEx> SelfWeakPtr(this);
+	if (!SelfWeakPtr.IsValid())
+		return;
+	
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
+		if (!SelfWeakPtr.IsValid())
+			return;
+		
 		OnAudioVolumeIndicationEx.Broadcast(rtcConnection, audioVolumeInfo, totalVolume);
 	});
 }
@@ -94,8 +126,16 @@ void UIRtcEngineEventHandlerEx::onLeaveChannel(const agora::rtc::RtcConnection& 
 	rtcStats.firstVideoKeyFrameRenderedDurationAfterUnmute=stats.firstVideoKeyFrameRenderedDurationAfterUnmute;
 	rtcStats.txPacketLossRate=stats.txPacketLossRate;
 	rtcStats.rxPacketLossRate=stats.rxPacketLossRate;
+	
+	TWeakObjectPtr<UIRtcEngineEventHandlerEx> SelfWeakPtr(this);
+	if (!SelfWeakPtr.IsValid())
+		return;
+	
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
+		if (!SelfWeakPtr.IsValid())
+			return;
+		
 		OnLeaveChannelEx.Broadcast(rtcConnection, rtcStats);
 	});
 }
@@ -138,8 +178,16 @@ void UIRtcEngineEventHandlerEx::onRtcStats(const agora::rtc::RtcConnection& conn
 	rtcStats.firstVideoKeyFrameRenderedDurationAfterUnmute=stats.firstVideoKeyFrameRenderedDurationAfterUnmute;
 	rtcStats.txPacketLossRate=stats.txPacketLossRate;
 	rtcStats.rxPacketLossRate=stats.rxPacketLossRate;
+	
+	TWeakObjectPtr<UIRtcEngineEventHandlerEx> SelfWeakPtr(this);
+	if (!SelfWeakPtr.IsValid())
+		return;
+	
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
+		if (!SelfWeakPtr.IsValid())
+			return;
+		
 		OnRtcStatsEx.Broadcast(rtcConnection, rtcStats);
 	});
 }
@@ -148,8 +196,16 @@ void UIRtcEngineEventHandlerEx::onNetworkQuality(const agora::rtc::RtcConnection
 	FRtcConnection rtcConnection;
 	rtcConnection.channelId=FString(connection.channelId);
 	rtcConnection.localUid=connection.localUid;
+	
+	TWeakObjectPtr<UIRtcEngineEventHandlerEx> SelfWeakPtr(this);
+	if (!SelfWeakPtr.IsValid())
+		return;
+	
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
+		if (!SelfWeakPtr.IsValid())
+			return;
+		
 		OnNetworkQualityEx.Broadcast(rtcConnection, (int64)remoteUid, txQuality, rxQuality);
 	});
 }
@@ -159,8 +215,16 @@ void UIRtcEngineEventHandlerEx::onIntraRequestReceived(const agora::rtc::RtcConn
 	FRtcConnection rtcConnection;
 	rtcConnection.channelId=FString(connection.channelId);
 	rtcConnection.localUid=connection.localUid;
+	
+	TWeakObjectPtr<UIRtcEngineEventHandlerEx> SelfWeakPtr(this);
+	if (!SelfWeakPtr.IsValid())
+		return;
+	
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
+		if (!SelfWeakPtr.IsValid())
+			return;
+		
 		OnIntraRequestReceivedEx.Broadcast(rtcConnection);
 	});
 }
@@ -170,8 +234,16 @@ void UIRtcEngineEventHandlerEx::onFirstLocalVideoFramePublished(const agora::rtc
 	FRtcConnection rtcConnection;
 	rtcConnection.channelId=FString(connection.channelId);
 	rtcConnection.localUid=connection.localUid;
+	
+	TWeakObjectPtr<UIRtcEngineEventHandlerEx> SelfWeakPtr(this);
+	if (!SelfWeakPtr.IsValid())
+		return;
+	
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
+		if (!SelfWeakPtr.IsValid())
+			return;
+		
 		OnFirstLocalVideoFramePublishedEx.Broadcast(rtcConnection, elapsed);
 	});
 }
@@ -180,8 +252,16 @@ void UIRtcEngineEventHandlerEx::onFirstRemoteVideoDecoded(const agora::rtc::RtcC
 	FRtcConnection rtcConnection;
 	rtcConnection.channelId=FString(connection.channelId);
 	rtcConnection.localUid=connection.localUid;
+	
+	TWeakObjectPtr<UIRtcEngineEventHandlerEx> SelfWeakPtr(this);
+	if (!SelfWeakPtr.IsValid())
+		return;
+	
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
+		if (!SelfWeakPtr.IsValid())
+			return;
+		
 		OnFirstRemoteVideoDecodedEx.Broadcast(rtcConnection, (int64)remoteUid, width, height, elapsed);
 	});
 }
@@ -190,8 +270,16 @@ void UIRtcEngineEventHandlerEx::onVideoSizeChanged(const agora::rtc::RtcConnecti
 	FRtcConnection rtcConnection;
 	rtcConnection.channelId=FString(connection.channelId);
 	rtcConnection.localUid=connection.localUid;
+	
+	TWeakObjectPtr<UIRtcEngineEventHandlerEx> SelfWeakPtr(this);
+	if (!SelfWeakPtr.IsValid())
+		return;
+	
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
+		if (!SelfWeakPtr.IsValid())
+			return;
+		
 		OnVideoSizeChangedEx.Broadcast(rtcConnection, (EVIDEO_SOURCE_TYPE)sourceType,(int64)uid, width, height, rotation);
 	});
 }
@@ -200,8 +288,16 @@ void UIRtcEngineEventHandlerEx::onLocalVideoStateChanged(const agora::rtc::RtcCo
 	FRtcConnection rtcConnection;
 	rtcConnection.channelId=FString(connection.channelId);
 	rtcConnection.localUid=connection.localUid;
+	
+	TWeakObjectPtr<UIRtcEngineEventHandlerEx> SelfWeakPtr(this);
+	if (!SelfWeakPtr.IsValid())
+		return;
+	
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
+		if (!SelfWeakPtr.IsValid())
+			return;
+		
 		OnLocalVideoStateChangedEx.Broadcast(rtcConnection, (ELOCAL_VIDEO_STREAM_STATE)state, (ELOCAL_VIDEO_STREAM_ERROR)errorCode);
 	});
 }
@@ -211,8 +307,16 @@ void UIRtcEngineEventHandlerEx::onRemoteVideoStateChanged(const agora::rtc::RtcC
 	FRtcConnection rtcConnection;
 	rtcConnection.channelId=FString(connection.channelId);
 	rtcConnection.localUid=connection.localUid;
+	
+	TWeakObjectPtr<UIRtcEngineEventHandlerEx> SelfWeakPtr(this);
+	if (!SelfWeakPtr.IsValid())
+		return;
+	
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
+		if (!SelfWeakPtr.IsValid())
+			return;
+		
 		OnRemoteVideoStateChangedEx.Broadcast(rtcConnection, (int64)remoteUid, (EREMOTE_VIDEO_STATE)state, (EREMOTE_VIDEO_STATE_REASON)reason, elapsed);
 	});
 }
@@ -221,8 +325,16 @@ void UIRtcEngineEventHandlerEx::onFirstRemoteVideoFrame(const agora::rtc::RtcCon
 	FRtcConnection rtcConnection;
 	rtcConnection.channelId=FString(connection.channelId);
 	rtcConnection.localUid=connection.localUid;
+	
+	TWeakObjectPtr<UIRtcEngineEventHandlerEx> SelfWeakPtr(this);
+	if (!SelfWeakPtr.IsValid())
+		return;
+	
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
+		if (!SelfWeakPtr.IsValid())
+			return;
+		
 		OnFirstRemoteVideoFrameEx.Broadcast(rtcConnection, (int64)remoteUid, width, height, elapsed);
 	});
 }
@@ -231,8 +343,16 @@ void UIRtcEngineEventHandlerEx::onUserJoined(const agora::rtc::RtcConnection& co
 	FRtcConnection rtcConnection;
 	rtcConnection.channelId=FString(connection.channelId);
 	rtcConnection.localUid=connection.localUid;
+	
+	TWeakObjectPtr<UIRtcEngineEventHandlerEx> SelfWeakPtr(this);
+	if (!SelfWeakPtr.IsValid())
+		return;
+	
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
+		if (!SelfWeakPtr.IsValid())
+			return;
+		
 		OnUserJoinedEx.Broadcast(rtcConnection, (int64)remoteUid, elapsed);
 	});
 }
@@ -241,8 +361,16 @@ void UIRtcEngineEventHandlerEx::onUserOffline(const agora::rtc::RtcConnection& c
 	FRtcConnection rtcConnection;
 	rtcConnection.channelId=FString(connection.channelId);
 	rtcConnection.localUid=connection.localUid;
+	
+	TWeakObjectPtr<UIRtcEngineEventHandlerEx> SelfWeakPtr(this);
+	if (!SelfWeakPtr.IsValid())
+		return;
+	
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
+		if (!SelfWeakPtr.IsValid())
+			return;
+		
 		OnUserOfflineEx.Broadcast(rtcConnection, (int64)remoteUid, (EUSER_OFFLINE_REASON_TYPE)reason);
 	});
 }
@@ -251,8 +379,16 @@ void UIRtcEngineEventHandlerEx::onUserMuteAudio(const agora::rtc::RtcConnection&
 	FRtcConnection rtcConnection;
 	rtcConnection.channelId=FString(connection.channelId);
 	rtcConnection.localUid=connection.localUid;
+	
+	TWeakObjectPtr<UIRtcEngineEventHandlerEx> SelfWeakPtr(this);
+	if (!SelfWeakPtr.IsValid())
+		return;
+	
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
+		if (!SelfWeakPtr.IsValid())
+			return;
+		
 		OnUserMuteAudioEx.Broadcast(rtcConnection, (int64)remoteUid, muted);
 	});
 }
@@ -261,8 +397,16 @@ void UIRtcEngineEventHandlerEx::onUserMuteVideo(const agora::rtc::RtcConnection&
 	FRtcConnection rtcConnection;
 	rtcConnection.channelId=FString(connection.channelId);
 	rtcConnection.localUid=connection.localUid;
+	
+	TWeakObjectPtr<UIRtcEngineEventHandlerEx> SelfWeakPtr(this);
+	if (!SelfWeakPtr.IsValid())
+		return;
+	
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
+		if (!SelfWeakPtr.IsValid())
+			return;
+		
 		OnUserMuteVideoEx.Broadcast(rtcConnection, (int64)remoteUid, muted);
 	});
 }
@@ -271,8 +415,16 @@ void UIRtcEngineEventHandlerEx::onUserEnableVideo(const agora::rtc::RtcConnectio
 	FRtcConnection rtcConnection;
 	rtcConnection.channelId=FString(connection.channelId);
 	rtcConnection.localUid=connection.localUid;
+	
+	TWeakObjectPtr<UIRtcEngineEventHandlerEx> SelfWeakPtr(this);
+	if (!SelfWeakPtr.IsValid())
+		return;
+	
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
+		if (!SelfWeakPtr.IsValid())
+			return;
+		
 		OnUserEnableVideoEx.Broadcast(rtcConnection, (int64)remoteUid, enabled);
 	});
 }
@@ -282,8 +434,16 @@ void UIRtcEngineEventHandlerEx::onUserEnableLocalVideo(const agora::rtc::RtcConn
 	FRtcConnection rtcConnection;
 	rtcConnection.channelId=FString(connection.channelId);
 	rtcConnection.localUid=connection.localUid;
+	
+	TWeakObjectPtr<UIRtcEngineEventHandlerEx> SelfWeakPtr(this);
+	if (!SelfWeakPtr.IsValid())
+		return;
+	
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
+		if (!SelfWeakPtr.IsValid())
+			return;
+		
 		OnUserEnableLocalVideoEx.Broadcast(rtcConnection, (int64)remoteUid, enabled);
 	});
 }
@@ -293,8 +453,16 @@ void UIRtcEngineEventHandlerEx::onUserStateChanged(const agora::rtc::RtcConnecti
 	FRtcConnection rtcConnection;
 	rtcConnection.channelId=FString(connection.channelId);
 	rtcConnection.localUid=connection.localUid;
+	
+	TWeakObjectPtr<UIRtcEngineEventHandlerEx> SelfWeakPtr(this);
+	if (!SelfWeakPtr.IsValid())
+		return;
+	
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
+		if (!SelfWeakPtr.IsValid())
+			return;
+		
 		OnUserStateChangedEx.Broadcast(rtcConnection, (int64)remoteUid, state);
 	});
 }
@@ -312,8 +480,16 @@ void UIRtcEngineEventHandlerEx::onLocalAudioStats(const agora::rtc::RtcConnectio
 	localAudioStats.internalCodec=stats.internalCodec;
 	localAudioStats.txPacketLossRate=stats.txPacketLossRate;
 	localAudioStats.audioDeviceDelay=stats.audioDeviceDelay;
+	
+	TWeakObjectPtr<UIRtcEngineEventHandlerEx> SelfWeakPtr(this);
+	if (!SelfWeakPtr.IsValid())
+		return;
+	
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
+		if (!SelfWeakPtr.IsValid())
+			return;
+		
 		OnLocalAudioStatsEx.Broadcast(rtcConnection, localAudioStats);
 	});
 }
@@ -339,8 +515,16 @@ void UIRtcEngineEventHandlerEx::onRemoteAudioStats(const agora::rtc::RtcConnecti
 	remoteAudioStats.publishDuration=stats.publishDuration;
 	remoteAudioStats.qoeQuality=stats.qoeQuality;
 	remoteAudioStats.qualityChangedReason=stats.qualityChangedReason;
+	
+	TWeakObjectPtr<UIRtcEngineEventHandlerEx> SelfWeakPtr(this);
+	if (!SelfWeakPtr.IsValid())
+		return;
+	
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
+		if (!SelfWeakPtr.IsValid())
+			return;
+		
 		OnRemoteAudioStatsEx.Broadcast(rtcConnection, remoteAudioStats);
 	});
 }
@@ -373,8 +557,16 @@ void UIRtcEngineEventHandlerEx::onLocalVideoStats(const agora::rtc::RtcConnectio
 	localVideoStats.txPacketLossRate=stats.txPacketLossRate;
 	localVideoStats.captureBrightnessLevel=stats.captureBrightnessLevel;
 	localVideoStats.dualStreamEnabled=stats.dualStreamEnabled;
+	
+	TWeakObjectPtr<UIRtcEngineEventHandlerEx> SelfWeakPtr(this);
+	if (!SelfWeakPtr.IsValid())
+		return;
+	
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
+		if (!SelfWeakPtr.IsValid())
+			return;
+		
 		OnLocalVideoStatsEx.Broadcast(rtcConnection, localVideoStats);
 	});
 }
@@ -400,8 +592,16 @@ void UIRtcEngineEventHandlerEx::onRemoteVideoStats(const agora::rtc::RtcConnecti
 	remoteVideoStats.avSyncTimeMs=stats.avSyncTimeMs;
 	remoteVideoStats.totalActiveTime=stats.totalActiveTime;
 	remoteVideoStats.publishDuration=stats.publishDuration;
+	
+	TWeakObjectPtr<UIRtcEngineEventHandlerEx> SelfWeakPtr(this);
+	if (!SelfWeakPtr.IsValid())
+		return;
+	
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
+		if (!SelfWeakPtr.IsValid())
+			return;
+		
 		OnRemoteVideoStatsEx.Broadcast(rtcConnection, remoteVideoStats);
 	});
 }
@@ -410,8 +610,16 @@ void UIRtcEngineEventHandlerEx::onConnectionLost(const agora::rtc::RtcConnection
 	FRtcConnection rtcConnection;
 	rtcConnection.channelId=FString(connection.channelId);
 	rtcConnection.localUid=connection.localUid;
+	
+	TWeakObjectPtr<UIRtcEngineEventHandlerEx> SelfWeakPtr(this);
+	if (!SelfWeakPtr.IsValid())
+		return;
+	
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
+		if (!SelfWeakPtr.IsValid())
+			return;
+		
 		OnConnectionLostEx.Broadcast(rtcConnection);
 	});
 }
@@ -420,8 +628,16 @@ void UIRtcEngineEventHandlerEx::onConnectionInterrupted(const agora::rtc::RtcCon
 	FRtcConnection rtcConnection;
 	rtcConnection.channelId=FString(connection.channelId);
 	rtcConnection.localUid=connection.localUid;
+	
+	TWeakObjectPtr<UIRtcEngineEventHandlerEx> SelfWeakPtr(this);
+	if (!SelfWeakPtr.IsValid())
+		return;
+	
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
+		if (!SelfWeakPtr.IsValid())
+			return;
+		
 		OnConnectionInterruptedEx.Broadcast(rtcConnection);
 	});
 }
@@ -431,8 +647,16 @@ void UIRtcEngineEventHandlerEx::onConnectionBanned(const agora::rtc::RtcConnecti
 	FRtcConnection rtcConnection;
 	rtcConnection.channelId=FString(connection.channelId);
 	rtcConnection.localUid=connection.localUid;
+	
+	TWeakObjectPtr<UIRtcEngineEventHandlerEx> SelfWeakPtr(this);
+	if (!SelfWeakPtr.IsValid())
+		return;
+	
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
+		if (!SelfWeakPtr.IsValid())
+			return;
+		
 		OnConnectionBannedEx.Broadcast(rtcConnection);
 	});
 }
@@ -447,8 +671,16 @@ void UIRtcEngineEventHandlerEx::onStreamMessage(const agora::rtc::RtcConnection&
 	FRtcConnection rtcConnection;
 	rtcConnection.channelId=FString(connection.channelId);
 	rtcConnection.localUid=connection.localUid;
+	
+	TWeakObjectPtr<UIRtcEngineEventHandlerEx> SelfWeakPtr(this);
+	if (!SelfWeakPtr.IsValid())
+		return;
+	
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
+		if (!SelfWeakPtr.IsValid())
+			return;
+		
 		OnStreamMessageEx.Broadcast(rtcConnection, (int64)remoteUid, streamId, FString(UTF8_TO_TCHAR(temp.c_str())), length, sentTs);
 	});
 }
@@ -458,8 +690,16 @@ void UIRtcEngineEventHandlerEx::onStreamMessageError(const agora::rtc::RtcConnec
 	FRtcConnection rtcConnection;
 	rtcConnection.channelId=FString(connection.channelId);
 	rtcConnection.localUid=connection.localUid;
+	
+	TWeakObjectPtr<UIRtcEngineEventHandlerEx> SelfWeakPtr(this);
+	if (!SelfWeakPtr.IsValid())
+		return;
+	
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
+		if (!SelfWeakPtr.IsValid())
+			return;
+		
 		OnStreamMessageErrorEx.Broadcast(rtcConnection, (int64)remoteUid, streamId, code, missed, cached);
 	});
 }
@@ -469,8 +709,16 @@ void UIRtcEngineEventHandlerEx::onRequestToken(const agora::rtc::RtcConnection& 
 	FRtcConnection rtcConnection;
 	rtcConnection.channelId=FString(connection.channelId);
 	rtcConnection.localUid=connection.localUid;
+	
+	TWeakObjectPtr<UIRtcEngineEventHandlerEx> SelfWeakPtr(this);
+	if (!SelfWeakPtr.IsValid())
+		return;
+	
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
+		if (!SelfWeakPtr.IsValid())
+			return;
+		
 		OnRequestTokenEx.Broadcast(rtcConnection);
 	});
 }
@@ -483,10 +731,18 @@ void UIRtcEngineEventHandlerEx::onLicenseValidationFailure(const agora::rtc::Rtc
 	rtcConnection.channelId=FString(connection.channelId);
 	rtcConnection.localUid=connection.localUid;
 	ELICENSE_ERROR_TYPE licenseErrorType = (ELICENSE_ERROR_TYPE)reason;
+
+	TWeakObjectPtr<UIRtcEngineEventHandlerEx> SelfWeakPtr(this);
+	if (!SelfWeakPtr.IsValid())
+		return;
+
 	AsyncTask(ENamedThreads::GameThread, [=]()
 		{
+			if (!SelfWeakPtr.IsValid())
+				return;
+			
 			OnLicenseValidationFailureEx.Broadcast(rtcConnection, licenseErrorType);
-	});
+		});
 }
 
 void UIRtcEngineEventHandlerEx::onTokenPrivilegeWillExpire(const agora::rtc::RtcConnection& connection, const char* token)
@@ -494,8 +750,16 @@ void UIRtcEngineEventHandlerEx::onTokenPrivilegeWillExpire(const agora::rtc::Rtc
 	FRtcConnection rtcConnection;
 	rtcConnection.channelId=FString(connection.channelId);
 	rtcConnection.localUid=connection.localUid;
+	
+	TWeakObjectPtr<UIRtcEngineEventHandlerEx> SelfWeakPtr(this);
+	if (!SelfWeakPtr.IsValid())
+		return;
+	
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
+		if (!SelfWeakPtr.IsValid())
+			return;
+		
 		OnTokenPrivilegeWillExpireEx.Broadcast(rtcConnection, FString(token));
 	});
 }
@@ -504,8 +768,16 @@ void UIRtcEngineEventHandlerEx::onFirstLocalAudioFramePublished(const agora::rtc
 	FRtcConnection rtcConnection;
 	rtcConnection.channelId=FString(connection.channelId);
 	rtcConnection.localUid=connection.localUid;
+	
+	TWeakObjectPtr<UIRtcEngineEventHandlerEx> SelfWeakPtr(this);
+	if (!SelfWeakPtr.IsValid())
+		return;
+	
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
+		if (!SelfWeakPtr.IsValid())
+			return;
+		
 		OnFirstLocalAudioFramePublishedEx.Broadcast(rtcConnection, elapsed);
 	});
 }
@@ -514,8 +786,16 @@ void UIRtcEngineEventHandlerEx::onFirstRemoteAudioFrame(const agora::rtc::RtcCon
 	FRtcConnection rtcConnection;
 	rtcConnection.channelId=FString(connection.channelId);
 	rtcConnection.localUid=connection.localUid;
+	
+	TWeakObjectPtr<UIRtcEngineEventHandlerEx> SelfWeakPtr(this);
+	if (!SelfWeakPtr.IsValid())
+		return;
+	
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
+		if (!SelfWeakPtr.IsValid())
+			return;
+		
 		OnFirstRemoteAudioFrameEx.Broadcast(rtcConnection, userId, elapsed);
 	});
 }
@@ -524,8 +804,16 @@ void UIRtcEngineEventHandlerEx::onFirstRemoteAudioDecoded(const agora::rtc::RtcC
 	FRtcConnection rtcConnection;
 	rtcConnection.channelId=FString(connection.channelId);
 	rtcConnection.localUid=connection.localUid;
+	
+	TWeakObjectPtr<UIRtcEngineEventHandlerEx> SelfWeakPtr(this);
+	if (!SelfWeakPtr.IsValid())
+		return;
+	
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
+		if (!SelfWeakPtr.IsValid())
+			return;
+		
 		OnFirstRemoteAudioDecodedEx.Broadcast(rtcConnection, (int64)uid, elapsed);
 	});
 }
@@ -534,8 +822,16 @@ void UIRtcEngineEventHandlerEx::onLocalAudioStateChanged(const agora::rtc::RtcCo
 	FRtcConnection rtcConnection;
 	rtcConnection.channelId=FString(connection.channelId);
 	rtcConnection.localUid=connection.localUid;
+	
+	TWeakObjectPtr<UIRtcEngineEventHandlerEx> SelfWeakPtr(this);
+	if (!SelfWeakPtr.IsValid())
+		return;
+	
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
+		if (!SelfWeakPtr.IsValid())
+			return;
+		
 		OnLocalAudioStateChangedEx.Broadcast(rtcConnection, (ELOCAL_AUDIO_STREAM_STATE)state, (ELOCAL_AUDIO_STREAM_ERROR)error);
 	});
 }
@@ -545,8 +841,16 @@ void UIRtcEngineEventHandlerEx::onRemoteAudioStateChanged(const agora::rtc::RtcC
 	FRtcConnection rtcConnection;
 	rtcConnection.channelId=FString(connection.channelId);
 	rtcConnection.localUid=connection.localUid;
+	
+	TWeakObjectPtr<UIRtcEngineEventHandlerEx> SelfWeakPtr(this);
+	if (!SelfWeakPtr.IsValid())
+		return;
+	
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
+		if (!SelfWeakPtr.IsValid())
+			return;
+		
 		OnRemoteAudioStateChangedEx.Broadcast(rtcConnection, remoteUid, (EREMOTE_AUDIO_STATE)state, (EREMOTE_AUDIO_STATE_REASON)reason, elapsed);
 	});
 }
@@ -556,8 +860,16 @@ void UIRtcEngineEventHandlerEx::onActiveSpeaker(const agora::rtc::RtcConnection&
 	FRtcConnection rtcConnection;
 	rtcConnection.channelId=FString(connection.channelId);
 	rtcConnection.localUid=connection.localUid;
+	
+	TWeakObjectPtr<UIRtcEngineEventHandlerEx> SelfWeakPtr(this);
+	if (!SelfWeakPtr.IsValid())
+		return;
+	
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
+		if (!SelfWeakPtr.IsValid())
+			return;
+		
 		OnActiveSpeakerEx.Broadcast(rtcConnection, (int64)uid);
 	});
 }
@@ -570,8 +882,16 @@ void UIRtcEngineEventHandlerEx::onClientRoleChanged(const agora::rtc::RtcConnect
 
 	FClientRoleOptions options;
 	options.audienceLatencyLevel = (EAUDIENCE_LATENCY_LEVEL_TYPE)newRoleOptions.audienceLatencyLevel;
+	
+	TWeakObjectPtr<UIRtcEngineEventHandlerEx> SelfWeakPtr(this);
+	if (!SelfWeakPtr.IsValid())
+		return;
+	
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
+		if (!SelfWeakPtr.IsValid())
+			return;
+		
 		OnClientRoleChangedEx.Broadcast(rtcConnection, (ECLIENT_ROLE_TYPE)oldRole, (ECLIENT_ROLE_TYPE)newRole, options);
 	});
 }
@@ -580,8 +900,16 @@ void UIRtcEngineEventHandlerEx::onClientRoleChangeFailed(const agora::rtc::RtcCo
 	FRtcConnection rtcConnection;
 	rtcConnection.channelId=FString(connection.channelId);
 	rtcConnection.localUid=connection.localUid;
+	
+	TWeakObjectPtr<UIRtcEngineEventHandlerEx> SelfWeakPtr(this);
+	if (!SelfWeakPtr.IsValid())
+		return;
+	
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
+		if (!SelfWeakPtr.IsValid())
+			return;
+		
 		OnClientRoleChangeFailedEx.Broadcast(rtcConnection, (ECLIENT_ROLE_CHANGE_FAILED_REASON)reason, (ECLIENT_ROLE_TYPE)currentRole);
 	});
 }
@@ -590,8 +918,16 @@ void UIRtcEngineEventHandlerEx::onRemoteAudioTransportStats(const agora::rtc::Rt
 	FRtcConnection rtcConnection;
 	rtcConnection.channelId=FString(connection.channelId);
 	rtcConnection.localUid=connection.localUid;
+	
+	TWeakObjectPtr<UIRtcEngineEventHandlerEx> SelfWeakPtr(this);
+	if (!SelfWeakPtr.IsValid())
+		return;
+	
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
+		if (!SelfWeakPtr.IsValid())
+			return;
+		
 		OnRemoteAudioTransportStatsEx.Broadcast(rtcConnection, remoteUid, delay, lost, rxKBitRate);
 	});
 }
@@ -600,8 +936,16 @@ void UIRtcEngineEventHandlerEx::onRemoteVideoTransportStats(const agora::rtc::Rt
 	FRtcConnection rtcConnection;
 	rtcConnection.channelId=FString(connection.channelId);
 	rtcConnection.localUid=connection.localUid;
+	
+	TWeakObjectPtr<UIRtcEngineEventHandlerEx> SelfWeakPtr(this);
+	if (!SelfWeakPtr.IsValid())
+		return;
+	
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
+		if (!SelfWeakPtr.IsValid())
+			return;
+		
 		OnRemoteVideoTransportStatsEx.Broadcast(rtcConnection, (int64)remoteUid, delay, lost, rxKBitRate);
 	});
 }
@@ -610,8 +954,16 @@ void UIRtcEngineEventHandlerEx::onConnectionStateChanged(const agora::rtc::RtcCo
 	FRtcConnection rtcConnection;
 	rtcConnection.channelId=FString(connection.channelId);
 	rtcConnection.localUid=connection.localUid;
+	
+	TWeakObjectPtr<UIRtcEngineEventHandlerEx> SelfWeakPtr(this);
+	if (!SelfWeakPtr.IsValid())
+		return;
+	
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
+		if (!SelfWeakPtr.IsValid())
+			return;
+		
 		OnConnectionStateChangedEx.Broadcast(rtcConnection, (ECONNECTION_STATE_TYPE)state, (ECONNECTION_CHANGED_REASON_TYPE)reason);
 	});
 }
@@ -620,8 +972,16 @@ void UIRtcEngineEventHandlerEx::onWlAccMessage(const agora::rtc::RtcConnection& 
 	FRtcConnection rtcConnection;
 	rtcConnection.channelId=FString(connection.channelId);
 	rtcConnection.localUid=connection.localUid;
+	
+	TWeakObjectPtr<UIRtcEngineEventHandlerEx> SelfWeakPtr(this);
+	if (!SelfWeakPtr.IsValid())
+		return;
+	
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
+		if (!SelfWeakPtr.IsValid())
+			return;
+		
 		OnWlAccMessageEx.Broadcast(rtcConnection, (EWLACC_MESSAGE_REASON)reason, (EWLACC_SUGGEST_ACTION)action, FString(wlAccMsg));
 	});
 }
@@ -638,8 +998,16 @@ void UIRtcEngineEventHandlerEx::onWlAccStats(const agora::rtc::RtcConnection& co
 	average.e2eDelayPercent=averageStats.e2eDelayPercent;
 	average.frozenRatioPercent=averageStats.frozenRatioPercent;
 	average.lossRatePercent=averageStats.lossRatePercent;
+	
+	TWeakObjectPtr<UIRtcEngineEventHandlerEx> SelfWeakPtr(this);
+	if (!SelfWeakPtr.IsValid())
+		return;
+	
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
+		if (!SelfWeakPtr.IsValid())
+			return;
+		
 		OnWlAccStatsEx.Broadcast(rtcConnection, current, average);
 	});
 }
@@ -648,8 +1016,16 @@ void UIRtcEngineEventHandlerEx::onNetworkTypeChanged(const agora::rtc::RtcConnec
 	FRtcConnection rtcConnection;
 	rtcConnection.channelId=FString(connection.channelId);
 	rtcConnection.localUid=connection.localUid;
+	
+	TWeakObjectPtr<UIRtcEngineEventHandlerEx> SelfWeakPtr(this);
+	if (!SelfWeakPtr.IsValid())
+		return;
+	
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
+		if (!SelfWeakPtr.IsValid())
+			return;
+		
 		OnNetworkTypeChangedEx.Broadcast(rtcConnection,type);
 	});
 }
@@ -658,8 +1034,16 @@ void UIRtcEngineEventHandlerEx::onEncryptionError(const agora::rtc::RtcConnectio
 	FRtcConnection rtcConnection;
 	rtcConnection.channelId=FString(connection.channelId);
 	rtcConnection.localUid=connection.localUid;
+	
+	TWeakObjectPtr<UIRtcEngineEventHandlerEx> SelfWeakPtr(this);
+	if (!SelfWeakPtr.IsValid())
+		return;
+	
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
+		if (!SelfWeakPtr.IsValid())
+			return;
+		
 		OnEncryptionErrorEx.Broadcast(rtcConnection, (EENCRYPTION_ERROR_TYPE)errorType);
 	});
 }
@@ -668,8 +1052,16 @@ void UIRtcEngineEventHandlerEx::onUploadLogResult(const agora::rtc::RtcConnectio
 	FRtcConnection rtcConnection;
 	rtcConnection.channelId=FString(connection.channelId);
 	rtcConnection.localUid=connection.localUid;
+	
+	TWeakObjectPtr<UIRtcEngineEventHandlerEx> SelfWeakPtr(this);
+	if (!SelfWeakPtr.IsValid())
+		return;
+	
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
+		if (!SelfWeakPtr.IsValid())
+			return;
+		
 		OnUploadLogResultEx.Broadcast(rtcConnection, FString(requestId), success, (EUPLOAD_ERROR_REASON)reason);
 	});
 }
@@ -678,8 +1070,16 @@ void UIRtcEngineEventHandlerEx::onUserAccountUpdated(const agora::rtc::RtcConnec
 	FRtcConnection rtcConnection;
 	rtcConnection.channelId=FString(connection.channelId);
 	rtcConnection.localUid=connection.localUid;
+	
+	TWeakObjectPtr<UIRtcEngineEventHandlerEx> SelfWeakPtr(this);
+	if (!SelfWeakPtr.IsValid())
+		return;
+	
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
+		if (!SelfWeakPtr.IsValid())
+			return;
+		
 		OnUserAccountUpdatedEx.Broadcast(rtcConnection, remoteUid, FString(userAccount));
 	});
 }
@@ -688,16 +1088,31 @@ void UIRtcEngineEventHandlerEx::onSnapshotTaken(const agora::rtc::RtcConnection&
 	FRtcConnection rtcConnection;
 	rtcConnection.channelId=FString(connection.channelId);
 	rtcConnection.localUid=connection.localUid;
+	
+	TWeakObjectPtr<UIRtcEngineEventHandlerEx> SelfWeakPtr(this);
+	if (!SelfWeakPtr.IsValid())
+		return;
+	
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
+		if (!SelfWeakPtr.IsValid())
+			return;
+		
 		OnSnapshotTakenEx.Broadcast(rtcConnection, (int64)uid, FString(filePath), width, height, errCode);
 	});
 }
 
 void UIRtcEngineEventHandlerEx::onVideoRenderingTracingResult(const agora::rtc::RtcConnection& connection, agora::rtc::uid_t uid, agora::rtc::MEDIA_TRACE_EVENT currentEvent, agora::rtc::VideoRenderingTracingInfo tracingInfo)
 {
+	TWeakObjectPtr<UIRtcEngineEventHandlerEx> SelfWeakPtr(this);
+	if (!SelfWeakPtr.IsValid())
+		return;
+	
 	AsyncTask(ENamedThreads::GameThread, [=]()
 		{
+			if (!SelfWeakPtr.IsValid())
+				return;
+
 			FRtcConnection rtcConnection;
 			rtcConnection.channelId = FString(connection.channelId);
 			rtcConnection.localUid = connection.localUid;
