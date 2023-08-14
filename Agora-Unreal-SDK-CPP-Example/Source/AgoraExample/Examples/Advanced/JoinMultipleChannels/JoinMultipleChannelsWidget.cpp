@@ -80,7 +80,7 @@ void UJoinMultipleChannelsWidget::JoinChannel1()
 	connection.channelId = StdStrChannelName.c_str();
 	connection.localUid = UIDChannel1;
 
-	int ret = RtcEngineProxy->joinChannelEx(nullptr, connection, ChannelMediaOptions, nullptr);
+	int ret = RtcEngineProxy->joinChannelEx(TCHAR_TO_UTF8(*Token), connection, ChannelMediaOptions, nullptr);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s ChannelName=%s ret %d"), *FString(FUNCTION_MACRO),*ChannelName1, ret), LogMsgViewPtr);
 }
 
@@ -101,7 +101,7 @@ void UJoinMultipleChannelsWidget::JoinChannel2()
 	connection.channelId = StdStrChannelName.c_str();
 	connection.localUid = UIDChannel2;
 
-	int ret = RtcEngineProxy->joinChannelEx(nullptr, connection, ChannelMediaOptions, nullptr);
+	int ret = RtcEngineProxy->joinChannelEx(TCHAR_TO_UTF8(*Token), connection, ChannelMediaOptions, nullptr);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s ChannelName=%s ret %d"), *FString(FUNCTION_MACRO), *ChannelName2, ret), LogMsgViewPtr);
 }
 

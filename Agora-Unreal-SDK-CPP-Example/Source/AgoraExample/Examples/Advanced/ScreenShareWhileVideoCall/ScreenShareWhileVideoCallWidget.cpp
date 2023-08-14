@@ -191,33 +191,33 @@ void UScreenShareWhileVideoCallWidget::OnBtnStartScreenShare()
 
 void UScreenShareWhileVideoCallWidget::JoinChannel_ScreenShare()
 {
-	agora::rtc::ChannelMediaOptions options;
-	options.publishCameraTrack = false;
+	agora::rtc::ChannelMediaOptions ValChannelMediaOptions;
+	ValChannelMediaOptions.publishCameraTrack = false;
 
 #if PLATFORM_ANDROID || PLATFORM_IOS
-	options.publishScreenCaptureVideo = true;
-	options.publishScreenCaptureAudio = true;
+	ValChannelMediaOptions.publishScreenCaptureVideo = true;
+	ValChannelMediaOptions.publishScreenCaptureAudio = true;
 #else
-	options.publishScreenTrack = true;
+	ValChannelMediaOptions.publishScreenTrack = true;
 #endif
 
-	options.enableAudioRecordingOrPlayout = false;
-	options.clientRoleType = CLIENT_ROLE_TYPE::CLIENT_ROLE_BROADCASTER;
-	agora::rtc::RtcConnection connection;
+	ValChannelMediaOptions.enableAudioRecordingOrPlayout = false;
+	ValChannelMediaOptions.clientRoleType = CLIENT_ROLE_TYPE::CLIENT_ROLE_BROADCASTER;
+	agora::rtc::RtcConnection Connection;
 	std::string StdStrChannelName = TCHAR_TO_UTF8(*ChannelName);
-	connection.channelId = StdStrChannelName.c_str();
-	connection.localUid = UID2_Screen;
-	int ret = RtcEngineProxy->joinChannelEx(nullptr, connection, options, nullptr);
+	Connection.channelId = StdStrChannelName.c_str();
+	Connection.localUid = UID2_Screen;
+	int ret = RtcEngineProxy->joinChannelEx(TCHAR_TO_UTF8(*Token), Connection, ValChannelMediaOptions, nullptr);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 }
 
 void UScreenShareWhileVideoCallWidget::OnBtnStopScreenShare()
 {
-	agora::rtc::RtcConnection connection;
+	agora::rtc::RtcConnection Connection;
 	std::string StdStrChannelName = TCHAR_TO_UTF8(*ChannelName);
-	connection.channelId = StdStrChannelName.c_str();
-	connection.localUid = UID2_Screen;
-	int ret = RtcEngineProxy->leaveChannelEx(connection);
+	Connection.channelId = StdStrChannelName.c_str();
+	Connection.localUid = UID2_Screen;
+	int ret = RtcEngineProxy->leaveChannelEx(Connection);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 }
 
