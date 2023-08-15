@@ -6,6 +6,8 @@ namespace ue {
 void CacheManagerImpl::enableVideoFrameObserver(const VideoFrameIdentity *Identity)
 {
 	std::lock_guard<std::recursive_mutex> lock(Mutex);
+
+	// refresh the status to be true
 	auto it = CacheMapStatus.find(*Identity);
 	if (it == CacheMapStatus.end()) {
 		CacheMapStatus[*Identity] = true;
@@ -14,6 +16,7 @@ void CacheManagerImpl::enableVideoFrameObserver(const VideoFrameIdentity *Identi
 		it->second = true;
 	}
 
+	// if not found, insert a new item
 	auto videoFrameIterator = DataMap.find(*Identity);
 	if (videoFrameIterator == DataMap.end()) {
 		auto frame = new FramesInfo();

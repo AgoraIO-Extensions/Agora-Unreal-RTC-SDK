@@ -4,112 +4,193 @@
 
 #include "CoreMinimal.h"
 #include "../../BaseAgoraUserWidget.h"
-#include "Blueprint/UserWidget.h"
-#include "Components/Image.h"
-#include "Components/Button.h"
 #include "AgoraPluginInterface.h"
-#include "Kismet/GameplayStatics.h"
-#include "Engine/Texture2D.h"
-#include "SlateOptMacros.h"
-#include <iostream>
-#include <string.h>
-#include <memory>
+
+// UI
+#include "Components/Button.h"
+#include "Components/CanvasPanel.h"
+
+// UI Utility
+#include "../../../Utility/BFL_VideoViewManager.h"
+#include "../../../Utility/BFL_Logger.h"
+
 #if PLATFORM_ANDROID
 #include "AndroidPermission/Classes/AndroidPermissionFunctionLibrary.h"
 #endif
-#if PLATFORM_WINDOWS
-#include "Windows/AllowWindowsPlatformTypes.h"
-#include "Windows/HideWindowsPlatformTypes.h"
-#endif
+
 #include "ProcessVideoRawDataWidget.generated.h"
+
 using namespace agora::rtc;
-using namespace agora;
+
 /**
  * 
  */
-UCLASS(Abstract)
-class AGORAEXAMPLE_API UProcessVideoRawDataWidget : public UBaseAgoraUserWidget, public agora::rtc::IRtcEngineEventHandler , public media::IVideoFrameObserver
+UCLASS()
+class AGORAEXAMPLE_API UProcessVideoRawDataWidget : public UBaseAgoraUserWidget
 {
 	GENERATED_BODY()
-public:
-	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
-	UImage* remoteVideo = nullptr;
 
-	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
-	UImage* localVideo = nullptr;
+
+#pragma region Event Handler
+
+public:
+
+	class FUserRtcEventHandlerEx : public agora::rtc::IRtcEngineEventHandlerEx
+	{
+	public:
+
+		FUserRtcEventHandlerEx(UProcessVideoRawDataWidget* InVideoWidget) : WidgetPtr(InVideoWidget) {};
+
+#pragma region AgoraCallback - IRtcEngineEventHandlerEx
+
+		void onJoinChannelSuccess(const agora::rtc::RtcConnection& connection, int elapsed) override;
+
+		void onLeaveChannel(const agora::rtc::RtcConnection& connection, const agora::rtc::RtcStats& stats) override;
+
+		void onUserJoined(const agora::rtc::RtcConnection& connection, agora::rtc::uid_t remoteUid, int elapsed) override;
+
+		void onUserOffline(const agora::rtc::RtcConnection& connection, agora::rtc::uid_t remoteUid, agora::rtc::USER_OFFLINE_REASON_TYPE reason) override;
+
+#pragma endregion
+
+		inline bool IsWidgetValid() { return WidgetPtr.IsValid(); }
+
+	private:
+
+		TWeakObjectPtr<UProcessVideoRawDataWidget> WidgetPtr;
+	};
+
+
+	class FUserVideoFrameObserver : public agora::media::IVideoFrameObserver
+	{
+
+	public:
+
+		FUserVideoFrameObserver(UProcessVideoRawDataWidget* InVideoWidget) : WidgetPtr(InVideoWidget) {
+			//LogSet.Empty();
+		};
+
+#pragma region AgoraCallback - IVideoFrameObserver
+
+		bool onCaptureVideoFrame(agora::rtc::VIDEO_SOURCE_TYPE sourceType, agora::media::base::VideoFrame& videoFrame) override;
+
+		bool onPreEncodeVideoFrame(agora::rtc::VIDEO_SOURCE_TYPE sourceType, agora::media::base::VideoFrame& videoFrame) override;
+
+		bool onMediaPlayerVideoFrame(agora::media::base::VideoFrame& videoFrame, int mediaPlayerId) override;
+
+		bool onRenderVideoFrame(const char* channelId, agora::rtc::uid_t remoteUid, agora::media::base::VideoFrame& videoFrame) override;
+
+		bool onTranscodedVideoFrame(agora::media::base::VideoFrame& videoFrame) override;
+
+		agora::media::IVideoFrameObserver::VIDEO_FRAME_PROCESS_MODE getVideoFrameProcessMode() override;
+
+		agora::media::base::VIDEO_PIXEL_FORMAT getVideoFormatPreference() override;
+
+#pragma endregion
+		inline bool IsWidgetValid() { return WidgetPtr.IsValid(); }
+	
+	private:
+		//TSet<FName> LogSet;
+		TWeakObjectPtr<UProcessVideoRawDataWidget> WidgetPtr;
+	};
+
+#pragma endregion
+
+
+#pragma region UI
+
+public:
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
+		UButton* Btn_BackToHome = nullptr;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-	UButton* JoinBtn = nullptr;
+	UButton* Btn_JoinChannel = nullptr;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget))
-	UButton* LeaveBtn = nullptr;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-	UButton* BackHomeBtn = nullptr;
+	UButton* Btn_LeaveChannel = nullptr;
+	
+	UFUNCTION(BlueprintCallable)
+	void OnBtnBackToHomeClicked();
 
 	UFUNCTION(BlueprintCallable)
-	void OnLeaveButtonClick();
+	void OnBtnJoinChannelClicked();
 
 	UFUNCTION(BlueprintCallable)
-	void OnJoinButtonClick();
+	void OnBtnLeaveChannelClicked();
 
-	UFUNCTION(BlueprintCallable)
-	void OnBackHomeButtonClick();
+#pragma endregion
 
-	void CheckAndroidPermission();
+public:
 
 	void InitAgoraWidget(FString APP_ID, FString TOKEN, FString CHANNEL_NAME) override;
 
+
+#pragma region UI Utility - Video View
+
+public:
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	UCanvasPanel* CanvasPanel_VideoView = nullptr;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<UDraggableVideoViewWidget> DraggableVideoViewTemplate;
+	
 protected:
 
-	void NativeDestruct() override;
+	int MakeVideoView(uint32 uid, agora::rtc::VIDEO_SOURCE_TYPE sourceType = VIDEO_SOURCE_CAMERA_PRIMARY,FString channelId = "");
+	int ReleaseVideoView(uint32 uid, agora::rtc::VIDEO_SOURCE_TYPE sourceType = VIDEO_SOURCE_CAMERA_PRIMARY, FString channelId = "");
+
+	TMap<FVideoViewIdentity, UDraggableVideoViewWidget*> VideoViewMap;
+
+#pragma endregion
+
+#pragma region UI Utility - Log Msg View
+
+public:
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	UCanvasPanel* CanvasPanel_LogMsgView = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TSubclassOf<UDraggableLogMsgViewWidget> DraggableLogMsgViewTemplate;
+
+public:
+	inline UDraggableLogMsgViewWidget* GetLogMsgViewPtr() {return LogMsgViewPtr;} 
 
 private:
+	UDraggableLogMsgViewWidget* LogMsgViewPtr = nullptr;
 
-	IRtcEngine* RtcEngineProxy;
+#pragma endregion
 
-	agora::media::IMediaEngine* MediaEngine;
+public:
+	inline FString GetAppId() { return AppId; };
+	inline FString GetToken() { return Token; };
+	inline FString GetChannelName() { return ChannelName; };
 
-	std::string AppID;
+	void RenderRawData(agora::media::base::VideoFrame& videoFrame);
 
-	std::string Token;
-
-	std::string ChannelName;
-
-	FSlateBrush EmptyBrush;
-
+protected:
+	void CheckPermission();
 	void InitAgoraEngine(FString APP_ID, FString TOKEN, FString CHANNEL_NAME);
 
-	void SetUpUIEvent();
+	void MakeVideoViewForRawData();
+	void ReleaseVideoViewForRawData();
 
-	void onLeaveChannel(const agora::rtc::RtcStats& stats) override;
+	void NativeDestruct() override;
+	void UnInitAgoraEngine();
 
-	void onUserOffline(agora::rtc::uid_t uid, agora::rtc::USER_OFFLINE_REASON_TYPE reason) override;
+	FString AppId = "";
+	FString Token = "";
+	FString ChannelName = "";
 
-	virtual bool onCaptureVideoFrame(VideoFrame& videoFrame) override;
-	virtual bool onPreEncodeVideoFrame(VideoFrame& videoFrame) override;
-	virtual bool onSecondaryCameraCaptureVideoFrame(VideoFrame& videoFrame) override;
-	virtual bool onSecondaryPreEncodeCameraVideoFrame(VideoFrame& videoFrame) override;
-	virtual bool onScreenCaptureVideoFrame(VideoFrame& videoFrame) override;
-	virtual bool onPreEncodeScreenVideoFrame(VideoFrame& videoFrame) override;
-	virtual bool onMediaPlayerVideoFrame(VideoFrame& videoFrame, int mediaPlayerId) override;
-	virtual bool onSecondaryScreenCaptureVideoFrame(VideoFrame& videoFrame) override;
-	virtual bool onSecondaryPreEncodeScreenVideoFrame(VideoFrame& videoFrame) override;
-	virtual agora::media::IVideoFrameObserver::VIDEO_FRAME_PROCESS_MODE getVideoFrameProcessMode() override;
-	virtual agora::media::base::VIDEO_PIXEL_FORMAT getVideoFormatPreference() override;
-	virtual bool getRotationApplied() override;
-	virtual bool getMirrorApplied() override;
-	virtual uint32_t getObservedFramePosition() override;
-	virtual bool isExternal() override;
-	virtual bool onRenderVideoFrame(const char* channelId, rtc::uid_t remoteUid, VideoFrame& videoFrame) override;
-	virtual bool onTranscodedVideoFrame(VideoFrame& videoFrame) override;
+	IRtcEngineEx* RtcEngineProxy;
+	agora::media::IMediaEngine* MediaEngine;
 
-	UTexture2D* LocalRenderTexture;
-	FSlateBrush LocalRenderBrush;
 
-	UTexture2D* RemoteRenderTexture;
-	FSlateBrush RemoteRenderBrush;
+
+	TSharedPtr<FUserRtcEventHandlerEx> UserRtcEventHandlerEx;
+	TSharedPtr<FUserVideoFrameObserver> UserVideoFrameObserver;
+
+	
+	UDraggableVideoViewWidget* VideoRenderView = nullptr;
+
 };
-
-
-

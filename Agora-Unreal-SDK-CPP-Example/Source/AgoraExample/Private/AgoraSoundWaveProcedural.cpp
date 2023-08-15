@@ -3,24 +3,21 @@
 
 #include "AgoraSoundWaveProcedural.h"
 
-UAgoraSoundWaveProcedural::UAgoraSoundWaveProcedural(const FObjectInitializer& ObjectInitializer)
-	:Super(ObjectInitializer)
-{
-
-}
-
 int32 UAgoraSoundWaveProcedural::OnGeneratePCMAudio(TArray<uint8>& OutAudio, int32 NumSamples)
 {
 	FScopeLock Lock(&CriticalSectionOfAudioFrames);
 
 	agora::media::IAudioFrameObserverBase::AudioFrame frame;
 
+	// get one frame
 	if (AudioFrames.Num() > 0)
 	{
 		frame = AudioFrames[0];
 	}
 	else
 	{
+		// fail to get one frame
+
 		OutAudio.Reset();
 
 		OutAudio.AddZeroed(NumSamples * sizeof(int16_t));
@@ -29,14 +26,18 @@ int32 UAgoraSoundWaveProcedural::OnGeneratePCMAudio(TArray<uint8>& OutAudio, int
 	}
 
 
+	// Copy Data to OutAudio
+	int ByteSize = frame.bytesPerSample * frame.samplesPerChannel * frame.channels;
+
 	OutAudio.Reset();
 
-	OutAudio.AddZeroed(frame.bytesPerSample * frame.samplesPerChannel * frame.channels);
+	OutAudio.AddZeroed(ByteSize);
 
-	int16_t* OutAudioBuffer = (int16_t*)OutAudio.GetData();
+	auto OutAudioBuffer = OutAudio.GetData();
 
-	FMemory::Memcpy(OutAudioBuffer, frame.buffer, frame.bytesPerSample * frame.samplesPerChannel * frame.channels);
+	FMemory::Memcpy(OutAudioBuffer, frame.buffer, ByteSize);
 
+	// Remove the frame which has been consumed
 	FMemory::Free(AudioFrames[0].buffer);
 
 	AudioFrames.RemoveAt(0, 1, true);
@@ -46,24 +47,33 @@ int32 UAgoraSoundWaveProcedural::OnGeneratePCMAudio(TArray<uint8>& OutAudio, int
 
 Audio::EAudioMixerStreamDataFormat::Type UAgoraSoundWaveProcedural::GetGeneratedPCMDataFormat() const
 {
-	return Super::GetGeneratedPCMDataFormat();
+	return Audio::EAudioMixerStreamDataFormat::Int16;
 }
 
 
 void UAgoraSoundWaveProcedural::AddToFrames(agora::media::IAudioFrameObserverBase::AudioFrame& audioFrame)
 {
+
 	FScopeLock Lock(&CriticalSectionOfAudioFrames);
+	//Make a Copy
 	agora::media::IAudioFrameObserverBase::AudioFrame frame;
 	frame.type = audioFrame.type;
 	frame.samplesPerChannel = audioFrame.samplesPerChannel;
 	frame.bytesPerSample = audioFrame.bytesPerSample;
 	frame.channels = audioFrame.channels;
-	frame.samplesPerSec = audioFrame.samplesPerSec; 
+	frame.samplesPerSec = audioFrame.samplesPerSec;
 	frame.renderTimeMs = audioFrame.renderTimeMs;
 	frame.avsync_type = audioFrame.avsync_type;
-	frame.buffer = FMemory::Malloc(audioFrame.bytesPerSample * audioFrame.samplesPerChannel * audioFrame.channels);
-	FMemory::Memcpy(frame.buffer, audioFrame.buffer, audioFrame.bytesPerSample * audioFrame.samplesPerChannel * audioFrame.channels);
+	int ByteSize = audioFrame.bytesPerSample * audioFrame.samplesPerChannel * audioFrame.channels;
+	frame.buffer = FMemory::Malloc(ByteSize);
+	FMemory::Memcpy(frame.buffer, audioFrame.buffer, ByteSize);
+
 	AudioFrames.Add(frame);
+}
+
+void UAgoraSoundWaveProcedural::Init(TArray<uint8>& InData)
+{
+	lastpos = 0;
 }
 
 void UAgoraSoundWaveProcedural::BeginDestroy()

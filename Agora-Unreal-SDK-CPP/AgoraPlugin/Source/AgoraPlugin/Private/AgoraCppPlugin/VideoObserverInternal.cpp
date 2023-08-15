@@ -16,52 +16,22 @@ VideoObserverInternal::~VideoObserverInternal()
 
 }
 
-bool VideoObserverInternal::onCaptureVideoFrame(VideoFrame& videoFrame)
+bool VideoObserverInternal::onCaptureVideoFrame(agora::rtc::VIDEO_SOURCE_TYPE sourceType, VideoFrame& videoFrame)
 {
-    VideoFrameIdentity config{VIDEO_SOURCE_CAMERA_PRIMARY, 0, ""};
+    VideoFrameIdentity config{ sourceType, 0, ""};
+	setVideoFrame(&config, &videoFrame);
+	if (UserObserver != nullptr) UserObserver->onCaptureVideoFrame(sourceType, videoFrame);
+	return true; 
+}
+
+bool VideoObserverInternal::onPreEncodeVideoFrame(agora::rtc::VIDEO_SOURCE_TYPE sourceType, VideoFrame& videoFrame)
+{
+    VideoFrameIdentity config{ sourceType, 0, "" };
     setVideoFrame(&config, &videoFrame);
-    if (UserObserver != nullptr) UserObserver->onCaptureVideoFrame(videoFrame);
-    return true; 
-}
-
-bool VideoObserverInternal::onRenderVideoFrame(const char* channelId, rtc::uid_t remoteUid, VideoFrame& videoFrame)
-{
-    VideoFrameIdentity config{VIDEO_SOURCE_REMOTE, remoteUid, channelId };
-    setVideoFrame(&config, &videoFrame);
-    if (UserObserver != nullptr) UserObserver->onRenderVideoFrame(channelId, remoteUid, videoFrame);
-    return true; 
-}
-
-bool VideoObserverInternal::onPreEncodeVideoFrame(VideoFrame& videoFrame)
-{
-    return true; 
-}
-
-bool VideoObserverInternal::onSecondaryCameraCaptureVideoFrame(VideoFrame& videoFrame)
-{
-    VideoFrameIdentity config{VIDEO_SOURCE_CAMERA_SECONDARY, 0, ""};
-    setVideoFrame(&config, &videoFrame);
-    if (UserObserver != nullptr) UserObserver->onSecondaryCameraCaptureVideoFrame(videoFrame);
-    return true; 
-}
-
-bool VideoObserverInternal::onSecondaryPreEncodeCameraVideoFrame(VideoFrame& videoFrame)
-{
+    if (UserObserver != nullptr) UserObserver->onPreEncodeVideoFrame(sourceType, videoFrame);
     return true;
 }
 
-bool VideoObserverInternal::onScreenCaptureVideoFrame(VideoFrame& videoFrame)
-{
-    VideoFrameIdentity config{VIDEO_SOURCE_SCREEN_PRIMARY, 0, ""};
-    setVideoFrame(&config, &videoFrame);
-    if (UserObserver != nullptr) UserObserver->onScreenCaptureVideoFrame(videoFrame);
-    return true; 
-}
-
-bool VideoObserverInternal::onPreEncodeScreenVideoFrame(VideoFrame& videoFrame)
-{
-    return true;
-}
 
 bool VideoObserverInternal::onMediaPlayerVideoFrame(VideoFrame& videoFrame, int mediaPlayerId)
 {
@@ -73,16 +43,11 @@ bool VideoObserverInternal::onMediaPlayerVideoFrame(VideoFrame& videoFrame, int 
     return true; 
 }
 
-bool VideoObserverInternal::onSecondaryScreenCaptureVideoFrame(VideoFrame& videoFrame)
+bool VideoObserverInternal::onRenderVideoFrame(const char* channelId, rtc::uid_t remoteUid, VideoFrame& videoFrame)
 {
-    VideoFrameIdentity config{VIDEO_SOURCE_SCREEN_SECONDARY, 0, ""};
+    VideoFrameIdentity config{ VIDEO_SOURCE_REMOTE, remoteUid, channelId };
     setVideoFrame(&config, &videoFrame);
-    if (UserObserver != nullptr) UserObserver->onSecondaryScreenCaptureVideoFrame(videoFrame);
-    return true; 
-}
-
-bool VideoObserverInternal::onSecondaryPreEncodeScreenVideoFrame(VideoFrame& videoFrame)
-{
+    if (UserObserver != nullptr) UserObserver->onRenderVideoFrame(channelId, remoteUid, videoFrame);
     return true;
 }
 
@@ -108,6 +73,12 @@ agora::media::base::VIDEO_PIXEL_FORMAT VideoObserverInternal::getVideoFormatPref
 bool VideoObserverInternal::getRotationApplied()
 {
     return true;
+}
+
+
+bool VideoObserverInternal::getMirrorApplied()
+{
+    return false;
 }
 
 uint32_t VideoObserverInternal::getObservedFramePosition()

@@ -1,5 +1,4 @@
 #include "AgoraCppPlugin/Include/VideoRender.h"
-#include "AgoraCppPlugin/Include/MediaEngineProxy.h"
 #include "AgoraCppPlugin/Include/AgoraHeaderBase.h"
 #include "AgoraCppPlugin/Include/RtcEngineProxy.h"
 #include "AgoraCppPlugin/Include/VideoObserverInternal.h"

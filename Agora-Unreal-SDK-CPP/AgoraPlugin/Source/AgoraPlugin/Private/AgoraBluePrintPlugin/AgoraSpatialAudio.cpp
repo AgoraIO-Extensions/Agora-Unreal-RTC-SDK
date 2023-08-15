@@ -56,7 +56,8 @@ int UILocalSpatialAudioEngine::UpdateRemotePositionEx(int64 uid, FRemoteVoicePos
 	FMemory::Memcpy(remoteVoicePositionInfo.forward, forward);
 
 	agora::rtc::RtcConnection rtcConnection;
-	rtcConnection.channelId = TCHAR_TO_ANSI(*connection.channelId);
+	std::string StdStrChannelId = TCHAR_TO_UTF8(*connection.channelId);
+	rtcConnection.channelId = StdStrChannelId.c_str();
 	rtcConnection.localUid = connection.localUid;
 	if (LocalSpatialAudioEngine != nullptr)
 	{
@@ -75,7 +76,8 @@ int UILocalSpatialAudioEngine::RemoveRemotePosition(int64 uid)
 int UILocalSpatialAudioEngine::RemoveRemotePositionEx(int64 uid, FRtcConnection& connection)
 {
 	agora::rtc::RtcConnection rtcConnection;
-	rtcConnection.channelId = TCHAR_TO_ANSI(*connection.channelId);
+	std::string StdStrChannelId = TCHAR_TO_UTF8(*connection.channelId);
+	rtcConnection.channelId = StdStrChannelId.c_str();
 	rtcConnection.localUid = connection.localUid;
 	if (LocalSpatialAudioEngine != nullptr)
 	{
@@ -94,13 +96,27 @@ int UILocalSpatialAudioEngine::ClearRemotePositions()
 int UILocalSpatialAudioEngine::ClearRemotePositionsEx(FRtcConnection& connection)
 {
 	agora::rtc::RtcConnection rtcConnection;
-	rtcConnection.channelId = TCHAR_TO_ANSI(*connection.channelId);
+	std::string StdStrChannelId = TCHAR_TO_UTF8(*connection.channelId);
+	rtcConnection.channelId = StdStrChannelId.c_str();
 	rtcConnection.localUid = connection.localUid;
 	if (LocalSpatialAudioEngine != nullptr)
 	{
 		return LocalSpatialAudioEngine->clearRemotePositionsEx(rtcConnection);
 	}
 	return -ERROR_NULLPTR;
+}
+
+
+int UILocalSpatialAudioEngine::SetRemoteAudioAttenuation(int64 uid, bool forceSet, FString attenuation /*= "0.0"*/)
+{
+	if (LocalSpatialAudioEngine != nullptr)
+	{
+		double ValAttenuation = FCString::Atod(*attenuation);
+		auto ret = LocalSpatialAudioEngine->setRemoteAudioAttenuation(uid,ValAttenuation, forceSet);
+		return ret;
+	}
+	return -ERROR_NULLPTR;
+
 }
 
 void UILocalSpatialAudioEngine::Release()
@@ -198,7 +214,8 @@ int UILocalSpatialAudioEngine::UpdateSelfPositionEx(FVector position, FVector ax
 	up[2] = axisUp.Z;
 
 	agora::rtc::RtcConnection rtcConnection;
-	rtcConnection.channelId = TCHAR_TO_ANSI(*connection.channelId);
+	std::string StdStrChannelId = TCHAR_TO_UTF8(*connection.channelId);
+	rtcConnection.channelId = StdStrChannelId.c_str();
 	rtcConnection.localUid = connection.localUid;
 
 	if (LocalSpatialAudioEngine != nullptr)
@@ -239,7 +256,7 @@ int UILocalSpatialAudioEngine::SetParameters(FString params)
 {
 	if (LocalSpatialAudioEngine != nullptr)
 	{
-		return LocalSpatialAudioEngine->setParameters(TCHAR_TO_ANSI(*params));
+		return LocalSpatialAudioEngine->setParameters(TCHAR_TO_UTF8(*params));
 	}
 	return -ERROR_NULLPTR;
 }
@@ -258,6 +275,58 @@ int UILocalSpatialAudioEngine::MuteAllRemoteAudioStreams(bool mute)
 	if (LocalSpatialAudioEngine != nullptr)
 	{
 		return LocalSpatialAudioEngine->muteAllRemoteAudioStreams(mute);
+	}
+	return -ERROR_NULLPTR;
+}
+
+
+int UILocalSpatialAudioEngine::SetZones(TArray<FSpatialAudioZone> zones)
+{
+	int zoneCount = zones.Num();
+	if (LocalSpatialAudioEngine != nullptr)
+	{
+		agora::rtc::SpatialAudioZone* valZones = new agora::rtc::SpatialAudioZone[zoneCount];
+		for (int i = 0; i < zones.Num(); i++) {
+			valZones[i].zoneSetId = zones[i].zoneSetId;
+			valZones[i].position[0] = zones[i].position.X;
+			valZones[i].position[1] = zones[i].position.Y;
+			valZones[i].position[2] = zones[i].position.Z;
+			valZones[i].forward[0] = zones[i].forward.X;
+			valZones[i].forward[1] = zones[i].forward.Y;
+			valZones[i].forward[2] = zones[i].forward.Z;
+			valZones[i].right[0] = zones[i].right.X;
+			valZones[i].right[1] = zones[i].right.Y;
+			valZones[i].right[2] = zones[i].right.Z;
+			valZones[i].up[0] = zones[i].up.X;
+			valZones[i].up[1] = zones[i].up.Y;
+			valZones[i].up[2] = zones[i].up.Z;
+			valZones[i].forwardLength = zones[i].forwardLength;
+			valZones[i].rightLength = zones[i].rightLength;
+			valZones[i].upLength = zones[i].upLength;
+			valZones[i].audioAttenuation = zones[i].audioAttenuation;
+		}
+
+		return LocalSpatialAudioEngine->setZones(valZones, zoneCount);
+	}
+	return -ERROR_NULLPTR;
+}
+
+int UILocalSpatialAudioEngine::SetPlayerAttenuation(int playerId, bool forceSet, FString attenuation /*= "0.0"*/)
+{
+	if (LocalSpatialAudioEngine != nullptr)
+	{
+		double ValAttenuation = FCString::Atod(*attenuation);
+		auto ret = LocalSpatialAudioEngine->setPlayerAttenuation(playerId,ValAttenuation, forceSet);
+		return ret;
+	}
+	return -ERROR_NULLPTR;
+}
+
+int UILocalSpatialAudioEngine::muteRemoteAudioStream(int64 uid, bool mute)
+{
+	if (LocalSpatialAudioEngine != nullptr)
+	{
+		return LocalSpatialAudioEngine->muteRemoteAudioStream(uid, mute);
 	}
 	return -ERROR_NULLPTR;
 }

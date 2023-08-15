@@ -25,23 +25,11 @@ public:
 
     virtual ~VideoObserverInternal() override;
 
-    virtual bool onCaptureVideoFrame(VideoFrame& videoFrame) override;
+    virtual bool onCaptureVideoFrame(agora::rtc::VIDEO_SOURCE_TYPE sourceType, VideoFrame& videoFrame)  override;
 
-    virtual bool onPreEncodeVideoFrame(VideoFrame& videoFrame) override;
-
-    virtual bool onSecondaryCameraCaptureVideoFrame(VideoFrame& videoFrame) override;
-
-    virtual bool onSecondaryPreEncodeCameraVideoFrame(VideoFrame& videoFrame) override;
-
-    virtual bool onScreenCaptureVideoFrame(VideoFrame& videoFrame) override;
-
-    virtual bool onPreEncodeScreenVideoFrame(VideoFrame& videoFrame) override;
+    virtual bool onPreEncodeVideoFrame(agora::rtc::VIDEO_SOURCE_TYPE sourceType, VideoFrame& videoFrame) override;
 
     virtual bool onMediaPlayerVideoFrame(VideoFrame& videoFrame, int mediaPlayerId) override;
-
-    virtual bool onSecondaryScreenCaptureVideoFrame(VideoFrame& videoFrame) override;
-
-    virtual bool onSecondaryPreEncodeScreenVideoFrame(VideoFrame& videoFrame) override;
 
     virtual bool onRenderVideoFrame(const char* channelId, rtc::uid_t remoteUid, VideoFrame& videoFrame) override;
 
@@ -53,6 +41,8 @@ public:
 
     virtual bool getRotationApplied() override;
     
+    virtual bool getMirrorApplied() override;
+
     virtual uint32_t getObservedFramePosition() override;
 
     virtual bool isExternal() override;

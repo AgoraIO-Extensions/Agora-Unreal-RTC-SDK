@@ -14,11 +14,14 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSeekDone, ESTREAMING_SRC_ERR, err
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnEofOnce, int64, progress_ms, int64, repeat_count);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnProgress, int64, position_ms);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnMetaData, const int64, data, int, length);
+
+class IMediaStreamingSourceObserverClassWrapper : public agora::rtc::IMediaStreamingSourceObserver {};
+
 /**
  * 
  */
 UCLASS(Blueprintable)
-class AGORAPLUGIN_API UIMediaStreamingSourceObserver : public UObject, public agora::rtc::IMediaStreamingSourceObserver
+class AGORAPLUGIN_API UIMediaStreamingSourceObserver : public UObject, public IMediaStreamingSourceObserverClassWrapper
 {
 	GENERATED_BODY()
 public:

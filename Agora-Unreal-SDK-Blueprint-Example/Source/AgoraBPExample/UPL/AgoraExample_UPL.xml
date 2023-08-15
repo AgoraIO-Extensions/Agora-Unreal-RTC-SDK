@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<root xmlns:android="http://schemas.android.com/apk/res/android">
+	<!-- initialization-->
+	<init>
+		<log text="AgoraExample UPL Init"/>
+	</init>
+
+	<!-- modify AndroidManifest.xml -->
+	<androidManifestUpdates>
+
+		<log text="androidManifestUpdates begin" />
+		<log text="addPermission begin" />
+
+		<loopElements tag="meta-data">
+			<setStringFromAttribute result="ApplicationSectionName" tag="$" name="android:name"/>
+			<log text="UPL ---- > ApplicationSectionName $S(ApplicationSectionName)" />
+			<setBoolIsEqual result="bUseExternalFilesDir" arg1="$S(ApplicationSectionName)" arg2="com.epicgames.ue4.GameActivity.bUseExternalFilesDir"/>
+			<log text="UPL Restult ---- > bUseExternalFilesDir $B(bUseExternalFilesDir)" />
+			<if condition="bUseExternalFilesDir">
+				<true>
+					<removeElement tag="$"/>
+				</true>
+			</if>
+		</loopElements>
+
+		<addElements tag="application">
+			<meta-data android:name="com.epicgames.ue4.GameActivity.bUseExternalFilesDir" android:value="true" />
+		</addElements>
+
+	</androidManifestUpdates>
+
+	<log text="AgoraExample UPL End"/>
+</root>

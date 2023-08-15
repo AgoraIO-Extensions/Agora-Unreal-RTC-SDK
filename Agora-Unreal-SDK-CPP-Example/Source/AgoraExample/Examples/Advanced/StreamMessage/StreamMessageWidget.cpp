@@ -2,103 +2,26 @@
 
 
 #include "StreamMessageWidget.h"
+#include <string>
 
 void UStreamMessageWidget::InitAgoraWidget(FString APP_ID, FString TOKEN, FString CHANNEL_NAME)
 {
-	CheckAndroidPermission();
+	LogMsgViewPtr = UBFL_Logger::CreateLogView(CanvasPanel_LogMsgView, DraggableLogMsgViewTemplate);
+
+	CheckPermission();
 
 	InitAgoraEngine(APP_ID, TOKEN, CHANNEL_NAME);
 
-	SetUpUIEvent();
+	JoinChannel();
 
-	OnJoinChannel();
+	CreateDataStreamId();
 }
 
-
-void UStreamMessageWidget::InitAgoraEngine(FString APP_ID, FString TOKEN, FString CHANNEL_NAME)
-{
-	agora::rtc::RtcEngineContext RtcEngineContext;
-
-	RtcEngineContext.appId = TCHAR_TO_ANSI(*APP_ID);
-	RtcEngineContext.eventHandler = this;
-	RtcEngineContext.channelProfile = agora::CHANNEL_PROFILE_TYPE::CHANNEL_PROFILE_LIVE_BROADCASTING;
-	RtcEngineContext.audioScenario = agora::rtc::AUDIO_SCENARIO_TYPE::AUDIO_SCENARIO_GAME_STREAMING;
-
-	AppId = APP_ID;
-	Token = TOKEN;
-	ChannelName = CHANNEL_NAME;
-
-	RtcEngineProxy = agora::rtc::ue::createAgoraRtcEngine();
-
-	RtcEngineProxy->initialize(RtcEngineContext);
-}
-
-void UStreamMessageWidget::SetUpUIEvent()
-{
-	SendBtn->OnClicked.AddDynamic(this, &UStreamMessageWidget::onSendButtonClick);
-	BackHomeBtn->OnClicked.AddDynamic(this, &UStreamMessageWidget::OnBackHomeButtonClick);
-}
-
-void UStreamMessageWidget::OnBackHomeButtonClick()
-{
-	if (RtcEngineProxy != nullptr)
-	{
-		RtcEngineProxy->unregisterEventHandler(this);
-		RtcEngineProxy->release();
-		delete RtcEngineProxy;
-		RtcEngineProxy = nullptr;
-	}
-	UGameplayStatics::OpenLevel(UGameplayStatics::GetPlayerController(GWorld, 0)->GetWorld(), FName("MainLevel"));
-}
-void UStreamMessageWidget::onSendButtonClick()
-{
-	FString sendMessage = SendTextBox->GetText().ToString();
-
-	if (sendMessage =="")
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Dont send empty message!"));
-		return;
-	}
-	int streamId = CreateDataStreamId();
-	if (streamId < 0)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("CreateDataStream failed!"));
-		return;
-	}
-	else
-	{
-		SendStreamMessage(streamId, TCHAR_TO_UTF8(*sendMessage));
-
-		SendTextBox->SetText(FText::GetEmpty());
-	}
-}
-
-
-int UStreamMessageWidget::CreateDataStreamId()
-{
-	if (this->StreamId == -1)
-	{
-		DataStreamConfig config;
-		config.syncWithAudio = false;
-		config.ordered = true;
-		int ret = RtcEngineProxy->createDataStream(&StreamId, config);
-		UE_LOG(LogTemp, Warning, TEXT("CreateDataStream: ret %d, streamId %d"), ret,StreamId);
-	}
-	return StreamId;
-}
-
-void UStreamMessageWidget::SendStreamMessage(int streamId, const char* message)
-{
-	int ret = RtcEngineProxy->sendStreamMessage(streamId, message, strlen(message)+1);
-	UE_LOG(LogTemp, Warning, TEXT("sendStreamMessage: message %s,length %d"), UTF8_TO_TCHAR(message), strlen(message));
-	UE_LOG(LogTemp, Warning, TEXT("SendStreamMessage: ret %d"), ret);
-}
-
-void UStreamMessageWidget::CheckAndroidPermission()
+void UStreamMessageWidget::CheckPermission()
 {
 #if PLATFORM_ANDROID
-	FString pathfromName = UGameplayStatics::GetPlatformName();
-	if (pathfromName == "Android")
+	FString TargetPlatformName = UGameplayStatics::GetPlatformName();
+	if (TargetPlatformName == "Android")
 	{
 		TArray<FString> AndroidPermission;
 		AndroidPermission.Add(FString("android.permission.RECORD_AUDIO"));
@@ -109,65 +32,229 @@ void UStreamMessageWidget::CheckAndroidPermission()
 #endif
 }
 
-void UStreamMessageWidget::OnJoinChannel() {
-	UE_LOG(LogTemp, Warning, TEXT("UStreamMessageWidget OnJoinButtonClick ======"));
+void UStreamMessageWidget::InitAgoraEngine(FString APP_ID, FString TOKEN, FString CHANNEL_NAME)
+{
+	agora::rtc::RtcEngineContext RtcEngineContext;
 
+	UserRtcEventHandler = MakeShared<FUserRtcEventHandler>(this);
+	std::string StdStrAppId = TCHAR_TO_UTF8(*APP_ID);
+	RtcEngineContext.appId = StdStrAppId.c_str();
+	RtcEngineContext.eventHandler = UserRtcEventHandler.Get();
+	RtcEngineContext.channelProfile = agora::CHANNEL_PROFILE_TYPE::CHANNEL_PROFILE_LIVE_BROADCASTING;
+
+	AppId = APP_ID;
+	Token = TOKEN;
+	ChannelName = CHANNEL_NAME;
+
+	RtcEngineProxy = agora::rtc::ue::createAgoraRtcEngine();
+
+	int SDKBuild = 0;
+	FString SDKInfo = FString::Printf(TEXT("SDK Version: %s Build: %d"), UTF8_TO_TCHAR(RtcEngineProxy->getVersion(&SDKBuild)), SDKBuild);
+	UBFL_Logger::Print(FString::Printf(TEXT("SDK Info:  %s"), *SDKInfo), LogMsgViewPtr);
+
+	int ret = RtcEngineProxy->initialize(RtcEngineContext);
+	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
+
+}
+
+void UStreamMessageWidget::JoinChannel()
+{
 	RtcEngineProxy->enableAudio();
-	RtcEngineProxy->joinChannel(TCHAR_TO_ANSI(*Token), TCHAR_TO_ANSI(*ChannelName), "", 0);
-	RtcEngineProxy->setClientRole(agora::rtc::CLIENT_ROLE_TYPE::CLIENT_ROLE_BROADCASTER);
+	RtcEngineProxy->enableVideo();
+	RtcEngineProxy->setClientRole(CLIENT_ROLE_BROADCASTER);
+	int ret = RtcEngineProxy->joinChannel(TCHAR_TO_UTF8(*Token), TCHAR_TO_UTF8(*ChannelName), "", 0);
+	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 }
 
 
-#pragma region RtcEngineCallBack
-void UStreamMessageWidget::onJoinChannelSuccess(const char* channel, agora::rtc::uid_t uid, int elapsed)
+void UStreamMessageWidget::OnBtnBackToHomeClicked()
 {
-	AsyncTask(ENamedThreads::GameThread, [=]()
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Blue, FString::Printf(TEXT("UStreamMessageWidget::JoinChannelSuccess uid: %u"), uid));
-	});
+	UnInitAgoraEngine();
+	UGameplayStatics::OpenLevel(UGameplayStatics::GetPlayerController(GWorld, 0)->GetWorld(), FName("MainLevel"));
 }
 
 
-void UStreamMessageWidget::onStreamMessage(uid_t userId, int streamId, const char* data, size_t length, uint64_t sentTs)
+void UStreamMessageWidget::OnBtnSendClicked()
 {
-	char* tempdata = new char[length];
-	FMemory::Memcpy(tempdata, data, length*sizeof(char));
-	FString temp = FString(UTF8_TO_TCHAR(tempdata));
-	//std::string temp(tempdata);
-	delete[] tempdata;
-	AsyncTask(ENamedThreads::GameThread, [=]()
+	FString SentMsg = ET_MsgText->GetText().ToString();
+
+	if (SentMsg == "")
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Blue, FString::Printf(TEXT("UStreamMessageWidget::onStreamMessage uid: %u,streamId %d,data %s,length %d,sentTs %d"), userId, streamId, *temp,length,sentTs));
-	});
-
-}
-
-void UStreamMessageWidget::onStreamMessageError(uid_t userId, int streamId, int code, int missed, int cached)
-{
-	AsyncTask(ENamedThreads::GameThread, [=]()
+		UBFL_Logger::PrintWarn(FString::Printf(TEXT("%s Dont send empty message!"), *FString(FUNCTION_MACRO)), LogMsgViewPtr);
+		return;
+	}
+	int streamId = CreateDataStreamId();
+	if (streamId < 0)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Blue, FString::Printf(TEXT("UStreamMessageWidget::onStreamMessage uid: %u,streamId %d,code %d,missed %d,cached %d"), userId, streamId, code, missed, cached));
-	});
-}
 
-void UStreamMessageWidget::onUserJoined(agora::rtc::uid_t uid, int elapsed) {
-	AsyncTask(ENamedThreads::GameThread, [=]()
+		UBFL_Logger::PrintWarn(FString::Printf(TEXT("%s CreateDataStream failed!"), *FString(FUNCTION_MACRO)), LogMsgViewPtr);
+		return;
+	}
+	else
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Blue, FString::Printf(TEXT("UStreamMessageWidget::onUserJoined uid: %u"), uid));
-	});
-
-}
-#pragma endregion RtcEngineCallBack
-
-
-void UStreamMessageWidget::NativeDestruct() {
-	Super::NativeDestruct();
-
-	if (RtcEngineProxy != nullptr)
-	{
-		RtcEngineProxy->unregisterEventHandler(this);
-		RtcEngineProxy->release();
-		delete RtcEngineProxy;
-		RtcEngineProxy = nullptr;
+		SendStreamMessage(streamId, SentMsg);
+		ET_MsgText->SetText(FText::GetEmpty());
 	}
 }
+
+
+int UStreamMessageWidget::CreateDataStreamId()
+{
+	if (StreamId == -1)
+	{
+		DataStreamConfig config;
+		config.syncWithAudio = false;
+		config.ordered = true;
+		int ret = RtcEngineProxy->createDataStream(&StreamId, config);
+		UBFL_Logger::Print(FString::Printf(TEXT("%s createDataStream ret %d, streamId %d"), *FString(FUNCTION_MACRO), ret, StreamId), LogMsgViewPtr);
+	}
+	return StreamId;
+}
+
+void UStreamMessageWidget::SendStreamMessage(int StreamID, FString Msg)
+{
+	std::string StdStrMsg = TCHAR_TO_UTF8(*Msg);
+	int Size = strlen(StdStrMsg.c_str()) + 1;
+	int ret = RtcEngineProxy->sendStreamMessage(StreamID, TCHAR_TO_UTF8(*Msg), Size);
+	UBFL_Logger::Print(FString::Printf(TEXT("%s sendStreamMessage ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
+	UBFL_Logger::Print(FString::Printf(TEXT("%s sendStreamMessage  message %s,length %d"), *FString(FUNCTION_MACRO), *Msg ,Msg.Len()), LogMsgViewPtr);
+}
+
+
+void UStreamMessageWidget::NativeDestruct()
+{
+	Super::NativeDestruct();
+
+	UnInitAgoraEngine();
+
+	
+}
+
+
+
+void UStreamMessageWidget::UnInitAgoraEngine()
+{
+	if (RtcEngineProxy != nullptr)
+	{
+		RtcEngineProxy->leaveChannel();
+		RtcEngineProxy->unregisterEventHandler(UserRtcEventHandler.Get());
+		RtcEngineProxy->release();
+		RtcEngineProxy = nullptr;
+
+		UBFL_Logger::Print(FString::Printf(TEXT("%s release agora engine"), *FString(FUNCTION_MACRO)), LogMsgViewPtr);
+	}
+}
+
+#pragma region AgoraCallback - IRtcEngineEventHandler
+
+void UStreamMessageWidget::FUserRtcEventHandler::onJoinChannelSuccess(const char* channel, agora::rtc::uid_t uid, int elapsed)
+{
+	if (!IsWidgetValid())
+		return;
+
+	AsyncTask(ENamedThreads::GameThread, [=]()
+		{
+			if (!IsWidgetValid())
+			{
+				UBFL_Logger::PrintError(FString::Printf(TEXT("%s bIsDestruct "), *FString(FUNCTION_MACRO)));
+				return;
+			}
+			UBFL_Logger::Print(FString::Printf(TEXT("%s uid=%d"), *FString(FUNCTION_MACRO), uid), WidgetPtr->GetLogMsgViewPtr());
+
+		});
+}
+
+void UStreamMessageWidget::FUserRtcEventHandler::onLeaveChannel(const agora::rtc::RtcStats& stats)
+{
+	if (!IsWidgetValid())
+		return;
+	AsyncTask(ENamedThreads::GameThread, [=]()
+		{
+			if (!IsWidgetValid())
+			{
+				UBFL_Logger::PrintError(FString::Printf(TEXT("%s bIsDestruct "), *FString(FUNCTION_MACRO)));
+				return;
+			}
+			UBFL_Logger::Print(FString::Printf(TEXT("%s"), *FString(FUNCTION_MACRO)), WidgetPtr->GetLogMsgViewPtr());
+
+		});
+
+}
+
+
+void UStreamMessageWidget::FUserRtcEventHandler::onUserJoined(agora::rtc::uid_t uid, int elapsed)
+{
+	if (!IsWidgetValid())
+		return;
+	AsyncTask(ENamedThreads::GameThread, [=]()
+		{
+			if (!IsWidgetValid())
+			{
+				UBFL_Logger::PrintError(FString::Printf(TEXT("%s bIsDestruct "), *FString(FUNCTION_MACRO)));
+				return;
+			}
+			UBFL_Logger::Print(FString::Printf(TEXT("%s uid=%d"), *FString(FUNCTION_MACRO), uid), WidgetPtr->GetLogMsgViewPtr());
+
+		});
+
+}
+
+void UStreamMessageWidget::FUserRtcEventHandler::onUserOffline(agora::rtc::uid_t uid, agora::rtc::USER_OFFLINE_REASON_TYPE reason)
+{
+	if (!IsWidgetValid())
+		return;
+
+	AsyncTask(ENamedThreads::GameThread, [=]()
+		{
+
+			if (!IsWidgetValid())
+			{
+				UBFL_Logger::PrintError(FString::Printf(TEXT("%s bIsDestruct "), *FString(FUNCTION_MACRO)));
+				return;
+			}
+			UBFL_Logger::Print(FString::Printf(TEXT("%s uid=%d"), *FString(FUNCTION_MACRO), uid), WidgetPtr->GetLogMsgViewPtr());
+
+		});
+}
+
+void UStreamMessageWidget::FUserRtcEventHandler::onStreamMessage(uid_t userId, int streamId, const char* data, size_t length, uint64_t sentTs)
+{
+	if (!IsWidgetValid())
+		return;
+
+	FString Msg = UTF8_TO_TCHAR(data);
+
+	AsyncTask(ENamedThreads::GameThread, [=]()
+		{
+
+			if (!IsWidgetValid())
+			{
+				UBFL_Logger::PrintError(FString::Printf(TEXT("%s bIsDestruct "), *FString(FUNCTION_MACRO)));
+				return;
+			}
+
+			UBFL_Logger::Print(FString::Printf(TEXT("%s  uid: %u,streamId %d,length %d,sentTs %d"), *FString(FUNCTION_MACRO), userId, streamId, Msg.Len(), sentTs), WidgetPtr->GetLogMsgViewPtr());
+			UBFL_Logger::Print(FString::Printf(TEXT("===> Msg[%s]"), *Msg), WidgetPtr->GetLogMsgViewPtr());
+		});
+}
+
+void UStreamMessageWidget::FUserRtcEventHandler::onStreamMessageError(uid_t userId, int streamId, int code, int missed, int cached)
+{
+	if (!IsWidgetValid())
+		return;
+
+	AsyncTask(ENamedThreads::GameThread, [=]()
+		{
+
+			if (!IsWidgetValid())
+			{
+				UBFL_Logger::PrintError(FString::Printf(TEXT("%s bIsDestruct "), *FString(FUNCTION_MACRO)));
+				return;
+			}
+
+			UBFL_Logger::Print(FString::Printf(TEXT("%s uid: %u,streamId %d,code %d,missed %d,cached %d"), *FString(FUNCTION_MACRO), userId, streamId, code, missed, cached), WidgetPtr->GetLogMsgViewPtr());
+
+		});
+}
+
+#pragma endregion RtcEngineCallBack

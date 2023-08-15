@@ -15,12 +15,14 @@
 				"UMG",
 				"CoreUObject"
 			]
-		}
-	],
-	"Plugins": [
+		},
 		{
-			"Name": "AudioCapture",
-			"Enabled": false
+			"Name": "MyShaderLibrary",
+			"Type": "Runtime",
+			"LoadingPhase": "PostConfigInit",
+			"AdditionalDependencies": [
+				"Engine"
+			]
 		}
 	]
 }

@@ -3,6 +3,7 @@
 
 #include "AgoraBluePrintPlugin/AgoraMediaPlayer.h"
 #include "AgoraCppPlugin/IAgoraMediaPlayer.h"
+#include <string>
 
 
 int UIMediaPlayer::GetMediaPlayerId()
@@ -11,18 +12,20 @@ int UIMediaPlayer::GetMediaPlayerId()
 }
 int UIMediaPlayer::Open(FString url, int64 startPos)
 {
-	return MediaPlayer->open(TCHAR_TO_ANSI(*url), startPos);
+	return MediaPlayer->open(TCHAR_TO_UTF8(*url), startPos);
 }
 
 int UIMediaPlayer::OpenWithCustomSource(int64 startPos, UIMediaPlayerCustomDataProvider* provider)
 {
 	return MediaPlayer->openWithCustomSource(startPos, provider);
 }
-int UIMediaPlayer::OpenWithMediaSource(FAgoraMediaSource& source)
+int UIMediaPlayer::OpenWithMediaSource(const FAgoraMediaSource& source)
 {
 	agora::media::base::MediaSource mediaSource;
-	mediaSource.url = TCHAR_TO_ANSI(*source.url);
-	mediaSource.uri = TCHAR_TO_ANSI(*source.uri);
+	std::string StdStringURL = TCHAR_TO_UTF8(*source.url);
+	std::string StdStringURI = TCHAR_TO_UTF8(*source.uri);
+	mediaSource.url = StdStringURL.c_str();
+	mediaSource.uri = StdStringURI.c_str();
 	mediaSource.startPos = source.startPos;
 	mediaSource.autoPlay = source.autoPlay;
 	mediaSource.enableCache = source.enableCache;
@@ -125,13 +128,21 @@ int UIMediaPlayer::SelectAudioTrack(int index)
 	return MediaPlayer->selectAudioTrack(index);
 }
 
-int UIMediaPlayer::SetPlayerOption(FString key, FString value)
+int UIMediaPlayer::SetPlayerOptionInInt(FString key, int value)
 {
-	return MediaPlayer->setPlayerOption(TCHAR_TO_ANSI(*key), TCHAR_TO_ANSI(*value));
+	auto ret = MediaPlayer->setPlayerOption(TCHAR_TO_UTF8(*key), value);
+	return ret;
 }
+
+int UIMediaPlayer::SetPlayerOptionInString(FString key, FString value)
+{
+	auto ret = MediaPlayer->setPlayerOption(TCHAR_TO_UTF8(*key), TCHAR_TO_UTF8(*value));
+	return ret;
+}
+
 int UIMediaPlayer::TakeScreenshot(FString filename)
 {
-	return MediaPlayer->takeScreenshot(TCHAR_TO_ANSI(*filename));
+	return MediaPlayer->takeScreenshot(TCHAR_TO_UTF8(*filename));
 }
 int UIMediaPlayer::SelectInternalSubtitle(int index)
 {
@@ -139,7 +150,7 @@ int UIMediaPlayer::SelectInternalSubtitle(int index)
 }
 int UIMediaPlayer::SetExternalSubtitle(FString url)
 {
-	return MediaPlayer->setExternalSubtitle(TCHAR_TO_ANSI(*url));
+	return MediaPlayer->setExternalSubtitle(TCHAR_TO_UTF8(*url));
 }
 EMEDIA_PLAYER_STATE UIMediaPlayer::GetState()
 {
@@ -185,13 +196,13 @@ int UIMediaPlayer::UnregisterPlayerSourceObserver(UIMediaPlayerSourceObserver* o
 {
 	return MediaPlayer->unregisterPlayerSourceObserver(observer);
 }
-int UIMediaPlayer::RegisterAudioFrameObserver(UIAudioFrameObserver* observer, ERAW_AUDIO_FRAME_OP_MODE_TYPE mode)
+int UIMediaPlayer::RegisterAudioFrameObserver(UIAudioPcmFrameSink* observer, ERAW_AUDIO_FRAME_OP_MODE_TYPE mode)
 {
-	return MediaPlayer->registerAudioFrameObserver((agora::media::base::IAudioFrameObserver*)observer, (agora::rtc::RAW_AUDIO_FRAME_OP_MODE_TYPE)mode);
+	return MediaPlayer->registerAudioFrameObserver((agora::media::IAudioPcmFrameSink*)observer, (agora::rtc::RAW_AUDIO_FRAME_OP_MODE_TYPE)mode);
 }
-int UIMediaPlayer::UnregisterAudioFrameObserver(UIAudioFrameObserver* observer)
+int UIMediaPlayer::UnregisterAudioFrameObserver(UIAudioPcmFrameSink* observer)
 {
-	return MediaPlayer->unregisterAudioFrameObserver((agora::media::base::IAudioFrameObserver*)observer);
+	return MediaPlayer->unregisterAudioFrameObserver((agora::media::IAudioPcmFrameSink*)observer);
 }
 int UIMediaPlayer::RegisterVideoFrameObserver(UIVideoFrameObserver* observer)
 {
@@ -223,7 +234,7 @@ FString UIMediaPlayer::GetPlaySrc()
 }
 int UIMediaPlayer::OpenWithAgoraCDNSrc(FString src, int64 startPos)
 {
-	return MediaPlayer->openWithAgoraCDNSrc(TCHAR_TO_ANSI(*src), startPos);
+	return MediaPlayer->openWithAgoraCDNSrc(TCHAR_TO_UTF8(*src), startPos);
 }
 int UIMediaPlayer::GetAgoraCDNLineCount()
 {
@@ -243,59 +254,32 @@ int UIMediaPlayer::EnableAutoSwitchAgoraCDN(bool enable)
 }
 int UIMediaPlayer::RenewAgoraCDNSrcToken(FString token, int64 ts)
 {
-	return MediaPlayer->renewAgoraCDNSrcToken(TCHAR_TO_ANSI(*token), ts);
+	return MediaPlayer->renewAgoraCDNSrcToken(TCHAR_TO_UTF8(*token), ts);
 }
 int UIMediaPlayer::SwitchAgoraCDNSrc(FString src, bool syncPts)
 {
-	return MediaPlayer->switchAgoraCDNSrc(TCHAR_TO_ANSI(*src), syncPts);
+	return MediaPlayer->switchAgoraCDNSrc(TCHAR_TO_UTF8(*src), syncPts);
 }
 int UIMediaPlayer::SwitchSrc(FString src, bool syncPts)
 {
-	return MediaPlayer->switchSrc(TCHAR_TO_ANSI(*src), syncPts);
+	return MediaPlayer->switchSrc(TCHAR_TO_UTF8(*src), syncPts);
 }
 int UIMediaPlayer::PreloadSrc(FString src, int64 startPos)
 {
-	return MediaPlayer->preloadSrc(TCHAR_TO_ANSI(*src), startPos);
+	return MediaPlayer->preloadSrc(TCHAR_TO_UTF8(*src), startPos);
 }
 int UIMediaPlayer::PlayPreloadedSrc(FString src)
 {
-	return MediaPlayer->playPreloadedSrc(TCHAR_TO_ANSI(*src));
+	return MediaPlayer->playPreloadedSrc(TCHAR_TO_UTF8(*src));
 }
 int UIMediaPlayer::UnloadSrc(FString src)
 {
-	return MediaPlayer->unloadSrc(TCHAR_TO_ANSI(*src));
+	return MediaPlayer->unloadSrc(TCHAR_TO_UTF8(*src));
 }
-int UIMediaPlayer::SetSpatialAudioParams(FSpatialAudioParams& params)
+int UIMediaPlayer::SetSpatialAudioParams(const FSpatialAudioParams& params)
 {
 	agora::SpatialAudioParams spatialAudioParams;
-	if (params.speaker_azimuthValue != AGORAOPTIONAL::AGORA_NULL_VALUE)
-	{
-		spatialAudioParams.speaker_azimuth = params.speaker_azimuth;
-	}
-	if (params.speaker_elevationValue != AGORAOPTIONAL::AGORA_NULL_VALUE)
-	{
-		spatialAudioParams.speaker_elevation = params.speaker_elevation;
-	}
-	if (params.speaker_distanceValue != AGORAOPTIONAL::AGORA_NULL_VALUE)
-	{
-		spatialAudioParams.speaker_distance = params.speaker_distance;
-	}
-	if (params.speaker_orientationValue != AGORAOPTIONAL::AGORA_NULL_VALUE)
-	{
-		spatialAudioParams.speaker_orientation = params.speaker_orientation;
-	}
-	if (params.enable_blurValue != AGORAOPTIONAL::AGORA_NULL_VALUE)
-	{
-		spatialAudioParams.enable_blur = params.enable_blur;
-	}
-	if (params.enable_air_absorbValue != AGORAOPTIONAL::AGORA_NULL_VALUE)
-	{
-		spatialAudioParams.enable_air_absorb = params.enable_air_absorb;
-	}
-	if (params.speaker_attenuationValue != AGORAOPTIONAL::AGORA_NULL_VALUE)
-	{
-		spatialAudioParams.speaker_attenuation = params.speaker_attenuation;
-	}
+	SET_AGORA_DATA_SPATIALAUDIOPARAMS(spatialAudioParams, params);
 	return MediaPlayer->setSpatialAudioParams(spatialAudioParams);
 }
 int UIMediaPlayer::SetSoundPositionParams(float pan, float gain)
@@ -322,11 +306,11 @@ int UIMediaPlayerCacheManager::RemoveOldCache()
 }
 int UIMediaPlayerCacheManager::RemoveCacheByUri(FString uri)
 {
-	return getMediaPlayerCacheManager()->removeCacheByUri(TCHAR_TO_ANSI(*uri));
+	return getMediaPlayerCacheManager()->removeCacheByUri(TCHAR_TO_UTF8(*uri));
 }
 int UIMediaPlayerCacheManager::SetCacheDir(FString path)
 {
-	return getMediaPlayerCacheManager()->setCacheDir(TCHAR_TO_ANSI(*path));
+	return getMediaPlayerCacheManager()->setCacheDir(TCHAR_TO_UTF8(*path));
 }
 int UIMediaPlayerCacheManager::SetMaxCacheFileCount(int count)
 {
@@ -342,7 +326,7 @@ int UIMediaPlayerCacheManager::EnableAutoRemoveCache(bool enable)
 }
 int UIMediaPlayerCacheManager::GetCacheDir(FString path, int length)
 {
-	return getMediaPlayerCacheManager()->getCacheDir(TCHAR_TO_ANSI(*path), length);
+	return getMediaPlayerCacheManager()->getCacheDir(TCHAR_TO_UTF8(*path), length);
 }
 int UIMediaPlayerCacheManager::GetMaxCacheFileCount()
 {

@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "Kismet/GameplayStatics.h"
 #include "GameFrameWork/PlayerController.h"
+#include <string>
 #include "BaseAgoraUserWidget.generated.h"
 
 /**

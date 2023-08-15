@@ -5,7 +5,7 @@ This project contains different ways for integrating the Agora Unreal SDK APIs i
 
 ## Prerequisites
 - An Agora [account](https://docs.agora.io/en/video-calling/reference/manage-agora-account#create-an-agora-account) and [project](https://docs.agora.io/en/video-calling/reference/manage-agora-account#create-an-agora-project).
-- Unreal Engine 4.27 or later (including UE5)
+- Unreal Engine 4.27 or later (To open the example project on UE5, you need to delete some cases: like RenderWithYUV, it would be instructed later)
 - The supported platforms and their requirements are as follows:
 
 | Platform | IDE  | OS | Architecture|Note|
@@ -19,25 +19,78 @@ This project contains different ways for integrating the Agora Unreal SDK APIs i
 
 ## Case examples
 
-### Basic Case
-- JoinChannelAudio
-- JoinChannelVideo
-### Advance Case
-- DvicesManager
-- JoinMultipleChannel
-- MediaPlayer
-- ScreenShare
-- SendMultiCameraStream
-- SpatialAudio
-- StartRtmpStreamWithTranscoding
-- StreamMessage
-- SetEncryption
-- CustomCaptureAudio(case only cpp)
-- CustomCaptureVideo(case only cpp)
-- CustomRenderAudio(case only cpp)
-- ProcessAudioRawData(case only cpp)
-- ProcessVideoRawData(case only cpp)
+### Full List
 
+**Basic Case**
+
+- BasicAudioCallScene
+- BasicVideoCallScene
+
+**Advanced Case**
+
+- ScreenShare
+- ScreenShareWhileVideoCall
+- DualCamera
+- StartLocalVideoTranscoder
+- DeviceManager (PLATFORM_MAC||PLATFORM_WINDOWS)
+- MediaPlayer
+- SpatialAudio
+- SetEncryptionScene
+- StreamMessageScene
+- StartRtmpStreamWithTranscoding
+- CustomCaptureAudio
+- CustomCaptureVideo
+- CustomRenderAudio
+- ProcessAudioRawData
+- ProcessVideoRawData
+- AudioMixing
+- JoinChannelWithToken
+- JoinChannelWithUserAccount
+- JoinMultipleChannels
+- PushEncodedVideoImage
+- SpatialAudioWithMediaPlayer
+- StartDirectCdnStreaming
+- Metadata
+- TakeSnapshot
+- VirtualBackground
+- VoiceChanger
+- MusicPlayer
+- RenderWithYUV
+- MediaPlayerWithCustomDataProvide
+- WriteBackVideoRawData
+- AudioSpectrum
+- ChannelMediaReplay
+- ContentInspect
+- MediaRecorder
+- SetBeautyEffectOptions
+- StartRhythmPlayer
+
+### Audio Only List
+
+**Basic Case**
+
+- BasicAudioCallScene
+
+**Advanced Case**
+
+- AudioMixing
+- AudioSpectrum
+- ChannelMediaReplay
+- CustomCaptureAudio
+- CustomRenderAudio
+- DeviceManager (PLATFORM_MAC||PLATFORM_WINDOWS)
+- JoinChannelWithToken
+- JoinChannelWithUserAccount
+- JoinMultipleChannels
+- MediaPlayer
+- ProcessAudioRawData
+- SetEncryptionScene
+- SpatialAudio
+- SpatialAudioWithMediaPlayer
+- StartRhythmPlayer
+- StreamMessageScene
+- VoiceChanger
+- MusicPlayer
 
 ## Project setup
 
@@ -70,22 +123,41 @@ When a user attempts to join a channel, your app passes an encrypted authenticat
 2. Create a folder named Plugins in the root directory of your project.  
 3. Unzip the SDK files to *Plugins* folder
 
- ![plugins](https://user-images.githubusercontent.com/1261195/186286865-24d40426-4329-4ba1-b943-2626ce50d1b0.png)
+ ![plugins](./DocImages/Plugins.png)
 
 
 ### Compile and run the demo
 You can run the demos in a main level or in any level of the API examples.  
-![MainLevelPos](https://user-images.githubusercontent.com/47908151/202615511-b4ad613d-1bc8-45bf-b149-fdb00133adff.png)
+![MainLevelPos](./DocImages/MainLevelPos.png)
 1.Compile and run the project in the main level, and then click the Play button on the UE Editor. You see the main screen as shown in the following image:
 
-![AgoraExample_-_Unreal_Editor](https://user-images.githubusercontent.com/1261195/186287084-9d462257-93eb-4913-b6fa-cba892de004e.png)
+![AgoraExample](./DocImages/AgoraExample.png)
 
 Fill in your App ID, channel name, and token (optional). You can now click a button on the left to navigate to a particular level of the API examples.  
 2.Run in a particular level if you want experience an API example. Take *Basic/joinChannelAudio/BasicAudioCall/* as an example:
  1. Find a blueprint named BP_Agoractor in the World outliner.
  2. Fill in your App ID and channel name below the BP_Agoractor.
 
-![Sample-PlayAudio](https://user-images.githubusercontent.com/47908151/202999790-cfe614c8-9b6e-4550-8741-0ac4be26a171.gif)
+![Sample-PlayAudio](./DocImages/SamplePlayAudio.gif)
+
+
+## Project Setting
+
+### Mac / IOS
+
+1. Set **Generate Info.plist File** to True
+   
+![InfoPlist](./DocImages/InfoPlist.png)
+
+
+1. If you are using a mac with an M1/M2 chip, you need to set the Destination Architecture to (Rosetta)
+    
+    Ref: 
+    
+    - https://support.apple.com/en-us/HT211861
+
+
+![DestinationArchitecture](./DocImages/DestinationArchitecture.gif)
 
 ## Project Packaging
 
@@ -93,11 +165,11 @@ Fill in your App ID, channel name, and token (optional). You can now click a but
 
 Click File > Package Project > Windows > Windows(64-bit).
 
-![windowspackage](https://user-images.githubusercontent.com/47908151/202615706-41df9c3e-0463-43eb-8fef-a8d154745976.jpg)
+![windowspackage](./DocImages/WindowsPackage.jpg)
 
 Since UE5 does not support 32-bit Windows, the Agora plugin omits the 32-bit implementation by default. If you want to use 32-bit Windows with UE4, uncomment the code relating to Win32 in the **AgoraPluginLibrary.Build.cs** file, as shown in the red box in the following image:
 
-![code_16613129312915](https://user-images.githubusercontent.com/1261195/186325436-d8bf6543-5aea-4adc-a903-0199519339eb.png)
+![code_16613129312915](./DocImages/Code16613129312915.png)
 
 ### MacOS Packaging
 
@@ -107,7 +179,7 @@ Since UE5 does not support 32-bit Windows, the Agora plugin omits the 32-bit imp
 
 	a. Right click the compiled xxx.app file, and select **Show Package Contents**.
 
-![contextMenu_and_MacNoEditor](https://user-images.githubusercontent.com/1261195/186290440-ab80de0e-b87c-4a3a-a589-cc68960b6397.png)
+![contextMenu_and_MacNoEditor](./DocImages/ContextMenuAndMacNoEditor.png)
 
         b. Edit Contents/Info.plist (Double-click to open it in XCode,  then see Step 3 next; or Step 3b if using your favorite text editor).
 
@@ -118,7 +190,7 @@ Double click to open *Contents/Info.plist* in XCode, then click **Information Pr
 - Privacy - Camera Usage Description
 - Privacy - Microphone Usage Description
 
-![privacy_plist](https://user-images.githubusercontent.com/1261195/186293374-d550e36c-cd87-4feb-b79d-8344945af827.gif)
+![privacy_plist](./DocImages/PrivacyPlist.gif)
 
 If you are editing with Xcode, you can just open the plist file with a text editor and paste the following XML snippet into it:
 ```xml
@@ -131,7 +203,7 @@ If you are editing with Xcode, you can just open the plist file with a text edit
 4. Add the SDK frameworks.
 
 Copy ***.framework** from ***Plugs/AgoraPlugin/Source/ ThirdParty/Agora/MAC/Release*** to ***MacNoEditor/xxx/Contents/MacOS/*** .
-![unrealMacPlugins](https://user-images.githubusercontent.com/1261195/186295172-9fea300b-77fc-4bfe-bb15-41f5727044a3.png)
+![unrealMacPlugins](./DocImages/UnrealMacPlugins.png)
 
 ### IOS Packaging
 The following permissions are also required on iOS:
@@ -147,14 +219,14 @@ To add the above permissions to the info.plist, you can enter them in the UE Edi
 ```
 2. Click Edit > Project Settings >Platforms > iOS.
 3. Enter the text to the "**additional plist data**" field:
-<img width="936" alt="iOS_add_permission" src="https://user-images.githubusercontent.com/1261195/186298955-19949598-fcf8-46ac-8d8a-d0d0e320917c.png">
+<img width="936" alt="iOS_add_permission" src="./DocImages/IOSAddPermission.png">
 
 
 You can package the iOS project (File > Package Project > iOS).
 
 iOS should add the following code to your target as well:
 
-![iospackage2](https://user-images.githubusercontent.com/47908151/202614986-e641ac9b-de6a-40a6-b4e3-517651899c0a.jpg)
+![iospackage2](./DocImages/IOSPackage2.jpg)
 
 On the iOS platform, Unreal Engine uses the built-in Binned memory allocator by default. For related source code, please refer to FApplePlatformMemory::BaseAllocator().
 Here, the global macro definition setting engine uses the standard C memory allocation method on the iOS platform, that is, directly calling malloc, free, realloc and other functions, so as to avoid some abnormal memory release problems when using the Agora plug-in on the iOS platform;
@@ -221,15 +293,15 @@ AdditionalCompilerArguments = "-Wno-unused-but-set-variable";
 ```
 
 ### When opening the project on MacOS, there are blocking errors on framework.  How to quickly get over this?
-![framework](https://user-images.githubusercontent.com/1261195/186300244-e227f19f-eb11-43c7-a70b-3c289b6f7334.png)
+![framework](./DocImages/Framework.png)
 
 Mac's Gatekeeper blocks unsigned frameworks and you have to unblock them one by one.  If your environment is safe, you can temporarily allow Apps to run from Anywhere.  See this checkbox in System Preferences:
-![Security___Privacy](https://user-images.githubusercontent.com/1261195/186300847-b8c88971-371f-4a6a-b216-2189bd14d57f.png)
+![Security_Privacy](./DocImages/SecurityPrivacy.png)
 
 
 ### What should I do for the error "failed to load because module 'AgoraPlugin' could not be loaded" ?
 
-![import_error](https://user-images.githubusercontent.com/1261195/186298361-6e4e0007-0a7e-43f8-8338-1033e99a3e92.png)
+![import_error](./DocImages/ImportError.png)
 
 Try deleting the [Binaries] folder in your project
 
@@ -240,7 +312,7 @@ Make sure you have accepted or added "Screen Recording" permission for the App (
 ### Why our app dpi changed after joinchannel?
 
 You can tick the checkboxes below
-![dpiproblem](https://user-images.githubusercontent.com/47908151/204960841-7bfc949e-673d-41b1-9f4a-e34171402dc6.png)
+![dpiproblem](./DocImages/DPIProblem.png)
 
 # Connect With Us
 - If you have any questions, create an issue [here](https://github.com/AgoraIO-Extensions/Agora-Unreal-SDK-CPP-NG/issues).

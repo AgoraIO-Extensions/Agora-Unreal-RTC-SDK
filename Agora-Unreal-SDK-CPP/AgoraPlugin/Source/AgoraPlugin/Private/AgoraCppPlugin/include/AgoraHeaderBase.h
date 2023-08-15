@@ -10,6 +10,9 @@
 #include <AgoraCppPlugin/IAudioDeviceManager.h>
 #include <AgoraCppPlugin/IAgoraMediaRecorder.h>
 
+// additional
+#include <AgoraCppPlugin/IAgoraMusicContentCenter.h>
+
 enum AGORA_UNREAL_PLUGIN_ERROR_CODE
 {
 	ERROR_OK = 0,
