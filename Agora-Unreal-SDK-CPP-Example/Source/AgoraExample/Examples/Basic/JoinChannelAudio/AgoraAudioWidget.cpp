@@ -164,7 +164,7 @@ void UAgoraAudioWidget::OnCBSAudioProfileSelectionChanged(FString SelectedItem, 
 		audioProfile = AUDIO_PROFILE_IOT;
 	
 	int ret = RtcEngineProxy->setAudioProfile(audioProfile);
-	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
+	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d AudioProfile=%s"), *FString(FUNCTION_MACRO), ret,*SelectedOption), LogMsgViewPtr);
 }
 
 void UAgoraAudioWidget::OnCBSAudioSenarioSelectionChanged(FString SelectedItem, ESelectInfo::Type SelectionType)
@@ -184,7 +184,7 @@ void UAgoraAudioWidget::OnCBSAudioSenarioSelectionChanged(FString SelectedItem, 
 		scenario = AUDIO_SCENARIO_MEETING;
 
 	int ret = RtcEngineProxy->setAudioScenario(scenario);
-	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d  AudioScenario=$s"), *FString(FUNCTION_MACRO), ret, *SelectedOption), LogMsgViewPtr);
+	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d  AudioScenario=%s"), *FString(FUNCTION_MACRO), ret, *SelectedOption), LogMsgViewPtr);
 }
 
 void UAgoraAudioWidget::NativeDestruct() 

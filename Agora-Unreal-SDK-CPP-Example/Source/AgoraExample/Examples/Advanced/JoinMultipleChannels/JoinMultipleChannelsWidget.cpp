@@ -158,7 +158,7 @@ void UJoinMultipleChannelsWidget::OnBtnPublishChannel2()
 
 	agora::rtc::ChannelMediaOptions Options2;
 	Options2.publishCameraTrack = true;
-	Options1.publishMicrophoneTrack = true;
+	Options2.publishMicrophoneTrack = true;
 	Options2.clientRoleType = CLIENT_ROLE_TYPE::CLIENT_ROLE_BROADCASTER;
 
 	agora::rtc::RtcConnection Connection2;
