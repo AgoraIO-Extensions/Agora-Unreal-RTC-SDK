@@ -44,3 +44,16 @@ enum AppType {
 	kAppTypeCef = 13,
 	kAppTypeUniApp = 14,
 };
+
+
+// For UE4.25 or older versions - Target Platforms like: Android, define CONSTEXPR back
+// Currently AgoraOptional.h would undefine CONSTEXPR at the end of the file.
+// This issue would be resolved in a later SDK version.
+
+//#ifndef CONSTEXPR
+//#if __cplusplus >= 201103L || (defined(_MSVC_LANG) && _MSVC_LANG >= 201103L)
+//#define CONSTEXPR constexpr
+//#else
+//#define CONSTEXPR
+//#endif
+//#endif  // !CONSTEXPR

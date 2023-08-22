@@ -10,6 +10,7 @@
 #include "VideoObserverInternal.h"
 #include <memory>
 #include <map>
+#include "Tickable.h"
 #include "Templates/SharedPointer.h"
 /**
  *
