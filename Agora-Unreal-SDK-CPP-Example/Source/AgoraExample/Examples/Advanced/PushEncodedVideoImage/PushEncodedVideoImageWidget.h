@@ -15,11 +15,14 @@
 
 // UI Utility
 #include "../../../Utility/BFL_VideoViewManager.h"
-#include "../../../Utility/BFL_Logger.h" 
+#include "../../../Utility/BFL_Logger.h"
 
 #if PLATFORM_ANDROID
 #include "AndroidPermission/Classes/AndroidPermissionFunctionLibrary.h"
 #endif
+
+#include "Misc/FileHelper.h"
+#include "TimerManager.h"
 
 #include "PushEncodedVideoImageWidget.generated.h"
 

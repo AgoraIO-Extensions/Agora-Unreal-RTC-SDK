@@ -15,6 +15,7 @@
 #include "../../../Utility/BFL_Logger.h"
 
 #include <ctime>
+#include "Misc/FileHelper.h"
 
 #if PLATFORM_ANDROID
 #include "AndroidPermission/Classes/AndroidPermissionFunctionLibrary.h"

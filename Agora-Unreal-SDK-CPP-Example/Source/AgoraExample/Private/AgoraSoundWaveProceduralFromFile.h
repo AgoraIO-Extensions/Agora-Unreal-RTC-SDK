@@ -6,6 +6,7 @@
 #include "Sound/SoundWaveProcedural.h"
 #include "AgoraPluginInterface.h"
 #include "Misc/ScopeLock.h" 
+#include "Misc/FileHelper.h"
 #include "AgoraSoundWaveProceduralFromFile.generated.h"
 
 /**

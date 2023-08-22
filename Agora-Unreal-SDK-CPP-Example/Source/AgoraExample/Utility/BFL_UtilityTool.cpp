@@ -68,10 +68,12 @@ void UBFL_UtilityTool::CreateMediaFileWithSource(FString SrcPath, FString DstPat
 		}
 		return;
 	}
-	// 写入数据到文件
+	
+	// Write the file data
 	FileDataWriter->Serialize(FileData.GetData(), FileData.Num());
+
+	// Close the file
 	bool bWriterSuccess  = FileDataWriter->Close();
-	// 关闭文件写入器
 	delete FileDataWriter;
 	return;
 
