@@ -1570,7 +1570,7 @@ namespace agora
 			int RtcEngineProxy::queryScreenCaptureCapability()
 			{
 				if (RtcEngine != nullptr) {
-					return RtcEngine->queryScreenCaptureCapability(captureParams);
+					return RtcEngine->queryScreenCaptureCapability();
 				}
 				return -ERROR_NULLPTR;
 

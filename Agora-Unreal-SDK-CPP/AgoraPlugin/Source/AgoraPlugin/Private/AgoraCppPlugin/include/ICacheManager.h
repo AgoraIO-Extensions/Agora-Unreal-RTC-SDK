@@ -1,6 +1,7 @@
 #pragma once
 #include "AgoraHeaderBase.h"
 #include <memory>
+#include <string>
 
 namespace agora {
 namespace rtc {
