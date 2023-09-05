@@ -1527,16 +1527,16 @@ void UIRtcEngineEventHandler::onVideoRenderingTracingResult(agora::rtc::uid_t ui
 		if (!SelfWeakPtr.IsValid())
 			return;
 		
-			FVideoRenderingTracingInfo videoRenderingTracingInfo;
-			videoRenderingTracingInfo.elapsedTime = tracingInfo.elapsedTime;
-			videoRenderingTracingInfo.start2JoinChannel = tracingInfo.start2JoinChannel;
-			videoRenderingTracingInfo.join2JoinSuccess = tracingInfo.join2JoinSuccess;
-			videoRenderingTracingInfo.joinSuccess2RemoteJoined = tracingInfo.joinSuccess2RemoteJoined;
-			videoRenderingTracingInfo.remoteJoined2SetView = tracingInfo.remoteJoined2SetView;
-			videoRenderingTracingInfo.remoteJoined2UnmuteVideo = tracingInfo.remoteJoined2UnmuteVideo;
-			videoRenderingTracingInfo.remoteJoined2PacketReceived = tracingInfo.remoteJoined2PacketReceived;
-			OnVideoRenderingTracingResult.Broadcast((int64)uid,(EMEDIA_TRACE_EVENT)currentEvent, videoRenderingTracingInfo);
-		});
+		FVideoRenderingTracingInfo videoRenderingTracingInfo;
+		videoRenderingTracingInfo.elapsedTime = tracingInfo.elapsedTime;
+		videoRenderingTracingInfo.start2JoinChannel = tracingInfo.start2JoinChannel;
+		videoRenderingTracingInfo.join2JoinSuccess = tracingInfo.join2JoinSuccess;
+		videoRenderingTracingInfo.joinSuccess2RemoteJoined = tracingInfo.joinSuccess2RemoteJoined;
+		videoRenderingTracingInfo.remoteJoined2SetView = tracingInfo.remoteJoined2SetView;
+		videoRenderingTracingInfo.remoteJoined2UnmuteVideo = tracingInfo.remoteJoined2UnmuteVideo;
+		videoRenderingTracingInfo.remoteJoined2PacketReceived = tracingInfo.remoteJoined2PacketReceived;
+		OnVideoRenderingTracingResult.Broadcast((int64)uid, (EMEDIA_TRACE_EVENT)currentEvent, videoRenderingTracingInfo);
+	});
 }
 
 int UIMetadataObserver::getMaxMetadataSize()
