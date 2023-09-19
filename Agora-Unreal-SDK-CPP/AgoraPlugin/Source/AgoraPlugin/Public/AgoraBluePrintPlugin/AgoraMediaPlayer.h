@@ -88,7 +88,7 @@ struct FPlayerStreamInfo
 
 
 /**
- * 
+ *
  */
 UCLASS(Blueprintable)
 class AGORAPLUGIN_API UIMediaPlayer : public UObject

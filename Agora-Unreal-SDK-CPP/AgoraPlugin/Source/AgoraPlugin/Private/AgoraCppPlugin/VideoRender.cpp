@@ -1,3 +1,5 @@
+#if AGORA_UESDK_ENABLE_VIDEO
+
 #include "AgoraCppPlugin/Include/VideoRender.h"
 #include "AgoraCppPlugin/Include/AgoraHeaderBase.h"
 #include "AgoraCppPlugin/Include/RtcEngineProxy.h"
@@ -5,14 +7,14 @@
 namespace agora {
 	namespace rtc {
 		namespace ue {
-			VideoRender::VideoRender(ICacheManager* CacheManager):RenderFrameId(VIDEO_SOURCE_TYPE::VIDEO_SOURCE_CAMERA, 0, "")
+			VideoRender::VideoRender(ICacheManager* CacheManager) :RenderFrameId(VIDEO_SOURCE_TYPE::VIDEO_SOURCE_CAMERA, 0, "")
 			{
 				RenderTexture = nullptr;
 				RenderVideoFrame = nullptr;
 				RenderImage = nullptr;
 				VideoCacheManager = CacheManager;
 				bEnableUpdatePreview = false;
-				ArgbPixSize = 4; 
+				ArgbPixSize = 4;
 			}
 
 			VideoRender::~VideoRender()
@@ -36,7 +38,7 @@ namespace agora {
 					return;
 				}
 				if (RenderTexture == nullptr || !RenderTexture->IsValidLowLevel() || RenderTexture->GetSizeX() != RenderVideoFrame->width || RenderTexture->GetSizeY() != RenderVideoFrame->height) {
-					
+
 					RenderTexture = UTexture2D::CreateTransient(RenderVideoFrame->width, RenderVideoFrame->height, PF_R8G8B8A8);
 				}
 				else
@@ -74,3 +76,5 @@ namespace agora {
 		}
 	}
 }
+
+#endif

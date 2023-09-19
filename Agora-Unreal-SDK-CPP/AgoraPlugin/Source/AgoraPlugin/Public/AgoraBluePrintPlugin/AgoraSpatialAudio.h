@@ -75,7 +75,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Agora|ILocalSpatialAudioEngine")
 	int SetZones(TArray<FSpatialAudioZone> zones);
 	UFUNCTION(BlueprintCallable, Category = "Agora|ILocalSpatialAudioEngine")
-		int SetPlayerAttenuation(int playerId, bool forceSet, FString attenuation = "0.0");
+	int SetPlayerAttenuation(int playerId, bool forceSet, FString attenuation = "0.0");
 	UFUNCTION(BlueprintCallable, Category = "Agora|ILocalSpatialAudioEngine")
 	int muteRemoteAudioStream(int64 uid, bool mute);
 

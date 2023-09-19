@@ -195,10 +195,10 @@ struct FEncodedVideoFrameInfo {
 };
 
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnPlaybackAudioFrameBeforeMixing, const FString, channelId, int64, uid,const FAudioFrame&, audioFrame);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnPlaybackAudioFrameBeforeMixing, const FString, channelId, int64, uid, const FAudioFrame&, audioFrame);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnLocalAudioSpectrum, const FAudioSpectrumData&, data);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnRemoteAudioSpectrum, const TArray<FUserAudioSpectrumInfo>, spectrums, int, spectrumNumber);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnCaptureVideoFrame,EVIDEO_SOURCE_TYPE, sourceType, const FVideoFrame&, videoFrame);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnCaptureVideoFrame, EVIDEO_SOURCE_TYPE, sourceType, const FVideoFrame&, videoFrame);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnPreEncodeVideoFrame, EVIDEO_SOURCE_TYPE, sourceType, const FVideoFrame&, videoFrame);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnMediaPlayerVideoFrame, const FVideoFrame&, videoFrame, int, mediaPlayerId);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnRenderVideoFrame, const FString, channelId, int64, remoteUid, const FVideoFrame&, videoFrame);
@@ -312,7 +312,7 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "Agora|Event")
 	FOnPreEncodeVideoFrame OnPreEncodeVideoFrame;
 	UPROPERTY(BlueprintAssignable, Category = "Agora|Event")
-	FOnMediaPlayerVideoFrame OnMediaPlayerVideoFrame;	
+	FOnMediaPlayerVideoFrame OnMediaPlayerVideoFrame;
 	UPROPERTY(BlueprintAssignable, Category = "Agora|Event")
 	FOnRenderVideoFrame OnRenderVideoFrame;
 	UPROPERTY(BlueprintAssignable, Category = "Agora|Event")
@@ -331,13 +331,13 @@ public:
 	FIsExternal IsExternal;
 
 
-	bool onCaptureVideoFrame(agora::rtc::VIDEO_SOURCE_TYPE sourceType,agora::media::base::VideoFrame& videoFrame) override;
+	bool onCaptureVideoFrame(agora::rtc::VIDEO_SOURCE_TYPE sourceType, agora::media::base::VideoFrame& videoFrame) override;
 
 	bool onPreEncodeVideoFrame(agora::rtc::VIDEO_SOURCE_TYPE sourceType, agora::media::base::VideoFrame& videoFrame) override;
 
 	bool onMediaPlayerVideoFrame(agora::media::base::VideoFrame& videoFrame, int mediaPlayerId) override;
 
-	bool onRenderVideoFrame(const char* channelId,agora::rtc::uid_t remoteUid, agora::media::base::VideoFrame& videoFrame) override;
+	bool onRenderVideoFrame(const char* channelId, agora::rtc::uid_t remoteUid, agora::media::base::VideoFrame& videoFrame) override;
 
 	bool onTranscodedVideoFrame(agora::media::base::VideoFrame& videoFrame) override;
 

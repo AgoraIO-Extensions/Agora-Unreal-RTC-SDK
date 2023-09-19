@@ -1,14 +1,19 @@
 #pragma once
 
-
+// AgoraHeaderBase should be included first.
 #include "AgoraHeaderBase.h"
+
+#if AGORA_UESDK_ENABLE_VIDEO
 #include "VideoRenderManager.h"
 #include "VideoObserverInternal.h"
+#endif
+
 #if PLATFORM_ANDROID
 #include "Android/AndroidApplication.h"
 #include "Android/AndroidJni.h"
 #endif
 #include <memory>
+#include <mutex>
 #include "Templates/SharedPointer.h"
 
 namespace agora
@@ -26,9 +31,11 @@ namespace agora
 			protected:
 				static std::mutex MutexLock;
 				static RtcEngineProxy* Instance;
-				
+
 				IRtcEngine* RtcEngine;
+#if AGORA_UESDK_ENABLE_VIDEO
 				TSharedPtr<class VideoRenderManager> VideoRenderMgr;
+#endif
 
 			private:
 				void InitInstance();
@@ -81,7 +88,7 @@ namespace agora
 				virtual int setVideoScenario(VIDEO_APPLICATION_SCENARIO_TYPE scenarioType) override;
 				virtual int enableAudio() override;
 				virtual int disableAudio() override;
-				virtual int setAudioProfile(AUDIO_PROFILE_TYPE profile, AUDIO_SCENARIO_TYPE scenario) __deprecated override; 
+				virtual int setAudioProfile(AUDIO_PROFILE_TYPE profile, AUDIO_SCENARIO_TYPE scenario) __deprecated override;
 				virtual int setAudioProfile(AUDIO_PROFILE_TYPE profile) override;
 				virtual int setAudioScenario(AUDIO_SCENARIO_TYPE scenario) override;
 				virtual int enableLocalAudio(bool enabled) override;
@@ -205,7 +212,7 @@ namespace agora
 				virtual int enableExtension(const char* provider, const char* extension, bool enable = true, agora::media::MEDIA_SOURCE_TYPE type = agora::media::UNKNOWN_MEDIA_SOURCE) override;
 				virtual int enableExtension(const char* provider, const char* extension, const ExtensionInfo& extensionInfo, bool enable = true) override;
 				virtual int setExtensionProperty(const char* provider, const char* extension, const char* key, const char* value, agora::media::MEDIA_SOURCE_TYPE type = agora::media::UNKNOWN_MEDIA_SOURCE) override;
-				virtual int getExtensionProperty(const char* provider, const char* extension,const char* key, char* value, int buf_len, agora::media::MEDIA_SOURCE_TYPE type = agora::media::UNKNOWN_MEDIA_SOURCE) override;
+				virtual int getExtensionProperty(const char* provider, const char* extension, const char* key, char* value, int buf_len, agora::media::MEDIA_SOURCE_TYPE type = agora::media::UNKNOWN_MEDIA_SOURCE) override;
 				virtual int setExtensionProperty(const char* provider, const char* extension, const ExtensionInfo& extensionInfo, const char* key, const char* value) override;
 				virtual int getExtensionProperty(const char* provider, const char* extension, const ExtensionInfo& extensionInfo, const char* key, char* value, int buf_len)  override;
 				virtual int setCameraCapturerConfiguration(const CameraCapturerConfiguration& config) override;
@@ -384,7 +391,7 @@ namespace agora
 				virtual int getUserInfoByUidEx(uid_t uid, rtc::UserInfo* userInfo, const RtcConnection& connection) override;
 				virtual int enableDualStreamModeEx(bool enabled, const SimulcastStreamConfig& streamConfig, const RtcConnection& connection) override;
 				virtual int setDualStreamModeEx(SIMULCAST_STREAM_MODE mode, const SimulcastStreamConfig& streamConfig, const RtcConnection& connection) override;
-				virtual int setHighPriorityUserListEx(uid_t* uidList, int uidNum, STREAM_FALLBACK_OPTIONS option,const RtcConnection& connection) override;
+				virtual int setHighPriorityUserListEx(uid_t* uidList, int uidNum, STREAM_FALLBACK_OPTIONS option, const RtcConnection& connection) override;
 				virtual int enableWirelessAccelerate(bool enabled) override;
 				virtual int getNetworkType() override;
 				virtual int setParameters(const char* parameters) override;
@@ -396,6 +403,6 @@ namespace agora
 			};
 		};
 
-		
+
 	}
 }

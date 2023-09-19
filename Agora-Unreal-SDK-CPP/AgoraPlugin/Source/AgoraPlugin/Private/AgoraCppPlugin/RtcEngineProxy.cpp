@@ -43,7 +43,9 @@ namespace agora
 				}
 #endif		
 				RtcEngine = ::createAgoraRtcEngine();
+#if AGORA_UESDK_ENABLE_VIDEO
 				VideoRenderMgr = MakeShareable(new VideoRenderManager());
+#endif
 			}
 
 
@@ -51,14 +53,16 @@ namespace agora
 			{
 				RtcEngine->release(sync);
 				RtcEngine = nullptr;
+#if AGORA_UESDK_ENABLE_VIDEO
 				VideoRenderMgr = nullptr;
+#endif
 			}
 
 
 
 			agora::rtc::ue::RtcEngineProxy* RtcEngineProxy::GetInstance()
 			{
-				if(Instance == nullptr){
+				if (Instance == nullptr) {
 					std::unique_lock<std::mutex> lock(MutexLock);
 					if (Instance == nullptr) {
 						Instance = new RtcEngineProxy();
@@ -73,7 +77,7 @@ namespace agora
 			{
 				if (Instance != nullptr) {
 					std::unique_lock<std::mutex> lock(MutexLock);
-					if(Instance != nullptr){
+					if (Instance != nullptr) {
 						Instance->UnInitInstance(sync);
 						delete Instance;
 						Instance = nullptr;
@@ -81,9 +85,9 @@ namespace agora
 				}
 			}
 
-			RtcEngineProxy::RtcEngineProxy(){}
+			RtcEngineProxy::RtcEngineProxy() {}
 
-			RtcEngineProxy::~RtcEngineProxy(){}
+			RtcEngineProxy::~RtcEngineProxy() {}
 
 			void RtcEngineProxy::release(bool sync) {
 				if (Instance != nullptr)
@@ -104,13 +108,15 @@ namespace agora
 					agora::base::AParameter apm(RtcEngine);
 					apm->setParameters(TCHAR_TO_UTF8(*ParamType));
 
+#if AGORA_UESDK_ENABLE_VIDEO
 					// Our client can also use addVideoFrameRenderer to listen to VideoFrameObserver
 					queryInterface(AGORA_IID_MEDIA_ENGINE, (void**)&MediaEngine);
 					VideoObserverInternal* VideoObserver = new VideoObserverInternal(nullptr, DataManager::getInstance()->getCacheManager());
 					MediaEngine->addVideoFrameRenderer(VideoObserver);
+#endif
 					return ret;
 				}
-				else if(RtcEngine != nullptr && ret != 0)
+				else if (RtcEngine != nullptr && ret != 0)
 				{
 					return ret;
 				}
@@ -346,7 +352,7 @@ namespace agora
 			}
 
 			int RtcEngineProxy::setupRemoteVideo(agora::rtc::VideoCanvas const& canvas) {
-
+#if AGORA_UESDK_ENABLE_VIDEO
 				if (RtcEngine != nullptr) {
 					if (canvas.view != nullptr) {
 						VideoRenderMgr->setRenderImage((UImage*)canvas.view, canvas.uid, "", canvas.sourceType);
@@ -356,11 +362,11 @@ namespace agora
 					}
 					return -ERROR_OK;
 				}
+#endif
 				return -ERROR_NULLPTR;
 			}
 			int RtcEngineProxy::setupLocalVideo(agora::rtc::VideoCanvas const& canvas) {
-
-
+#if AGORA_UESDK_ENABLE_VIDEO
 				if (RtcEngine != nullptr) {
 					if (canvas.view != nullptr) {
 						VideoRenderMgr->setRenderImage((UImage*)canvas.view, canvas.uid, "", canvas.sourceType);
@@ -371,6 +377,7 @@ namespace agora
 					}
 					return -ERROR_OK;
 				}
+#endif
 				return -ERROR_NULLPTR;
 			}
 
@@ -396,7 +403,7 @@ namespace agora
 				return -ERROR_NULLPTR;
 			}
 
-			int RtcEngineProxy::setAudioProfile(AUDIO_PROFILE_TYPE profile, AUDIO_SCENARIO_TYPE scenario) 
+			int RtcEngineProxy::setAudioProfile(AUDIO_PROFILE_TYPE profile, AUDIO_SCENARIO_TYPE scenario)
 			{
 				if (RtcEngine != nullptr) {
 					return RtcEngine->setAudioProfile(profile, scenario);
@@ -440,7 +447,7 @@ namespace agora
 				return -ERROR_NULLPTR;
 			}
 
-			int RtcEngineProxy::setDefaultMuteAllRemoteAudioStreams(bool mute) 
+			int RtcEngineProxy::setDefaultMuteAllRemoteAudioStreams(bool mute)
 			{
 				if (RtcEngine != nullptr) {
 					return RtcEngine->setDefaultMuteAllRemoteAudioStreams(mute);
@@ -476,7 +483,7 @@ namespace agora
 				return -ERROR_NULLPTR;
 			}
 
-			int RtcEngineProxy::setDefaultMuteAllRemoteVideoStreams(bool mute) 
+			int RtcEngineProxy::setDefaultMuteAllRemoteVideoStreams(bool mute)
 			{
 				if (RtcEngine != nullptr) {
 					return RtcEngine->setDefaultMuteAllRemoteVideoStreams(mute);
@@ -1269,7 +1276,7 @@ namespace agora
 				return -ERROR_NULLPTR;
 			}
 
-			
+
 
 			int RtcEngineProxy::setExtensionProperty(const char* provider, const char* extension, const char* key, const char* value, agora::media::MEDIA_SOURCE_TYPE type /*= agora::media::UNKNOWN_MEDIA_SOURCE*/)
 			{
@@ -1567,7 +1574,7 @@ namespace agora
 				return -ERROR_NULLPTR;
 			}
 
-			
+
 
 #endif
 #if defined(_WIN32) || defined(__APPLE__) || defined(__ANDROID__)
@@ -1709,7 +1716,7 @@ namespace agora
 				return -ERROR_NULLPTR;
 			}
 
-			
+
 			agora::rtc::CONNECTION_STATE_TYPE RtcEngineProxy::getConnectionState() {
 				if (RtcEngine != nullptr) {
 					return RtcEngine->getConnectionState();
@@ -1745,7 +1752,7 @@ namespace agora
 				return -ERROR_NULLPTR;
 			}
 
-			int RtcEngineProxy::setEncryptionMode(char const* encryptionMode) 
+			int RtcEngineProxy::setEncryptionMode(char const* encryptionMode)
 			{
 				if (RtcEngine != nullptr) {
 					return RtcEngine->setEncryptionMode(encryptionMode);
@@ -1810,7 +1817,7 @@ namespace agora
 				return -ERROR_NULLPTR;
 			}
 
-			int RtcEngineProxy::pauseAudio(){
+			int RtcEngineProxy::pauseAudio() {
 				if (RtcEngine != nullptr) {
 					return RtcEngine->pauseAudio();
 				}
@@ -1818,7 +1825,7 @@ namespace agora
 			}
 
 
-			int RtcEngineProxy::resumeAudio(){
+			int RtcEngineProxy::resumeAudio() {
 				if (RtcEngine != nullptr) {
 					return RtcEngine->resumeAudio();
 				}
@@ -1826,7 +1833,7 @@ namespace agora
 			}
 
 
-			int RtcEngineProxy::enableWebSdkInteroperability (bool enabled) {
+			int RtcEngineProxy::enableWebSdkInteroperability(bool enabled) {
 				if (RtcEngine != nullptr) {
 					return RtcEngine->enableWebSdkInteroperability(enabled);
 				}
@@ -2328,8 +2335,7 @@ namespace agora
 			}
 
 			int RtcEngineProxy::setupRemoteVideoEx(agora::rtc::VideoCanvas const& canvas, agora::rtc::RtcConnection const& connection) {
-
-
+#if AGORA_UESDK_ENABLE_VIDEO
 				if (RtcEngine != nullptr) {
 					if (canvas.view != nullptr) {
 						VideoRenderMgr->setRenderImage((UImage*)canvas.view, canvas.uid, connection.channelId, canvas.sourceType);
@@ -2339,6 +2345,7 @@ namespace agora
 					}
 					return -ERROR_OK;
 				}
+#endif
 				return -ERROR_NULLPTR;
 			}
 			int RtcEngineProxy::muteRemoteAudioStreamEx(agora::rtc::uid_t uid, bool mute, agora::rtc::RtcConnection const& connection) {

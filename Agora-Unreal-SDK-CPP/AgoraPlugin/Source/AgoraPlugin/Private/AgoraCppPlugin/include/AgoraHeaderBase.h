@@ -1,5 +1,10 @@
 #pragma once
 
+// For compiling the plugin independently using UAT's BuildPlugin command
+#if PLATFORM_WINDOWS
+#include "Windows/WindowsHWrapper.h"
+#endif
+
 #include <AgoraCppPlugin/IAgoraMediaComponentFactory.h>
 #include <AgoraCppPlugin/IAgoraMediaEngine.h>
 #include <AgoraCppPlugin/IAgoraMediaPlayer.h>
@@ -12,6 +17,15 @@
 
 // additional
 #include <AgoraCppPlugin/IAgoraMusicContentCenter.h>
+
+
+// Notice: for now, the audio-only plugin is only available for Android and iOS. The [Windows/Mac] version still remains the FULL version.
+#if !AGORA_UESDK_AUDIO_ONLY || (!(PLATFORM_ANDROID || PLATFORM_IOS))
+#define AGORA_UESDK_ENABLE_VIDEO 1
+#else
+#define AGORA_UESDK_ENABLE_VIDEO 0
+#endif
+
 
 enum AGORA_UNREAL_PLUGIN_ERROR_CODE
 {

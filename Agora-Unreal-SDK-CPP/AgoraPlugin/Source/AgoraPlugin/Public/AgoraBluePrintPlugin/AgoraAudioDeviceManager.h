@@ -8,7 +8,7 @@
 #include "AgoraAudioDeviceManager.generated.h"
 
 /**
- * 
+ *
  */
 UCLASS(Blueprintable)
 class AGORAPLUGIN_API UIAudioDeviceCollection : public UObject
@@ -17,7 +17,7 @@ class AGORAPLUGIN_API UIAudioDeviceCollection : public UObject
 
 private:
 	agora::rtc::IAudioDeviceCollection* AudioDeviceCollection;
-	
+
 public:
 	UFUNCTION(BlueprintCallable, Category = "Agora|IAudioDeviceCollection")
 	int GetCount();

@@ -1,6 +1,8 @@
 
 #pragma once
 
+#if AGORA_UESDK_ENABLE_VIDEO
+
 #include "CoreMinimal.h"
 #include "SlateOptMacros.h"
 #include "Engine/Texture2D.h"
@@ -12,52 +14,53 @@
  *
  */
 namespace agora {
-namespace rtc {
-namespace ue {
-    
-using VideoFrame = media::IVideoFrameObserver::VideoFrame;
+	namespace rtc {
+		namespace ue {
 
-class VideoObserverInternal : public media::IVideoFrameObserver
-{
-public:
+			using VideoFrame = media::IVideoFrameObserver::VideoFrame;
 
-    VideoObserverInternal(media::IVideoFrameObserver* observer, ICacheManager* cache);
+			class VideoObserverInternal : public media::IVideoFrameObserver
+			{
+			public:
 
-    virtual ~VideoObserverInternal() override;
+				VideoObserverInternal(media::IVideoFrameObserver* observer, ICacheManager* cache);
 
-    virtual bool onCaptureVideoFrame(agora::rtc::VIDEO_SOURCE_TYPE sourceType, VideoFrame& videoFrame)  override;
+				virtual ~VideoObserverInternal() override;
 
-    virtual bool onPreEncodeVideoFrame(agora::rtc::VIDEO_SOURCE_TYPE sourceType, VideoFrame& videoFrame) override;
+				virtual bool onCaptureVideoFrame(agora::rtc::VIDEO_SOURCE_TYPE sourceType, VideoFrame& videoFrame)  override;
 
-    virtual bool onMediaPlayerVideoFrame(VideoFrame& videoFrame, int mediaPlayerId) override;
+				virtual bool onPreEncodeVideoFrame(agora::rtc::VIDEO_SOURCE_TYPE sourceType, VideoFrame& videoFrame) override;
 
-    virtual bool onRenderVideoFrame(const char* channelId, rtc::uid_t remoteUid, VideoFrame& videoFrame) override;
+				virtual bool onMediaPlayerVideoFrame(VideoFrame& videoFrame, int mediaPlayerId) override;
 
-    virtual bool onTranscodedVideoFrame(VideoFrame& videoFrame) override;
+				virtual bool onRenderVideoFrame(const char* channelId, rtc::uid_t remoteUid, VideoFrame& videoFrame) override;
 
-    virtual VIDEO_FRAME_PROCESS_MODE getVideoFrameProcessMode() override;
+				virtual bool onTranscodedVideoFrame(VideoFrame& videoFrame) override;
 
-    virtual agora::media::base::VIDEO_PIXEL_FORMAT getVideoFormatPreference()  override;
+				virtual VIDEO_FRAME_PROCESS_MODE getVideoFrameProcessMode() override;
 
-    virtual bool getRotationApplied() override;
-    
-    virtual bool getMirrorApplied() override;
+				virtual agora::media::base::VIDEO_PIXEL_FORMAT getVideoFormatPreference()  override;
 
-    virtual uint32_t getObservedFramePosition() override;
+				virtual bool getRotationApplied() override;
 
-    virtual bool isExternal() override;
+				virtual bool getMirrorApplied() override;
 
-    void registerVideoFrameObserver(media::IVideoFrameObserver* observer);
-private:
+				virtual uint32_t getObservedFramePosition() override;
 
-    void setVideoFrame(VideoFrameIdentity *identity, VideoFrame* frame);
+				virtual bool isExternal() override;
 
-public:
-    ICacheManager* AacheManager;
-    media::IVideoFrameObserver* UserObserver;
-};
+				void registerVideoFrameObserver(media::IVideoFrameObserver* observer);
+			private:
 
+				void setVideoFrame(VideoFrameIdentity* identity, VideoFrame* frame);
+
+			public:
+				ICacheManager* AacheManager;
+				media::IVideoFrameObserver* UserObserver;
+			};
+
+		}
+	}
 }
-}
-}
 
+#endif

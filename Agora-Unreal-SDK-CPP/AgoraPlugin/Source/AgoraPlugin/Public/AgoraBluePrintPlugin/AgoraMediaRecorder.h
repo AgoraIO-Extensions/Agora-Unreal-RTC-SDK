@@ -43,7 +43,7 @@ struct FMediaRecorderConfiguration
 	int recorderInfoUpdateInterval;
 };
 /**
- * 
+ *
  */
 UCLASS(Blueprintable)
 class AGORAPLUGIN_API UIMediaRecorder : public UObject
@@ -58,7 +58,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Agora|IMediaRecorder")
 	int StopRecording();
 	void SetMediaRecorder(agora::rtc::IMediaRecorder* mediaRecorder);
-	agora::rtc::IMediaRecorder* GetMediaRecorder() { return MediaRecorder;}
+	agora::rtc::IMediaRecorder* GetMediaRecorder() { return MediaRecorder; }
 private:
 	agora::rtc::IMediaRecorder* MediaRecorder;
 };

@@ -47,7 +47,7 @@ USTRUCT(BlueprintType)
 struct FEncodedAudioFrameAdvancedSettings {
 	GENERATED_BODY()
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|EncodedAudioFrameAdvancedSettings")
-	bool speech =true;
+	bool speech = true;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|EncodedAudioFrameAdvancedSettings")
 	bool sendEvenIfEmpty = true;
 };
@@ -73,7 +73,7 @@ struct FEncodedAudioFrameInfo {
 
 
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSendAudioPacket,const FPacket&, packet);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSendAudioPacket, const FPacket&, packet);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSendVideoPacket, const FPacket&, packet);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnReceiveAudioPacket, const FPacket&, packet);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnReceiveVideoPacket, const FPacket&, packet);

@@ -41,7 +41,7 @@ private:
 class RtcEngineProxyClassWrapper : public agora::rtc::ue::RtcEngineProxy {};
 
 /**
- * 
+ *
  */
 UCLASS(Blueprintable)
 class AGORAPLUGIN_API UAgoraRtcEngine : public UObject, public RtcEngineProxyClassWrapper
@@ -248,7 +248,7 @@ public:
 	int SetVoiceConversionParameters(FENUMWRAP_VOICE_CONVERSION_PRESET preset, int param1, int param2);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
 	int SetLocalVoicePitch(float pitch);
-	
+
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
 	int SetLocalVoiceFormant(FString formantRatio = "0.0");
 
@@ -526,12 +526,12 @@ public:
 	int TakeSnapshot(int64 uid, FString filePath);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
 	int EnableContentInspect(bool enabled, FContentInspectConfig& config);
-	
+
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
 	int AdjustCustomAudioPublishVolume(int64 trackId, int volume);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
 	int AdjustCustomAudioPlayoutVolume(int64 trackId, int volume);
-	
+
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
 	int SetCloudProxy(ECLOUD_PROXY_TYPE proxyType);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
@@ -642,19 +642,19 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
 	FString GetNtpWallTimeInMs();
-	
+
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
 	int SetHeadphoneEQPreset(FENUMWRAP_HEADPHONE_EQUALIZER_PRESET preset);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
 	int SetHeadphoneEQParameters(int lowGain, int highGain);
 
-	private:
-		UIVideoDeviceManager* videoDeviceManager;
-		UIAudioDeviceManager* audioDeviceManager;
-		class UILocalSpatialAudioEngine* spatialAudioEngine;
-		UIMediaRecorder* mediaRecorder;
-		UIMediaPlayer* mediaPlayer;
-		UIScreenCaptureSourceList* screenCaptureSourceList;
+private:
+	UIVideoDeviceManager* videoDeviceManager;
+	UIAudioDeviceManager* audioDeviceManager;
+	class UILocalSpatialAudioEngine* spatialAudioEngine;
+	UIMediaRecorder* mediaRecorder;
+	UIMediaPlayer* mediaPlayer;
+	UIScreenCaptureSourceList* screenCaptureSourceList;
 
 };
 

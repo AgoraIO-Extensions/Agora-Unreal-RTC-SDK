@@ -9,7 +9,7 @@
 #include "IMediaRecorderObserver.generated.h"
 
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnRecorderStateChanged,FString,channelId,int64, uid, FENUMWRAP_RecorderState, state, ERecorderErrorCode, error);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnRecorderStateChanged, FString, channelId, int64, uid, FENUMWRAP_RecorderState, state, ERecorderErrorCode, error);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnRecorderInfoUpdated, FString, channelId, int64, uid, const FRecorderInfo&, info);
 
 class IMediaRecorderObserverClassWrapper : public agora::media::IMediaRecorderObserver {};

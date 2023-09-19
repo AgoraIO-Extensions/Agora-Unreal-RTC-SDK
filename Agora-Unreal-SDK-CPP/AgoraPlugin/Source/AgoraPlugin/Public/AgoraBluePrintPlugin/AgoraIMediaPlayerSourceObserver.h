@@ -44,7 +44,7 @@ enum class EENUMCUSTOM_MEDIA_PLAYER_ERROR : uint8 {
 	PLAYER_ERROR_TOKEN_EXPIRED = 15,
 
 	PLAYER_ERROR_IP_EXPIRED = 16,
-	
+
 	PLAYER_ERROR_UNKNOWN = 17,
 
 };
@@ -58,12 +58,12 @@ public:
 
 	// require to call [GetRawValue] method to get the raw value
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|EENUMCUSTOM_MEDIA_PLAYER_ERROR")
-		EENUMCUSTOM_MEDIA_PLAYER_ERROR ValueWrapper;
+	EENUMCUSTOM_MEDIA_PLAYER_ERROR ValueWrapper;
 
 	// default
-	FENUMWRAP_MEDIA_PLAYER_ERROR():ValueWrapper(EENUMCUSTOM_MEDIA_PLAYER_ERROR::PLAYER_ERROR_NONE){}
+	FENUMWRAP_MEDIA_PLAYER_ERROR() :ValueWrapper(EENUMCUSTOM_MEDIA_PLAYER_ERROR::PLAYER_ERROR_NONE) {}
 
-	FENUMWRAP_MEDIA_PLAYER_ERROR(EENUMCUSTOM_MEDIA_PLAYER_ERROR Val):ValueWrapper(Val){}
+	FENUMWRAP_MEDIA_PLAYER_ERROR(EENUMCUSTOM_MEDIA_PLAYER_ERROR Val) :ValueWrapper(Val) {}
 
 	FENUMWRAP_MEDIA_PLAYER_ERROR(agora::media::base::MEDIA_PLAYER_ERROR Val) :ValueWrapper((EENUMCUSTOM_MEDIA_PLAYER_ERROR)(-(int)Val)) {}
 	void operator = (EENUMCUSTOM_MEDIA_PLAYER_ERROR InValue) {
@@ -114,7 +114,7 @@ enum EMEDIA_PLAYER_EVENT {
 };
 
 UENUM(BlueprintType)
-enum class EPLAYER_PRELOAD_EVENT :uint8{
+enum class EPLAYER_PRELOAD_EVENT :uint8 {
 
 	PLAYER_PRELOAD_EVENT_BEGIN = 0,
 
@@ -177,10 +177,10 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnReadData, TArray<int64>, buffer,
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnSeek, int64, offset, int, whence);
 
 
-class IMediaPlayerSourceObserverClassWrapper : public agora::rtc::IMediaPlayerSourceObserver{};
+class IMediaPlayerSourceObserverClassWrapper : public agora::rtc::IMediaPlayerSourceObserver {};
 
 /**
- * 
+ *
  */
 UCLASS(Blueprintable)
 class AGORAPLUGIN_API UIMediaPlayerSourceObserver : public UObject, public IMediaPlayerSourceObserverClassWrapper

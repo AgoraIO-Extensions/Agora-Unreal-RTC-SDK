@@ -8,8 +8,8 @@ namespace agora
 	{
 		namespace ue
 		{
-            AGORAPLUGIN_API agora::rtc::IRtcEngine* AGORA_CALL createAgoraRtcEngine();
+			AGORAPLUGIN_API agora::rtc::IRtcEngine* AGORA_CALL createAgoraRtcEngine();
 			AGORAPLUGIN_API agora::rtc::IRtcEngineEx* AGORA_CALL createAgoraRtcEngineEx();
-        }
-    }
+		}
+	}
 }

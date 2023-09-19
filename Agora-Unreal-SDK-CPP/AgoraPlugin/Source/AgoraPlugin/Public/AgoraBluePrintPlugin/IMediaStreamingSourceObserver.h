@@ -18,7 +18,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnMetaData, const int64, data, int
 class IMediaStreamingSourceObserverClassWrapper : public agora::rtc::IMediaStreamingSourceObserver {};
 
 /**
- * 
+ *
  */
 UCLASS(Blueprintable)
 class AGORAPLUGIN_API UIMediaStreamingSourceObserver : public UObject, public IMediaStreamingSourceObserverClassWrapper
