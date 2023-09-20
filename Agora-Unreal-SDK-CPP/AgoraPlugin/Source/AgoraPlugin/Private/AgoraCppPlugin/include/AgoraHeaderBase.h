@@ -19,14 +19,6 @@
 #include <AgoraCppPlugin/IAgoraMusicContentCenter.h>
 
 
-// Notice: for now, the audio-only plugin is only available for Android and iOS. The [Windows/Mac] version still remains the FULL version.
-#if !AGORA_UESDK_AUDIO_ONLY || (!(PLATFORM_ANDROID || PLATFORM_IOS))
-#define AGORA_UESDK_ENABLE_VIDEO 1
-#else
-#define AGORA_UESDK_ENABLE_VIDEO 0
-#endif
-
-
 enum AGORA_UNREAL_PLUGIN_ERROR_CODE
 {
 	ERROR_OK = 0,

@@ -1,5 +1,6 @@
 // C// Copyright Epic Games, Inc. All Rights Reserved.
 
+using System;
 using UnrealBuildTool;
 
 public class AgoraPlugin : ModuleRules
@@ -8,8 +9,21 @@ public class AgoraPlugin : ModuleRules
     {
         PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
 
-        // Notice: for now, the audio-only plugin is only available for Android and iOS. The [Windows/Mac] version still remains the FULL version.
-        PublicDefinitions.Add("AGORA_UESDK_AUDIO_ONLY=0");
+        // [Voice (audio-only) / Full]
+        // SDK is [Voice] Version or not.
+        bool bIsAudioOnlySDK = false;
+        
+        // Notice: for now, the audio-only plugin is only available for Android and iOS. The [Windows/Mac] version still remains the FULL version, even if you have downloaded the voice version SDK.
+        PublicDefinitions.Add(String.Format("AGORA_UESDK_AUDIO_ONLY={0}", (bIsAudioOnlySDK ? 1 : 0)));
+
+        // Whether to compile video-related code or not.
+        if (!bIsAudioOnlySDK || (!(Target.Platform == UnrealTargetPlatform.Android || Target.Platform == UnrealTargetPlatform.IOS)))
+        {
+            PublicDefinitions.Add("AGORA_UESDK_ENABLE_VIDEO=1");
+        }
+        else {
+            PublicDefinitions.Add("AGORA_UESDK_ENABLE_VIDEO=0");
+        }
 
         PublicIncludePaths.AddRange(
             new string[] {
