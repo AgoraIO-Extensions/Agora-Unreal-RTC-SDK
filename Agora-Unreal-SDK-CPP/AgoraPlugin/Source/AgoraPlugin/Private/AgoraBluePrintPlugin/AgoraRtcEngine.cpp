@@ -278,6 +278,20 @@ int UAgoraRtcEngine::StopEchoTest()
 	auto ret = RtcEngineProxyClassWrapper::GetInstance()->stopEchoTest();
 	return ret;
 }
+
+int UAgoraRtcEngine::EnableMultiCamera(bool enabled, const FCameraCapturerConfiguration& config)
+{
+	auto ret = -1;
+
+#if defined(__APPLE__) && TARGET_OS_IOS
+	agora::rtc::CameraCapturerConfiguration RtcConfig;
+	RtcConfig.cameraDirection = (agora::rtc::CAMERA_DIRECTION)((int)config.cameraDirection);
+	ret = RtcEngineProxyClassWrapper::GetInstance()->enableMultiCamera(enabled, RtcConfig);
+#endif
+
+	return ret;
+}
+
 int UAgoraRtcEngine::EnableVideo()
 {
 	auto ret = RtcEngineProxyClassWrapper::GetInstance()->enableVideo();
@@ -308,6 +322,13 @@ int UAgoraRtcEngine::StartLastmileProbeTest(const FLastmileProbeConfig& config)
 	auto ret = RtcEngineProxyClassWrapper::GetInstance()->startLastmileProbeTest(lastmileProbeConfig);
 	return ret;
 }
+
+int UAgoraRtcEngine::StopLastmileProbeTest()
+{
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->stopLastmileProbeTest();
+	return ret;
+}
+
 int UAgoraRtcEngine::SetVideoEncoderConfiguration(const FVideoEncoderConfiguration& config)
 {
 	agora::rtc::VideoEncoderConfiguration videoEncoderConfiguration;
@@ -591,6 +612,13 @@ int UAgoraRtcEngine::StartAudioMixing(FString filePath, bool loopback, int cycle
 	auto ret = RtcEngineProxyClassWrapper::GetInstance()->startAudioMixing(FilePath.c_str(), loopback, cycle, startPos);
 	return ret;
 }
+
+int UAgoraRtcEngine::StopAudioMixing()
+{
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->stopAudioMixing();
+	return ret;
+}
+
 int UAgoraRtcEngine::PauseAudioMixing()
 {
 	auto ret = RtcEngineProxyClassWrapper::GetInstance()->pauseAudioMixing();
@@ -2137,6 +2165,39 @@ int UAgoraRtcEngine::StartOrUpdateChannelMediaRelay(const FChannelMediaRelayConf
 	return ret;
 }
 
+
+int UAgoraRtcEngine::StartOrUpdateChannelMediaRelayEx(const FChannelMediaRelayConfiguration& configuration, const FRtcConnection& connection)
+{
+	agora::rtc::RtcConnection rtcConnection;
+	std::string channel = TCHAR_TO_UTF8(*connection.channelId);
+	rtcConnection.channelId = channel.c_str();
+	rtcConnection.localUid = connection.localUid;
+
+	agora::rtc::ChannelMediaRelayConfiguration channelMediaRelayConfiguration;
+	agora::rtc::ChannelMediaInfo* mediaInfo = new agora::rtc::ChannelMediaInfo();
+	std::string ChannelName = TCHAR_TO_UTF8(*configuration.srcInfo.channelName);
+	mediaInfo->channelName = ChannelName.c_str();
+	std::string Token = TCHAR_TO_UTF8(*configuration.srcInfo.token);
+	mediaInfo->token = Token.c_str();
+	mediaInfo->uid = configuration.srcInfo.uid;
+	channelMediaRelayConfiguration.srcInfo = mediaInfo;
+	agora::rtc::ChannelMediaInfo* mediaInfos = new agora::rtc::ChannelMediaInfo[configuration.destCount];
+	for (int i = 0; i < configuration.destCount; i++)
+	{
+		std::string ChannelNameTemp = TCHAR_TO_UTF8(*configuration.srcInfo.channelName);
+		mediaInfos[i].channelName = ChannelNameTemp.c_str();
+		std::string TokenTemp = TCHAR_TO_UTF8(*configuration.srcInfo.channelName);
+		mediaInfos[i].token = TokenTemp.c_str();
+		mediaInfos[i].uid = configuration.destInfos[i].uid;
+	}
+	channelMediaRelayConfiguration.destInfos = mediaInfos;
+	channelMediaRelayConfiguration.destCount = configuration.destCount;
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->startChannelMediaRelayEx(channelMediaRelayConfiguration, rtcConnection);
+	delete mediaInfo;
+	delete[] mediaInfos;
+	return ret;
+}
+
 int UAgoraRtcEngine::StartChannelMediaRelay(const FChannelMediaRelayConfiguration& configuration)
 {
 	agora::rtc::ChannelMediaRelayConfiguration channelMediaRelayConfiguration;
@@ -2750,6 +2811,18 @@ int UAgoraRtcEngine::MuteAllRemoteVideoStreamsEx(bool mute, const FRtcConnection
 	return ret;
 }
 
+
+int UAgoraRtcEngine::SetSubscribeAudioBlocklist(TArray<int64> uidList, int uidNumber)
+{
+	agora::rtc::uid_t* data = new agora::rtc::uid_t[uidList.Num()];
+	for (int i = 0; i < uidList.Num(); i++)
+	{
+		data[i] = (agora::rtc::uid_t)uidList[i];
+	}
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->setSubscribeAudioBlocklist(data, uidNumber);
+	return ret;
+}
+
 int UAgoraRtcEngine::SetSubscribeAudioBlocklistEx(TArray<int64> uidList, int uidNumber, const FRtcConnection& connection)
 {
 	agora::rtc::RtcConnection rtcConnection;
@@ -2762,6 +2835,18 @@ int UAgoraRtcEngine::SetSubscribeAudioBlocklistEx(TArray<int64> uidList, int uid
 		data[i] = (agora::rtc::uid_t)uidList[i];
 	}
 	auto ret = RtcEngineProxyClassWrapper::GetInstance()->setSubscribeAudioBlocklistEx(data, uidNumber, rtcConnection);
+	return ret;
+}
+
+
+int UAgoraRtcEngine::SetSubscribeAudioAllowlist(TArray<int64> uidList, int uidNumber)
+{
+	agora::rtc::uid_t* data = new agora::rtc::uid_t[uidList.Num()];
+	for (int i = 0; i < uidList.Num(); i++)
+	{
+		data[i] = (agora::rtc::uid_t)uidList[i];
+	}
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->setSubscribeAudioAllowlist(data, uidNumber);
 	return ret;
 }
 
@@ -2780,6 +2865,18 @@ int UAgoraRtcEngine::SetSubscribeAudioAllowlistEx(TArray<int64> uidList, int uid
 	return ret;
 }
 
+
+int UAgoraRtcEngine::SetSubscribeVideoBlocklist(TArray<int64> uidList, int uidNumber)
+{
+	agora::rtc::uid_t* data = new agora::rtc::uid_t[uidList.Num()];
+	for (int i = 0; i < uidList.Num(); i++)
+	{
+		data[i] = (agora::rtc::uid_t)uidList[i];
+	}
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->setSubscribeVideoBlocklist(data, uidNumber);
+	return ret;
+}
+
 int UAgoraRtcEngine::SetSubscribeVideoBlocklistEx(TArray<int64> uidList, int uidNumber, const FRtcConnection& connection)
 {
 	agora::rtc::RtcConnection rtcConnection;
@@ -2792,6 +2889,18 @@ int UAgoraRtcEngine::SetSubscribeVideoBlocklistEx(TArray<int64> uidList, int uid
 		data[i] = (agora::rtc::uid_t)uidList[i];
 	}
 	auto ret = RtcEngineProxyClassWrapper::GetInstance()->setSubscribeVideoBlocklistEx(data, uidNumber, rtcConnection);
+	return ret;
+}
+
+
+int UAgoraRtcEngine::SetSubscribeVideoAllowlist(TArray<int64> uidList, int uidNumber)
+{
+	agora::rtc::uid_t* data = new agora::rtc::uid_t[uidList.Num()];
+	for (int i = 0; i < uidList.Num(); i++)
+	{
+		data[i] = (agora::rtc::uid_t)uidList[i];
+	}
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->setSubscribeVideoAllowlist(data, uidNumber);
 	return ret;
 }
 
@@ -3150,6 +3259,16 @@ int UAgoraRtcEngine::StartMediaRenderingTracing()
 }
 
 
+int UAgoraRtcEngine::StartMediaRenderingTracingEx(const FRtcConnection& connection)
+{
+	agora::rtc::RtcConnection rtcConnection;
+	std::string ChannelId = TCHAR_TO_UTF8(*connection.channelId);
+	rtcConnection.channelId = ChannelId.c_str();
+	rtcConnection.localUid = connection.localUid;
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->startMediaRenderingTracingEx(rtcConnection);
+	return ret;
+}
+
 int UAgoraRtcEngine::EnableInstantMediaRendering()
 {
 	auto ret = RtcEngineProxyClassWrapper::GetInstance()->enableInstantMediaRendering();
@@ -3174,6 +3293,37 @@ int UAgoraRtcEngine::SetHeadphoneEQPreset(FENUMWRAP_HEADPHONE_EQUALIZER_PRESET p
 int UAgoraRtcEngine::SetHeadphoneEQParameters(int lowGain, int highGain)
 {
 	auto ret = RtcEngineProxyClassWrapper::GetInstance()->setHeadphoneEQParameters(lowGain, highGain);
+	return ret;
+}
+
+
+int UAgoraRtcEngine::SetEarMonitoringAudioFrameParameters(int sampleRate, int channel, ERAW_AUDIO_FRAME_OP_MODE_TYPE mode, int samplesPerCall)
+{
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->setEarMonitoringAudioFrameParameters(sampleRate, channel, (agora::rtc::RAW_AUDIO_FRAME_OP_MODE_TYPE)((int)mode), samplesPerCall);
+	return ret;
+}
+
+
+int64 UAgoraRtcEngine::GetCurrentMonotonicTimeInMs()
+{
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->getCurrentMonotonicTimeInMs();
+	return ret;
+}
+
+
+
+int UAgoraRtcEngine::RegisterExtension(FString provider, FString extension, EMEDIA_SOURCE_TYPE type)
+{
+	std::string Provider = TCHAR_TO_UTF8(*provider);
+	std::string Extension = TCHAR_TO_UTF8(*extension);
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->registerExtension(Provider.c_str(), Extension.c_str(), (agora::media::MEDIA_SOURCE_TYPE)type);
+	return ret;
+}
+
+
+int UAgoraRtcEngine::GetNetworkType()
+{
+	auto ret = RtcEngineProxyClassWrapper::GetInstance()->getNetworkType();
 	return ret;
 }
 
