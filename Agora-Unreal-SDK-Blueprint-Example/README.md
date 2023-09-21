@@ -221,11 +221,17 @@ bOverrideBuildEnvironment = true;
 AdditionalCompilerArguments = "-Wno-unused-but-set-variable";
 ```
 
-### When opening the project on MacOS, there are blocking errors on framework.  How to quickly get over this?
+### When opening the project on macOS, you may encounter blocking errors related to frameworks or receive notifications that the app is damaged.How to quickly get over this?
+
 ![framework](./DocImages/Framework.png)
 
-Mac's Gatekeeper blocks unsigned frameworks and you have to unblock them one by one.  If your environment is safe, you can temporarily allow Apps to run from Anywhere.  See this checkbox in System Preferences:
-![Security_Privacy](./DocImages/SecurityPrivacy.png)
+Even on older versions of macOS, you may encounter the following error message: **"AppXXX is damaged and can’t be opened. You should move it to the Trash."**
+
+This error occurs because Mac's Gatekeeper blocks unsigned frameworks.
+
+To resolve issues related to trusted execution, you can run the script **MacRATrust.sh** located in the project folder.
+
+Alternatively, you can manually unlock the application by allowing the target framework in the **Privacy & Security** tab of your Mac's **System Preferences**.
 
 
 ### What should I do for the error "failed to load because module 'AgoraPlugin' could not be loaded" ?
