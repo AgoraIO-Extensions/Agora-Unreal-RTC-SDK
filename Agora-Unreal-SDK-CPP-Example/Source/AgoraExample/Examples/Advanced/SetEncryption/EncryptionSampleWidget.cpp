@@ -10,6 +10,8 @@ void UEncryptionSampleWidget::InitAgoraWidget(FString APP_ID, FString TOKEN, FSt
 	CheckPermission();
 
 	InitAgoraEngine(APP_ID, TOKEN, CHANNEL_NAME);
+
+	ShowUserGuide();
 }
 
 
@@ -57,6 +59,16 @@ void UEncryptionSampleWidget::InitAgoraEngine(FString APP_ID, FString TOKEN, FSt
 
 }
 
+
+void UEncryptionSampleWidget::ShowUserGuide()
+{
+	FString Guide =
+		"Case: [EncryptionSample]\n"
+		"1. Join the channel with the encryption.\n"
+		"";
+
+	UBFL_Logger::DisplayUserGuide(Guide, LogMsgViewPtr);
+}
 
 void UEncryptionSampleWidget::OnBtnJoinChannelClicked()
 {

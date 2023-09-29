@@ -11,6 +11,8 @@ void UMetadataWidget::InitAgoraWidget(FString APP_ID, FString TOKEN, FString CHA
 
 	InitAgoraEngine(APP_ID, TOKEN, CHANNEL_NAME);
 
+	ShowUserGuide();
+
 	JoinChannel();
 }
 
@@ -60,6 +62,16 @@ void UMetadataWidget::InitAgoraEngine(FString APP_ID, FString TOKEN, FString CHA
 	MetadataObserver = MakeShareable(new FUserMetadataObserver(this));
 	int ret2 = RtcEngineProxy->registerMediaMetadataObserver(MetadataObserver.Get(), IMetadataObserver::METADATA_TYPE::VIDEO_METADATA);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s registerMediaMetadataObserver ret %d"), *FString(FUNCTION_MACRO), ret2), LogMsgViewPtr);
+}
+
+void UMetadataWidget::ShowUserGuide()
+{
+	FString Guide =
+		"Case: [Metadata]\n"
+		"1. It could send the metadata and the remote user in the same channel would be able to receive the data.\n"
+		"";
+
+	UBFL_Logger::DisplayUserGuide(Guide, LogMsgViewPtr);
 }
 
 void UMetadataWidget::JoinChannel()

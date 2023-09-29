@@ -12,6 +12,8 @@ void UStreamMessageWidget::InitAgoraWidget(FString APP_ID, FString TOKEN, FStrin
 
 	InitAgoraEngine(APP_ID, TOKEN, CHANNEL_NAME);
 
+	ShowUserGuide();
+
 	JoinChannel();
 
 	CreateDataStreamId();
@@ -55,6 +57,16 @@ void UStreamMessageWidget::InitAgoraEngine(FString APP_ID, FString TOKEN, FStrin
 	int ret = RtcEngineProxy->initialize(RtcEngineContext);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 
+}
+
+void UStreamMessageWidget::ShowUserGuide()
+{
+	FString Guide =
+		"Case: [StreamMessage]\n"
+		"1. You need to use 2 examples of StreamMessage. One is for sending messages and the other one is for receiving.\n"
+		"";
+
+	UBFL_Logger::DisplayUserGuide(Guide, LogMsgViewPtr);
 }
 
 void UStreamMessageWidget::JoinChannel()

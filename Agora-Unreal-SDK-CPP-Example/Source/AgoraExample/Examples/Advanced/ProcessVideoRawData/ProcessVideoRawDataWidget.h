@@ -171,6 +171,7 @@ public:
 protected:
 	void CheckPermission();
 	void InitAgoraEngine(FString APP_ID, FString TOKEN, FString CHANNEL_NAME);
+	void ShowUserGuide();
 
 	void MakeVideoViewForRawData();
 	void ReleaseVideoViewForRawData();
@@ -189,8 +190,10 @@ protected:
 
 	TSharedPtr<FUserRtcEventHandlerEx> UserRtcEventHandlerEx;
 	TSharedPtr<FUserVideoFrameObserver> UserVideoFrameObserver;
-
-	
 	UDraggableVideoViewWidget* VideoRenderView = nullptr;
+
+
+	UTexture2D* RenderTexture = nullptr;
+	FSlateBrush RenderBrush;
 
 };

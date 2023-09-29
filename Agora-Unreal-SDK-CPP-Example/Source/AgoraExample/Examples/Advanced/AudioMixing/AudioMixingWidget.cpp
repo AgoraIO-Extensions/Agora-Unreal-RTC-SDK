@@ -10,6 +10,8 @@ void UAudioMixingWidget::InitAgoraWidget(FString APP_ID, FString TOKEN, FString 
 
 	InitAgoraEngine(APP_ID, TOKEN, CHANNEL_NAME);
 
+	ShowUserGuide();
+
 	JoinChannel();
 }
 
@@ -36,6 +38,19 @@ void UAudioMixingWidget::InitAgoraEngine(FString APP_ID, FString TOKEN, FString 
 	int ret = RtcEngineProxy->initialize(RtcEngineContext);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 
+}
+
+void UAudioMixingWidget::ShowUserGuide()
+{
+	FString Guide = ""
+	"Case: [AudioMixing]\n" 
+	"1. If you don't enter a URL below, you will use the local file. Alternatively, you can enter an audio file URL into the editable text.\n"
+	"2. <LocalOnly>: If checked, only the local user can hear the audio mixing.\n"
+	"3. <Loop>: If checked, enable infinite playback loops.\n"
+	"4. For the version 4.2.1 audio-only SDK, it will utilize the system's simple player, which may come with certain limitations. Therefore, it is recommended to use a url of a wav file instead.\n"
+	"";
+
+	UBFL_Logger::DisplayUserGuide(Guide, LogMsgViewPtr);
 }
 
 void UAudioMixingWidget::JoinChannel()

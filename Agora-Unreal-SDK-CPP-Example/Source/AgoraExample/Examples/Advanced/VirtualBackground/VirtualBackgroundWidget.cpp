@@ -12,6 +12,8 @@ void UVirtualBackgroundWidget::InitAgoraWidget(FString APP_ID, FString TOKEN, FS
 
 	InitAgoraEngine(APP_ID, TOKEN, CHANNEL_NAME);
 
+	ShowUserGuide();
+
 	JoinChannel();
 }
 
@@ -58,6 +60,16 @@ void UVirtualBackgroundWidget::InitAgoraEngine(FString APP_ID, FString TOKEN, FS
 	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 }
 
+
+void UVirtualBackgroundWidget::ShowUserGuide()
+{
+	FString Guide =
+		"Case: [VirtualBackground]\n"
+		"1. Use a virtual background during your video call.\n"
+		"";
+
+	UBFL_Logger::DisplayUserGuide(Guide, LogMsgViewPtr);
+}
 
 void UVirtualBackgroundWidget::JoinChannel()
 {

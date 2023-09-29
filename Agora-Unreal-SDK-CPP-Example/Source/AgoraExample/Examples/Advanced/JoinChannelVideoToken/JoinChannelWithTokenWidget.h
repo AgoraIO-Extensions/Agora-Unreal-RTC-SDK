@@ -152,6 +152,7 @@ protected:
 	void CheckPermission();
 	void InitAgoraEngine(FString APP_ID, FString TOKEN, FString CHANNEL_NAME);
 
+	void ShowUserGuide();
 	
 	void StartRequestToken();
 

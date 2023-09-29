@@ -9,6 +9,8 @@ void UMusicPlayerWidget::InitAgoraWidget(FString APP_ID, FString TOKEN, FString 
 
 	InitAgoraEngine(APP_ID, TOKEN, CHANNEL_NAME);
 
+	ShowUserGuide();
+
 }
 
 void UMusicPlayerWidget::InitAgoraEngine(FString APP_ID, FString TOKEN, FString CHANNEL_NAME)
@@ -33,6 +35,17 @@ void UMusicPlayerWidget::InitAgoraEngine(FString APP_ID, FString TOKEN, FString 
 
 	int ret = RtcEngineProxy->initialize(RtcEngineContext);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
+}
+
+void UMusicPlayerWidget::ShowUserGuide()
+{
+	FString Guide =
+		"Case: [MusicPlayer]\n"
+		"1. Currently, it is only supported on mobile platforms.\n"
+		"2. It requires an [RTM AppID, not the RTC one], an [RTM Token], and an [RTM UID].\n"
+		"";
+
+	UBFL_Logger::DisplayUserGuide(Guide, LogMsgViewPtr);
 }
 
 void UMusicPlayerWidget::OnBtnJoinChannelClicked()

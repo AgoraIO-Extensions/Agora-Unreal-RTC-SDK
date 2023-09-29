@@ -100,6 +100,53 @@ void UBFL_VideoViewManager::ChangeSizeForOneVideoView(const FVideoViewIdentity& 
 	}
 }
 
+void UBFL_VideoViewManager::RotateTheVideoView(const FVideoViewIdentity& Key, int rotation, TMap<FVideoViewIdentity, UDraggableVideoViewWidget*>& VideoViewMap)
+{
+	if (VideoViewMap.Contains(Key))
+	{
+		UCanvasPanelSlot* CanvasPanelSlot = UWidgetLayoutLibrary::SlotAsCanvasSlot(VideoViewMap[Key]);
+		UImage* TargetImage= VideoViewMap[Key]->View;
+		TargetImage->SetRenderTransformAngle(rotation);
+	}
+}
+
+void UBFL_VideoViewManager::ResizeTheRotationAppliedImage(const FVideoViewIdentity& Key, int Width, int Height, int rotation, TMap<FVideoViewIdentity, UDraggableVideoViewWidget*>& VideoViewMap)
+{
+	// Because [getRotationApplied] in [VideoObserverInternal.h] is set to True, we just change the size.
+	if (VideoViewMap.Contains(Key))
+	{
+		/*
+			Rotate Matrix:
+			| cos(¦È)  -sin(¦È) |
+			| sin(¦È)   cos(¦È) |
+
+			For Each Points: (x,y) -> (x',y')
+
+			x' = x * cos(¦È) - y * sin(¦È)
+			y' = x * sin(¦È) + y * cos(¦È)
+		*/
+
+		/*
+			RotatedWidth = max(x'1, x'2, x'3, x'4) - min(x'1, x'2, x'3, x'4)
+			RotatedHeight = max(y'1, y'2, y'3, y'4) - min(y'1, y'2, y'3, y'4)
+
+			RotatedWidth = max((Width * cos(¦È) - Height * sin(¦È)), (Width * cos(¦È)), 0) - min((0), (0), (Width * cos(¦È) - Height * sin(¦È)))
+			RotatedHeight = max((Width * sin(¦È) + Height * cos(¦È)), (Height * cos(¦È)), 0) - min((0), (0), (Width * sin(¦È) + Height * cos(¦È)))
+			RotatedWidth = Width * cos(¦È) - Height * sin(¦È)
+			RotatedHeight = Width * sin(¦È) + Height * cos(¦È)
+		*/
+
+		float Radians = FMath::DegreesToRadians(rotation);
+		float CosTheta = FMath::Abs(FMath::Cos(Radians));
+		float SinTheta = FMath::Abs(FMath::Sin(Radians));
+
+		int32 RotatedWidth = FMath::RoundToInt(Width * CosTheta + Height * SinTheta);
+		int32 RotatedHeight = FMath::RoundToInt(Width * SinTheta + Height * CosTheta);
+
+		ChangeSizeForOneVideoView(Key, RotatedWidth, RotatedHeight, VideoViewMap);
+	}
+}
+
 void UBFL_VideoViewManager::OnDropInner(const FGeometry& InGeometry, const FPointerEvent& InDragDropEvent, UDragDropOperation* InOperation)
 {
 	UWidgetDropOP* WidgetDropOp = Cast<UWidgetDropOP>(InOperation);

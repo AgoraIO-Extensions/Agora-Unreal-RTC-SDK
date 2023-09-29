@@ -128,6 +128,7 @@ protected:
 	void CheckPermission();
 	void InitUI();
 	void InitAgoraEngine(FString APP_ID, FString TOKEN, FString CHANNEL_NAME);
+	void ShowUserGuide();
 	void InitSpatialAudioEngine(IRtcEngine* engine);
 
 
@@ -137,9 +138,6 @@ protected:
 	FString AppId = "";
 	FString Token = "";
 	FString ChannelName = "";
-
-	uint32 UID = 123;
-	uint32 UID_UsedInMPK = 67890;
 
 	IRtcEngineEx* RtcEngineProxy;
 	ILocalSpatialAudioEngine* LocalSpatialAudioEngine = nullptr;

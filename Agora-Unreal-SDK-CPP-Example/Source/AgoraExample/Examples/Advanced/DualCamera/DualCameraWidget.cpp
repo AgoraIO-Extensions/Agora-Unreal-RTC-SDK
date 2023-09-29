@@ -7,11 +7,13 @@ void UDualCameraWidget::InitAgoraWidget(FString APP_ID, FString TOKEN, FString C
 {
 	LogMsgViewPtr = UBFL_Logger::CreateLogView(CanvasPanel_LogMsgView, DraggableLogMsgViewTemplate);
 
-	InitData();
-
 	CheckPermission();
 
 	InitAgoraEngine(APP_ID, TOKEN, CHANNEL_NAME);
+
+	InitData();
+
+	ShowUserGuide();
 
 	GetVideoDeviceManager();
 }
@@ -19,8 +21,16 @@ void UDualCameraWidget::InitAgoraWidget(FString APP_ID, FString TOKEN, FString C
 
 void UDualCameraWidget::InitData()
 {
-	UID1 = FMath::RandRange(0, 10000);
-	UID2 = FMath::RandRange(0, 10000);
+	FString MachineCode = UBFL_UtilityTool::GenSimpleUIDPart_MachineCode();
+	FString FuncCode = UBFL_UtilityTool::GenSimpleUIDPart_FuncCode(EUIDFuncType::CAMERA);
+	FString BaseUID = MachineCode + FuncCode;
+
+	UID1 = FCString::Atoi(*(BaseUID + "1"));
+	UID2 = FCString::Atoi(*(BaseUID + "2"));
+
+	UBFL_Logger::Print(FString::Printf(TEXT(" >>>> UID Generation <<< ")), LogMsgViewPtr);
+	UBFL_Logger::Print(FString::Printf(TEXT("UID1:  %d"), UID1), LogMsgViewPtr);
+	UBFL_Logger::Print(FString::Printf(TEXT("UID2:  %d"), UID2), LogMsgViewPtr);
 }
 
 void UDualCameraWidget::CheckPermission()
@@ -65,6 +75,17 @@ void UDualCameraWidget::InitAgoraEngine(FString APP_ID, FString TOKEN, FString C
 	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 }
 
+
+void UDualCameraWidget::ShowUserGuide()
+{
+	FString Guide =
+		"Case: [DualCamera]\n"
+		"1. Android is not fully supported at the moment, so there may be unexpected problems.\n"
+		"2. iPhone is only supported on iPhone XR or newer. iOS version 13.0 or later is supported.\n"
+		"";
+
+	UBFL_Logger::DisplayUserGuide(Guide, LogMsgViewPtr);
+}
 
 void UDualCameraWidget::GetVideoDeviceManager()
 {
@@ -159,6 +180,11 @@ void UDualCameraWidget::OnBtn_SecondCameraJoinClicked()
 	int ret = RtcEngineProxy->startCameraCapture(VIDEO_SOURCE_CAMERA_SECONDARY, SecondCameraConfig);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s startCameraCapture ret1 %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 	agora::rtc::ChannelMediaOptions options2;
+	/*
+		If a client wants to add multiple connections to the same channel, 
+		then auto-subscribing to audio and video in just one connection is enough, [autoSubscribeAudio/autoSubscribeVideo]
+		and set subscriptions to false for other connections.
+	*/
 	options2.autoSubscribeAudio = false;
 	options2.autoSubscribeVideo = false;
 	options2.publishCustomAudioTrack = false;

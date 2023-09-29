@@ -14,6 +14,7 @@ void UProcessVideoRawDataWidget::InitAgoraWidget(FString APP_ID, FString TOKEN, 
 
 	InitAgoraEngine(APP_ID, TOKEN, CHANNEL_NAME);
 	
+	ShowUserGuide();
 
 }
 
@@ -62,6 +63,16 @@ void UProcessVideoRawDataWidget::InitAgoraEngine(FString APP_ID, FString TOKEN, 
 	RtcEngineProxy->queryInterface(AGORA_IID_MEDIA_ENGINE, (void**)&MediaEngine);
 	UserVideoFrameObserver = MakeShared<FUserVideoFrameObserver>(this);
 	MediaEngine->registerVideoFrameObserver(UserVideoFrameObserver.Get());
+}
+
+void UProcessVideoRawDataWidget::ShowUserGuide()
+{
+	FString Guide =
+		"Case: [ProcessVideoRawData]\n"
+		"1. You can retrieve your raw video data (in this case, the data would be video frames captured by your webcam) and handle it yourself.\n"
+		"";
+
+	UBFL_Logger::DisplayUserGuide(Guide, LogMsgViewPtr);
 }
 
 void UProcessVideoRawDataWidget::OnBtnBackToHomeClicked()
@@ -143,7 +154,9 @@ void UProcessVideoRawDataWidget::RenderRawData(agora::media::base::VideoFrame& v
 			if(!VideoRenderViewWeakPtr.IsValid())
 				return;
 
-			UTexture2D* RenderTexture = UTexture2D::CreateTransient(Width, Height, PF_R8G8B8A8);
+			if(RenderTexture == nullptr || !RenderTexture->IsValidLowLevel() || RenderTexture->GetSizeX() != Width || RenderTexture->GetSizeY() != Height)
+				RenderTexture = UTexture2D::CreateTransient(Width, Height, PF_R8G8B8A8);
+
 			uint8* raw = (uint8*)RenderTexture->PlatformData->Mips[0].BulkData.Lock(LOCK_READ_WRITE);
 			memcpy(raw, rawdata, Width * Height * 4);
 			delete[] rawdata;
@@ -160,7 +173,6 @@ void UProcessVideoRawDataWidget::RenderRawData(agora::media::base::VideoFrame& v
 #else
 			RenderTexture->UpdateResource();
 #endif
-			FSlateBrush RenderBrush;
 			RenderBrush.SetResourceObject(RenderTexture);
 			RenderBrush.SetImageSize(FVector2D(Width, Height));
 

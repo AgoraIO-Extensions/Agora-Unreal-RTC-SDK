@@ -11,6 +11,8 @@ void UStartDirectCdnStreamingWidget::InitAgoraWidget(FString APP_ID, FString TOK
 
 	InitAgoraEngine(APP_ID, TOKEN, CHANNEL_NAME);
 
+	ShowUserGuide();
+
 	SetProfile();
 }
 
@@ -56,6 +58,17 @@ void UStartDirectCdnStreamingWidget::InitAgoraEngine(FString APP_ID, FString TOK
 
 	int ret = RtcEngineProxy->initialize(RtcEngineContext);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
+}
+
+void UStartDirectCdnStreamingWidget::ShowUserGuide()
+{
+	FString Guide =
+		"Case: [StartDirectCdnStreaming]\n"
+		"1. Play a video using data from direct CDN streaming.\n"
+		"2. Remember to enter your URL in the editable text box.\n"
+		"";
+
+	UBFL_Logger::DisplayUserGuide(Guide, LogMsgViewPtr);
 }
 
 void UStartDirectCdnStreamingWidget::SetProfile()

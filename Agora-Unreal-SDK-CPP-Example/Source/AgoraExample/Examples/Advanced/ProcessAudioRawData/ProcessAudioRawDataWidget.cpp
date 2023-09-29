@@ -14,6 +14,8 @@ void UProcessAudioRawDataWidget::InitAgoraWidget(FString APP_ID, FString TOKEN, 
 
 	InitAgoraEngine(APP_ID, TOKEN, CHANNEL_NAME);
 
+	ShowUserGuide();
+
 }
 
 
@@ -87,6 +89,16 @@ void UProcessAudioRawDataWidget::InitAgoraEngine(FString APP_ID, FString TOKEN, 
 	RtcEngineProxy->queryInterface(AGORA_IID_MEDIA_ENGINE, (void**)&MediaEngine);
 	UserAudioFrameObserver = MakeShared<FUserAudioFrameObserver>(this);
 	MediaEngine->registerAudioFrameObserver(UserAudioFrameObserver.Get());
+}
+
+void UProcessAudioRawDataWidget::ShowUserGuide()
+{
+	FString Guide =
+		"Case: [ProcessAudioRawData]\n"
+		"1. You can retrieve your raw audio data (in this case, the data would be your playback audio data) and handle it yourself.\n"
+		"";
+
+	UBFL_Logger::DisplayUserGuide(Guide, LogMsgViewPtr);
 }
 
 void UProcessAudioRawDataWidget::OnBtnJoinChannelClicked()

@@ -11,6 +11,8 @@ void UContentInspectWidget::InitAgoraWidget(FString APP_ID, FString TOKEN, FStri
 
 	InitAgoraEngine(APP_ID, TOKEN, CHANNEL_NAME);
 
+	ShowUserGuide();
+
 	JoinChannel();
 }
 
@@ -55,6 +57,16 @@ void UContentInspectWidget::InitAgoraEngine(FString APP_ID, FString TOKEN, FStri
 	int ret = RtcEngineProxy->initialize(RtcEngineContext);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 
+}
+
+void UContentInspectWidget::ShowUserGuide()
+{
+	FString Guide =
+		"Case: [ContentInspect]\n"
+		"1. It would inspect the video content and return the result in [onContentInspectResult] callback function.\n"
+		"";
+
+	UBFL_Logger::DisplayUserGuide(Guide, LogMsgViewPtr);
 }
 
 void UContentInspectWidget::JoinChannel()

@@ -14,6 +14,10 @@ void UScreenShareWhileVideoCallWidget::InitAgoraWidget(FString APP_ID, FString T
 
 	InitAgoraEngine(APP_ID, TOKEN, CHANNEL_NAME);
 
+	InitData();
+
+	ShowUserGuide();
+
 	PrepareScreenShare();
 	
 	JoinChannel();
@@ -73,6 +77,31 @@ void UScreenShareWhileVideoCallWidget::InitAgoraEngine(FString APP_ID, FString T
 
 	int ret = RtcEngineProxy->initialize(RtcEngineContext);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
+}
+
+void UScreenShareWhileVideoCallWidget::InitData()
+{
+	FString MachineCode = UBFL_UtilityTool::GenSimpleUIDPart_MachineCode();
+	FString FuncCode1 = UBFL_UtilityTool::GenSimpleUIDPart_FuncCode(EUIDFuncType::CAMERA);
+	FString FuncCode2 = UBFL_UtilityTool::GenSimpleUIDPart_FuncCode(EUIDFuncType::SCREEN_SHARE);
+
+	UID1_Camera = FCString::Atoi(*(MachineCode + FuncCode1 + "1"));
+	UID2_Screen = FCString::Atoi(*(MachineCode + FuncCode2 + "2"));
+
+	UBFL_Logger::Print(FString::Printf(TEXT(" >>>> UID Generation <<< ")), LogMsgViewPtr);
+	UBFL_Logger::Print(FString::Printf(TEXT("UID1_Camera:  %d"), UID1_Camera), LogMsgViewPtr);
+	UBFL_Logger::Print(FString::Printf(TEXT("UID2_Screen:  %d"), UID2_Screen), LogMsgViewPtr);
+}
+
+void UScreenShareWhileVideoCallWidget::ShowUserGuide()
+{
+	FString Guide =
+		"Case: [ScreenShareWhileVideoCall]\n"
+		"1. Perform screen sharing and video call at the same time.\n"
+		"2. For IOS, you need to check the screen share guide on Github.\n"
+		"";
+
+	UBFL_Logger::DisplayUserGuide(Guide, LogMsgViewPtr);
 }
 
 void UScreenShareWhileVideoCallWidget::PrepareScreenShare()
@@ -201,6 +230,8 @@ void UScreenShareWhileVideoCallWidget::JoinChannel_ScreenShare()
 	ValChannelMediaOptions.publishScreenTrack = true;
 #endif
 
+	ValChannelMediaOptions.autoSubscribeAudio = false;
+	ValChannelMediaOptions.autoSubscribeVideo = false;
 	ValChannelMediaOptions.enableAudioRecordingOrPlayout = false;
 	ValChannelMediaOptions.clientRoleType = CLIENT_ROLE_TYPE::CLIENT_ROLE_BROADCASTER;
 	agora::rtc::RtcConnection Connection;

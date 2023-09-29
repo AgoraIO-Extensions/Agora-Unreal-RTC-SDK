@@ -12,7 +12,8 @@
 
 // UI Utility
 #include "../../../Utility/BFL_VideoViewManager.h"
-#include "../../../Utility/BFL_Logger.h" 
+#include "../../../Utility/BFL_Logger.h"
+#include "../../../Utility/BFL_UtilityTool.h"
 
 #if PLATFORM_ANDROID
 #include "AndroidPermission/Classes/AndroidPermissionFunctionLibrary.h"
@@ -196,6 +197,8 @@ protected:
 	void InitAgoraMediaPlayer();
 	void InitAgoraSpatialAudioEngine();
 	void InitAgoraEngine(FString APP_ID, FString TOKEN, FString CHANNEL_NAME);
+	void InitData();
+	void ShowUserGuide();
 	void UnInitAgoraEngine();
 
 	FString AppId = "";
@@ -210,7 +213,15 @@ protected:
 
 #if AGORA_UESDK_AUDIO_ONLY
 	// In 4.2.1 AudioOnly SDK, the mp4 format is not supported.
-	FString MPL_URL = "https://agora-adc-artifacts.oss-cn-beijing.aliyuncs.com/video/meta_live_mpk.mov";
+	
+	// You could use the following URL, but playback may experience stuttering or lagging due to the current audio - only SDK's use of the system's SimplePlayer.
+	// FString MPL_URL = "https://agora-adc-artifacts.oss-cn-beijing.aliyuncs.com/video/meta_live_mpk.mov";
+	
+	
+	// Source Website: https://samplelib.com/sample-mp3.html
+	// License: https://samplelib.com/license.html
+	FString MPL_URL = "https://download.samplelib.com/mp3/sample-15s.mp3";
+
 #else
 	FString MPL_URL =
 		"https://agoracdn.s3.us-west-1.amazonaws.com/videos/Agora.io-Interactions.mp4";

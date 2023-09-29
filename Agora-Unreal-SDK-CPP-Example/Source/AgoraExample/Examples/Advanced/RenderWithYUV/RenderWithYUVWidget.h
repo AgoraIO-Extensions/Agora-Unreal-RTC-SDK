@@ -200,6 +200,7 @@ protected:
 	void NativeDestruct() override;
 	void CheckPermission();
 	void InitAgoraEngine(FString APP_ID, FString TOKEN, FString CHANNEL_NAME);
+	void ShowUserGuide();
 	void SetBasicConfiguration();
 	void UnInitAgoraEngine();
 
@@ -214,6 +215,11 @@ protected:
 		
 	TSharedPtr<FUserRtcEventHandlerEx> UserRtcEventHandlerEx;
 	TSharedPtr<FUserVideoFrameObserver> UserVideoFrameObserver;
+
+
+	UTexture2D* YRenderTexture = nullptr;
+	UTexture2D* URenderTexture = nullptr;
+	UTexture2D* VRenderTexture = nullptr;
 
 };
 

@@ -13,6 +13,8 @@ void UJoinChannelWithTokenWidget::InitAgoraWidget(FString APP_ID, FString TOKEN,
 	InitUI();
 	
 	InitAgoraEngine(APP_ID, TOKEN, CHANNEL_NAME);
+
+	ShowUserGuide();
 }
 
 
@@ -63,6 +65,18 @@ void UJoinChannelWithTokenWidget::InitAgoraEngine(FString APP_ID, FString TOKEN,
 	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 }
 
+
+void UJoinChannelWithTokenWidget::ShowUserGuide()
+{
+	FString Guide =
+		"Case: [JoinChannelWithToken]\n"
+		"1. You can join the channel using the token you provide.\n"
+		"2. You can also join the channel using the token retrieved from the server.\n"
+		"3. A simple server can be launched with the website link commented in the source code.\n"
+		"";
+
+	UBFL_Logger::DisplayUserGuide(Guide, LogMsgViewPtr);
+}
 
 void UJoinChannelWithTokenWidget::OnBtnJoinOrRenewTokenlicked()
 {

@@ -12,6 +12,8 @@ void UTakeSnapshotWidget::InitAgoraWidget(FString APP_ID, FString TOKEN, FString
 
 	InitAgoraEngine(APP_ID, TOKEN, CHANNEL_NAME);
 
+	ShowUserGuide();
+
 	JoinChannel();
 }
 
@@ -56,6 +58,17 @@ void UTakeSnapshotWidget::InitAgoraEngine(FString APP_ID, FString TOKEN, FString
 
 	int ret = RtcEngineProxy->initialize(RtcEngineContext);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
+}
+
+void UTakeSnapshotWidget::ShowUserGuide()
+{
+	FString Guide =
+		"Case: [TakeSnapshot]\n"
+		"1. It will take a snapshot of your video call.\n"
+		"2. The saved file should be located near your project's Log directory.\n"
+		"";
+
+	UBFL_Logger::DisplayUserGuide(Guide, LogMsgViewPtr);
 }
 
 void UTakeSnapshotWidget::JoinChannel()

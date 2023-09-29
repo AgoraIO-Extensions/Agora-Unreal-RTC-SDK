@@ -13,6 +13,8 @@ void UMediaplayerWidget::InitAgoraWidget(FString APP_ID, FString TOKEN, FString 
 	CheckPermission();
 
 	InitAgoraEngine(APP_ID, TOKEN, CHANNEL_NAME);
+
+	ShowUserGuide();
 	
 	InitAgoraMediaPlayer();
 	
@@ -67,6 +69,17 @@ void UMediaplayerWidget::InitAgoraEngine(FString APP_ID, FString TOKEN, FString 
 	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 }
 
+
+void UMediaplayerWidget::ShowUserGuide()
+{
+	FString Guide = ""
+		"Case: [Mediaplayer]\n"
+		"1. If you don't enter a URL below, you will use the local file. Alternatively, you can enter a URL into the editable text.\n"
+		"2. <Loop>: If checked, enable infinite playback loops.\n"
+		"";
+
+	UBFL_Logger::DisplayUserGuide(Guide, LogMsgViewPtr);
+}
 
 void UMediaplayerWidget::InitAgoraMediaPlayer()
 {
@@ -183,8 +196,11 @@ void UMediaplayerWidget::UnInitAgoraEngine()
 	if (RtcEngineProxy != nullptr)
 	{
 		if(MediaPlayer)
+		{
+			MediaPlayer->stop();
 			MediaPlayer->unregisterPlayerSourceObserver(UserIMediaPlayerSourceObserver.Get());
-		
+		}
+
 		RtcEngineProxy->destroyMediaPlayer(MediaPlayer);
 
 		RtcEngineProxy->leaveChannel();

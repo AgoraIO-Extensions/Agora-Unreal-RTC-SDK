@@ -7,21 +7,17 @@ void UPushEncodedVideoImageWidget::InitAgoraWidget(FString APP_ID, FString TOKEN
 {
 	LogMsgViewPtr = UBFL_Logger::CreateLogView(CanvasPanel_LogMsgView, DraggableLogMsgViewTemplate);
 
-	InitData();
-
 	CheckPermission();
 
 	InitAgoraEngine(APP_ID, TOKEN, CHANNEL_NAME);
 
+	InitData();
+
+	ShowUserGuide();
+
 	JoinChannel();
 
 	JoinChannel2();
-}
-
-void UPushEncodedVideoImageWidget::InitData()
-{
-	UID1 = FMath::RandRange(1, 1000);
-	UID2 = FMath::RandRange(1, 1000) + 1000;
 }
 
 void UPushEncodedVideoImageWidget::CheckPermission()
@@ -66,6 +62,31 @@ void UPushEncodedVideoImageWidget::InitAgoraEngine(FString APP_ID, FString TOKEN
 	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 }
 
+void UPushEncodedVideoImageWidget::InitData()
+{
+	FString MachineCode = UBFL_UtilityTool::GenSimpleUIDPart_MachineCode();
+	FString FuncCode = UBFL_UtilityTool::GenSimpleUIDPart_FuncCode(EUIDFuncType::CAMERA);
+	FString BaseUID = MachineCode + FuncCode;
+
+	UID1 = FCString::Atoi(*(BaseUID + "1"));
+	UID2 = FCString::Atoi(*(BaseUID + "2"));
+
+	UBFL_Logger::Print(FString::Printf(TEXT(" >>>> UID Generation <<< ")), LogMsgViewPtr);
+	UBFL_Logger::Print(FString::Printf(TEXT("UID1:  %d"), UID1), LogMsgViewPtr);
+	UBFL_Logger::Print(FString::Printf(TEXT("UID2:  %d"), UID2), LogMsgViewPtr);
+}
+
+void UPushEncodedVideoImageWidget::ShowUserGuide()
+{
+	FString Guide =
+		"Case: [PushEncodedVideoImage]\n"
+		"1. You can use 2 PushEncodedVideoImage examples to connect with each other. One handles the image pushing job, and the other one receives the images.\n"
+		"2. It will launch a timer to send data continuously.\n"
+		"3. Currently, the example case only prints logs.\n"
+		"";
+
+	UBFL_Logger::DisplayUserGuide(Guide, LogMsgViewPtr);
+}
 
 void UPushEncodedVideoImageWidget::JoinChannel()
 {
@@ -101,9 +122,15 @@ void UPushEncodedVideoImageWidget::JoinChannel2()
 	MediaEngine->setExternalVideoSource(true, true, agora::media::EXTERNAL_VIDEO_SOURCE_TYPE::ENCODED_VIDEO_FRAME, SenderOptions);
 
 
+	/*
+		If a client wants to add multiple connections to the same channel,
+		then auto-subscribing to audio and video in just one connection is enough, [autoSubscribeAudio/autoSubscribeVideo]
+		and set subscriptions to false for other connections.
+	*/
+
 	ChannelMediaOptions option;
-	option.autoSubscribeVideo = true;
-	option.autoSubscribeAudio = true;
+	option.autoSubscribeVideo = false;
+	option.autoSubscribeAudio = false;
 	option.publishCustomAudioTrack = false;
 	option.publishCameraTrack = false;
 	option.publishCustomVideoTrack = false;
@@ -162,7 +189,7 @@ void UPushEncodedVideoImageWidget::UpdateForPushEncodeVideoImage()
 {
 
 	UE_LOG(LogTemp,Warning,TEXT("UpdateForPushEncodeVideoImage"));
-	// you can send any data not just  video image byte
+	// you can send any data, not only video image.
 	agora::rtc::EncodedVideoFrameInfo ValEncodedVideoFrameInfo;
 	ValEncodedVideoFrameInfo.framesPerSecond = 60;
 	ValEncodedVideoFrameInfo.codecType = VIDEO_CODEC_TYPE::VIDEO_CODEC_GENERIC;
@@ -172,7 +199,7 @@ void UPushEncodedVideoImageWidget::UpdateForPushEncodeVideoImage()
 
 
 
-	UTexture2D* Texture2D = NewObject<UTexture2D>(this,TEXT("EncodedData"));
+	//UTexture2D* Texture2D = NewObject<UTexture2D>(this,TEXT("EncodedData"));
 	FString Path = FPaths::ProjectContentDir() / TEXT("Image/jpg.jpg");
 	TArray<uint8> FileData;
 	if (!FFileHelper::LoadFileToArray(FileData, *Path))

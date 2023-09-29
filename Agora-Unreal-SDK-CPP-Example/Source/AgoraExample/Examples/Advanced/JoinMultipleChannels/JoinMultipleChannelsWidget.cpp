@@ -12,6 +12,10 @@ void UJoinMultipleChannelsWidget::InitAgoraWidget(FString APP_ID, FString TOKEN,
 
 	InitAgoraEngine(APP_ID, TOKEN, CHANNEL_NAME);
 
+	InitData();
+
+	ShowUserGuide();
+
 	JoinChannel1();
 
 	JoinChannel2();
@@ -59,6 +63,34 @@ void UJoinMultipleChannelsWidget::InitAgoraEngine(FString APP_ID, FString TOKEN,
 
 	int ret = RtcEngineProxy->initialize(RtcEngineContext);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
+}
+
+void UJoinMultipleChannelsWidget::InitData()
+{
+	FString MachineCode = UBFL_UtilityTool::GenSimpleUIDPart_MachineCode();
+	FString FuncCode = UBFL_UtilityTool::GenSimpleUIDPart_FuncCode(EUIDFuncType::CAMERA);
+	FString BaseUID = MachineCode + FuncCode;
+
+	UIDChannel1 = FCString::Atoi(*(BaseUID + "1"));
+	UIDChannel2 = FCString::Atoi(*(BaseUID + "2"));
+
+	UBFL_Logger::Print(FString::Printf(TEXT(" >>>> UID Generation <<< ")), LogMsgViewPtr);
+	UBFL_Logger::Print(FString::Printf(TEXT("UID1:  %d"), UIDChannel1), LogMsgViewPtr);
+	UBFL_Logger::Print(FString::Printf(TEXT("UID2:  %d"), UIDChannel2), LogMsgViewPtr);
+}
+
+void UJoinMultipleChannelsWidget::ShowUserGuide()
+{
+	FString Guide = ""
+	"Case: [JoinMultiChannels]\n"
+	"1. You will join 2 channels: [YourChannelName] with UID [UIDChannel1] and [YourChannelName2] with UID [UIDChannel2].\n"
+	"2. By default, [YourChannelName] would be CLIENT_ROLE_AUDIENCE and [YourChannelName2] would be CLIENT_ROLE_BROADCASTER.\n"
+	"3. There can only be 1 CLIENT_ROLE_BROADCASTER for 1 channel at a time.If you need multiple broadcasters, that should be handled on the server side.\n"
+	"4. If someone joins the channel with the same CHANNEL_NAME and the same UID, it will kick off the previous user for now.\n"
+	"5. You can switch the broadcaster by clicking buttons. Note: You need to stop publishing first.\n"
+	"";
+
+	UBFL_Logger::DisplayUserGuide(Guide, LogMsgViewPtr);
 }
 
 void UJoinMultipleChannelsWidget::JoinChannel1()

@@ -12,6 +12,8 @@ void UVoiceChangerWidget::InitAgoraWidget(FString APP_ID, FString TOKEN, FString
 
 	InitAgoraEngine(APP_ID, TOKEN, CHANNEL_NAME);
 
+	ShowUserGuide();
+
 	JoinChannel();
 }
 
@@ -43,6 +45,16 @@ void UVoiceChangerWidget::InitAgoraEngine(FString APP_ID, FString TOKEN, FString
 
 	int ret = RtcEngineProxy->initialize(RtcEngineContext);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
+}
+
+void UVoiceChangerWidget::ShowUserGuide()
+{
+	FString Guide =
+		"Case: [VoiceChanger]\n"
+		"1. Apply audio/voice effects during your phone call.\n"
+		"";
+
+	UBFL_Logger::DisplayUserGuide(Guide, LogMsgViewPtr);
 }
 
 void UVoiceChangerWidget::JoinChannel()

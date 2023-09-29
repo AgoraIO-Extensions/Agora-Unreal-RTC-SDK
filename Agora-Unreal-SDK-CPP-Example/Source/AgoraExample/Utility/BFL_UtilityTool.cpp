@@ -83,3 +83,26 @@ void UBFL_UtilityTool::CreateMediaFileWithSource(FString SrcPath, FString DstPat
 	//bSuccess = DstAr && ConcertUtil::Copy(*DstAr, *InPackageDataStream.DataAr, InPackageDataStream.DataSize);
 
 }
+
+FString UBFL_UtilityTool::GenSimpleUIDPart_MachineCode()
+{
+	return FString::FromInt(FMath::RandRange(100, 900));
+}
+
+
+FString UBFL_UtilityTool::GenSimpleUIDPart_FuncCode(EUIDFuncType Type)
+{
+	int ValType = (uint8)Type;
+	return  "00" + FString::FromInt(ValType);
+}
+
+void UBFL_UtilityTool::SetCBSTextColor(UComboBoxString* CBSPtr)
+{
+	// Because in UE5.2.1, the default style of ComboBoxString is the black text on the black background.
+	// We need to change it manually.
+	if (CBSPtr)
+	{
+		CBSPtr->ItemStyle.TextColor = FSlateColor(FColor::FromHex("FFFFFFFF"));
+		CBSPtr->ItemStyle.SelectedTextColor = FSlateColor(FColor::FromHex("B7B7B7FF"));
+	}
+}

@@ -12,6 +12,10 @@ void USpatialAudioWithMPWidget::InitAgoraWidget(FString APP_ID, FString TOKEN, F
 	
 	InitAgoraEngine(APP_ID, TOKEN, CHANNEL_NAME);
 
+	InitData();
+
+	ShowUserGuide();
+
 	InitAgoraMediaPlayer();
 
 	InitAgoraSpatialAudioEngine();
@@ -66,6 +70,30 @@ void USpatialAudioWithMPWidget::InitAgoraEngine(FString APP_ID, FString TOKEN, F
 	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 }
 
+
+void USpatialAudioWithMPWidget::InitData()
+{
+	FString MachineCode = UBFL_UtilityTool::GenSimpleUIDPart_MachineCode();
+	FString FuncCode1 = UBFL_UtilityTool::GenSimpleUIDPart_FuncCode(EUIDFuncType::CAMERA);
+	FString FuncCode2 = UBFL_UtilityTool::GenSimpleUIDPart_FuncCode(EUIDFuncType::MPK);
+
+	UID = FCString::Atoi(*(MachineCode + FuncCode1 + "1"));
+	UID_UsedInMPK = FCString::Atoi(*(MachineCode + FuncCode2 + "2"));
+
+	UBFL_Logger::Print(FString::Printf(TEXT(" >>>> UID Generation <<< ")), LogMsgViewPtr);
+	UBFL_Logger::Print(FString::Printf(TEXT("UID Camera:  %d"), UID), LogMsgViewPtr);
+	UBFL_Logger::Print(FString::Printf(TEXT("UID MPK:  %d"), UID_UsedInMPK), LogMsgViewPtr);
+}
+
+void USpatialAudioWithMPWidget::ShowUserGuide()
+{
+	FString Guide =
+		"Case: [SpatialAudio]\n"
+		"1. Play spatial audio using the audio data from your local mpk (media player kit).\n"
+		"";
+
+	UBFL_Logger::DisplayUserGuide(Guide, LogMsgViewPtr);
+}
 
 void USpatialAudioWithMPWidget::InitAgoraMediaPlayer()
 {
@@ -123,9 +151,15 @@ void USpatialAudioWithMPWidget::JoinChannelWithMPK()
 {
 	int playerId = MediaPlayer->getMediaPlayerId();
 
+	/*
+		If a client wants to add multiple connections to the same channel,
+		then auto-subscribing to audio and video in just one connection is enough, [autoSubscribeAudio/autoSubscribeVideo]
+		and set subscriptions to false for other connections.
+	*/
+
 	agora::rtc::ChannelMediaOptions ChannelMediaOptions;
 	ChannelMediaOptions.autoSubscribeAudio = false;
-	ChannelMediaOptions.autoSubscribeVideo = true;
+	ChannelMediaOptions.autoSubscribeVideo = false;
 	ChannelMediaOptions.publishCameraTrack = false;
 	ChannelMediaOptions.publishMediaPlayerAudioTrack = true;
 	ChannelMediaOptions.publishMediaPlayerVideoTrack = true;
@@ -155,7 +189,6 @@ void USpatialAudioWithMPWidget::OnBtnPlayClicked()
 	if (MediaPlayer)
 	{
 		int ret = MediaPlayer->open(TCHAR_TO_UTF8(*MPL_URL), 0);
-		MediaPlayer->play();
 		MediaPlayer->adjustPlayoutVolume(0);
 		UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 	}
@@ -193,7 +226,10 @@ void USpatialAudioWithMPWidget::UnInitAgoraEngine()
 	if (RtcEngineProxy != nullptr)
 	{
 		if(MediaPlayer)
+		{
+			MediaPlayer->stop();
 			MediaPlayer->unregisterPlayerSourceObserver(MediaPlayerSourceObserverWarpper.Get());
+		}
 
 		RtcEngineProxy->leaveChannel();
 		RtcEngineProxy->unregisterEventHandler(UserRtcEventHandlerEx.Get());

@@ -3,7 +3,7 @@
 
 #include "BFL_HTTPHelper.h"
 
-void UBFL_HTTPHelper::FetchToken(FString RequestURL,int64 uid, FString ChannelName, int64 Role, std::function<void(FString, bool)> Callback)
+void UBFL_HTTPHelper::FetchToken(FString RequestURL, int64 uid, FString ChannelName, int64 Role, std::function<void(FString, bool)> Callback)
 {
 
 	// Create Json Data
@@ -11,7 +11,7 @@ void UBFL_HTTPHelper::FetchToken(FString RequestURL,int64 uid, FString ChannelNa
 
 	TSharedRef<TJsonWriter<TCHAR, TPrettyJsonPrintPolicy<TCHAR>>> JsonWriter = TJsonWriterFactory<TCHAR, TPrettyJsonPrintPolicy<TCHAR>>::Create(&ServerData);
 	JsonWriter->WriteObjectStart();
-	
+
 	JsonWriter->WriteValue(TEXT("uid"), uid);
 	JsonWriter->WriteValue(TEXT("ChannelName"), ChannelName);
 	JsonWriter->WriteValue(TEXT("role"), Role);
@@ -33,7 +33,7 @@ void UBFL_HTTPHelper::FetchToken(FString RequestURL,int64 uid, FString ChannelNa
 
 	Request->SetVerb("POST");
 
-	Request->SetURL(RequestURL); // 服务端预留的测试接口
+	Request->SetURL(RequestURL);
 
 	Request->SetContentAsString(ServerData);
 
@@ -42,14 +42,14 @@ void UBFL_HTTPHelper::FetchToken(FString RequestURL,int64 uid, FString ChannelNa
 		// class's methods in the callback.
 
 		[Callback](
-				FHttpRequestPtr pRequest,
-				FHttpResponsePtr pResponse,
-				bool connectedSuccessfully
-		) mutable 
+			FHttpRequestPtr pRequest,
+			FHttpResponsePtr pResponse,
+			bool connectedSuccessfully
+			) mutable
 		{
-					HandleRequest(pRequest, pResponse, connectedSuccessfully, Callback);
+			HandleRequest(pRequest, pResponse, connectedSuccessfully, Callback);
 		}
-	
+
 	);
 
 	// Send Request
@@ -63,13 +63,11 @@ void UBFL_HTTPHelper::HandleRequest(FHttpRequestPtr RequestPtr, FHttpResponsePtr
 		return;
 	}
 
-	// 获得返回的json数据
+	// Get Json Data
 	TSharedRef<TJsonReader<TCHAR>> JsonReader = TJsonReaderFactory<TCHAR>::Create(ResponsePtr->GetContentAsString());
-	// 把FString转成TCHAR
-	TCHAR* serializedChar = ResponsePtr->GetContentAsString().GetCharArray().GetData();
-	
-	// solve garbled problem
-	FString myData(TCHAR_TO_UTF8(serializedChar));
+
+	// Solve garbled problem
+	FString myData = ResponsePtr->GetContentAsString();
 
 
 	TSharedPtr<FJsonObject> JsonObject;
@@ -79,7 +77,7 @@ void UBFL_HTTPHelper::HandleRequest(FHttpRequestPtr RequestPtr, FHttpResponsePtr
 	if (bIsOk)
 	{
 		FString Token = JsonObject->GetStringField(TEXT("token"));
-		Callback(Token,true);
+		Callback(Token, true);
 	}
 
 	Callback("", false);

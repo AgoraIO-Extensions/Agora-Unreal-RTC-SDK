@@ -15,6 +15,8 @@ void UScreenShareWidget::InitAgoraWidget(FString APP_ID, FString TOKEN, FString 
 
 	InitAgoraEngine(APP_ID, TOKEN, CHANNEL_NAME);
 
+	ShowUserGuide();
+
 	PrepareScreenShare();
 }
 
@@ -73,6 +75,17 @@ void UScreenShareWidget::InitAgoraEngine(FString APP_ID, FString TOKEN, FString 
 	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 }
 
+
+void UScreenShareWidget::ShowUserGuide()
+{
+	FString Guide =
+		"Case: [ScreenShare]\n"
+		"1. Perform screen sharing.\n"
+		"2. For IOS, you need to check the screen share guide on Github.\n"
+		"";
+
+	UBFL_Logger::DisplayUserGuide(Guide, LogMsgViewPtr);
+}
 
 void UScreenShareWidget::PrepareScreenShare()
 {

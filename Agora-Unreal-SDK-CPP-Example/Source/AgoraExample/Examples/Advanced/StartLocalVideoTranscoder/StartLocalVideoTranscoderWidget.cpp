@@ -11,6 +11,8 @@ void UStartLocalVideoTranscoderWidget::InitAgoraWidget(FString APP_ID, FString T
 
 	InitAgoraEngine(APP_ID, TOKEN, CHANNEL_NAME);
 
+	ShowUserGuide();
+
 	InitAgoraMediaPlayer();
 
 	JoinChannel();
@@ -60,6 +62,16 @@ void UStartLocalVideoTranscoderWidget::InitAgoraEngine(FString APP_ID, FString T
 
 	int ret = RtcEngineProxy->initialize(RtcEngineContext);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
+}
+
+void UStartLocalVideoTranscoderWidget::ShowUserGuide()
+{
+	FString Guide =
+		"Case: [StartLocalVideoTranscoder]\n"
+		"1. Combine multiple video streams into one stream (e.g., Video Call, Screen Share, Media Player, Images, etc.).\n"
+		"";
+
+	UBFL_Logger::DisplayUserGuide(Guide, LogMsgViewPtr);
 }
 
 void UStartLocalVideoTranscoderWidget::InitAgoraMediaPlayer()
@@ -455,6 +467,12 @@ void UStartLocalVideoTranscoderWidget::UnInitAgoraEngine()
 {
 	if (RtcEngineProxy != nullptr)
 	{
+		if (MediaPlayer) 
+		{
+			MediaPlayer->stop();
+			MediaPlayer->unregisterPlayerSourceObserver(MediaPlayerSourceObserverWarpper.Get());
+		}
+
 		RtcEngineProxy->leaveChannel();
 		RtcEngineProxy->unregisterEventHandler(UserRtcEventHandlerEx.Get());
 		RtcEngineProxy->release();

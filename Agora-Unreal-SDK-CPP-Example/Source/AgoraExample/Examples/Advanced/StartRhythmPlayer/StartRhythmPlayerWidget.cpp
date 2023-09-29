@@ -12,6 +12,8 @@ void UStartRhythmPlayerWidget::InitAgoraWidget(FString APP_ID, FString TOKEN, FS
 
 	InitAgoraEngine(APP_ID, TOKEN, CHANNEL_NAME);
 
+	ShowUserGuide();
+
 	JoinChannel();
 }
 
@@ -56,6 +58,16 @@ void UStartRhythmPlayerWidget::InitAgoraEngine(FString APP_ID, FString TOKEN, FS
 	int ret = RtcEngineProxy->initialize(RtcEngineContext);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 
+}
+
+void UStartRhythmPlayerWidget::ShowUserGuide()
+{
+	FString Guide =
+		"Case: [StartRhythmPlayer]\n"
+		"1. Start a rhythm player using the files you provided in the content folder.\n"
+		"";
+
+	UBFL_Logger::DisplayUserGuide(Guide, LogMsgViewPtr);
 }
 
 void UStartRhythmPlayerWidget::JoinChannel()

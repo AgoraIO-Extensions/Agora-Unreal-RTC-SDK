@@ -120,6 +120,7 @@ public:
 	inline FString GetChannelName() { return ChannelName; };
 
 protected:
+	void ShowUserGuide();
 	void JoinChannel();
 	void NativeDestruct() override;
 	void InitAgoraEngine(FString APP_ID, FString TOKEN, FString CHANNEL_NAME);

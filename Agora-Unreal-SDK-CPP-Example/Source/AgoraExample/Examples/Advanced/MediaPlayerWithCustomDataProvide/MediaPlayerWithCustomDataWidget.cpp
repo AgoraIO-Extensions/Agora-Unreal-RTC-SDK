@@ -11,6 +11,8 @@ void UMediaPlayerWithCustomDataWidget::InitAgoraWidget(FString APP_ID, FString T
 
 	InitAgoraEngine(APP_ID, TOKEN, CHANNEL_NAME);
 
+	ShowUserGuide();
+
 	InitAgoraMediaPlayer();
 	
 	JoinChannelWithMPK();
@@ -59,6 +61,16 @@ void UMediaPlayerWithCustomDataWidget::InitAgoraEngine(FString APP_ID, FString T
 	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 }
 
+
+void UMediaPlayerWithCustomDataWidget::ShowUserGuide()
+{
+	FString Guide = ""
+		"Case: [MediaPlayerWithCustomData]\n"
+		"1. You could use media player using the custom data you provide.\n"
+		"";
+
+	UBFL_Logger::DisplayUserGuide(Guide, LogMsgViewPtr);
+}
 
 void UMediaPlayerWithCustomDataWidget::InitAgoraMediaPlayer()
 {

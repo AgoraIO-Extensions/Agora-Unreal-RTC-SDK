@@ -15,6 +15,8 @@ void URenderWithYUVWidget::InitAgoraWidget(FString APP_ID, FString TOKEN, FStrin
 	CheckPermission();
 	
 	InitAgoraEngine(APP_ID, TOKEN, CHANNEL_NAME);
+
+	ShowUserGuide();
 	
 	SetBasicConfiguration();
 }
@@ -69,6 +71,17 @@ void URenderWithYUVWidget::InitAgoraEngine(FString APP_ID, FString TOKEN, FStrin
 	MediaEngine->registerVideoFrameObserver(UserVideoFrameObserver.Get());
 }
 
+
+void URenderWithYUVWidget::ShowUserGuide()
+{
+	FString Guide =
+		"Case: [RenderWithYUV]\n"
+		"1. Render the video frame using YUV data from the remote side.\n"
+		"2. Currently, it is only support UE4.27.\n"
+		"";
+
+	UBFL_Logger::DisplayUserGuide(Guide, LogMsgViewPtr);
+}
 
 void URenderWithYUVWidget::SetBasicConfiguration()
 {
@@ -166,21 +179,43 @@ void URenderWithYUVWidget::RenderRawData(agora::media::base::VideoFrame& videoFr
 				return;
 			
 			EPixelFormat Format = EPixelFormat::PF_R8;
-			UTexture2D* YRenderTexture = UTexture2D::CreateTransient(YWidth, YHeight, Format);
+
+			if (YRenderTexture == nullptr || !YRenderTexture->IsValidLowLevel() || YRenderTexture->GetSizeX() != YWidth || YRenderTexture->GetSizeY() != YHeight)
+				YRenderTexture = UTexture2D::CreateTransient(YWidth, YHeight, Format);
 			uint8* YRaw = (uint8*)YRenderTexture->PlatformData->Mips[0].BulkData.Lock(LOCK_READ_WRITE);
 			memcpy(YRaw, YRawData, YSize);
 			delete[] YRawData;
 			YRenderTexture->PlatformData->Mips[0].BulkData.Unlock();
 			
 
-			UTexture2D* URenderTexture = UTexture2D::CreateTransient(UWidth, UHeight, EPixelFormat::PF_R8);
+			if (URenderTexture == nullptr || !URenderTexture->IsValidLowLevel() || URenderTexture->GetSizeX() != UWidth || URenderTexture->GetSizeY() != UHeight)
+				URenderTexture = UTexture2D::CreateTransient(UWidth, UHeight, EPixelFormat::PF_R8);
+			// Specify the texture configurations; otherwise, [Texture2D.sample] may return different values on different platforms.
+			//URenderTexture->Filter = TextureFilter::TF_Nearest;
+			URenderTexture->SRGB = false;
+			//URenderTexture->CompressionSettings = TextureCompressionSettings::TC_Grayscale;
+			//URenderTexture->CompressionNoAlpha = true;
+			//URenderTexture->MipGenSettings = TextureMipGenSettings::TMGS_NoMipmaps;
+			//URenderTexture->AddressX = TextureAddress::TA_Clamp;
+			//URenderTexture->AddressY = TextureAddress::TA_Clamp;
+
 			uint8* URaw = (uint8*)URenderTexture->PlatformData->Mips[0].BulkData.Lock(LOCK_READ_WRITE);
 			memcpy(URaw, URawData, USize);
 			delete[] URawData;
 			URenderTexture->PlatformData->Mips[0].BulkData.Unlock();
 
 
-			UTexture2D* VRenderTexture = UTexture2D::CreateTransient(VWidth, VHeight, EPixelFormat::PF_R8);
+			if (VRenderTexture == nullptr || !VRenderTexture->IsValidLowLevel() || VRenderTexture->GetSizeX() != UWidth || VRenderTexture->GetSizeY() != UHeight)
+				VRenderTexture = UTexture2D::CreateTransient(VWidth, VHeight, EPixelFormat::PF_R8);
+			// Specify the texture configurations; otherwise, [Texture2D.sample] may return different values on different platforms.
+			//VRenderTexture->Filter = TextureFilter::TF_Nearest;
+			VRenderTexture->SRGB = false;
+			//VRenderTexture->CompressionSettings = TextureCompressionSettings::TC_Grayscale;
+			//VRenderTexture->CompressionNoAlpha = true;
+			//VRenderTexture->MipGenSettings = TextureMipGenSettings::TMGS_NoMipmaps;
+			//VRenderTexture->AddressX = TextureAddress::TA_Clamp;
+			//VRenderTexture->AddressY = TextureAddress::TA_Clamp;
+
 			uint8* VRaw = (uint8*)VRenderTexture->PlatformData->Mips[0].BulkData.Lock(LOCK_READ_WRITE);
 			memcpy(VRaw, VRawData, VSize);
 			delete[] VRawData;

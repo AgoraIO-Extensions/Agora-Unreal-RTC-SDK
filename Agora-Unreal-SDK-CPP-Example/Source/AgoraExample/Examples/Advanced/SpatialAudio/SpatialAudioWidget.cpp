@@ -13,6 +13,8 @@ void USpatialAudioWidget::InitAgoraWidget(FString APP_ID, FString TOKEN, FString
 
 	InitAgoraEngine(APP_ID, TOKEN, CHANNEL_NAME);
 
+	ShowUserGuide();
+
 	InitSpatialAudioEngine(RtcEngineProxy);
 }
 
@@ -65,6 +67,16 @@ void USpatialAudioWidget::InitAgoraEngine(FString APP_ID, FString TOKEN, FString
 
 }
 
+
+void USpatialAudioWidget::ShowUserGuide()
+{
+	FString Guide =
+		"Case: [SpatialAudio]\n"
+		"1. Play spatial audio using the audio data from the remote user. \n"
+		"";
+
+	UBFL_Logger::DisplayUserGuide(Guide, LogMsgViewPtr);
+}
 
 void USpatialAudioWidget::InitSpatialAudioEngine(IRtcEngine* engine)
 {

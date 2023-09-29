@@ -10,6 +10,8 @@ void UAgoraVideoWidget::InitAgoraWidget(FString APP_ID, FString TOKEN, FString C
 	CheckPermission();
 
 	InitAgoraEngine(APP_ID, TOKEN, CHANNEL_NAME);
+
+	ShowUserGuide();
 }
 
 void UAgoraVideoWidget::CheckPermission() {
@@ -51,6 +53,16 @@ void UAgoraVideoWidget::InitAgoraEngine(FString APP_ID, FString TOKEN, FString C
 	UBFL_Logger::Print(FString::Printf(TEXT("%s initialize ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 }
 
+
+void UAgoraVideoWidget::ShowUserGuide()
+{
+	FString Guide =
+		"Case: [BasicVideoScene]\n"
+		"1. This is a basic video scene.\n"
+		"";
+
+	UBFL_Logger::DisplayUserGuide(Guide, LogMsgViewPtr);
+}
 
 void UAgoraVideoWidget::UnInitAgoraEngine()
 {
@@ -297,11 +309,20 @@ void UAgoraVideoWidget::FUserRtcEventHandler::onVideoSizeChanged(VIDEO_SOURCE_TY
 				UBFL_Logger::PrintError(FString::Printf(TEXT("%s bIsDestruct "), *FString(FUNCTION_MACRO)));
 				return;
 			}
-			UBFL_Logger::Print(FString::Printf(TEXT("%s uid=%d width=%d height=%d "), *FString(FUNCTION_MACRO), uid, width, height), WidgetPtr->GetLogMsgViewPtr());
-			
+			UBFL_Logger::Print(FString::Printf(TEXT("%s uid=%d width=%d height=%d rotation=%d"), *FString(FUNCTION_MACRO), uid, width, height, rotation), WidgetPtr->GetLogMsgViewPtr());
+
 			FVideoViewIdentity VideoViewIdentity(uid, sourceType, "");
-			UBFL_VideoViewManager::ChangeSizeForOneVideoView(VideoViewIdentity, width, height, WidgetPtr->VideoViewMap);
-			
+
+			//if(rotation == 0){
+			//	// no need to consider the rotation.
+			//	UBFL_VideoViewManager::ChangeSizeForOneVideoView(VideoViewIdentity, width, height, WidgetPtr->VideoViewMap);	
+			//}
+			//else{
+			//	UBFL_VideoViewManager::ResizeTheRotationAppliedImage(VideoViewIdentity, width, height, rotation, WidgetPtr->VideoViewMap);
+			//}
+
+			// Because [getRotationApplied] in [VideoObserverInternal.h] is set to True, we just change the size.
+			UBFL_VideoViewManager::ResizeTheRotationAppliedImage(VideoViewIdentity, width, height, rotation, WidgetPtr->VideoViewMap);
 		});
 }
 

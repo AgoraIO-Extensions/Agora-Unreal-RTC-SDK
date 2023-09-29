@@ -14,6 +14,8 @@ void UAgoraAudioWidget::InitAgoraWidget(FString APP_ID, FString TOKEN, FString C
 
 	InitAgoraEngine(APP_ID, TOKEN, CHANNEL_NAME);
 
+	ShowUserGuide();
+
 }
 
 
@@ -61,6 +63,16 @@ void UAgoraAudioWidget::InitAgoraEngine(FString APP_ID, FString TOKEN, FString C
 
 	int ret = RtcEngineProxy->initialize(RtcEngineContext);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
+}
+
+void UAgoraAudioWidget::ShowUserGuide()
+{
+	FString Guide =
+		"Case: [BasicAudioScene]\n"
+		"1. This is a basic audio scene.\n"
+		"";
+
+	UBFL_Logger::DisplayUserGuide(Guide, LogMsgViewPtr);
 }
 
 void UAgoraAudioWidget::UnInitAgoraEngine()

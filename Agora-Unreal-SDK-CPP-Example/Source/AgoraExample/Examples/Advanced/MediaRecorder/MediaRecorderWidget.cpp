@@ -11,6 +11,8 @@ void UMediaRecorderWidget::InitAgoraWidget(FString APP_ID, FString TOKEN, FStrin
 
 	InitAgoraEngine(APP_ID, TOKEN, CHANNEL_NAME);
 
+	ShowUserGuide();
+
 	JoinChannel();
 }
 
@@ -55,6 +57,17 @@ void UMediaRecorderWidget::InitAgoraEngine(FString APP_ID, FString TOKEN, FStrin
 	int ret = RtcEngineProxy->initialize(RtcEngineContext);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 
+}
+
+void UMediaRecorderWidget::ShowUserGuide()
+{
+	FString Guide =
+		"Case: [MediaRecorder]\n"
+		"1. It will record your video call and save it into your UE ProjectSavedDir folder.\n"
+		"2. The recorded file should be located near your project's Log directory.\n"
+		"";
+
+	UBFL_Logger::DisplayUserGuide(Guide, LogMsgViewPtr);
 }
 
 void UMediaRecorderWidget::JoinChannel()

@@ -61,6 +61,16 @@ void USetBeautyEffectOptionsWidget::InitAgoraEngine(FString APP_ID, FString TOKE
 
 }
 
+void USetBeautyEffectOptionsWidget::ShowUserGuide()
+{
+	FString Guide =
+		"Case: [SetBeautyEffectOptions]\n"
+		"1. Apply beauty effects on video call.\n"
+		"";
+
+	UBFL_Logger::DisplayUserGuide(Guide, LogMsgViewPtr);
+}
+
 void USetBeautyEffectOptionsWidget::JoinChannel()
 {
 	RtcEngineProxy->enableAudio();

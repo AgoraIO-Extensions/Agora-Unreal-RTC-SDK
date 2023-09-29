@@ -13,6 +13,8 @@ void UJoinChannelWithUserAccountWidget::InitAgoraWidget(FString APP_ID, FString 
 
 	InitAgoraEngine(APP_ID, TOKEN, CHANNEL_NAME);
 
+	ShowUserGuide();
+
 	JoinChannel();
 }
 
@@ -58,6 +60,16 @@ void UJoinChannelWithUserAccountWidget::InitAgoraEngine(FString APP_ID, FString 
 	int ret = RtcEngineProxy->initialize(RtcEngineContext);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 
+}
+
+void UJoinChannelWithUserAccountWidget::ShowUserGuide()
+{
+	FString Guide =
+		"Case: [JoinChannelWithUserAccount]\n"
+		"1. You can join the channel using the account you provide and also show the account user info.\n"
+		"";
+
+	UBFL_Logger::DisplayUserGuide(Guide, LogMsgViewPtr);
 }
 
 void UJoinChannelWithUserAccountWidget::JoinChannel()

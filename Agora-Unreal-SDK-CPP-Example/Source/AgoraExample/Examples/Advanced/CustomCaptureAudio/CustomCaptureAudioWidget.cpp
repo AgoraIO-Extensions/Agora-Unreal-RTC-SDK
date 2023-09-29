@@ -12,6 +12,8 @@ void UCustomCaptureAudioWidget::InitAgoraWidget(FString APP_ID, FString TOKEN, F
 
 	InitAgoraEngine(APP_ID, TOKEN, CHANNEL_NAME);
 
+	ShowUserGuide();
+
 	SetExternalAudioSource();
 
 	JoinChannel();
@@ -61,6 +63,16 @@ void UCustomCaptureAudioWidget::InitAgoraEngine(FString APP_ID, FString TOKEN, F
 	RtcEngineProxy->queryInterface(AGORA_IID_MEDIA_ENGINE, (void**)&MediaEngine);
 }
 
+void UCustomCaptureAudioWidget::ShowUserGuide()
+{
+	FString Guide =
+		"Case: [CustomCaptureAudio]\n"
+		"1. It will push the audio data to the remote side with the custom data you provide.\n"
+		"";
+
+	UBFL_Logger::DisplayUserGuide(Guide, LogMsgViewPtr);
+}
+
 void UCustomCaptureAudioWidget::SetExternalAudioSource()
 {
 	int ret = MediaEngine->setExternalAudioSource(true, SAMPLE_RATE, CHANNEL, 1);
@@ -82,7 +94,7 @@ void UCustomCaptureAudioWidget::StartPushAudio()
 	TArray<uint8> AudioData;
 	FFileHelper::LoadFileToArray(AudioData, *LoadDir, 0);
 	Runnable = new FAgoraCaptureRunnable(MediaEngine, AudioData.GetData(), AudioData.Num() * sizeof(uint8));
-	FRunnableThread* RunnableThread = FRunnableThread::Create(Runnable, TEXT("Agora"));
+	FRunnableThread* RunnableThread = FRunnableThread::Create(Runnable, TEXT("AgoraUE-UserThread"));
 }
 
 void UCustomCaptureAudioWidget::OnBtnBackToHomeClicked()

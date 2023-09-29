@@ -13,7 +13,8 @@
 
 // UI Utility
 #include "../../../Utility/BFL_VideoViewManager.h"
-#include "../../../Utility/BFL_Logger.h" 
+#include "../../../Utility/BFL_Logger.h"
+#include "../../../Utility/BFL_UtilityTool.h"
 
 #if PLATFORM_ANDROID
 #include "AndroidPermission/Classes/AndroidPermissionFunctionLibrary.h"
@@ -214,6 +215,7 @@ protected:
 
 	void InitAgoraMediaPlayer();
 	void InitAgoraEngine(FString APP_ID, FString TOKEN, FString CHANNEL_NAME);
+	void ShowUserGuide();
 	void UnInitAgoraEngine();
 
 	int StartScreenShare();
@@ -223,8 +225,6 @@ protected:
 	FString AppId;
 	FString Token;
 	FString ChannelName;
-
-	uint32 SrcIdMPK = 1234;
 
 	IRtcEngine* RtcEngineProxy;
 	agora::agora_refptr<agora::rtc::IMediaPlayer> MediaPlayer;

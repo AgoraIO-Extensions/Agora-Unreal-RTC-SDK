@@ -85,6 +85,9 @@ public:
 
 	static void ChangeSizeForOneVideoView(const FVideoViewIdentity& Key, int Width,int Height, TMap<FVideoViewIdentity, UDraggableVideoViewWidget*>& VideoViewMap);
 
+	static void RotateTheVideoView(const FVideoViewIdentity& Key, int rotation,TMap<FVideoViewIdentity, UDraggableVideoViewWidget*>& VideoViewMap);
+
+	static void ResizeTheRotationAppliedImage(const FVideoViewIdentity& Key, int Width, int Height, int rotation, TMap<FVideoViewIdentity, UDraggableVideoViewWidget*>& VideoViewMap);
 
 	UFUNCTION(BlueprintCallable, Category = "VideoViewManager")
 		static void OnDropInner(const FGeometry& InGeometry, const FPointerEvent& InDragDropEvent, UDragDropOperation* InOperation);

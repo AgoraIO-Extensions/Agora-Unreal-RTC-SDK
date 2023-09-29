@@ -13,6 +13,7 @@
 // UI Utility
 #include "../../../Utility/BFL_VideoViewManager.h"
 #include "../../../Utility/BFL_Logger.h"
+#include "../../../Utility/BFL_UtilityTool.h"
 
 #if PLATFORM_ANDROID
 #include "AndroidPermission/Classes/AndroidPermissionFunctionLibrary.h"
@@ -132,6 +133,8 @@ public:
 protected:
 	void CheckPermission();
 	void InitAgoraEngine(FString APP_ID, FString TOKEN, FString CHANNEL_NAME);
+	void InitData();
+	void ShowUserGuide();
 	void JoinChannel1();
 	void JoinChannel2();
 

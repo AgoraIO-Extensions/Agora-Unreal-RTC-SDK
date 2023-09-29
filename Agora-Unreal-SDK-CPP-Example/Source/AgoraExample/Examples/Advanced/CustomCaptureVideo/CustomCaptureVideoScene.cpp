@@ -20,6 +20,8 @@ void UCustomCaptureVideoScene::InitAgoraWidget(FString APP_ID, FString TOKEN, FS
 
 	InitAgoraEngine(APP_ID, TOKEN, CHANNEL_NAME);
 
+	ShowUserGuide();
+
 	SetExternalVideoSource();
 
 	JoinChannel();
@@ -72,6 +74,16 @@ void UCustomCaptureVideoScene::InitAgoraEngine(FString APP_ID, FString TOKEN, FS
 	int ret = RtcEngineProxy->initialize(RtcEngineContext);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 
+}
+
+void UCustomCaptureVideoScene::ShowUserGuide()
+{
+	FString Guide =
+		"Case: [CustomCaptureVideo]\n"
+		"1. It will push the video data to the remote side with the custom data you provide.\n"
+		"";
+
+	UBFL_Logger::DisplayUserGuide(Guide, LogMsgViewPtr);
 }
 
 void UCustomCaptureVideoScene::SetExternalVideoSource()

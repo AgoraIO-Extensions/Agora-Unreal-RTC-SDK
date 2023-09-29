@@ -104,3 +104,20 @@ void UBFL_Logger::PrintError(FString LogMsg, UDraggableLogMsgViewWidget* Widget 
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, LogMsg);
 	}
 }
+
+void UBFL_Logger::DisplayUserGuide(FString UserGuide, UDraggableLogMsgViewWidget* Widget /*= nullptr*/, bool bToConsole /*= true*/, bool bToLogMsgView /*= true*/, bool bOnScreen /*= false*/)
+{
+	FString GuideBegin ="\n"\
+	"******************************************\n" \
+	"======== User Guide Begin ========\n" \
+	"[Notice]: All the views are draggable\n" \
+	"---------------------------------------\n";
+
+	FString GuideEnd = ""\
+	"========= User Guide End ========\n"\
+	"******************************************\n";
+
+	FString ContentMsg = GuideBegin + UserGuide + GuideEnd;
+
+	Print(ContentMsg,Widget,false, bToLogMsgView, bOnScreen);
+}

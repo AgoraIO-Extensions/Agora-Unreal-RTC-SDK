@@ -15,6 +15,8 @@ void UAudioSpectrumWidget::InitAgoraWidget(FString APP_ID, FString TOKEN, FStrin
 
 	InitAgoraEngine(APP_ID, TOKEN, CHANNEL_NAME);
 
+	ShowUserGuide();
+
 	InitAgoraMediaPlayer();
 
 	JoinChannelWithMPK();
@@ -68,6 +70,18 @@ void UAudioSpectrumWidget::InitAgoraEngine(FString APP_ID, FString TOKEN, FStrin
 	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 }
 
+
+void UAudioSpectrumWidget::ShowUserGuide()
+{
+	FString Guide = ""
+		"Case: [AudioSpectrum]\n"
+		"1. If you don't enter a URL below, you will use the local file. Alternatively, you can enter a URL into the editable text.\n"
+		"2. <Loop>: If checked, enable infinite playback loops.\n"
+		"";
+
+	UBFL_Logger::DisplayUserGuide(Guide, LogMsgViewPtr);
+
+}
 
 void UAudioSpectrumWidget::InitAgoraMediaPlayer()
 {
@@ -260,7 +274,10 @@ void UAudioSpectrumWidget::UnInitAgoraEngine()
 	if (RtcEngineProxy != nullptr)
 	{
 		if (MediaPlayer)
+		{
+			MediaPlayer->stop();
 			MediaPlayer->unregisterPlayerSourceObserver(UserIMediaPlayerSourceObserver.Get());
+		}
 
 		RtcEngineProxy->destroyMediaPlayer(MediaPlayer);
 

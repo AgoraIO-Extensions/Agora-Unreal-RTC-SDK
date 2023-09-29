@@ -11,6 +11,8 @@ void UChannelMediaRelayWidget::InitAgoraWidget(FString APP_ID, FString TOKEN, FS
 
 	InitAgoraEngine(APP_ID, TOKEN, CHANNEL_NAME);
 
+	ShowUserGuide();
+
 	JoinChannel();
 }
 
@@ -55,6 +57,17 @@ void UChannelMediaRelayWidget::InitAgoraEngine(FString APP_ID, FString TOKEN, FS
 	int ret = RtcEngineProxy->initialize(RtcEngineContext);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 
+}
+
+void UChannelMediaRelayWidget::ShowUserGuide()
+{
+	FString Guide =
+		"Case: [ChannelMediaRelay]\n"
+		"1. You can join the channel [YourChannelName]. Channel [YourChannelName + Dst1] can also receive the stream.\n"
+		"2. You can click the Update button to update the configuration. After that, [YourChannelName + Dst1] will lose the stream, and [YourChannelName + Dst2] will be able to receive the stream.\n"
+		"";
+
+	UBFL_Logger::DisplayUserGuide(Guide, LogMsgViewPtr);
 }
 
 void UChannelMediaRelayWidget::JoinChannel()

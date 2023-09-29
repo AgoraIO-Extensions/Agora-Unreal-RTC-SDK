@@ -14,6 +14,8 @@ void UWriteBackVideoRawDataWidget::InitAgoraWidget(FString APP_ID, FString TOKEN
 
 	InitAgoraEngine(APP_ID, TOKEN, CHANNEL_NAME);
 
+	ShowUserGuide();
+
 	JoinChannel();
 }
 
@@ -67,6 +69,17 @@ void UWriteBackVideoRawDataWidget::InitAgoraEngine(FString APP_ID, FString TOKEN
 }
 
 
+
+void UWriteBackVideoRawDataWidget::ShowUserGuide()
+{
+	FString Guide =
+		"Case: [WriteBackVideoRawData]\n"
+		"1. Write your own data to the captured frame.\n"
+		"2. In this case, we modify the UV data when receiving the YUV video frame from both the local and remote sides.\n"
+		"";
+
+	UBFL_Logger::DisplayUserGuide(Guide, LogMsgViewPtr);
+}
 
 void UWriteBackVideoRawDataWidget::JoinChannel()
 {

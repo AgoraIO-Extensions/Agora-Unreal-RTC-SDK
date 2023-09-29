@@ -45,6 +45,9 @@ public:
 	static void PrintWarn(FString LogMsg, UDraggableLogMsgViewWidget* Widget = nullptr, bool bToConsole = true, bool bToLogMsgView = true, bool bOnScreen = false);
 	static void PrintError(FString LogMsg, UDraggableLogMsgViewWidget* Widget = nullptr, bool bToConsole = true, bool bToLogMsgView = true, bool bOnScreen = false);
 
+
+	static void DisplayUserGuide(FString UserGuide, UDraggableLogMsgViewWidget* Widget = nullptr, bool bToConsole = true, bool bToLogMsgView = true, bool bOnScreen = false);
+
 	UFUNCTION(Blueprintcallable)
 	static FString GetAgoraConsoleLogTitleStr(){ return ConsoleLogTitle;}
 };
