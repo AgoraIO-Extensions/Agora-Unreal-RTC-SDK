@@ -123,7 +123,6 @@ void UMainAgoraUserWidget::InitLevelArray()
 	LevelArray.Add(FString("VirtualBackground"));
 	LevelArray.Add(FString("VoiceChanger"));
 	LevelArray.Add(FString("MusicPlayer"));
-	LevelArray.Add(FString("RenderWithYUV"));
 	LevelArray.Add(FString("MediaPlayerWithCustomDataProvide"));
 	LevelArray.Add(FString("WriteBackVideoRawData"));
 

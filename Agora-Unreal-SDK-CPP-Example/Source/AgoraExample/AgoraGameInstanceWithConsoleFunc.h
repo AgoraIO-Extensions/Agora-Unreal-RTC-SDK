@@ -18,7 +18,4 @@ class AGORAEXAMPLE_API UAgoraGameInstanceWithConsoleFunc : public UGameInstance
 	
 	UFUNCTION(Exec)
 	void SetRtcEngineParam(FString Param);
-
-	UFUNCTION(Exec)
-	void DumpAudioFrame();
 };
