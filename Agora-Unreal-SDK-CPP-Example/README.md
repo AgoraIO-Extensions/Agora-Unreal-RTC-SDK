@@ -55,7 +55,6 @@ This project contains different ways for integrating the Agora Unreal SDK APIs i
 - VirtualBackground
 - VoiceChanger
 - MusicPlayer
-- RenderWithYUV
 - MediaPlayerWithCustomDataProvide
 - WriteBackVideoRawData
 - AudioSpectrum
@@ -300,7 +299,7 @@ Even on older versions of macOS, you may encounter the following error message: 
 
 This error occurs because Mac's Gatekeeper blocks unsigned frameworks.
 
-To resolve issues related to trusted execution, you can run the script **MacRATrust.sh** located in the project folder.
+To resolve issues related to trusted execution, you can run the script **MacRATrust.sh** located in the project folder. **Remember to replace the value of "PathToYourProject" with your project path in this script.**
 
 Alternatively, you can manually unlock the application by allowing the target framework in the **Privacy & Security** tab of your Mac's **System Preferences**.
 
