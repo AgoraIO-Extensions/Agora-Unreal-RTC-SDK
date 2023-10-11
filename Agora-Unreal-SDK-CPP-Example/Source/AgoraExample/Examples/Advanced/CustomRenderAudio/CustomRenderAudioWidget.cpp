@@ -88,11 +88,18 @@ void UCustomRenderAudioWidget::JoinChannel()
 
 
 #if PLATFORM_IOS
+
 	// UE and SDK would compete for the ADM.
+
+	// [Tmp Solution]
 	// It would disable SDK's ADM, therefore, it would disable the functionality of Recording and Playout.
 	// You could get the sample effect with ChannelMediaOptions.enableAudioRecordingOrPlayout to false
-	int ret00 = RtcEngineProxy->enableLocalAudio(false);
-	UBFL_Logger::Print(FString::Printf(TEXT("%s enableLocalAudio ret %d"), *FString(FUNCTION_MACRO), ret00), LogMsgViewPtr);
+	// int ret00 = RtcEngineProxy->enableLocalAudio(false);
+
+	// [Solution]
+	int ret00 = RtcEngineProxy->setParameters("{\"che.audio.keep.audiosession\": true}");
+	UBFL_Logger::Print(FString::Printf(TEXT("%s setParameters ret %d"), *FString(FUNCTION_MACRO), ret00), LogMsgViewPtr);
+
 #endif
 
 	int ret0 = MediaEngine->setExternalAudioSink(true, SAMPLE_RATE, CHANNEL);
