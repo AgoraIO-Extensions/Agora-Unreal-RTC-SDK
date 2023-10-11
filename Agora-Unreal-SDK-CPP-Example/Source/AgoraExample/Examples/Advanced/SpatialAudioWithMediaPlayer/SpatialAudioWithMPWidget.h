@@ -217,10 +217,7 @@ protected:
 	// You could use the following URL, but playback may experience stuttering or lagging due to the current audio - only SDK's use of the system's SimplePlayer.
 	// FString MPL_URL = "https://agora-adc-artifacts.oss-cn-beijing.aliyuncs.com/video/meta_live_mpk.mov";
 	
-	
-	// Source Website: https://samplelib.com/sample-mp3.html
-	// License: https://samplelib.com/license.html
-	FString MPL_URL = "https://download.samplelib.com/mp3/sample-15s.mp3";
+	FString MPL_URL = "https://download.agora.io/demo/test/Agora.io-Interactions.wav";
 
 #else
 	FString MPL_URL =
