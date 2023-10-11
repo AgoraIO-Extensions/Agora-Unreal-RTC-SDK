@@ -11,7 +11,8 @@
 			"AdditionalDependencies": [
 				"Engine",
 				"AgoraPlugin",
-				"CoreUObject"
+				"CoreUObject",
+				"UMG"
 			]
 		}
 	]
