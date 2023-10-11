@@ -109,6 +109,16 @@ namespace agora
 					apm->setParameters(TCHAR_TO_UTF8(*ParamType));
 
 #if AGORA_UESDK_ENABLE_VIDEO
+
+#if PLATFORM_ANDROID
+					
+					// The following parameter is the same as "{\"rtc.enable_camera_capture_yuv\":\"true\"}"
+					// These 2 parameters are used to capture YUV data directly.
+					// Otherwise, the inconsistent rotation applied to video frame can lead to flickering in the displayed image.
+					
+					apm->setParameters("{\"che.video.android_camera_output_type\":0}");
+
+#endif
 					// Our client can also use addVideoFrameRenderer to listen to VideoFrameObserver
 					queryInterface(AGORA_IID_MEDIA_ENGINE, (void**)&MediaEngine);
 					VideoObserverInternal* VideoObserver = new VideoObserverInternal(nullptr, DataManager::getInstance()->getCacheManager());
