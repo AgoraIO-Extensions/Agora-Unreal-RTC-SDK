@@ -383,7 +383,7 @@ void UAudioSpectrumWidget::FUserRtcEventHandler::onJoinChannelSuccess(const char
 	if (!IsWidgetValid())
 		return;
 
-#if UE_5_3_OR_LATER
+#if AGORA_CPP_VER_20_OR_LATER
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -406,7 +406,7 @@ void UAudioSpectrumWidget::FUserRtcEventHandler::onUserJoined(agora::rtc::uid_t 
 	if (!IsWidgetValid())
 		return;
 
-#if UE_5_3_OR_LATER
+#if AGORA_CPP_VER_20_OR_LATER
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -427,7 +427,7 @@ void UAudioSpectrumWidget::FUserRtcEventHandler::onUserOffline(agora::rtc::uid_t
 	if (!IsWidgetValid())
 		return;
 
-#if UE_5_3_OR_LATER
+#if AGORA_CPP_VER_20_OR_LATER
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -448,7 +448,7 @@ void UAudioSpectrumWidget::FUserRtcEventHandler::onLeaveChannel(const agora::rtc
 	if (!IsWidgetValid())
 		return;
 
-#if UE_5_3_OR_LATER
+#if AGORA_CPP_VER_20_OR_LATER
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -474,7 +474,7 @@ void UAudioSpectrumWidget::FUserIMediaPlayerSourceObserver::onPlayerSourceStateC
 	if (!IsWidgetValid())
 		return;
 
-#if UE_5_3_OR_LATER
+#if AGORA_CPP_VER_20_OR_LATER
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -565,7 +565,7 @@ bool UAudioSpectrumWidget::FUserAudioSpectrumObserver::onLocalAudioSpectrum(cons
 
 	WidgetPtr->UpdateSpectrumData(data);
 
-#if UE_5_3_OR_LATER
+#if AGORA_CPP_VER_20_OR_LATER
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()

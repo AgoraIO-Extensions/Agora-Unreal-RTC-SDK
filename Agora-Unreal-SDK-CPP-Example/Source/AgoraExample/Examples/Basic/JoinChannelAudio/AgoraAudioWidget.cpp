@@ -217,7 +217,7 @@ void UAgoraAudioWidget::FUserRtcEventHandler::onJoinChannelSuccess(const char* c
 	if (!IsWidgetValid())
 		return;
 
-#if UE_5_3_OR_LATER
+#if AGORA_CPP_VER_20_OR_LATER
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -237,7 +237,7 @@ void UAgoraAudioWidget::FUserRtcEventHandler::onLeaveChannel(const agora::rtc::R
 {
 	if (!IsWidgetValid())
 		return;
-#if UE_5_3_OR_LATER
+#if AGORA_CPP_VER_20_OR_LATER
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -259,7 +259,7 @@ void UAgoraAudioWidget::FUserRtcEventHandler::onUserJoined(agora::rtc::uid_t uid
 {
 	if (!IsWidgetValid())
 		return;
-#if UE_5_3_OR_LATER
+#if AGORA_CPP_VER_20_OR_LATER
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -281,7 +281,7 @@ void UAgoraAudioWidget::FUserRtcEventHandler::onUserOffline(agora::rtc::uid_t ui
 	if (!IsWidgetValid())
 		return;
 
-#if UE_5_3_OR_LATER
+#if AGORA_CPP_VER_20_OR_LATER
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -304,7 +304,7 @@ void UAgoraAudioWidget::FUserRtcEventHandler::onAudioVolumeIndication(const agor
 	if (!IsWidgetValid())
 		return;
 
-#if UE_5_3_OR_LATER
+#if AGORA_CPP_VER_20_OR_LATER
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()

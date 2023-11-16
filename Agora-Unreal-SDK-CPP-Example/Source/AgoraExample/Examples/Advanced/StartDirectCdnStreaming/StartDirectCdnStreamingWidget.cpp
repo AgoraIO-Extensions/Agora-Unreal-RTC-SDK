@@ -243,7 +243,7 @@ void UStartDirectCdnStreamingWidget::FUserRtcEventHandlerEx::onJoinChannelSucces
 	if (!IsWidgetValid())
 		return;
 
-#if UE_5_3_OR_LATER
+#if AGORA_CPP_VER_20_OR_LATER
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -265,7 +265,7 @@ void UStartDirectCdnStreamingWidget::FUserRtcEventHandlerEx::onLeaveChannel(cons
 	if (!IsWidgetValid())
 		return;
 
-#if UE_5_3_OR_LATER
+#if AGORA_CPP_VER_20_OR_LATER
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -287,7 +287,7 @@ void UStartDirectCdnStreamingWidget::FUserRtcEventHandlerEx::onUserJoined(const 
 	if (!IsWidgetValid())
 		return;
 
-#if UE_5_3_OR_LATER
+#if AGORA_CPP_VER_20_OR_LATER
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -309,7 +309,7 @@ void UStartDirectCdnStreamingWidget::FUserRtcEventHandlerEx::onUserOffline(const
 	if (!IsWidgetValid())
 		return;
 
-#if UE_5_3_OR_LATER
+#if AGORA_CPP_VER_20_OR_LATER
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()

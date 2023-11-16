@@ -388,7 +388,7 @@ void UScreenShareWhileVideoCallWidget::FUserRtcEventHandlerEx::onJoinChannelSucc
 	if (!IsWidgetValid())
 		return;
 
-#if UE_5_3_OR_LATER
+#if AGORA_CPP_VER_20_OR_LATER
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -413,7 +413,7 @@ void UScreenShareWhileVideoCallWidget::FUserRtcEventHandlerEx::onLeaveChannel(co
 	if (!IsWidgetValid())
 		return;
 
-#if UE_5_3_OR_LATER
+#if AGORA_CPP_VER_20_OR_LATER
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -438,7 +438,7 @@ void UScreenShareWhileVideoCallWidget::FUserRtcEventHandlerEx::onUserJoined(cons
 	if (!IsWidgetValid())
 		return;
 
-#if UE_5_3_OR_LATER
+#if AGORA_CPP_VER_20_OR_LATER
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -464,7 +464,7 @@ void UScreenShareWhileVideoCallWidget::FUserRtcEventHandlerEx::onUserOffline(con
 	if (!IsWidgetValid())
 		return;
 
-#if UE_5_3_OR_LATER
+#if AGORA_CPP_VER_20_OR_LATER
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()

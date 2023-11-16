@@ -222,7 +222,7 @@ void UWriteBackVideoRawDataWidget::FUserRtcEventHandlerEx::onJoinChannelSuccess(
 	if (!IsWidgetValid())
 		return;
 
-#if UE_5_3_OR_LATER
+#if AGORA_CPP_VER_20_OR_LATER
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -247,7 +247,7 @@ void UWriteBackVideoRawDataWidget::FUserRtcEventHandlerEx::onLeaveChannel(const 
 	if (!IsWidgetValid())
 		return;
 
-#if UE_5_3_OR_LATER
+#if AGORA_CPP_VER_20_OR_LATER
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -273,7 +273,7 @@ void UWriteBackVideoRawDataWidget::FUserRtcEventHandlerEx::onUserJoined(const ag
 	if (!IsWidgetValid())
 		return;
 
-#if UE_5_3_OR_LATER
+#if AGORA_CPP_VER_20_OR_LATER
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -298,7 +298,7 @@ void UWriteBackVideoRawDataWidget::FUserRtcEventHandlerEx::onUserOffline(const a
 	if (!IsWidgetValid())
 		return;
 
-#if UE_5_3_OR_LATER
+#if AGORA_CPP_VER_20_OR_LATER
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()

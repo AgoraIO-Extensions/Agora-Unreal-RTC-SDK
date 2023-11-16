@@ -250,7 +250,7 @@ void USetBeautyEffectOptionsWidget::FUserRtcEventHandlerEx::onJoinChannelSuccess
 	if (!IsWidgetValid())
 		return;
 
-#if UE_5_3_OR_LATER
+#if AGORA_CPP_VER_20_OR_LATER
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -272,7 +272,7 @@ void USetBeautyEffectOptionsWidget::FUserRtcEventHandlerEx::onLeaveChannel(const
 	if (!IsWidgetValid())
 		return;
 
-#if UE_5_3_OR_LATER
+#if AGORA_CPP_VER_20_OR_LATER
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -294,7 +294,7 @@ void USetBeautyEffectOptionsWidget::FUserRtcEventHandlerEx::onUserJoined(const a
 	if (!IsWidgetValid())
 		return;
 
-#if UE_5_3_OR_LATER
+#if AGORA_CPP_VER_20_OR_LATER
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -316,7 +316,7 @@ void USetBeautyEffectOptionsWidget::FUserRtcEventHandlerEx::onUserOffline(const 
 	if (!IsWidgetValid())
 		return;
 
-#if UE_5_3_OR_LATER
+#if AGORA_CPP_VER_20_OR_LATER
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()

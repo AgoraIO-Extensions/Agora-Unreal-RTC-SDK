@@ -165,7 +165,7 @@ void UStreamMessageWidget::FUserRtcEventHandler::onJoinChannelSuccess(const char
 	if (!IsWidgetValid())
 		return;
 
-#if UE_5_3_OR_LATER
+#if AGORA_CPP_VER_20_OR_LATER
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -185,7 +185,7 @@ void UStreamMessageWidget::FUserRtcEventHandler::onLeaveChannel(const agora::rtc
 {
 	if (!IsWidgetValid())
 		return;
-#if UE_5_3_OR_LATER
+#if AGORA_CPP_VER_20_OR_LATER
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -207,7 +207,7 @@ void UStreamMessageWidget::FUserRtcEventHandler::onUserJoined(agora::rtc::uid_t 
 {
 	if (!IsWidgetValid())
 		return;
-#if UE_5_3_OR_LATER
+#if AGORA_CPP_VER_20_OR_LATER
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -229,7 +229,7 @@ void UStreamMessageWidget::FUserRtcEventHandler::onUserOffline(agora::rtc::uid_t
 	if (!IsWidgetValid())
 		return;
 
-#if UE_5_3_OR_LATER
+#if AGORA_CPP_VER_20_OR_LATER
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -253,7 +253,7 @@ void UStreamMessageWidget::FUserRtcEventHandler::onStreamMessage(uid_t userId, i
 
 	FString Msg = UTF8_TO_TCHAR(data);
 
-#if UE_5_3_OR_LATER
+#if AGORA_CPP_VER_20_OR_LATER
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -276,7 +276,7 @@ void UStreamMessageWidget::FUserRtcEventHandler::onStreamMessageError(uid_t user
 	if (!IsWidgetValid())
 		return;
 
-#if UE_5_3_OR_LATER
+#if AGORA_CPP_VER_20_OR_LATER
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()

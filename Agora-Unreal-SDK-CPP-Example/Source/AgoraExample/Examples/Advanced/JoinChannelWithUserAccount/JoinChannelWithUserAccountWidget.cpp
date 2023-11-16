@@ -212,7 +212,7 @@ void UJoinChannelWithUserAccountWidget::FUserRtcEventHandlerEx::onJoinChannelSuc
 	if (!IsWidgetValid())
 		return;
 
-#if UE_5_3_OR_LATER
+#if AGORA_CPP_VER_20_OR_LATER
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -234,7 +234,7 @@ void UJoinChannelWithUserAccountWidget::FUserRtcEventHandlerEx::onLeaveChannel(c
 	if (!IsWidgetValid())
 		return;
 
-#if UE_5_3_OR_LATER
+#if AGORA_CPP_VER_20_OR_LATER
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -256,7 +256,7 @@ void UJoinChannelWithUserAccountWidget::FUserRtcEventHandlerEx::onUserJoined(con
 	if (!IsWidgetValid())
 		return;
 
-#if UE_5_3_OR_LATER
+#if AGORA_CPP_VER_20_OR_LATER
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -278,7 +278,7 @@ void UJoinChannelWithUserAccountWidget::FUserRtcEventHandlerEx::onUserOffline(co
 	if (!IsWidgetValid())
 		return;
 
-#if UE_5_3_OR_LATER
+#if AGORA_CPP_VER_20_OR_LATER
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()

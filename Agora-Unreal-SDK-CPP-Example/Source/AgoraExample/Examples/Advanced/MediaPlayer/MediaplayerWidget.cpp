@@ -305,7 +305,7 @@ void UMediaplayerWidget::FUserRtcEventHandler::onJoinChannelSuccess(const char* 
 	if (!IsWidgetValid())
 		return;
 
-#if UE_5_3_OR_LATER
+#if AGORA_CPP_VER_20_OR_LATER
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -328,7 +328,7 @@ void UMediaplayerWidget::FUserRtcEventHandler::onUserJoined(agora::rtc::uid_t ui
 	if (!IsWidgetValid())
 		return;
 
-#if UE_5_3_OR_LATER
+#if AGORA_CPP_VER_20_OR_LATER
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -349,7 +349,7 @@ void UMediaplayerWidget::FUserRtcEventHandler::onUserOffline(agora::rtc::uid_t u
 	if (!IsWidgetValid())
 		return;
 
-#if UE_5_3_OR_LATER
+#if AGORA_CPP_VER_20_OR_LATER
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -370,7 +370,7 @@ void UMediaplayerWidget::FUserRtcEventHandler::onLeaveChannel(const agora::rtc::
 	if (!IsWidgetValid())
 		return;
 
-#if UE_5_3_OR_LATER
+#if AGORA_CPP_VER_20_OR_LATER
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -396,7 +396,7 @@ void UMediaplayerWidget::FUserIMediaPlayerSourceObserver::onPlayerSourceStateCha
 	if (!IsWidgetValid())
 		return;
 
-#if UE_5_3_OR_LATER
+#if AGORA_CPP_VER_20_OR_LATER
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()

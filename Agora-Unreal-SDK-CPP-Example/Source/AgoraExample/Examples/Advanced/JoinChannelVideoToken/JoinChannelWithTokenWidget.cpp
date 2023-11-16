@@ -287,7 +287,7 @@ void UJoinChannelWithTokenWidget::FUserRtcEventHandlerEx::onJoinChannelSuccess(c
 	if (!IsWidgetValid())
 		return;
 
-#if UE_5_3_OR_LATER
+#if AGORA_CPP_VER_20_OR_LATER
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -309,7 +309,7 @@ void UJoinChannelWithTokenWidget::FUserRtcEventHandlerEx::onLeaveChannel(const a
 	if (!IsWidgetValid())
 		return;
 
-#if UE_5_3_OR_LATER
+#if AGORA_CPP_VER_20_OR_LATER
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -331,7 +331,7 @@ void UJoinChannelWithTokenWidget::FUserRtcEventHandlerEx::onUserJoined(const ago
 	if (!IsWidgetValid())
 		return;
 
-#if UE_5_3_OR_LATER
+#if AGORA_CPP_VER_20_OR_LATER
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -353,7 +353,7 @@ void UJoinChannelWithTokenWidget::FUserRtcEventHandlerEx::onUserOffline(const ag
 	if (!IsWidgetValid())
 		return;
 
-#if UE_5_3_OR_LATER
+#if AGORA_CPP_VER_20_OR_LATER
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -376,7 +376,7 @@ void UJoinChannelWithTokenWidget::FUserRtcEventHandlerEx::onTokenPrivilegeWillEx
 		return;
 
 	FString TokenStr = UTF8_TO_TCHAR(token);
-#if UE_5_3_OR_LATER
+#if AGORA_CPP_VER_20_OR_LATER
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()

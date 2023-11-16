@@ -373,7 +373,7 @@ void UDualCameraWidget::FUserRtcEventHandlerEx::onJoinChannelSuccess(const agora
 	if (!IsWidgetValid())
 		return;
 
-#if UE_5_3_OR_LATER
+#if AGORA_CPP_VER_20_OR_LATER
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -398,7 +398,7 @@ void UDualCameraWidget::FUserRtcEventHandlerEx::onLeaveChannel(const agora::rtc:
 	if (!IsWidgetValid())
 		return;
 
-#if UE_5_3_OR_LATER
+#if AGORA_CPP_VER_20_OR_LATER
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -423,7 +423,7 @@ void UDualCameraWidget::FUserRtcEventHandlerEx::onUserJoined(const agora::rtc::R
 	if (!IsWidgetValid())
 		return;
 
-#if UE_5_3_OR_LATER
+#if AGORA_CPP_VER_20_OR_LATER
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -446,7 +446,7 @@ void UDualCameraWidget::FUserRtcEventHandlerEx::onUserOffline(const agora::rtc::
 	if (!IsWidgetValid())
 		return;
 
-#if UE_5_3_OR_LATER
+#if AGORA_CPP_VER_20_OR_LATER
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()

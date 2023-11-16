@@ -220,7 +220,7 @@ void UVoiceChangerWidget::FUserRtcEventHandlerEx::onJoinChannelSuccess(const ago
 	if (!IsWidgetValid())
 		return;
 
-#if UE_5_3_OR_LATER
+#if AGORA_CPP_VER_20_OR_LATER
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -241,7 +241,7 @@ void UVoiceChangerWidget::FUserRtcEventHandlerEx::onLeaveChannel(const agora::rt
 	if (!IsWidgetValid())
 		return;
 
-#if UE_5_3_OR_LATER
+#if AGORA_CPP_VER_20_OR_LATER
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -262,7 +262,7 @@ void UVoiceChangerWidget::FUserRtcEventHandlerEx::onUserJoined(const agora::rtc:
 	if (!IsWidgetValid())
 		return;
 
-#if UE_5_3_OR_LATER
+#if AGORA_CPP_VER_20_OR_LATER
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -283,7 +283,7 @@ void UVoiceChangerWidget::FUserRtcEventHandlerEx::onUserOffline(const agora::rtc
 	if (!IsWidgetValid())
 		return;
 
-#if UE_5_3_OR_LATER
+#if AGORA_CPP_VER_20_OR_LATER
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()

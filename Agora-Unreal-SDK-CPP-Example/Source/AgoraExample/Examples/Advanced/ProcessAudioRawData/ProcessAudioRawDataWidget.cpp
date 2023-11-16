@@ -175,7 +175,7 @@ void UProcessAudioRawDataWidget::FUserRtcEventHandlerEx::onJoinChannelSuccess(co
 	if (!IsWidgetValid())
 		return;
 
-#if UE_5_3_OR_LATER
+#if AGORA_CPP_VER_20_OR_LATER
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -196,7 +196,7 @@ void UProcessAudioRawDataWidget::FUserRtcEventHandlerEx::onLeaveChannel(const ag
 	if (!IsWidgetValid())
 		return;
 
-#if UE_5_3_OR_LATER
+#if AGORA_CPP_VER_20_OR_LATER
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -216,7 +216,7 @@ void UProcessAudioRawDataWidget::FUserRtcEventHandlerEx::onUserJoined(const agor
 	if (!IsWidgetValid())
 		return;
 
-#if UE_5_3_OR_LATER
+#if AGORA_CPP_VER_20_OR_LATER
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -240,7 +240,7 @@ void UProcessAudioRawDataWidget::FUserRtcEventHandlerEx::onUserOffline(const ago
 	if (!IsWidgetValid())
 		return;
 
-#if UE_5_3_OR_LATER
+#if AGORA_CPP_VER_20_OR_LATER
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()

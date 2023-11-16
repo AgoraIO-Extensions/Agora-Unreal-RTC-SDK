@@ -247,7 +247,7 @@ void UVirtualBackgroundWidget::FUserRtcEventHandlerEx::onJoinChannelSuccess(cons
 	if (!IsWidgetValid())
 		return;
 
-#if UE_5_3_OR_LATER
+#if AGORA_CPP_VER_20_OR_LATER
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -269,7 +269,7 @@ void UVirtualBackgroundWidget::FUserRtcEventHandlerEx::onLeaveChannel(const agor
 	if (!IsWidgetValid())
 		return;
 
-#if UE_5_3_OR_LATER
+#if AGORA_CPP_VER_20_OR_LATER
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -291,7 +291,7 @@ void UVirtualBackgroundWidget::FUserRtcEventHandlerEx::onUserJoined(const agora:
 	if (!IsWidgetValid())
 		return;
 
-#if UE_5_3_OR_LATER
+#if AGORA_CPP_VER_20_OR_LATER
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -313,7 +313,7 @@ void UVirtualBackgroundWidget::FUserRtcEventHandlerEx::onUserOffline(const agora
 	if (!IsWidgetValid())
 		return;
 
-#if UE_5_3_OR_LATER
+#if AGORA_CPP_VER_20_OR_LATER
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()

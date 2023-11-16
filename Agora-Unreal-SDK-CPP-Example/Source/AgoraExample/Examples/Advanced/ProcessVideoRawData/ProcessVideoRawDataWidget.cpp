@@ -146,7 +146,7 @@ void UProcessVideoRawDataWidget::RenderRawData(agora::media::base::VideoFrame& v
 	memcpy(rawdata, videoFrame.yBuffer, Width * Height * 4);
 
 
-#if UE_5_3_OR_LATER
+#if AGORA_CPP_VER_20_OR_LATER
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -306,7 +306,7 @@ void UProcessVideoRawDataWidget::FUserRtcEventHandlerEx::onJoinChannelSuccess(co
 	if (!IsWidgetValid())
 		return;
 
-#if UE_5_3_OR_LATER
+#if AGORA_CPP_VER_20_OR_LATER
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -327,7 +327,7 @@ void UProcessVideoRawDataWidget::FUserRtcEventHandlerEx::onLeaveChannel(const ag
 	if (!IsWidgetValid())
 		return;
 
-#if UE_5_3_OR_LATER
+#if AGORA_CPP_VER_20_OR_LATER
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -348,7 +348,7 @@ void UProcessVideoRawDataWidget::FUserRtcEventHandlerEx::onUserJoined(const agor
 	if (!IsWidgetValid())
 		return;
 
-#if UE_5_3_OR_LATER
+#if AGORA_CPP_VER_20_OR_LATER
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -370,7 +370,7 @@ void UProcessVideoRawDataWidget::FUserRtcEventHandlerEx::onUserOffline(const ago
 	if (!IsWidgetValid())
 		return;
 
-#if UE_5_3_OR_LATER
+#if AGORA_CPP_VER_20_OR_LATER
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()

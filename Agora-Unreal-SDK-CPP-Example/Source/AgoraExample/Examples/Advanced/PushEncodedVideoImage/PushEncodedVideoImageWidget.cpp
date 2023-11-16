@@ -306,7 +306,7 @@ void UPushEncodedVideoImageWidget::FUserRtcEventHandlerEx::onJoinChannelSuccess(
 	if (!IsWidgetValid())
 		return;
 
-#if UE_5_3_OR_LATER
+#if AGORA_CPP_VER_20_OR_LATER
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -337,7 +337,7 @@ void UPushEncodedVideoImageWidget::FUserRtcEventHandlerEx::onLeaveChannel(const 
 	if (!IsWidgetValid())
 		return;
 
-#if UE_5_3_OR_LATER
+#if AGORA_CPP_VER_20_OR_LATER
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -372,7 +372,7 @@ void UPushEncodedVideoImageWidget::FUserRtcEventHandlerEx::onUserJoined(const ag
 	if (remoteUid == WidgetPtr->GetUID1() || remoteUid == WidgetPtr->GetUID2())
 		return;
 
-#if UE_5_3_OR_LATER
+#if AGORA_CPP_VER_20_OR_LATER
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -411,7 +411,7 @@ void UPushEncodedVideoImageWidget::FUserRtcEventHandlerEx::onUserOffline(const a
 	if (remoteUid == WidgetPtr->GetUID1() || remoteUid == WidgetPtr->GetUID2())
 		return;
 
-#if UE_5_3_OR_LATER
+#if AGORA_CPP_VER_20_OR_LATER
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -458,7 +458,7 @@ bool UPushEncodedVideoImageWidget::FUserIVideoEncodedFrameObserver::onEncodedVid
 	if (!IsWidgetValid())
 		return false;
 
-#if UE_5_3_OR_LATER
+#if AGORA_CPP_VER_20_OR_LATER
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
