@@ -12,16 +12,16 @@
 #include "BFL_HTTPHelper.generated.h"
 
 /**
- * 
+ *
  */
 UCLASS()
 class AGORAEXAMPLE_API UBFL_HTTPHelper : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
-	
+
 public:
 
-	static void FetchToken(FString RequestURL, int64 uid, FString ChannelName, int64 Role, std::function<void(FString,bool)> Callback);
+	static void FetchToken(FString RequestURL, int64 uid, FString ChannelName, int64 Role, std::function<void(FString, bool)> Callback);
 
 	static void HandleRequest(FHttpRequestPtr RequestPtr, FHttpResponsePtr ResponsePtr, bool bIsSuccess, std::function<void(FString, bool)> Callback);
 };

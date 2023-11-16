@@ -23,12 +23,14 @@ typedef struct FVideoViewIdentity {
 	FString channelId;
 
 	FVideoViewIdentity()
-		: sourceType(VIDEO_SOURCE_TYPE::VIDEO_SOURCE_CAMERA), uid(0), channelId("") {/* use as the local video */}
+		: sourceType(VIDEO_SOURCE_TYPE::VIDEO_SOURCE_CAMERA), uid(0), channelId("") {/* use as the local video */
+	}
 	FVideoViewIdentity(VIDEO_SOURCE_TYPE vsourceType)
-		: sourceType(vsourceType), uid(0), channelId("") {/* use as the local video */}
+		: sourceType(vsourceType), uid(0), channelId("") {/* use as the local video */
+	}
 
-	FVideoViewIdentity(uint32 vuid,VIDEO_SOURCE_TYPE vsourceType, FString vchannelId)
-	: sourceType(vsourceType), uid(vuid), channelId(vchannelId) {}
+	FVideoViewIdentity(uint32 vuid, VIDEO_SOURCE_TYPE vsourceType, FString vchannelId)
+		: sourceType(vsourceType), uid(vuid), channelId(vchannelId) {}
 
 	bool operator==(const FVideoViewIdentity& Other) const
 	{
@@ -48,7 +50,7 @@ typedef struct FVideoViewIdentity {
 
 
 /**
- * 
+ *
  */
 UCLASS()
 class AGORAEXAMPLE_API UBFL_VideoViewManager : public UBlueprintFunctionLibrary
@@ -56,12 +58,12 @@ class AGORAEXAMPLE_API UBFL_VideoViewManager : public UBlueprintFunctionLibrary
 	GENERATED_BODY()
 
 public:
-	
+
 
 	static UImage* CreateOneVideoViewToCanvasPanel(
 		int64 uid,
 		UCanvasPanel* CanvasPanel,
-		TMap<int64, UDraggableVideoViewWidget*> & VideoViewMap,
+		TMap<int64, UDraggableVideoViewWidget*>& VideoViewMap,
 		UImage* VideoView,
 		TSubclassOf<UUserWidget> Template
 	);
@@ -69,7 +71,7 @@ public:
 	static void ReleaseOneVideoView(int64 uid, TMap<int64, UDraggableVideoViewWidget*>& VideoViewMap);
 
 	static void ReleaseAllVideoView(TMap<int64, UDraggableVideoViewWidget*>& VideoViewMap);
-	
+
 
 
 	static UImage* CreateOneVideoViewToCanvasPanel(
@@ -83,13 +85,13 @@ public:
 
 	static void ReleaseAllVideoView(TMap<FVideoViewIdentity, UDraggableVideoViewWidget*>& VideoViewMap);
 
-	static void ChangeSizeForOneVideoView(const FVideoViewIdentity& Key, int Width,int Height, TMap<FVideoViewIdentity, UDraggableVideoViewWidget*>& VideoViewMap);
+	static void ChangeSizeForOneVideoView(const FVideoViewIdentity& Key, int Width, int Height, TMap<FVideoViewIdentity, UDraggableVideoViewWidget*>& VideoViewMap);
 
-	static void RotateTheVideoView(const FVideoViewIdentity& Key, int rotation,TMap<FVideoViewIdentity, UDraggableVideoViewWidget*>& VideoViewMap);
+	static void RotateTheVideoView(const FVideoViewIdentity& Key, int rotation, TMap<FVideoViewIdentity, UDraggableVideoViewWidget*>& VideoViewMap);
 
 	static void ResizeTheRotationAppliedImage(const FVideoViewIdentity& Key, int Width, int Height, int rotation, TMap<FVideoViewIdentity, UDraggableVideoViewWidget*>& VideoViewMap);
 
 	UFUNCTION(BlueprintCallable, Category = "VideoViewManager")
-		static void OnDropInner(const FGeometry& InGeometry, const FPointerEvent& InDragDropEvent, UDragDropOperation* InOperation);
+	static void OnDropInner(const FGeometry& InGeometry, const FPointerEvent& InDragDropEvent, UDragDropOperation* InOperation);
 
 };

@@ -30,7 +30,7 @@ using namespace agora::rtc;
 class UAudioComponent;
 
 /**
- * 
+ *
  */
 UCLASS()
 class AGORAEXAMPLE_API UProcessAudioRawDataWidget : public UBaseAgoraUserWidget
@@ -106,7 +106,7 @@ public:
 
 
 		AudioParams getEarMonitoringAudioParams() override;
-		
+
 #pragma endregion
 
 		inline bool IsWidgetValid() { return WidgetPtr.IsValid(); }
@@ -122,14 +122,17 @@ public:
 
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-		UButton* Btn_BackToHome = nullptr;
+	UButton* Btn_BackToHome = nullptr;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
 	UButton* Btn_JoinChannel = nullptr;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget))
 	UButton* Btn_LeaveChannel = nullptr;
-	
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget))
+	UButton* Btn_StopUEAudio = nullptr;
+
 	UFUNCTION(BlueprintCallable)
 	void OnBtnBackToHomeClicked();
 
@@ -138,6 +141,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void OnBtnLeaveChannelClicked();
+
+	UFUNCTION(BlueprintCallable)
+	void OnBtnStopUEAudioClicked();
 
 #pragma endregion
 
@@ -152,10 +158,10 @@ public:
 	UCanvasPanel* CanvasPanel_LogMsgView = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TSubclassOf<UDraggableLogMsgViewWidget> DraggableLogMsgViewTemplate;
+	TSubclassOf<UDraggableLogMsgViewWidget> DraggableLogMsgViewTemplate;
 
 public:
-	inline UDraggableLogMsgViewWidget* GetLogMsgViewPtr() {return LogMsgViewPtr;} 
+	inline UDraggableLogMsgViewWidget* GetLogMsgViewPtr() { return LogMsgViewPtr; }
 
 private:
 	UDraggableLogMsgViewWidget* LogMsgViewPtr = nullptr;
@@ -169,6 +175,10 @@ public:
 
 	inline agora::media::IAudioFrameObserverBase::AudioParams GetAudioParams() { return audioParams; };
 	inline 	UAgoraSoundWaveProcedural* GetAgoraSoundWaveProcedural() { return AgoraSoundWaveProcedural; };
+
+	inline void SetFirstRemoteUID(agora::rtc::uid_t remoteUid) { if (FirstRemoteUID == 0) FirstRemoteUID = remoteUid;}
+	inline void ClearFirstRemoteUID(agora::rtc::uid_t remoteUid) { if (FirstRemoteUID == remoteUid) FirstRemoteUID = 0; }
+	inline agora::rtc::uid_t  GetFirstRemoteUID() { return FirstRemoteUID; }
 
 protected:
 	void CheckPermission();
@@ -186,7 +196,7 @@ protected:
 	IRtcEngineEx* RtcEngineProxy;
 	agora::media::IMediaEngine* MediaEngine;
 
-
+	agora::rtc::uid_t FirstRemoteUID = 0;
 
 	TSharedPtr<FUserRtcEventHandlerEx> UserRtcEventHandlerEx;
 	TSharedPtr<FUserAudioFrameObserver> UserAudioFrameObserver;

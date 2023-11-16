@@ -30,6 +30,7 @@ void UMainAgoraUserWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
+
 	if (UAgoraConfig* LoadedGame = Cast<UAgoraConfig>(UGameplayStatics::LoadGameFromSlot(FString("AgoraSave"), 0)))
 	{
 		this->APP_ID = LoadedGame->AppId;
@@ -145,6 +146,7 @@ void UMainAgoraUserWidget::InitLevelArray()
 	LevelArray.Add(FString("VirtualBackground"));
 	LevelArray.Add(FString("VoiceChanger"));
 	LevelArray.Add(FString("MusicPlayer"));
+	LevelArray.Add(FString("RenderWithYUV"));
 	LevelArray.Add(FString("MediaPlayerWithCustomDataProvide"));
 	LevelArray.Add(FString("WriteBackVideoRawData"));
 
@@ -158,4 +160,3 @@ void UMainAgoraUserWidget::InitLevelArray()
 #endif 
 
 }
-

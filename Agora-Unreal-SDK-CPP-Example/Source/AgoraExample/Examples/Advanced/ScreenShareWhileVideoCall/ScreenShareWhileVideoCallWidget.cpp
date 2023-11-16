@@ -19,7 +19,7 @@ void UScreenShareWhileVideoCallWidget::InitAgoraWidget(FString APP_ID, FString T
 	ShowUserGuide();
 
 	PrepareScreenShare();
-	
+
 	JoinChannel();
 }
 
@@ -72,7 +72,8 @@ void UScreenShareWhileVideoCallWidget::InitAgoraEngine(FString APP_ID, FString T
 	RtcEngineProxy = agora::rtc::ue::createAgoraRtcEngineEx();
 
 	int SDKBuild = 0;
-	FString SDKInfo = FString::Printf(TEXT("SDK Version: %s Build: %d"), UTF8_TO_TCHAR(RtcEngineProxy->getVersion(&SDKBuild)), SDKBuild);
+	const char* SDKVersionInfo = RtcEngineProxy->getVersion(&SDKBuild);
+	FString SDKInfo = FString::Printf(TEXT("SDK Version: %s Build: %d"), UTF8_TO_TCHAR(SDKVersionInfo), SDKBuild);
 	UBFL_Logger::Print(FString::Printf(TEXT("SDK Info:  %s"), *SDKInfo), LogMsgViewPtr);
 
 	int ret = RtcEngineProxy->initialize(RtcEngineContext);
@@ -248,6 +249,7 @@ void UScreenShareWhileVideoCallWidget::OnBtnStopScreenShare()
 	std::string StdStrChannelName = TCHAR_TO_UTF8(*ChannelName);
 	Connection.channelId = StdStrChannelName.c_str();
 	Connection.localUid = UID2_Screen;
+	int ret0 = RtcEngineProxy->stopScreenCapture();
 	int ret = RtcEngineProxy->leaveChannelEx(Connection);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 }
@@ -273,7 +275,7 @@ void UScreenShareWhileVideoCallWidget::NativeDestruct()
 
 	UnInitAgoraEngine();
 
-	
+
 }
 
 
@@ -281,6 +283,7 @@ void UScreenShareWhileVideoCallWidget::UnInitAgoraEngine()
 {
 	if (RtcEngineProxy != nullptr)
 	{
+		RtcEngineProxy->stopScreenCapture();
 		RtcEngineProxy->leaveChannel();
 		RtcEngineProxy->unregisterEventHandler(UserRtcEventHandlerEx.Get());
 		RtcEngineProxy->release();
@@ -385,7 +388,11 @@ void UScreenShareWhileVideoCallWidget::FUserRtcEventHandlerEx::onJoinChannelSucc
 	if (!IsWidgetValid())
 		return;
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!IsWidgetValid())
 			{
@@ -406,7 +413,11 @@ void UScreenShareWhileVideoCallWidget::FUserRtcEventHandlerEx::onLeaveChannel(co
 	if (!IsWidgetValid())
 		return;
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!IsWidgetValid())
 			{
@@ -427,20 +438,24 @@ void UScreenShareWhileVideoCallWidget::FUserRtcEventHandlerEx::onUserJoined(cons
 	if (!IsWidgetValid())
 		return;
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!IsWidgetValid())
 			{
 				UBFL_Logger::Print(FString::Printf(TEXT("%s bIsDestruct "), *FString(FUNCTION_MACRO)));
 				return;
 			}
-			UBFL_Logger::Print(FString::Printf(TEXT("%s remote uid=%d"), *FString(FUNCTION_MACRO), remoteUid), WidgetPtr->GetLogMsgViewPtr());
+			UBFL_Logger::Print(FString::Printf(TEXT("%s remote uid=%u"), *FString(FUNCTION_MACRO), remoteUid), WidgetPtr->GetLogMsgViewPtr());
 
 			if (remoteUid != WidgetPtr->GetUID_Camera() && remoteUid != WidgetPtr->GetUID_Screen()) {
 
 				WidgetPtr->MakeVideoView(remoteUid, agora::rtc::VIDEO_SOURCE_TYPE::VIDEO_SOURCE_REMOTE, WidgetPtr->GetChannelName());
 			}
-		
+
 		});
 }
 
@@ -449,19 +464,23 @@ void UScreenShareWhileVideoCallWidget::FUserRtcEventHandlerEx::onUserOffline(con
 	if (!IsWidgetValid())
 		return;
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!IsWidgetValid())
 			{
 				UBFL_Logger::Print(FString::Printf(TEXT("%s bIsDestruct "), *FString(FUNCTION_MACRO)));
 				return;
 			}
-			UBFL_Logger::Print(FString::Printf(TEXT("%s remote uid=%d"), *FString(FUNCTION_MACRO), remoteUid), WidgetPtr->GetLogMsgViewPtr());
+			UBFL_Logger::Print(FString::Printf(TEXT("%s remote uid=%u"), *FString(FUNCTION_MACRO), remoteUid), WidgetPtr->GetLogMsgViewPtr());
 
-			if (remoteUid != WidgetPtr->GetUID_Camera() && remoteUid != WidgetPtr->GetUID_Screen()){
+			if (remoteUid != WidgetPtr->GetUID_Camera() && remoteUid != WidgetPtr->GetUID_Screen()) {
 				WidgetPtr->ReleaseVideoView(remoteUid, agora::rtc::VIDEO_SOURCE_TYPE::VIDEO_SOURCE_REMOTE, WidgetPtr->GetChannelName());
 			}
-			
+
 		});
 }
 

@@ -51,7 +51,8 @@ void UEncryptionSampleWidget::InitAgoraEngine(FString APP_ID, FString TOKEN, FSt
 	RtcEngineProxy = agora::rtc::ue::createAgoraRtcEngineEx();
 
 	int SDKBuild = 0;
-	FString SDKInfo = FString::Printf(TEXT("SDK Version: %s Build: %d"), UTF8_TO_TCHAR(RtcEngineProxy->getVersion(&SDKBuild)), SDKBuild);
+	const char* SDKVersionInfo = RtcEngineProxy->getVersion(&SDKBuild);
+	FString SDKInfo = FString::Printf(TEXT("SDK Version: %s Build: %d"), UTF8_TO_TCHAR(SDKVersionInfo), SDKBuild);
 	UBFL_Logger::Print(FString::Printf(TEXT("SDK Info:  %s"), *SDKInfo), LogMsgViewPtr);
 
 	int ret = RtcEngineProxy->initialize(RtcEngineContext);
@@ -82,7 +83,7 @@ void UEncryptionSampleWidget::OnBtnJoinChannelClicked()
 
 void UEncryptionSampleWidget::SetEncryption()
 {
-	if(ET_RoomPassword->GetText().ToString() == "")
+	if (ET_RoomPassword->GetText().ToString() == "")
 	{
 		UBFL_Logger::PrintError(FString::Printf(TEXT("%s RoomPassword is empty"), *FString(FUNCTION_MACRO)), LogMsgViewPtr);
 		return;
@@ -121,7 +122,7 @@ void UEncryptionSampleWidget::NativeDestruct()
 
 	UnInitAgoraEngine();
 
-	
+
 }
 
 
@@ -232,7 +233,11 @@ void UEncryptionSampleWidget::FUserRtcEventHandlerEx::onJoinChannelSuccess(const
 	if (!IsWidgetValid())
 		return;
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!IsWidgetValid())
 			{
@@ -250,7 +255,11 @@ void UEncryptionSampleWidget::FUserRtcEventHandlerEx::onLeaveChannel(const agora
 	if (!IsWidgetValid())
 		return;
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!IsWidgetValid())
 			{
@@ -268,14 +277,18 @@ void UEncryptionSampleWidget::FUserRtcEventHandlerEx::onUserJoined(const agora::
 	if (!IsWidgetValid())
 		return;
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!IsWidgetValid())
 			{
 				UBFL_Logger::Print(FString::Printf(TEXT("%s bIsDestruct "), *FString(FUNCTION_MACRO)));
 				return;
 			}
-			UBFL_Logger::Print(FString::Printf(TEXT("%s remote uid=%d"), *FString(FUNCTION_MACRO), remoteUid), WidgetPtr->GetLogMsgViewPtr());
+			UBFL_Logger::Print(FString::Printf(TEXT("%s remote uid=%u"), *FString(FUNCTION_MACRO), remoteUid), WidgetPtr->GetLogMsgViewPtr());
 
 			WidgetPtr->MakeVideoView(remoteUid, agora::rtc::VIDEO_SOURCE_TYPE::VIDEO_SOURCE_REMOTE, WidgetPtr->GetChannelName());
 		});
@@ -286,14 +299,18 @@ void UEncryptionSampleWidget::FUserRtcEventHandlerEx::onUserOffline(const agora:
 	if (!IsWidgetValid())
 		return;
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!IsWidgetValid())
 			{
 				UBFL_Logger::Print(FString::Printf(TEXT("%s bIsDestruct "), *FString(FUNCTION_MACRO)));
 				return;
 			}
-			UBFL_Logger::Print(FString::Printf(TEXT("%s remote uid=%d"), *FString(FUNCTION_MACRO), remoteUid), WidgetPtr->GetLogMsgViewPtr());
+			UBFL_Logger::Print(FString::Printf(TEXT("%s remote uid=%u"), *FString(FUNCTION_MACRO), remoteUid), WidgetPtr->GetLogMsgViewPtr());
 
 			WidgetPtr->ReleaseVideoView(remoteUid, agora::rtc::VIDEO_SOURCE_TYPE::VIDEO_SOURCE_REMOTE, WidgetPtr->GetChannelName());
 		});

@@ -58,7 +58,8 @@ void UAgoraAudioWidget::InitAgoraEngine(FString APP_ID, FString TOKEN, FString C
 	RtcEngineProxy = agora::rtc::ue::createAgoraRtcEngine();
 
 	int SDKBuild = 0;
-	FString SDKInfo = FString::Printf(TEXT("SDK Version: %s Build: %d"), UTF8_TO_TCHAR(RtcEngineProxy->getVersion(&SDKBuild)), SDKBuild);
+	const char* SDKVersionInfo = RtcEngineProxy->getVersion(&SDKBuild);
+	FString SDKInfo = FString::Printf(TEXT("SDK Version: %s Build: %d"), UTF8_TO_TCHAR(SDKVersionInfo), SDKBuild);
 	UBFL_Logger::Print(FString::Printf(TEXT("SDK Info:  %s"), *SDKInfo), LogMsgViewPtr);
 
 	int ret = RtcEngineProxy->initialize(RtcEngineContext);
@@ -174,9 +175,9 @@ void UAgoraAudioWidget::OnCBSAudioProfileSelectionChanged(FString SelectedItem, 
 		audioProfile = AUDIO_PROFILE_MUSIC_HIGH_QUALITY_STEREO;
 	else if (SelectedOption == "AUDIO_PROFILE_IOT")
 		audioProfile = AUDIO_PROFILE_IOT;
-	
+
 	int ret = RtcEngineProxy->setAudioProfile(audioProfile);
-	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d AudioProfile=%s"), *FString(FUNCTION_MACRO), ret,*SelectedOption), LogMsgViewPtr);
+	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d AudioProfile=%s"), *FString(FUNCTION_MACRO), ret, *SelectedOption), LogMsgViewPtr);
 }
 
 void UAgoraAudioWidget::OnCBSAudioSenarioSelectionChanged(FString SelectedItem, ESelectInfo::Type SelectionType)
@@ -184,9 +185,9 @@ void UAgoraAudioWidget::OnCBSAudioSenarioSelectionChanged(FString SelectedItem, 
 	agora::rtc::AUDIO_SCENARIO_TYPE scenario = AUDIO_SCENARIO_DEFAULT;
 	FString SelectedOption = SelectedItem;
 
-	if(SelectedOption == "AUDIO_SCENARIO_DEFAULT")
+	if (SelectedOption == "AUDIO_SCENARIO_DEFAULT")
 		scenario = AUDIO_SCENARIO_DEFAULT;
-	else if(SelectedOption == "AUDIO_SCENARIO_GAME_STREAMING")
+	else if (SelectedOption == "AUDIO_SCENARIO_GAME_STREAMING")
 		scenario = AUDIO_SCENARIO_GAME_STREAMING;
 	else if (SelectedOption == "AUDIO_SCENARIO_CHATROOM")
 		scenario = AUDIO_SCENARIO_CHATROOM;
@@ -199,7 +200,7 @@ void UAgoraAudioWidget::OnCBSAudioSenarioSelectionChanged(FString SelectedItem, 
 	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d  AudioScenario=%s"), *FString(FUNCTION_MACRO), ret, *SelectedOption), LogMsgViewPtr);
 }
 
-void UAgoraAudioWidget::NativeDestruct() 
+void UAgoraAudioWidget::NativeDestruct()
 {
 	Super::NativeDestruct();
 
@@ -216,32 +217,40 @@ void UAgoraAudioWidget::FUserRtcEventHandler::onJoinChannelSuccess(const char* c
 	if (!IsWidgetValid())
 		return;
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
-	{
-		if (!IsWidgetValid())
+#endif
 		{
-			UBFL_Logger::PrintError(FString::Printf(TEXT("%s bIsDestruct "), *FString(FUNCTION_MACRO)));
-			return;
-		}
-		UBFL_Logger::Print(FString::Printf(TEXT("%s uid=%d"), *FString(FUNCTION_MACRO), uid), WidgetPtr->GetLogMsgViewPtr());
-	
-	});
+			if (!IsWidgetValid())
+			{
+				UBFL_Logger::PrintError(FString::Printf(TEXT("%s bIsDestruct "), *FString(FUNCTION_MACRO)));
+				return;
+			}
+			UBFL_Logger::Print(FString::Printf(TEXT("%s uid=%u"), *FString(FUNCTION_MACRO), uid), WidgetPtr->GetLogMsgViewPtr());
+
+		});
 }
 
 void UAgoraAudioWidget::FUserRtcEventHandler::onLeaveChannel(const agora::rtc::RtcStats& stats)
 {
 	if (!IsWidgetValid())
 		return;
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
-	{
-		if (!IsWidgetValid())
+#endif
 		{
-			UBFL_Logger::PrintError(FString::Printf(TEXT("%s bIsDestruct "), *FString(FUNCTION_MACRO)));
-			return;
-		}
-		UBFL_Logger::Print(FString::Printf(TEXT("%s"), *FString(FUNCTION_MACRO)), WidgetPtr->GetLogMsgViewPtr());
-		
-	});
+			if (!IsWidgetValid())
+			{
+				UBFL_Logger::PrintError(FString::Printf(TEXT("%s bIsDestruct "), *FString(FUNCTION_MACRO)));
+				return;
+			}
+			UBFL_Logger::Print(FString::Printf(TEXT("%s"), *FString(FUNCTION_MACRO)), WidgetPtr->GetLogMsgViewPtr());
+
+		});
 
 }
 
@@ -250,16 +259,20 @@ void UAgoraAudioWidget::FUserRtcEventHandler::onUserJoined(agora::rtc::uid_t uid
 {
 	if (!IsWidgetValid())
 		return;
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
-	{
-		if (!IsWidgetValid())
+#endif
 		{
-			UBFL_Logger::PrintError(FString::Printf(TEXT("%s bIsDestruct "), *FString(FUNCTION_MACRO)));
-			return;
-		}
-		UBFL_Logger::Print(FString::Printf(TEXT("%s uid=%d"), *FString(FUNCTION_MACRO), uid), WidgetPtr->GetLogMsgViewPtr());
-	
-	});
+			if (!IsWidgetValid())
+			{
+				UBFL_Logger::PrintError(FString::Printf(TEXT("%s bIsDestruct "), *FString(FUNCTION_MACRO)));
+				return;
+			}
+			UBFL_Logger::Print(FString::Printf(TEXT("%s uid=%u"), *FString(FUNCTION_MACRO), uid), WidgetPtr->GetLogMsgViewPtr());
+
+		});
 
 }
 
@@ -268,17 +281,21 @@ void UAgoraAudioWidget::FUserRtcEventHandler::onUserOffline(agora::rtc::uid_t ui
 	if (!IsWidgetValid())
 		return;
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
-	{
-
-		if (!IsWidgetValid())
+#endif
 		{
-			UBFL_Logger::PrintError(FString::Printf(TEXT("%s bIsDestruct "), *FString(FUNCTION_MACRO)));
-			return;
-		}
-		UBFL_Logger::Print(FString::Printf(TEXT("%s uid=%d"), *FString(FUNCTION_MACRO), uid), WidgetPtr->GetLogMsgViewPtr());
-	
-	});
+
+			if (!IsWidgetValid())
+			{
+				UBFL_Logger::PrintError(FString::Printf(TEXT("%s bIsDestruct "), *FString(FUNCTION_MACRO)));
+				return;
+			}
+			UBFL_Logger::Print(FString::Printf(TEXT("%s uid=%u"), *FString(FUNCTION_MACRO), uid), WidgetPtr->GetLogMsgViewPtr());
+
+		});
 }
 
 void UAgoraAudioWidget::FUserRtcEventHandler::onAudioVolumeIndication(const agora::rtc::AudioVolumeInfo* speakers, unsigned int speakerNumber, int totalVolume)
@@ -287,7 +304,11 @@ void UAgoraAudioWidget::FUserRtcEventHandler::onAudioVolumeIndication(const agor
 	if (!IsWidgetValid())
 		return;
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 
 			if (!IsWidgetValid())

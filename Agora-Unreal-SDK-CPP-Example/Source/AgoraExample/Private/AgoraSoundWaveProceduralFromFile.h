@@ -10,7 +10,7 @@
 #include "AgoraSoundWaveProceduralFromFile.generated.h"
 
 /**
- * 
+ *
  */
 UCLASS()
 class UAgoraSoundWaveProceduralFromFile : public USoundWaveProcedural
@@ -18,27 +18,27 @@ class UAgoraSoundWaveProceduralFromFile : public USoundWaveProcedural
 	GENERATED_BODY()
 
 public:
-    UAgoraSoundWaveProceduralFromFile(const FObjectInitializer& ObjectInitializer) :USoundWaveProcedural(ObjectInitializer) {}
+	UAgoraSoundWaveProceduralFromFile(const FObjectInitializer& ObjectInitializer) :USoundWaveProcedural(ObjectInitializer) {}
 
-    virtual int32 OnGeneratePCMAudio(TArray<uint8>& OutAudio, int32 NumSamples) override;
+	virtual int32 OnGeneratePCMAudio(TArray<uint8>& OutAudio, int32 NumSamples) override;
 
-    virtual Audio::EAudioMixerStreamDataFormat::Type GetGeneratedPCMDataFormat() const override;
+	virtual Audio::EAudioMixerStreamDataFormat::Type GetGeneratedPCMDataFormat() const override;
 
-    void AddToFrames(agora::media::IAudioFrameObserverBase::AudioFrame& frames);
+	void AddToFrames(agora::media::IAudioFrameObserverBase::AudioFrame& frames);
 
-    void Init(TArray<uint8>& InData);
+	void Init(TArray<uint8>& InData);
 
-    void Init(FString Path);
+	void Init(FString Path);
 
-    void BeginDestroy() override;
+	void BeginDestroy() override;
 
 private:
 
-    TArray<agora::media::IAudioFrameObserverBase::AudioFrame> AudioFrames;
+	TArray<agora::media::IAudioFrameObserverBase::AudioFrame> AudioFrames;
 
-    // Test 
-    TArray<uint8> FileData;
-    int lastpos = 0;
+	// Test 
+	TArray<uint8> FileData;
+	int lastpos = 0;
 
-    FCriticalSection CriticalSectionOfAudioFrames;
+	FCriticalSection CriticalSectionOfAudioFrames;
 };

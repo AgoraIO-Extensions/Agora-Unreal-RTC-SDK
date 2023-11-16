@@ -32,7 +32,8 @@ void UAudioMixingWidget::InitAgoraEngine(FString APP_ID, FString TOKEN, FString 
 	RtcEngineProxy = agora::rtc::ue::createAgoraRtcEngine();
 
 	int SDKBuild = 0;
-	FString SDKInfo = FString::Printf(TEXT("SDK Version: %s Build: %d"), UTF8_TO_TCHAR(RtcEngineProxy->getVersion(&SDKBuild)), SDKBuild);
+	const char* SDKVersionInfo = RtcEngineProxy->getVersion(&SDKBuild);
+	FString SDKInfo = FString::Printf(TEXT("SDK Version: %s Build: %d"), UTF8_TO_TCHAR(SDKVersionInfo), SDKBuild);
 	UBFL_Logger::Print(FString::Printf(TEXT("SDK Info:  %s"), *SDKInfo), LogMsgViewPtr);
 
 	int ret = RtcEngineProxy->initialize(RtcEngineContext);
@@ -43,12 +44,12 @@ void UAudioMixingWidget::InitAgoraEngine(FString APP_ID, FString TOKEN, FString 
 void UAudioMixingWidget::ShowUserGuide()
 {
 	FString Guide = ""
-	"Case: [AudioMixing]\n" 
-	"1. If you don't enter a URL below, you will use the local file. Alternatively, you can enter an audio file URL into the editable text.\n"
-	"2. <LocalOnly>: If checked, only the local user can hear the audio mixing.\n"
-	"3. <Loop>: If checked, enable infinite playback loops.\n"
-	"4. For the version 4.2.1 audio-only SDK, it will utilize the system's simple player, which may come with certain limitations. Therefore, it is recommended to use a url of a wav file instead.\n"
-	"";
+		"Case: [AudioMixing]\n"
+		"1. If you don't enter a URL below, you will use the local file. Alternatively, you can enter an audio file URL into the editable text.\n"
+		"2. <LocalOnly>: If checked, only the local user can hear the audio mixing.\n"
+		"3. <Loop>: If checked, enable infinite playback loops.\n"
+		"4. For the version 4.2.1 audio-only SDK, it will utilize the system's simple player, which may come with certain limitations. Therefore, it is recommended to use a url of a wav file instead.\n"
+		"";
 
 	UBFL_Logger::DisplayUserGuide(Guide, LogMsgViewPtr);
 }
@@ -71,18 +72,18 @@ void UAudioMixingWidget::OnBtnBackToHomeClicked()
 void UAudioMixingWidget::OnStartMixingClicked()
 {
 	FString Path = FPaths::Combine(FPaths::ProjectContentDir(), TEXT("Audio"), TEXT("Agora.io-Interactions.wav"));
-	
-	if(CB_URL->CheckedState == ECheckBoxState::Checked && ET_URL->GetText().ToString() == "")
+
+	if (CB_URL->CheckedState == ECheckBoxState::Checked && ET_URL->GetText().ToString() == "")
 	{
 		UBFL_Logger::Print(FString::Printf(TEXT("%s URL Is Empty"), *FString(FUNCTION_MACRO)), LogMsgViewPtr);
 		return;
 	}
-	
-	if(CB_URL->CheckedState == ECheckBoxState::Checked){
-	
+
+	if (CB_URL->CheckedState == ECheckBoxState::Checked) {
+
 		Path = ET_URL->GetText().ToString();
 	}
-	else{
+	else {
 
 		if (FPaths::FileExists(Path)) {
 			UBFL_Logger::Print(FString::Printf(TEXT("%s File Exists Path=%s"), *FString(FUNCTION_MACRO), *Path), LogMsgViewPtr);
@@ -101,7 +102,7 @@ void UAudioMixingWidget::OnStartMixingClicked()
 	}
 
 	int ParamLoop = CB_Loop->CheckedState == ECheckBoxState::Checked ? -1 : 1;
-	int ret = RtcEngineProxy->startAudioMixing(TCHAR_TO_UTF8(*Path), CB_LocalOnly->CheckedState == ECheckBoxState::Checked , ParamLoop);
+	int ret = RtcEngineProxy->startAudioMixing(TCHAR_TO_UTF8(*Path), CB_LocalOnly->CheckedState == ECheckBoxState::Checked, ParamLoop);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 }
 
@@ -144,7 +145,7 @@ void UAudioMixingWidget::OnStartEffectClicked()
 
 	}
 	int ParamLoop = CB_Loop->CheckedState == ECheckBoxState::Checked ? -1 : 1;
-	int ret = RtcEngineProxy->playEffect(1, TCHAR_TO_UTF8(*Path), ParamLoop,0.5,1,80, CB_LocalOnly->CheckedState != ECheckBoxState::Checked,0);
+	int ret = RtcEngineProxy->playEffect(1, TCHAR_TO_UTF8(*Path), ParamLoop, 0.5, 1, 80, CB_LocalOnly->CheckedState != ECheckBoxState::Checked, 0);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 }
 
@@ -160,11 +161,11 @@ void UAudioMixingWidget::NativeDestruct()
 	Super::NativeDestruct();
 
 	UnInitAgoraEngine();
-	
+
 }
 
 void UAudioMixingWidget::UnInitAgoraEngine()
-{	
+{
 	if (RtcEngineProxy != nullptr)
 	{
 		RtcEngineProxy->leaveChannel();
@@ -180,19 +181,23 @@ void UAudioMixingWidget::UnInitAgoraEngine()
 
 
 void UAudioMixingWidget::FUserRtcEventHandlerEx::onJoinChannelSuccess(const agora::rtc::RtcConnection& connection, int elapsed)
-{	
+{
 	if (!IsWidgetValid())
 		return;
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
-	{
-		if (!IsWidgetValid())
+#endif
 		{
-			UBFL_Logger::PrintError(FString::Printf(TEXT("%s bIsDestruct "), *FString(FUNCTION_MACRO)));
-			return;
-		}
-		UBFL_Logger::Print(FString::Printf(TEXT("%s"), *FString(FUNCTION_MACRO)), WidgetPtr->GetLogMsgViewPtr());
-	});
+			if (!IsWidgetValid())
+			{
+				UBFL_Logger::PrintError(FString::Printf(TEXT("%s bIsDestruct "), *FString(FUNCTION_MACRO)));
+				return;
+			}
+			UBFL_Logger::Print(FString::Printf(TEXT("%s"), *FString(FUNCTION_MACRO)), WidgetPtr->GetLogMsgViewPtr());
+		});
 }
 
 void UAudioMixingWidget::FUserRtcEventHandlerEx::onLeaveChannel(const agora::rtc::RtcConnection& connection, const agora::rtc::RtcStats& stats)
@@ -200,7 +205,11 @@ void UAudioMixingWidget::FUserRtcEventHandlerEx::onLeaveChannel(const agora::rtc
 	if (!IsWidgetValid())
 		return;
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!IsWidgetValid())
 			{
@@ -216,14 +225,18 @@ void UAudioMixingWidget::FUserRtcEventHandlerEx::onUserJoined(const agora::rtc::
 	if (!IsWidgetValid())
 		return;
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!IsWidgetValid())
 			{
 				UBFL_Logger::PrintError(FString::Printf(TEXT("%s bIsDestruct "), *FString(FUNCTION_MACRO)));
 				return;
 			}
-			UBFL_Logger::Print(FString::Printf(TEXT("%s remote uid=%d"), *FString(FUNCTION_MACRO),remoteUid), WidgetPtr->GetLogMsgViewPtr());
+			UBFL_Logger::Print(FString::Printf(TEXT("%s remote uid=%u"), *FString(FUNCTION_MACRO), remoteUid), WidgetPtr->GetLogMsgViewPtr());
 		});
 }
 
@@ -232,14 +245,18 @@ void UAudioMixingWidget::FUserRtcEventHandlerEx::onUserOffline(const agora::rtc:
 	if (!IsWidgetValid())
 		return;
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!IsWidgetValid())
 			{
 				UBFL_Logger::PrintError(FString::Printf(TEXT("%s bIsDestruct "), *FString(FUNCTION_MACRO)));
 				return;
 			}
-			UBFL_Logger::Print(FString::Printf(TEXT("%s remote uid=%d"), *FString(FUNCTION_MACRO), remoteUid), WidgetPtr->GetLogMsgViewPtr());
+			UBFL_Logger::Print(FString::Printf(TEXT("%s remote uid=%u"), *FString(FUNCTION_MACRO), remoteUid), WidgetPtr->GetLogMsgViewPtr());
 		});
 }
 

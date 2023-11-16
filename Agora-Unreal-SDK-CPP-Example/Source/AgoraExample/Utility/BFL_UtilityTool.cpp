@@ -14,7 +14,7 @@ FString UBFL_UtilityTool::ConvertToAbsolutePath(FString InRelativePath, bool bAn
 
 	extern FString GFilePathBase;
 	extern FString GInternalFilePath;
-	static FString BasePath = GFilePathBase / FString("UE4Game")  / FApp::GetProjectName() + FString("/");
+	static FString BasePath = GFilePathBase / FString("UE4Game") / FApp::GetProjectName() + FString("/");
 
 	if (InRelativePath.StartsWith(TEXT("../"), ESearchCase::CaseSensitive))
 	{
@@ -33,7 +33,7 @@ FString UBFL_UtilityTool::ConvertToAbsolutePath(FString InRelativePath, bool bAn
 
 void UBFL_UtilityTool::CreateMediaFileWithSource(FString SrcPath, FString DstPath)
 {
-	
+
 	TArray<uint8> FileData;
 	//FFileHelper::LoadFileToArray(FileData, *SrcPath, 0);
 
@@ -68,12 +68,12 @@ void UBFL_UtilityTool::CreateMediaFileWithSource(FString SrcPath, FString DstPat
 		}
 		return;
 	}
-	
+
 	// Write the file data
 	FileDataWriter->Serialize(FileData.GetData(), FileData.Num());
 
 	// Close the file
-	bool bWriterSuccess  = FileDataWriter->Close();
+	bool bWriterSuccess = FileDataWriter->Close();
 	delete FileDataWriter;
 	return;
 

@@ -25,7 +25,7 @@ using namespace agora::rtc;
 using namespace agora;
 
 /**
- * 
+ *
  */
 UCLASS()
 class AGORAEXAMPLE_API UVoiceChangerWidget : public UBaseAgoraUserWidget
@@ -68,32 +68,32 @@ public:
 
 #pragma region UI
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-		UButton* Btn_BackToHome = nullptr;
+	UButton* Btn_BackToHome = nullptr;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-		UButton* Btn_ChatBeautifier = nullptr;
+	UButton* Btn_ChatBeautifier = nullptr;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-		UButton* Btn_SingingBeautifier = nullptr;
+	UButton* Btn_SingingBeautifier = nullptr;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-		UButton* Btn_TimbreTransformation = nullptr;
+	UButton* Btn_TimbreTransformation = nullptr;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-		UButton* Btn_TurnOffVoiceBeautifier = nullptr;
+	UButton* Btn_TurnOffVoiceBeautifier = nullptr;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-		UButton* Btn_StyleTransformation = nullptr;
+	UButton* Btn_StyleTransformation = nullptr;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-		UButton* Btn_RoomAcoustuics = nullptr;
+	UButton* Btn_RoomAcoustuics = nullptr;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-		UButton* Btn_Pitch = nullptr;
+	UButton* Btn_Pitch = nullptr;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-		UButton* Btn_TurnOffAudioEffect = nullptr;
+	UButton* Btn_TurnOffAudioEffect = nullptr;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-		UButton* Btn_VoiceChanger = nullptr;
+	UButton* Btn_VoiceChanger = nullptr;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-		UButton* Btn_TurnOffVoiceChanger = nullptr;
+	UButton* Btn_TurnOffVoiceChanger = nullptr;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-		UButton* Btn_CustomVocalEffects = nullptr;
+	UButton* Btn_CustomVocalEffects = nullptr;
 
 	UFUNCTION(BlueprintCallable)
 	void OnBtnBackToHomeClicked();
@@ -157,10 +157,10 @@ public:
 	UCanvasPanel* CanvasPanel_LogMsgView = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TSubclassOf<UDraggableLogMsgViewWidget> DraggableLogMsgViewTemplate;
+	TSubclassOf<UDraggableLogMsgViewWidget> DraggableLogMsgViewTemplate;
 
 public:
-	inline UDraggableLogMsgViewWidget* GetLogMsgViewPtr() {return LogMsgViewPtr;} 
+	inline UDraggableLogMsgViewWidget* GetLogMsgViewPtr() { return LogMsgViewPtr; }
 
 private:
 	UDraggableLogMsgViewWidget* LogMsgViewPtr = nullptr;
@@ -189,7 +189,7 @@ protected:
 	IRtcEngine* RtcEngineProxy;
 
 
-	
+
 	TSharedPtr<FUserRtcEventHandlerEx> UserRtcEventHandlerEx;
 
 };

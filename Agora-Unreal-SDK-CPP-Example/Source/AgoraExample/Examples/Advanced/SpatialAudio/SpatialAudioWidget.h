@@ -25,7 +25,7 @@
 using namespace agora::rtc;
 
 /**
- * 
+ *
  */
 UCLASS()
 class AGORAEXAMPLE_API USpatialAudioWidget : public UBaseAgoraUserWidget
@@ -69,24 +69,24 @@ public:
 
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-		UButton* Btn_BackToHome = nullptr;
+	UButton* Btn_BackToHome = nullptr;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-		UButton* Btn_JoinChannel = nullptr;
+	UButton* Btn_JoinChannel = nullptr;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-		UButton* Btn_LeaveChannel = nullptr;
+	UButton* Btn_LeaveChannel = nullptr;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-		USlider* Slider_Distance = nullptr;
+	USlider* Slider_Distance = nullptr;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-		UTextBlock* Txt_Distance = nullptr;
+	UTextBlock* Txt_Distance = nullptr;
 
 	UFUNCTION(BlueprintCallable)
 	void OnBtnBackToHomeClicked();
-	
+
 	UFUNCTION(BlueprintCallable)
-		void OnBtnJoinChannelClicked();
+	void OnBtnJoinChannelClicked();
 	UFUNCTION(BlueprintCallable)
-		void OnBtnLeaveChannelClicked();
+	void OnBtnLeaveChannelClicked();
 	UFUNCTION(BlueprintCallable)
 	void OnSliderDistanceValChanged(float val);
 
@@ -104,10 +104,10 @@ public:
 	UCanvasPanel* CanvasPanel_LogMsgView = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TSubclassOf<UDraggableLogMsgViewWidget> DraggableLogMsgViewTemplate;
+	TSubclassOf<UDraggableLogMsgViewWidget> DraggableLogMsgViewTemplate;
 
 public:
-	inline UDraggableLogMsgViewWidget* GetLogMsgViewPtr() {return LogMsgViewPtr;} 
+	inline UDraggableLogMsgViewWidget* GetLogMsgViewPtr() { return LogMsgViewPtr; }
 
 private:
 	UDraggableLogMsgViewWidget* LogMsgViewPtr = nullptr;
@@ -124,7 +124,7 @@ public:
 	inline void SetRemoteUID(uint32 uid) { RemoteUID = uid; }
 	int UpdateRemotePositionWithCurrentDistanceVal();
 protected:
-	
+
 	void CheckPermission();
 	void InitUI();
 	void InitAgoraEngine(FString APP_ID, FString TOKEN, FString CHANNEL_NAME);

@@ -51,7 +51,8 @@ void UStreamMessageWidget::InitAgoraEngine(FString APP_ID, FString TOKEN, FStrin
 	RtcEngineProxy = agora::rtc::ue::createAgoraRtcEngine();
 
 	int SDKBuild = 0;
-	FString SDKInfo = FString::Printf(TEXT("SDK Version: %s Build: %d"), UTF8_TO_TCHAR(RtcEngineProxy->getVersion(&SDKBuild)), SDKBuild);
+	const char* SDKVersionInfo = RtcEngineProxy->getVersion(&SDKBuild);
+	FString SDKInfo = FString::Printf(TEXT("SDK Version: %s Build: %d"), UTF8_TO_TCHAR(SDKVersionInfo), SDKBuild);
 	UBFL_Logger::Print(FString::Printf(TEXT("SDK Info:  %s"), *SDKInfo), LogMsgViewPtr);
 
 	int ret = RtcEngineProxy->initialize(RtcEngineContext);
@@ -129,7 +130,7 @@ void UStreamMessageWidget::SendStreamMessage(int StreamID, FString Msg)
 	int Size = strlen(StdStrMsg.c_str()) + 1;
 	int ret = RtcEngineProxy->sendStreamMessage(StreamID, TCHAR_TO_UTF8(*Msg), Size);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s sendStreamMessage ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
-	UBFL_Logger::Print(FString::Printf(TEXT("%s sendStreamMessage  message %s,length %d"), *FString(FUNCTION_MACRO), *Msg ,Msg.Len()), LogMsgViewPtr);
+	UBFL_Logger::Print(FString::Printf(TEXT("%s sendStreamMessage  message %s,length %d"), *FString(FUNCTION_MACRO), *Msg, Msg.Len()), LogMsgViewPtr);
 }
 
 
@@ -139,7 +140,7 @@ void UStreamMessageWidget::NativeDestruct()
 
 	UnInitAgoraEngine();
 
-	
+
 }
 
 
@@ -164,14 +165,18 @@ void UStreamMessageWidget::FUserRtcEventHandler::onJoinChannelSuccess(const char
 	if (!IsWidgetValid())
 		return;
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!IsWidgetValid())
 			{
 				UBFL_Logger::PrintError(FString::Printf(TEXT("%s bIsDestruct "), *FString(FUNCTION_MACRO)));
 				return;
 			}
-			UBFL_Logger::Print(FString::Printf(TEXT("%s uid=%d"), *FString(FUNCTION_MACRO), uid), WidgetPtr->GetLogMsgViewPtr());
+			UBFL_Logger::Print(FString::Printf(TEXT("%s uid=%u"), *FString(FUNCTION_MACRO), uid), WidgetPtr->GetLogMsgViewPtr());
 
 		});
 }
@@ -180,7 +185,11 @@ void UStreamMessageWidget::FUserRtcEventHandler::onLeaveChannel(const agora::rtc
 {
 	if (!IsWidgetValid())
 		return;
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!IsWidgetValid())
 			{
@@ -198,14 +207,18 @@ void UStreamMessageWidget::FUserRtcEventHandler::onUserJoined(agora::rtc::uid_t 
 {
 	if (!IsWidgetValid())
 		return;
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!IsWidgetValid())
 			{
 				UBFL_Logger::PrintError(FString::Printf(TEXT("%s bIsDestruct "), *FString(FUNCTION_MACRO)));
 				return;
 			}
-			UBFL_Logger::Print(FString::Printf(TEXT("%s uid=%d"), *FString(FUNCTION_MACRO), uid), WidgetPtr->GetLogMsgViewPtr());
+			UBFL_Logger::Print(FString::Printf(TEXT("%s uid=%u"), *FString(FUNCTION_MACRO), uid), WidgetPtr->GetLogMsgViewPtr());
 
 		});
 
@@ -216,7 +229,11 @@ void UStreamMessageWidget::FUserRtcEventHandler::onUserOffline(agora::rtc::uid_t
 	if (!IsWidgetValid())
 		return;
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 
 			if (!IsWidgetValid())
@@ -224,7 +241,7 @@ void UStreamMessageWidget::FUserRtcEventHandler::onUserOffline(agora::rtc::uid_t
 				UBFL_Logger::PrintError(FString::Printf(TEXT("%s bIsDestruct "), *FString(FUNCTION_MACRO)));
 				return;
 			}
-			UBFL_Logger::Print(FString::Printf(TEXT("%s uid=%d"), *FString(FUNCTION_MACRO), uid), WidgetPtr->GetLogMsgViewPtr());
+			UBFL_Logger::Print(FString::Printf(TEXT("%s uid=%u"), *FString(FUNCTION_MACRO), uid), WidgetPtr->GetLogMsgViewPtr());
 
 		});
 }
@@ -236,7 +253,11 @@ void UStreamMessageWidget::FUserRtcEventHandler::onStreamMessage(uid_t userId, i
 
 	FString Msg = UTF8_TO_TCHAR(data);
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 
 			if (!IsWidgetValid())
@@ -255,7 +276,11 @@ void UStreamMessageWidget::FUserRtcEventHandler::onStreamMessageError(uid_t user
 	if (!IsWidgetValid())
 		return;
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 
 			if (!IsWidgetValid())

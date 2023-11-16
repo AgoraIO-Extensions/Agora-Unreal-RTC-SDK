@@ -14,7 +14,7 @@ void UMediaPlayerWithCustomDataWidget::InitAgoraWidget(FString APP_ID, FString T
 	ShowUserGuide();
 
 	InitAgoraMediaPlayer();
-	
+
 	JoinChannelWithMPK();
 }
 
@@ -54,7 +54,8 @@ void UMediaPlayerWithCustomDataWidget::InitAgoraEngine(FString APP_ID, FString T
 	RtcEngineProxy = agora::rtc::ue::createAgoraRtcEngineEx();
 
 	int SDKBuild = 0;
-	FString SDKInfo = FString::Printf(TEXT("SDK Version: %s Build: %d"), UTF8_TO_TCHAR(RtcEngineProxy->getVersion(&SDKBuild)), SDKBuild);
+	const char* SDKVersionInfo = RtcEngineProxy->getVersion(&SDKBuild);
+	FString SDKInfo = FString::Printf(TEXT("SDK Version: %s Build: %d"), UTF8_TO_TCHAR(SDKVersionInfo), SDKBuild);
 	UBFL_Logger::Print(FString::Printf(TEXT("SDK Info:  %s"), *SDKInfo), LogMsgViewPtr);
 
 	int ret = RtcEngineProxy->initialize(RtcEngineContext);
@@ -98,7 +99,7 @@ void UMediaPlayerWithCustomDataWidget::JoinChannelWithMPK()
 	Options.enableAudioRecordingOrPlayout = true;
 	Options.clientRoleType = CLIENT_ROLE_TYPE::CLIENT_ROLE_BROADCASTER;
 
-	int ret = RtcEngineProxy->joinChannel(TCHAR_TO_UTF8(*Token), TCHAR_TO_UTF8(*ChannelName), 0,Options);
+	int ret = RtcEngineProxy->joinChannel(TCHAR_TO_UTF8(*Token), TCHAR_TO_UTF8(*ChannelName), 0, Options);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 
 }
@@ -167,7 +168,7 @@ void UMediaPlayerWithCustomDataWidget::NativeDestruct()
 
 	UnInitAgoraEngine();
 
-	
+
 }
 
 
@@ -175,12 +176,12 @@ void UMediaPlayerWithCustomDataWidget::UnInitAgoraEngine()
 {
 	if (RtcEngineProxy != nullptr)
 	{
-		if(UserIMediaPlayerCustomDataProvider!= nullptr)
+		if (UserIMediaPlayerCustomDataProvider != nullptr)
 			UserIMediaPlayerCustomDataProvider->Release();
 
-		if(MediaPlayer)
+		if (MediaPlayer)
 			MediaPlayer->stop();
-		
+
 		RtcEngineProxy->destroyMediaPlayer(MediaPlayer);
 
 		RtcEngineProxy->leaveChannel();
@@ -285,7 +286,11 @@ void UMediaPlayerWithCustomDataWidget::FUserRtcEventHandlerEx::onJoinChannelSucc
 	if (!IsWidgetValid())
 		return;
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!IsWidgetValid())
 			{
@@ -303,7 +308,11 @@ void UMediaPlayerWithCustomDataWidget::FUserRtcEventHandlerEx::onLeaveChannel(co
 	if (!IsWidgetValid())
 		return;
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!IsWidgetValid())
 			{
@@ -321,14 +330,18 @@ void UMediaPlayerWithCustomDataWidget::FUserRtcEventHandlerEx::onUserJoined(cons
 	if (!IsWidgetValid())
 		return;
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!IsWidgetValid())
 			{
 				UBFL_Logger::Print(FString::Printf(TEXT("%s bIsDestruct "), *FString(FUNCTION_MACRO)));
 				return;
 			}
-			UBFL_Logger::Print(FString::Printf(TEXT("%s remote uid=%d"), *FString(FUNCTION_MACRO), remoteUid), WidgetPtr->GetLogMsgViewPtr());
+			UBFL_Logger::Print(FString::Printf(TEXT("%s remote uid=%u"), *FString(FUNCTION_MACRO), remoteUid), WidgetPtr->GetLogMsgViewPtr());
 
 			WidgetPtr->MakeVideoView(remoteUid, agora::rtc::VIDEO_SOURCE_TYPE::VIDEO_SOURCE_REMOTE, WidgetPtr->GetChannelName());
 		});
@@ -339,14 +352,18 @@ void UMediaPlayerWithCustomDataWidget::FUserRtcEventHandlerEx::onUserOffline(con
 	if (!IsWidgetValid())
 		return;
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!IsWidgetValid())
 			{
 				UBFL_Logger::Print(FString::Printf(TEXT("%s bIsDestruct "), *FString(FUNCTION_MACRO)));
 				return;
 			}
-			UBFL_Logger::Print(FString::Printf(TEXT("%s remote uid=%d"), *FString(FUNCTION_MACRO), remoteUid), WidgetPtr->GetLogMsgViewPtr());
+			UBFL_Logger::Print(FString::Printf(TEXT("%s remote uid=%u"), *FString(FUNCTION_MACRO), remoteUid), WidgetPtr->GetLogMsgViewPtr());
 
 			WidgetPtr->ReleaseVideoView(remoteUid, agora::rtc::VIDEO_SOURCE_TYPE::VIDEO_SOURCE_REMOTE, WidgetPtr->GetChannelName());
 		});
@@ -362,7 +379,11 @@ void UMediaPlayerWithCustomDataWidget::FUserIMediaPlayerSourceObserver::onPlayer
 	if (!IsWidgetValid())
 		return;
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!IsWidgetValid())
 			{
@@ -429,7 +450,7 @@ void UMediaPlayerWithCustomDataWidget::FUserIMediaPlayerSourceObserver::onPlayer
 
 void UMediaPlayerWithCustomDataWidget::FUserIMediaPlayerSourceObserver::onAudioVolumeIndication(int volume)
 {
-	
+
 }
 
 
@@ -453,7 +474,11 @@ void UMediaPlayerWithCustomDataWidget::FUserIMediaPlayerCustomDataProvider::Init
 	}
 	else
 	{
+#if UE_5_3_OR_LATER
+		AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 		AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 			{
 				if (!IsWidgetValid())
 				{
@@ -465,7 +490,11 @@ void UMediaPlayerWithCustomDataWidget::FUserIMediaPlayerCustomDataProvider::Init
 		return;
 	}
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!IsWidgetValid())
 			{
@@ -478,11 +507,15 @@ void UMediaPlayerWithCustomDataWidget::FUserIMediaPlayerCustomDataProvider::Init
 
 void UMediaPlayerWithCustomDataWidget::FUserIMediaPlayerCustomDataProvider::Release()
 {
-	if (DataFile){
+	if (DataFile) {
 		fclose(DataFile);
 		FileSize = 0;
 	}
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!IsWidgetValid())
 			{
@@ -510,7 +543,7 @@ int64_t UMediaPlayerWithCustomDataWidget::FUserIMediaPlayerCustomDataProvider::o
 		return -1;
 	}
 
-	if(whence == 0){
+	if (whence == 0) {
 		fseek(DataFile, offset, SEEK_SET);
 		return offset;
 	}

@@ -11,7 +11,7 @@ void UJoinChannelWithTokenWidget::InitAgoraWidget(FString APP_ID, FString TOKEN,
 	CheckPermission();
 
 	InitUI();
-	
+
 	InitAgoraEngine(APP_ID, TOKEN, CHANNEL_NAME);
 
 	ShowUserGuide();
@@ -58,7 +58,8 @@ void UJoinChannelWithTokenWidget::InitAgoraEngine(FString APP_ID, FString TOKEN,
 	RtcEngineProxy = agora::rtc::ue::createAgoraRtcEngineEx();
 
 	int SDKBuild = 0;
-	FString SDKInfo = FString::Printf(TEXT("SDK Version: %s Build: %d"), UTF8_TO_TCHAR(RtcEngineProxy->getVersion(&SDKBuild)), SDKBuild);
+	const char* SDKVersionInfo = RtcEngineProxy->getVersion(&SDKBuild);
+	FString SDKInfo = FString::Printf(TEXT("SDK Version: %s Build: %d"), UTF8_TO_TCHAR(SDKVersionInfo), SDKBuild);
 	UBFL_Logger::Print(FString::Printf(TEXT("SDK Info:  %s"), *SDKInfo), LogMsgViewPtr);
 
 	int ret = RtcEngineProxy->initialize(RtcEngineContext);
@@ -80,23 +81,23 @@ void UJoinChannelWithTokenWidget::ShowUserGuide()
 
 void UJoinChannelWithTokenWidget::OnBtnJoinOrRenewTokenlicked()
 {
-	if(CB_UseURL->CheckedState == ECheckBoxState::Checked ){
+	if (CB_UseURL->CheckedState == ECheckBoxState::Checked) {
 		if (ET_URL->GetText().ToString() == "")
 		{
 			UBFL_Logger::PrintWarn(FString::Printf(TEXT("%s ===  URL is Empty === "), *FString(FUNCTION_MACRO)), LogMsgViewPtr);
-			return; 
+			return;
 		}
 
 		StopRequestToken();
 		StartRequestToken();
-	
+
 		UBFL_Logger::Print(FString::Printf(TEXT("%s === [Token] Send HTTP POST Request === "), *FString(FUNCTION_MACRO)), LogMsgViewPtr);
 	}
-	else{
+	else {
 		UBFL_Logger::Print(FString::Printf(TEXT("%s === [Token] Use Token Form User Input === "), *FString(FUNCTION_MACRO)), LogMsgViewPtr);
-	
+
 		FString NewTokenVal = ET_Token->GetText().ToString();
-		if(NewTokenVal == "")
+		if (NewTokenVal == "")
 		{
 			UBFL_Logger::PrintWarn(FString::Printf(TEXT("%s ===  You are using Empty Token! === "), *FString(FUNCTION_MACRO)), LogMsgViewPtr);
 		}
@@ -128,7 +129,7 @@ void UJoinChannelWithTokenWidget::RequestToken()
 			return;
 
 		CallbackForRequestToken(ValToken);
-	};
+		};
 	UBFL_HTTPHelper::FetchToken(URL, 0, ChannelName, 0, Callback);
 }
 
@@ -175,7 +176,7 @@ void UJoinChannelWithTokenWidget::NativeDestruct()
 	Super::NativeDestruct();
 
 	UnInitAgoraEngine();
-	
+
 }
 
 void UJoinChannelWithTokenWidget::UnInitAgoraEngine()
@@ -286,17 +287,21 @@ void UJoinChannelWithTokenWidget::FUserRtcEventHandlerEx::onJoinChannelSuccess(c
 	if (!IsWidgetValid())
 		return;
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
-	{
-		if (!IsWidgetValid())
+#endif
 		{
-			UBFL_Logger::Print(FString::Printf(TEXT("%s bIsDestruct "), *FString(FUNCTION_MACRO)));
-			return;
-		}
-		UBFL_Logger::Print(FString::Printf(TEXT("%s"), *FString(FUNCTION_MACRO)), WidgetPtr->GetLogMsgViewPtr());
+			if (!IsWidgetValid())
+			{
+				UBFL_Logger::Print(FString::Printf(TEXT("%s bIsDestruct "), *FString(FUNCTION_MACRO)));
+				return;
+			}
+			UBFL_Logger::Print(FString::Printf(TEXT("%s"), *FString(FUNCTION_MACRO)), WidgetPtr->GetLogMsgViewPtr());
 
-		WidgetPtr->MakeVideoView(0, agora::rtc::VIDEO_SOURCE_TYPE::VIDEO_SOURCE_CAMERA);
-	});
+			WidgetPtr->MakeVideoView(0, agora::rtc::VIDEO_SOURCE_TYPE::VIDEO_SOURCE_CAMERA);
+		});
 }
 
 void UJoinChannelWithTokenWidget::FUserRtcEventHandlerEx::onLeaveChannel(const agora::rtc::RtcConnection& connection, const agora::rtc::RtcStats& stats)
@@ -304,17 +309,21 @@ void UJoinChannelWithTokenWidget::FUserRtcEventHandlerEx::onLeaveChannel(const a
 	if (!IsWidgetValid())
 		return;
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
-	{
-		if (!IsWidgetValid())
+#endif
 		{
-			UBFL_Logger::Print(FString::Printf(TEXT("%s bIsDestruct "), *FString(FUNCTION_MACRO)));
-			return;
-		}
-		UBFL_Logger::Print(FString::Printf(TEXT("%s"), *FString(FUNCTION_MACRO)), WidgetPtr->GetLogMsgViewPtr());
+			if (!IsWidgetValid())
+			{
+				UBFL_Logger::Print(FString::Printf(TEXT("%s bIsDestruct "), *FString(FUNCTION_MACRO)));
+				return;
+			}
+			UBFL_Logger::Print(FString::Printf(TEXT("%s"), *FString(FUNCTION_MACRO)), WidgetPtr->GetLogMsgViewPtr());
 
-		WidgetPtr->ReleaseVideoView(0, agora::rtc::VIDEO_SOURCE_TYPE::VIDEO_SOURCE_CAMERA);
-	});
+			WidgetPtr->ReleaseVideoView(0, agora::rtc::VIDEO_SOURCE_TYPE::VIDEO_SOURCE_CAMERA);
+		});
 }
 
 void UJoinChannelWithTokenWidget::FUserRtcEventHandlerEx::onUserJoined(const agora::rtc::RtcConnection& connection, agora::rtc::uid_t remoteUid, int elapsed)
@@ -322,17 +331,21 @@ void UJoinChannelWithTokenWidget::FUserRtcEventHandlerEx::onUserJoined(const ago
 	if (!IsWidgetValid())
 		return;
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
-	{
-		if (!IsWidgetValid())
+#endif
 		{
-			UBFL_Logger::Print(FString::Printf(TEXT("%s bIsDestruct "), *FString(FUNCTION_MACRO)));
-			return;
-		}
-		UBFL_Logger::Print(FString::Printf(TEXT("%s remote uid=%d"), *FString(FUNCTION_MACRO), remoteUid), WidgetPtr->GetLogMsgViewPtr());
+			if (!IsWidgetValid())
+			{
+				UBFL_Logger::Print(FString::Printf(TEXT("%s bIsDestruct "), *FString(FUNCTION_MACRO)));
+				return;
+			}
+			UBFL_Logger::Print(FString::Printf(TEXT("%s remote uid=%u"), *FString(FUNCTION_MACRO), remoteUid), WidgetPtr->GetLogMsgViewPtr());
 
-		WidgetPtr->MakeVideoView(remoteUid, agora::rtc::VIDEO_SOURCE_TYPE::VIDEO_SOURCE_REMOTE, WidgetPtr->GetChannelName());
-	});
+			WidgetPtr->MakeVideoView(remoteUid, agora::rtc::VIDEO_SOURCE_TYPE::VIDEO_SOURCE_REMOTE, WidgetPtr->GetChannelName());
+		});
 }
 
 void UJoinChannelWithTokenWidget::FUserRtcEventHandlerEx::onUserOffline(const agora::rtc::RtcConnection& connection, agora::rtc::uid_t remoteUid, agora::rtc::USER_OFFLINE_REASON_TYPE reason)
@@ -340,17 +353,21 @@ void UJoinChannelWithTokenWidget::FUserRtcEventHandlerEx::onUserOffline(const ag
 	if (!IsWidgetValid())
 		return;
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
-	{
-		if (!IsWidgetValid())
+#endif
 		{
-			UBFL_Logger::Print(FString::Printf(TEXT("%s bIsDestruct "), *FString(FUNCTION_MACRO)));
-			return;
-		}
-		UBFL_Logger::Print(FString::Printf(TEXT("%s remote uid=%d"), *FString(FUNCTION_MACRO), remoteUid), WidgetPtr->GetLogMsgViewPtr());
+			if (!IsWidgetValid())
+			{
+				UBFL_Logger::Print(FString::Printf(TEXT("%s bIsDestruct "), *FString(FUNCTION_MACRO)));
+				return;
+			}
+			UBFL_Logger::Print(FString::Printf(TEXT("%s remote uid=%u"), *FString(FUNCTION_MACRO), remoteUid), WidgetPtr->GetLogMsgViewPtr());
 
-		WidgetPtr->ReleaseVideoView(remoteUid, agora::rtc::VIDEO_SOURCE_TYPE::VIDEO_SOURCE_REMOTE, WidgetPtr->GetChannelName());
-	});
+			WidgetPtr->ReleaseVideoView(remoteUid, agora::rtc::VIDEO_SOURCE_TYPE::VIDEO_SOURCE_REMOTE, WidgetPtr->GetChannelName());
+		});
 }
 
 void UJoinChannelWithTokenWidget::FUserRtcEventHandlerEx::onTokenPrivilegeWillExpire(const RtcConnection& connection, const char* token)
@@ -359,7 +376,11 @@ void UJoinChannelWithTokenWidget::FUserRtcEventHandlerEx::onTokenPrivilegeWillEx
 		return;
 
 	FString TokenStr = UTF8_TO_TCHAR(token);
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!IsWidgetValid())
 			{

@@ -27,7 +27,7 @@ using namespace agora;
 class FUserRtcEventHandler;
 
 /**
- * 
+ *
  */
 UCLASS()
 class AGORAEXAMPLE_API UMusicPlayerWidget : public UBaseAgoraUserWidget
@@ -147,42 +147,42 @@ public:
 
 #pragma region UI
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-		UButton* Btn_BackToHome = nullptr;
+	UButton* Btn_BackToHome = nullptr;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-		UEditableText* ET_RTMAPPID = nullptr;
+	UEditableText* ET_RTMAPPID = nullptr;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-		UEditableText* ET_RTMTOKEN = nullptr;
+	UEditableText* ET_RTMTOKEN = nullptr;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-		UEditableText* ET_RTMUID = nullptr;
+	UEditableText* ET_RTMUID = nullptr;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-		UButton* Btn_JoinChannel = nullptr;
+	UButton* Btn_JoinChannel = nullptr;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-		UButton* Btn_GetCaches = nullptr;
+	UButton* Btn_GetCaches = nullptr;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-		UButton* Btn_RemoveCaches = nullptr;
+	UButton* Btn_RemoveCaches = nullptr;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-		UButton* Btn_GetMusicCharts = nullptr;
+	UButton* Btn_GetMusicCharts = nullptr;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-		UComboBoxString* CBS_MusicCharts= nullptr;
+	UComboBoxString* CBS_MusicCharts = nullptr;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-		UComboBoxString* CBS_SelectedSong = nullptr;
+	UComboBoxString* CBS_SelectedSong = nullptr;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-		UTextBlock* Txt_SelectedSong = nullptr;
+	UTextBlock* Txt_SelectedSong = nullptr;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-		UButton* Btn_GetLyric = nullptr;
+	UButton* Btn_GetLyric = nullptr;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-		UButton* Btn_Open = nullptr;
+	UButton* Btn_Open = nullptr;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-		UButton* Btn_IsPreload = nullptr;
+	UButton* Btn_IsPreload = nullptr;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-		UButton* Btn_Preload = nullptr;
+	UButton* Btn_Preload = nullptr;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-		UEditableText* ET_SearchMusicName = nullptr;
+	UEditableText* ET_SearchMusicName = nullptr;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-		UButton* Btn_SearchMusic = nullptr;
+	UButton* Btn_SearchMusic = nullptr;
 
 	UFUNCTION(BlueprintCallable)
 	void OnBtnBackToHomeClicked();
@@ -229,13 +229,13 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
 	UCanvasPanel* CanvasPanel_VideoView = nullptr;
-	
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<UDraggableVideoViewWidget> DraggableVideoViewTemplate;
-	
+
 protected:
 
-	int MakeVideoView(uint32 uid, agora::rtc::VIDEO_SOURCE_TYPE sourceType = VIDEO_SOURCE_CAMERA_PRIMARY,FString channelId = "");
+	int MakeVideoView(uint32 uid, agora::rtc::VIDEO_SOURCE_TYPE sourceType = VIDEO_SOURCE_CAMERA_PRIMARY, FString channelId = "");
 	int ReleaseVideoView(uint32 uid, agora::rtc::VIDEO_SOURCE_TYPE sourceType = VIDEO_SOURCE_CAMERA_PRIMARY, FString channelId = "");
 
 	TMap<FVideoViewIdentity, UDraggableVideoViewWidget*> VideoViewMap;
@@ -250,10 +250,10 @@ public:
 	UCanvasPanel* CanvasPanel_LogMsgView = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TSubclassOf<UDraggableLogMsgViewWidget> DraggableLogMsgViewTemplate;
+	TSubclassOf<UDraggableLogMsgViewWidget> DraggableLogMsgViewTemplate;
 
 public:
-	inline UDraggableLogMsgViewWidget* GetLogMsgViewPtr() {return LogMsgViewPtr;} 
+	inline UDraggableLogMsgViewWidget* GetLogMsgViewPtr() { return LogMsgViewPtr; }
 
 private:
 	UDraggableLogMsgViewWidget* LogMsgViewPtr = nullptr;
@@ -290,7 +290,7 @@ protected:
 	agora::media::IMediaEngine* MusicContentCenter;
 
 
-		
+
 	TSharedPtr<FUserRtcEventHandlerEx> UserRtcEventHandlerEx;
 	IMusicContentCenter* MusicContentCenterPtr;
 	TSharedPtr<FUserMusicContentCenterEventHandler> UserMusicContentCenterEventHandler;

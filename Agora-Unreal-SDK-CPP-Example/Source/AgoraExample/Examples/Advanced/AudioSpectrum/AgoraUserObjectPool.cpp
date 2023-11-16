@@ -22,7 +22,7 @@ void FAgoraUserObjectPool::ReleaseInstance(std::function<void(UObject*)>& Destro
 	}
 }
 
-UObject* FAgoraUserObjectPool::GetObject(std::function<UObject* ()>& SpawnFunc,std::function<void(UObject*)>& InitObjectFunc)
+UObject* FAgoraUserObjectPool::GetObject(std::function<UObject* ()>& SpawnFunc, std::function<void(UObject*)>& InitObjectFunc)
 {
 	UObject* Object = nullptr;
 	if (InActiveObjectQueue.Dequeue(Object))

@@ -24,7 +24,7 @@
 using namespace agora::rtc;
 
 /**
- * 
+ *
  */
 UCLASS()
 class AGORAEXAMPLE_API UMediaRecorderWidget : public UBaseAgoraUserWidget
@@ -70,7 +70,7 @@ public:
 		FUserMediaRecorderObserver(UMediaRecorderWidget* InVideoWidget) : WidgetPtr(InVideoWidget) {};
 
 #pragma region AgoraCallback - IMediaRecorderObserver
-		
+
 
 		void onRecorderStateChanged(const char* channelId, agora::rtc::uid_t uid, agora::media::RecorderState state, agora::media::RecorderErrorCode error) override;
 
@@ -94,15 +94,15 @@ public:
 
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-		UButton* Btn_BackToHome = nullptr;
+	UButton* Btn_BackToHome = nullptr;
 
 	UFUNCTION(BlueprintCallable)
 	void OnBtnBackToHomeClicked();
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-		UButton* Btn_Start = nullptr;
+	UButton* Btn_Start = nullptr;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-		UButton* Btn_Stop = nullptr;
+	UButton* Btn_Stop = nullptr;
 
 	UFUNCTION(BlueprintCallable)
 	void OnBtnStartClicked();
@@ -123,13 +123,13 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
 	UCanvasPanel* CanvasPanel_VideoView = nullptr;
-	
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<UDraggableVideoViewWidget> DraggableVideoViewTemplate;
-	
+
 protected:
 
-	int MakeVideoView(uint32 uid, agora::rtc::VIDEO_SOURCE_TYPE sourceType = VIDEO_SOURCE_CAMERA_PRIMARY,FString channelId = "");
+	int MakeVideoView(uint32 uid, agora::rtc::VIDEO_SOURCE_TYPE sourceType = VIDEO_SOURCE_CAMERA_PRIMARY, FString channelId = "");
 	int ReleaseVideoView(uint32 uid, agora::rtc::VIDEO_SOURCE_TYPE sourceType = VIDEO_SOURCE_CAMERA_PRIMARY, FString channelId = "");
 
 	TMap<FVideoViewIdentity, UDraggableVideoViewWidget*> VideoViewMap;
@@ -143,10 +143,10 @@ public:
 	UCanvasPanel* CanvasPanel_LogMsgView = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TSubclassOf<UDraggableLogMsgViewWidget> DraggableLogMsgViewTemplate;
+	TSubclassOf<UDraggableLogMsgViewWidget> DraggableLogMsgViewTemplate;
 
 public:
-	inline UDraggableLogMsgViewWidget* GetLogMsgViewPtr() {return LogMsgViewPtr;} 
+	inline UDraggableLogMsgViewWidget* GetLogMsgViewPtr() { return LogMsgViewPtr; }
 
 private:
 	UDraggableLogMsgViewWidget* LogMsgViewPtr = nullptr;
@@ -162,12 +162,12 @@ public:
 		std::string StdStrChannelName = TCHAR_TO_UTF8(*ChannelName);
 		Info.channelId = StdStrChannelName.c_str();
 		Info.uid = uid;
-		LocalRecorder  = RtcEngineProxy->createMediaRecorder(Info);
+		LocalRecorder = RtcEngineProxy->createMediaRecorder(Info);
 
 		UserMediaRecorderObserver = MakeShared<FUserMediaRecorderObserver>(this);
 		LocalRecorder->setMediaRecorderObserver(UserMediaRecorderObserver.Get());
 	}
-	inline bool HasLocalRecorder() {return LocalRecorder;}
+	inline bool HasLocalRecorder() { return LocalRecorder; }
 protected:
 	void CheckPermission();
 	void InitAgoraEngine(FString APP_ID, FString TOKEN, FString CHANNEL_NAME);

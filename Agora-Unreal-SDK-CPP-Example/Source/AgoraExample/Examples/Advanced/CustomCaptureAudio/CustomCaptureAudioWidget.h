@@ -26,7 +26,7 @@
 using namespace agora::rtc;
 
 /**
- * 
+ *
  */
 UCLASS()
 class AGORAEXAMPLE_API UCustomCaptureAudioWidget : public UBaseAgoraUserWidget
@@ -71,7 +71,7 @@ public:
 
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-		UButton* Btn_BackToHome = nullptr;
+	UButton* Btn_BackToHome = nullptr;
 
 	UFUNCTION(BlueprintCallable)
 	void OnBtnBackToHomeClicked();
@@ -91,10 +91,10 @@ public:
 	UCanvasPanel* CanvasPanel_LogMsgView = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TSubclassOf<UDraggableLogMsgViewWidget> DraggableLogMsgViewTemplate;
+	TSubclassOf<UDraggableLogMsgViewWidget> DraggableLogMsgViewTemplate;
 
 public:
-	inline UDraggableLogMsgViewWidget* GetLogMsgViewPtr() {return LogMsgViewPtr;} 
+	inline UDraggableLogMsgViewWidget* GetLogMsgViewPtr() { return LogMsgViewPtr; }
 
 private:
 	UDraggableLogMsgViewWidget* LogMsgViewPtr = nullptr;
@@ -161,7 +161,7 @@ protected:
 	std::time_t getTimeStamp();
 	void* sendByte;
 
-	
+
 	agora::media::IMediaEngine* MediaEngine;
 
 	uint8* audioData;

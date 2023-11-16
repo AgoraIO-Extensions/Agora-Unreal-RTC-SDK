@@ -68,7 +68,8 @@ void UDualCameraWidget::InitAgoraEngine(FString APP_ID, FString TOKEN, FString C
 	RtcEngineProxy = agora::rtc::ue::createAgoraRtcEngineEx();
 
 	int SDKBuild = 0;
-	FString SDKInfo = FString::Printf(TEXT("SDK Version: %s Build: %d"), UTF8_TO_TCHAR(RtcEngineProxy->getVersion(&SDKBuild)), SDKBuild);
+	const char* SDKVersionInfo = RtcEngineProxy->getVersion(&SDKBuild);
+	FString SDKInfo = FString::Printf(TEXT("SDK Version: %s Build: %d"), UTF8_TO_TCHAR(SDKVersionInfo), SDKBuild);
 	UBFL_Logger::Print(FString::Printf(TEXT("SDK Info:  %s"), *SDKInfo), LogMsgViewPtr);
 
 	int ret = RtcEngineProxy->initialize(RtcEngineContext);
@@ -136,7 +137,7 @@ void UDualCameraWidget::OnBtn_MainCameraJoinClicked()
 	RtcEngineProxy->setClientRole(CLIENT_ROLE_BROADCASTER);
 
 
-	int ret = RtcEngineProxy->startCameraCapture(VIDEO_SOURCE_CAMERA_PRIMARY,MainCameraConfig);
+	int ret = RtcEngineProxy->startCameraCapture(VIDEO_SOURCE_CAMERA_PRIMARY, MainCameraConfig);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s startCameraCapture ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 	agora::rtc::ChannelMediaOptions options1;
 	options1.publishCameraTrack = true;
@@ -181,7 +182,7 @@ void UDualCameraWidget::OnBtn_SecondCameraJoinClicked()
 	UBFL_Logger::Print(FString::Printf(TEXT("%s startCameraCapture ret1 %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 	agora::rtc::ChannelMediaOptions options2;
 	/*
-		If a client wants to add multiple connections to the same channel, 
+		If a client wants to add multiple connections to the same channel,
 		then auto-subscribing to audio and video in just one connection is enough, [autoSubscribeAudio/autoSubscribeVideo]
 		and set subscriptions to false for other connections.
 	*/
@@ -191,10 +192,10 @@ void UDualCameraWidget::OnBtn_SecondCameraJoinClicked()
 	options2.publishCameraTrack = false;
 	options2.publishSecondaryCameraTrack = true;
 	options2.enableAudioRecordingOrPlayout = false;
-	options2.clientRoleType= CLIENT_ROLE_TYPE::CLIENT_ROLE_BROADCASTER; 
+	options2.clientRoleType = CLIENT_ROLE_TYPE::CLIENT_ROLE_BROADCASTER;
 	std::string StdStrChannelName = TCHAR_TO_UTF8(*ChannelName);
 	agora::rtc::RtcConnection connection(StdStrChannelName.c_str(), UID2);
-	int ret2= RtcEngineProxy->joinChannelEx(TCHAR_TO_UTF8(*Token), connection,options2,nullptr);
+	int ret2 = RtcEngineProxy->joinChannelEx(TCHAR_TO_UTF8(*Token), connection, options2, nullptr);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s joinChannelEx ret2 %d"), *FString(FUNCTION_MACRO), ret2), LogMsgViewPtr);
 }
 
@@ -211,12 +212,12 @@ void UDualCameraWidget::OnBtn_PublishMainCameraClicked()
 {
 	agora::rtc::ChannelMediaOptions options1;
 	options1.publishCameraTrack = true;
-	options1.publishMicrophoneTrack  = true;
+	options1.publishMicrophoneTrack = true;
 	RtcConnection connection;
 	std::string StdStrChannelName = TCHAR_TO_UTF8(*ChannelName);
 	connection.channelId = StdStrChannelName.c_str();
 	connection.localUid = UID1;
-	int ret =RtcEngineProxy->updateChannelMediaOptionsEx(options1,connection);
+	int ret = RtcEngineProxy->updateChannelMediaOptionsEx(options1, connection);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 }
 
@@ -242,7 +243,7 @@ void UDualCameraWidget::OnBtn_PublishSecondCamClicked()
 	std::string StdStrChannelName = TCHAR_TO_UTF8(*ChannelName);
 	connection.channelId = StdStrChannelName.c_str();
 	connection.localUid = UID2;
-	int ret = RtcEngineProxy->updateChannelMediaOptionsEx(options2,connection);
+	int ret = RtcEngineProxy->updateChannelMediaOptionsEx(options2, connection);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 }
 
@@ -255,7 +256,7 @@ void UDualCameraWidget::OnBtn_UnPublishSecondCamClicked()
 	std::string StdStrChannelName = TCHAR_TO_UTF8(*ChannelName);
 	connection.channelId = StdStrChannelName.c_str();
 	connection.localUid = UID2;
-	int ret = RtcEngineProxy->updateChannelMediaOptionsEx(options2,connection);
+	int ret = RtcEngineProxy->updateChannelMediaOptionsEx(options2, connection);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 }
 
@@ -372,7 +373,11 @@ void UDualCameraWidget::FUserRtcEventHandlerEx::onJoinChannelSuccess(const agora
 	if (!IsWidgetValid())
 		return;
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!IsWidgetValid())
 			{
@@ -380,7 +385,7 @@ void UDualCameraWidget::FUserRtcEventHandlerEx::onJoinChannelSuccess(const agora
 				return;
 			}
 			UBFL_Logger::Print(FString::Printf(TEXT("%s"), *FString(FUNCTION_MACRO)), WidgetPtr->GetLogMsgViewPtr());
-		
+
 			if (connection.localUid == WidgetPtr->GetUID1())
 				WidgetPtr->MakeVideoView(0, agora::rtc::VIDEO_SOURCE_TYPE::VIDEO_SOURCE_CAMERA);
 			else if (connection.localUid == WidgetPtr->GetUID2())
@@ -393,7 +398,11 @@ void UDualCameraWidget::FUserRtcEventHandlerEx::onLeaveChannel(const agora::rtc:
 	if (!IsWidgetValid())
 		return;
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!IsWidgetValid())
 			{
@@ -401,7 +410,7 @@ void UDualCameraWidget::FUserRtcEventHandlerEx::onLeaveChannel(const agora::rtc:
 				return;
 			}
 			UBFL_Logger::Print(FString::Printf(TEXT("%s"), *FString(FUNCTION_MACRO)), WidgetPtr->GetLogMsgViewPtr());
-		
+
 			if (connection.localUid == WidgetPtr->GetUID1())
 				WidgetPtr->ReleaseVideoView(0, agora::rtc::VIDEO_SOURCE_TYPE::VIDEO_SOURCE_CAMERA);
 			else if (connection.localUid == WidgetPtr->GetUID2())
@@ -414,14 +423,18 @@ void UDualCameraWidget::FUserRtcEventHandlerEx::onUserJoined(const agora::rtc::R
 	if (!IsWidgetValid())
 		return;
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!IsWidgetValid())
 			{
 				UBFL_Logger::PrintError(FString::Printf(TEXT("%s bIsDestruct "), *FString(FUNCTION_MACRO)));
 				return;
 			}
-			UBFL_Logger::Print(FString::Printf(TEXT("%s remote uid=%d"), *FString(FUNCTION_MACRO), remoteUid), WidgetPtr->GetLogMsgViewPtr());
+			UBFL_Logger::Print(FString::Printf(TEXT("%s remote uid=%u"), *FString(FUNCTION_MACRO), remoteUid), WidgetPtr->GetLogMsgViewPtr());
 
 			if (connection.localUid != WidgetPtr->GetUID1() && connection.localUid != WidgetPtr->GetUID2())
 				WidgetPtr->MakeVideoView(remoteUid, agora::rtc::VIDEO_SOURCE_TYPE::VIDEO_SOURCE_REMOTE, WidgetPtr->GetChannelName());
@@ -433,15 +446,19 @@ void UDualCameraWidget::FUserRtcEventHandlerEx::onUserOffline(const agora::rtc::
 	if (!IsWidgetValid())
 		return;
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!IsWidgetValid())
 			{
 				UBFL_Logger::PrintError(FString::Printf(TEXT("%s bIsDestruct "), *FString(FUNCTION_MACRO)));
 				return;
 			}
-			UBFL_Logger::Print(FString::Printf(TEXT("%s remote uid=%d"), *FString(FUNCTION_MACRO), remoteUid), WidgetPtr->GetLogMsgViewPtr());
-		
+			UBFL_Logger::Print(FString::Printf(TEXT("%s remote uid=%u"), *FString(FUNCTION_MACRO), remoteUid), WidgetPtr->GetLogMsgViewPtr());
+
 			if (connection.localUid != WidgetPtr->GetUID1() && connection.localUid != WidgetPtr->GetUID2())
 				WidgetPtr->ReleaseVideoView(remoteUid, agora::rtc::VIDEO_SOURCE_TYPE::VIDEO_SOURCE_REMOTE, WidgetPtr->GetChannelName());
 		});

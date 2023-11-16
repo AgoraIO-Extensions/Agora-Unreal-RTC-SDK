@@ -11,7 +11,7 @@
 #include "DraggableVideoViewWidget.generated.h"
 
 /**
- * 
+ *
  */
 UCLASS()
 class AGORAEXAMPLE_API UDraggableVideoViewWidget : public UUserWidget
@@ -25,5 +25,5 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
 	UTextBlock* Text = nullptr;
-	
+
 };

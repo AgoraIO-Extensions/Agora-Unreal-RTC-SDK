@@ -16,18 +16,18 @@ enum class EUIDFuncType : uint8 {
 };
 
 /**
- * 
+ *
  */
 UCLASS()
 class AGORAEXAMPLE_API UBFL_UtilityTool : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
-	
+
 public:
 
 	static FString ConvertToAbsolutePath(FString InRelativePath, bool bAndroidUseInternalBasePath = false);
 
-	static void CreateMediaFileWithSource(FString SrcPath,FString DstPath);
+	static void CreateMediaFileWithSource(FString SrcPath, FString DstPath);
 
 	static FString GenSimpleUIDPart_MachineCode();
 

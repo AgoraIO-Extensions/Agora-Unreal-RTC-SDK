@@ -29,7 +29,7 @@ class FUserRtcEventHandler;
 class FUserVideoFrameObserver;
 
 /**
- * 
+ *
  */
 UCLASS()
 class AGORAEXAMPLE_API UWriteBackVideoRawDataWidget : public UBaseAgoraUserWidget
@@ -64,7 +64,7 @@ public:
 
 		TWeakObjectPtr<UWriteBackVideoRawDataWidget> WidgetPtr;
 	};
-	
+
 	class FUserVideoFrameObserver : public agora::media::IVideoFrameObserver
 	{
 
@@ -91,7 +91,7 @@ public:
 		agora::media::base::VIDEO_PIXEL_FORMAT getVideoFormatPreference() override;
 
 #pragma endregion
-		
+
 		inline bool IsWidgetValid() { return WidgetPtr.IsValid(); }
 
 	private:
@@ -106,7 +106,7 @@ public:
 
 #pragma region UI
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-		UButton* Btn_BackToHome = nullptr;
+	UButton* Btn_BackToHome = nullptr;
 
 	UFUNCTION(BlueprintCallable)
 	void OnBtnBackToHomeClicked();
@@ -123,13 +123,13 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
 	UCanvasPanel* CanvasPanel_VideoView = nullptr;
-	
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<UDraggableVideoViewWidget> DraggableVideoViewTemplate;
-	
+
 protected:
 
-	int MakeVideoView(uint32 uid, agora::rtc::VIDEO_SOURCE_TYPE sourceType = VIDEO_SOURCE_CAMERA_PRIMARY,FString channelId = "");
+	int MakeVideoView(uint32 uid, agora::rtc::VIDEO_SOURCE_TYPE sourceType = VIDEO_SOURCE_CAMERA_PRIMARY, FString channelId = "");
 	int ReleaseVideoView(uint32 uid, agora::rtc::VIDEO_SOURCE_TYPE sourceType = VIDEO_SOURCE_CAMERA_PRIMARY, FString channelId = "");
 
 	TMap<FVideoViewIdentity, UDraggableVideoViewWidget*> VideoViewMap;
@@ -143,10 +143,10 @@ public:
 	UCanvasPanel* CanvasPanel_LogMsgView = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TSubclassOf<UDraggableLogMsgViewWidget> DraggableLogMsgViewTemplate;
+	TSubclassOf<UDraggableLogMsgViewWidget> DraggableLogMsgViewTemplate;
 
 public:
-	inline UDraggableLogMsgViewWidget* GetLogMsgViewPtr() {return LogMsgViewPtr;} 
+	inline UDraggableLogMsgViewWidget* GetLogMsgViewPtr() { return LogMsgViewPtr; }
 
 private:
 	UDraggableLogMsgViewWidget* LogMsgViewPtr = nullptr;
@@ -177,7 +177,7 @@ protected:
 	agora::media::IMediaEngine* MediaEngine;
 
 
-		
+
 	TSharedPtr<FUserRtcEventHandlerEx> UserRtcEventHandlerEx;
 	TSharedPtr<FUserVideoFrameObserver> UserVideoFrameObserver;
 

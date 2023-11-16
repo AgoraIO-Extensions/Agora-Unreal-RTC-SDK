@@ -5,21 +5,21 @@
 #include "Components/CanvasPanelSlot.h"
 #include "Blueprint/WidgetLayoutLibrary.h"
 
-UImage* UBFL_VideoViewManager::CreateOneVideoViewToCanvasPanel(int64 uid, UCanvasPanel* CanvasPanel,TMap<int64, UDraggableVideoViewWidget*> & VideoViewMap, UImage* VideoView, TSubclassOf<UUserWidget> Template)
+UImage* UBFL_VideoViewManager::CreateOneVideoViewToCanvasPanel(int64 uid, UCanvasPanel* CanvasPanel, TMap<int64, UDraggableVideoViewWidget*>& VideoViewMap, UImage* VideoView, TSubclassOf<UUserWidget> Template)
 {
 	if (VideoViewMap.Contains(uid))
 	{
 		return VideoViewMap[uid]->View;
 	}
 	else
-	{	
+	{
 		UWorld* world = GEngine->GameViewport->GetWorld();
 		//TSubclassOf<UDraggableVideoViewWidget> VideoViewClass = UDraggableVideoViewWidget::StaticClass();
 		UDraggableVideoViewWidget* VideoViewWidget = CreateWidget<UDraggableVideoViewWidget>(world, Template);
 		VideoViewMap.Add(uid, VideoViewWidget);
 		UPanelSlot* PanelSlot = CanvasPanel->AddChild(VideoViewWidget);
 		UCanvasPanelSlot* CanvasPanelSlot = UWidgetLayoutLibrary::SlotAsCanvasSlot(VideoViewWidget);
-		CanvasPanelSlot->SetSize(FVector2D(640,360));
+		CanvasPanelSlot->SetSize(FVector2D(640, 360));
 		return  VideoViewWidget->View;
 	}
 }
@@ -37,11 +37,11 @@ UImage* UBFL_VideoViewManager::CreateOneVideoViewToCanvasPanel(const FVideoViewI
 		//TSubclassOf<UDraggableVideoViewWidget> VideoViewClass = UDraggableVideoViewWidget::StaticClass();
 		UDraggableVideoViewWidget* VideoViewWidget = CreateWidget<UDraggableVideoViewWidget>(world, Template);
 		ensure(VideoViewWidget != nullptr);
-		if(Key.uid == 0){
+		if (Key.uid == 0) {
 			FText ShowedText = FText::FromString(FString("LocalView"));
 			VideoViewWidget->Text->SetText(ShowedText);
 		}
-		else{
+		else {
 			FText ShowedText = FText::FromString(FString("RemoteView"));
 			VideoViewWidget->Text->SetText(ShowedText);
 		}
@@ -105,7 +105,7 @@ void UBFL_VideoViewManager::RotateTheVideoView(const FVideoViewIdentity& Key, in
 	if (VideoViewMap.Contains(Key))
 	{
 		UCanvasPanelSlot* CanvasPanelSlot = UWidgetLayoutLibrary::SlotAsCanvasSlot(VideoViewMap[Key]);
-		UImage* TargetImage= VideoViewMap[Key]->View;
+		UImage* TargetImage = VideoViewMap[Key]->View;
 		TargetImage->SetRenderTransformAngle(rotation);
 	}
 }

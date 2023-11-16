@@ -21,7 +21,7 @@ using namespace agora::rtc;
 
 
 /**
- * 
+ *
  */
 UCLASS()
 class AGORAEXAMPLE_API UAudioMixingWidget : public UBaseAgoraUserWidget
@@ -49,7 +49,7 @@ public:
 
 #pragma endregion
 
-		inline bool IsWidgetValid() { return WidgetPtr.IsValid();}
+		inline bool IsWidgetValid() { return WidgetPtr.IsValid(); }
 
 	private:
 
@@ -66,7 +66,7 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
 	UButton* Btn_BackToHome = nullptr;
-	
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
 	UButton* Btn_StartMixing = nullptr;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
@@ -75,7 +75,7 @@ public:
 	UButton* Btn_StartEffect = nullptr;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
 	UButton* Btn_StopEffect = nullptr;
-	
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
 	UCheckBox* CB_LocalOnly = nullptr;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
@@ -107,9 +107,9 @@ public:
 	UCanvasPanel* CanvasPanel_LogMsgView = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TSubclassOf<UDraggableLogMsgViewWidget> DraggableLogMsgViewTemplate;
+	TSubclassOf<UDraggableLogMsgViewWidget> DraggableLogMsgViewTemplate;
 public:
-	inline UDraggableLogMsgViewWidget* GetLogMsgViewPtr() {return LogMsgViewPtr;} 
+	inline UDraggableLogMsgViewWidget* GetLogMsgViewPtr() { return LogMsgViewPtr; }
 private:
 	UDraggableLogMsgViewWidget* LogMsgViewPtr = nullptr;
 #pragma endregion

@@ -64,7 +64,7 @@ public:
 
 
 /**
- * 
+ *
  */
 UCLASS(Abstract)
 class AGORAEXAMPLE_API UMainAgoraUserWidget : public UBaseAgoraUserWidget
@@ -86,7 +86,7 @@ public:
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	UEditableTextBox* ChannelBox;
 
-	FString APP_ID; 
+	FString APP_ID;
 
 	FString TOKEN;
 

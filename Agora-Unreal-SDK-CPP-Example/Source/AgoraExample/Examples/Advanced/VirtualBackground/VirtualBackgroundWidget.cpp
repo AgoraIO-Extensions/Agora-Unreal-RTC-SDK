@@ -53,7 +53,8 @@ void UVirtualBackgroundWidget::InitAgoraEngine(FString APP_ID, FString TOKEN, FS
 	RtcEngineProxy = agora::rtc::ue::createAgoraRtcEngine();
 
 	int SDKBuild = 0;
-	FString SDKInfo = FString::Printf(TEXT("SDK Version: %s Build: %d"), UTF8_TO_TCHAR(RtcEngineProxy->getVersion(&SDKBuild)), SDKBuild);
+	const char* SDKVersionInfo = RtcEngineProxy->getVersion(&SDKBuild);
+	FString SDKInfo = FString::Printf(TEXT("SDK Version: %s Build: %d"), UTF8_TO_TCHAR(SDKVersionInfo), SDKBuild);
 	UBFL_Logger::Print(FString::Printf(TEXT("SDK Info:  %s"), *SDKInfo), LogMsgViewPtr);
 
 	int ret = RtcEngineProxy->initialize(RtcEngineContext);
@@ -87,7 +88,7 @@ void UVirtualBackgroundWidget::OnBtnEnableVirtualBackgroundColorClicked()
 	backgroundSource.background_source_type = agora::rtc::VirtualBackgroundSource::BACKGROUND_SOURCE_TYPE::BACKGROUND_COLOR;
 	backgroundSource.color = 0x6de3ff;
 	SegmentationProperty valSegmentationProperty;
-	int ret = RtcEngineProxy->enableVirtualBackground(true,backgroundSource, valSegmentationProperty, agora::media::MEDIA_SOURCE_TYPE::PRIMARY_CAMERA_SOURCE);
+	int ret = RtcEngineProxy->enableVirtualBackground(true, backgroundSource, valSegmentationProperty, agora::media::MEDIA_SOURCE_TYPE::PRIMARY_CAMERA_SOURCE);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 }
 
@@ -105,7 +106,7 @@ void UVirtualBackgroundWidget::OnBtnEnableVirtualBackgroundImageClicked()
 	UBFL_UtilityTool::CreateMediaFileWithSource(Path, ValSavedFilePath);
 	Path = ValSavedFilePath;
 #endif 
-	
+
 	agora::rtc::VirtualBackgroundSource backgroundSource;
 	std::string StdStrPath = TCHAR_TO_UTF8(*Path);
 	backgroundSource.source = StdStrPath.c_str();
@@ -113,7 +114,7 @@ void UVirtualBackgroundWidget::OnBtnEnableVirtualBackgroundImageClicked()
 	agora::rtc::SegmentationProperty valSegmentationProperty;
 	int ret = RtcEngineProxy->enableVirtualBackground(true, backgroundSource, valSegmentationProperty, agora::media::MEDIA_SOURCE_TYPE::PRIMARY_CAMERA_SOURCE);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
-	
+
 }
 
 void UVirtualBackgroundWidget::OnBtnDisableVirtualBackgroundClicked()
@@ -136,7 +137,7 @@ void UVirtualBackgroundWidget::NativeDestruct()
 
 	UnInitAgoraEngine();
 
-	
+
 }
 
 void UVirtualBackgroundWidget::UnInitAgoraEngine()
@@ -246,7 +247,11 @@ void UVirtualBackgroundWidget::FUserRtcEventHandlerEx::onJoinChannelSuccess(cons
 	if (!IsWidgetValid())
 		return;
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!IsWidgetValid())
 			{
@@ -264,7 +269,11 @@ void UVirtualBackgroundWidget::FUserRtcEventHandlerEx::onLeaveChannel(const agor
 	if (!IsWidgetValid())
 		return;
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!IsWidgetValid())
 			{
@@ -282,14 +291,18 @@ void UVirtualBackgroundWidget::FUserRtcEventHandlerEx::onUserJoined(const agora:
 	if (!IsWidgetValid())
 		return;
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!IsWidgetValid())
 			{
 				UBFL_Logger::Print(FString::Printf(TEXT("%s bIsDestruct "), *FString(FUNCTION_MACRO)));
 				return;
 			}
-			UBFL_Logger::Print(FString::Printf(TEXT("%s remote uid=%d"), *FString(FUNCTION_MACRO), remoteUid), WidgetPtr->GetLogMsgViewPtr());
+			UBFL_Logger::Print(FString::Printf(TEXT("%s remote uid=%u"), *FString(FUNCTION_MACRO), remoteUid), WidgetPtr->GetLogMsgViewPtr());
 
 			WidgetPtr->MakeVideoView(remoteUid, agora::rtc::VIDEO_SOURCE_TYPE::VIDEO_SOURCE_REMOTE, WidgetPtr->GetChannelName());
 		});
@@ -300,14 +313,18 @@ void UVirtualBackgroundWidget::FUserRtcEventHandlerEx::onUserOffline(const agora
 	if (!IsWidgetValid())
 		return;
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!IsWidgetValid())
 			{
 				UBFL_Logger::Print(FString::Printf(TEXT("%s bIsDestruct "), *FString(FUNCTION_MACRO)));
 				return;
 			}
-			UBFL_Logger::Print(FString::Printf(TEXT("%s remote uid=%d"), *FString(FUNCTION_MACRO), remoteUid), WidgetPtr->GetLogMsgViewPtr());
+			UBFL_Logger::Print(FString::Printf(TEXT("%s remote uid=%u"), *FString(FUNCTION_MACRO), remoteUid), WidgetPtr->GetLogMsgViewPtr());
 
 			WidgetPtr->ReleaseVideoView(remoteUid, agora::rtc::VIDEO_SOURCE_TYPE::VIDEO_SOURCE_REMOTE, WidgetPtr->GetChannelName());
 		});

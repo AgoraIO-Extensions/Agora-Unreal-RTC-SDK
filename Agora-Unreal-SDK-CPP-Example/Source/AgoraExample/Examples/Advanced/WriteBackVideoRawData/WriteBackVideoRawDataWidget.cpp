@@ -56,7 +56,8 @@ void UWriteBackVideoRawDataWidget::InitAgoraEngine(FString APP_ID, FString TOKEN
 	RtcEngineProxy = agora::rtc::ue::createAgoraRtcEngine();
 
 	int SDKBuild = 0;
-	FString SDKInfo = FString::Printf(TEXT("SDK Version: %s Build: %d"), UTF8_TO_TCHAR(RtcEngineProxy->getVersion(&SDKBuild)), SDKBuild);
+	const char* SDKVersionInfo = RtcEngineProxy->getVersion(&SDKBuild);
+	FString SDKInfo = FString::Printf(TEXT("SDK Version: %s Build: %d"), UTF8_TO_TCHAR(SDKVersionInfo), SDKBuild);
 	UBFL_Logger::Print(FString::Printf(TEXT("SDK Info:  %s"), *SDKInfo), LogMsgViewPtr);
 
 	int ret = RtcEngineProxy->initialize(RtcEngineContext);
@@ -110,7 +111,7 @@ void UWriteBackVideoRawDataWidget::NativeDestruct()
 
 	UnInitAgoraEngine();
 
-	
+
 }
 
 void UWriteBackVideoRawDataWidget::UnInitAgoraEngine()
@@ -216,12 +217,16 @@ int UWriteBackVideoRawDataWidget::ReleaseVideoView(uint32 uid, agora::rtc::VIDEO
 
 void UWriteBackVideoRawDataWidget::FUserRtcEventHandlerEx::onJoinChannelSuccess(const agora::rtc::RtcConnection& connection, int elapsed)
 {
-	
+
 
 	if (!IsWidgetValid())
 		return;
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!IsWidgetValid())
 			{
@@ -242,7 +247,11 @@ void UWriteBackVideoRawDataWidget::FUserRtcEventHandlerEx::onLeaveChannel(const 
 	if (!IsWidgetValid())
 		return;
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!IsWidgetValid())
 			{
@@ -260,11 +269,15 @@ void UWriteBackVideoRawDataWidget::FUserRtcEventHandlerEx::onLeaveChannel(const 
 
 void UWriteBackVideoRawDataWidget::FUserRtcEventHandlerEx::onUserJoined(const agora::rtc::RtcConnection& connection, agora::rtc::uid_t remoteUid, int elapsed)
 {
-	
+
 	if (!IsWidgetValid())
 		return;
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!IsWidgetValid())
 			{
@@ -272,10 +285,10 @@ void UWriteBackVideoRawDataWidget::FUserRtcEventHandlerEx::onUserJoined(const ag
 				return;
 			}
 
-			UBFL_Logger::Print(FString::Printf(TEXT("%s remote uid=%d"), *FString(FUNCTION_MACRO), remoteUid), WidgetPtr->GetLogMsgViewPtr());
+			UBFL_Logger::Print(FString::Printf(TEXT("%s remote uid=%u"), *FString(FUNCTION_MACRO), remoteUid), WidgetPtr->GetLogMsgViewPtr());
 
 			WidgetPtr->MakeVideoView(remoteUid, agora::rtc::VIDEO_SOURCE_TYPE::VIDEO_SOURCE_REMOTE, WidgetPtr->GetChannelName());
-			
+
 		});
 }
 
@@ -285,7 +298,11 @@ void UWriteBackVideoRawDataWidget::FUserRtcEventHandlerEx::onUserOffline(const a
 	if (!IsWidgetValid())
 		return;
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!IsWidgetValid())
 			{
@@ -293,7 +310,7 @@ void UWriteBackVideoRawDataWidget::FUserRtcEventHandlerEx::onUserOffline(const a
 				return;
 			}
 
-			UBFL_Logger::Print(FString::Printf(TEXT("%s remote uid=%d"), *FString(FUNCTION_MACRO), remoteUid), WidgetPtr->GetLogMsgViewPtr());
+			UBFL_Logger::Print(FString::Printf(TEXT("%s remote uid=%u"), *FString(FUNCTION_MACRO), remoteUid), WidgetPtr->GetLogMsgViewPtr());
 
 			WidgetPtr->ReleaseVideoView(remoteUid, agora::rtc::VIDEO_SOURCE_TYPE::VIDEO_SOURCE_REMOTE, WidgetPtr->GetChannelName());
 		});
@@ -307,14 +324,14 @@ void UWriteBackVideoRawDataWidget::FUserRtcEventHandlerEx::onUserOffline(const a
 bool UWriteBackVideoRawDataWidget::FUserVideoFrameObserver::onCaptureVideoFrame(agora::rtc::VIDEO_SOURCE_TYPE sourceType, agora::media::base::VideoFrame& videoFrame)
 {
 	FName FuncName = FName(FString(FUNCTION_MACRO));
-	if(!LogSet.Contains(FuncName)){
+	if (!LogSet.Contains(FuncName)) {
 		UE_LOG(LogTemp, Warning, TEXT("%s"), *(FuncName.ToString()));
 		LogSet.Add(FuncName);
 	}
 
 	int length = videoFrame.uStride * videoFrame.height / 2;
-	uint8 * bytes = new uint8[length];
-	for (int i = 0; i < length; i++) 
+	uint8* bytes = new uint8[length];
+	for (int i = 0; i < length; i++)
 		bytes[i] = 128;
 	memcpy(videoFrame.uBuffer, bytes, length);
 	memcpy(videoFrame.vBuffer, bytes, length);
@@ -339,7 +356,7 @@ bool UWriteBackVideoRawDataWidget::FUserVideoFrameObserver::onRenderVideoFrame(c
 		UE_LOG(LogTemp, Warning, TEXT("%s"), *(FuncName.ToString()));
 		LogSet.Add(FuncName);
 	}
-	
+
 
 	int length = videoFrame.uStride * videoFrame.height / 2;
 	uint8* bytes = new uint8[length];

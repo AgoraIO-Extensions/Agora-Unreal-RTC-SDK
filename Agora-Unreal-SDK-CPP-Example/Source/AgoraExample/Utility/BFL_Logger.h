@@ -21,7 +21,7 @@
 
 
 /**
- * 
+ *
  */
 UCLASS()
 class AGORAEXAMPLE_API UBFL_Logger : public UBlueprintFunctionLibrary
@@ -41,7 +41,7 @@ public:
 	static void InitLogMsgView(UDraggableLogMsgViewWidget* Widget);
 
 
-	static void Print(FString LogMsg, UDraggableLogMsgViewWidget* Widget = nullptr,bool bToConsole = true, bool bToLogMsgView = true , bool bOnScreen = false);
+	static void Print(FString LogMsg, UDraggableLogMsgViewWidget* Widget = nullptr, bool bToConsole = true, bool bToLogMsgView = true, bool bOnScreen = false);
 	static void PrintWarn(FString LogMsg, UDraggableLogMsgViewWidget* Widget = nullptr, bool bToConsole = true, bool bToLogMsgView = true, bool bOnScreen = false);
 	static void PrintError(FString LogMsg, UDraggableLogMsgViewWidget* Widget = nullptr, bool bToConsole = true, bool bToLogMsgView = true, bool bOnScreen = false);
 
@@ -49,5 +49,5 @@ public:
 	static void DisplayUserGuide(FString UserGuide, UDraggableLogMsgViewWidget* Widget = nullptr, bool bToConsole = true, bool bToLogMsgView = true, bool bOnScreen = false);
 
 	UFUNCTION(Blueprintcallable)
-	static FString GetAgoraConsoleLogTitleStr(){ return ConsoleLogTitle;}
+	static FString GetAgoraConsoleLogTitleStr() { return ConsoleLogTitle; }
 };

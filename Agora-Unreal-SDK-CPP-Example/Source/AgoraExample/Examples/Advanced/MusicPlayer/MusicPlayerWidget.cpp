@@ -30,7 +30,8 @@ void UMusicPlayerWidget::InitAgoraEngine(FString APP_ID, FString TOKEN, FString 
 	RtcEngineProxy = agora::rtc::ue::createAgoraRtcEngineEx();
 
 	int SDKBuild = 0;
-	FString SDKInfo = FString::Printf(TEXT("SDK Version: %s Build: %d"), UTF8_TO_TCHAR(RtcEngineProxy->getVersion(&SDKBuild)), SDKBuild);
+	const char* SDKVersionInfo = RtcEngineProxy->getVersion(&SDKBuild);
+	FString SDKInfo = FString::Printf(TEXT("SDK Version: %s Build: %d"), UTF8_TO_TCHAR(SDKVersionInfo), SDKBuild);
 	UBFL_Logger::Print(FString::Printf(TEXT("SDK Info:  %s"), *SDKInfo), LogMsgViewPtr);
 
 	int ret = RtcEngineProxy->initialize(RtcEngineContext);
@@ -113,7 +114,7 @@ void UMusicPlayerWidget::OnBtnGetCachesClicked()
 	// if the actaul size is less than CacheInfoSize, CacheInfoSize will be the actual size
 	int ret = MusicContentCenterPtr->getCaches(Infos, &CacheInfoSize);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s getCaches ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
-	if(ret == 0){
+	if (ret == 0) {
 		for (int i = 0; i < CacheInfoSize; i++)
 		{
 			UBFL_Logger::Print(FString::Printf(TEXT("%s song code %lld status %d"), *FString(FUNCTION_MACRO), Infos[i].songCode, Infos[i].status), LogMsgViewPtr);
@@ -146,13 +147,13 @@ void UMusicPlayerWidget::OnBtnGetMusicChartsClicked()
 void UMusicPlayerWidget::OnCBSMusicChartsValueChanged(FString SelectedItem, ESelectInfo::Type SelectionType)
 {
 	int Index = CBS_MusicCharts->FindOptionIndex(SelectedItem);
-	if(Index == -1 || Index > MusicChartInfoList.Num())
+	if (Index == -1 || Index > MusicChartInfoList.Num())
 		return;
-	
+
 	MusicChartInfo Info = MusicChartInfoList[Index];
 	CurChartId = Info.id;
 	agora::util::AString RequestId;
-	int ret = MusicContentCenterPtr->getMusicCollectionByMusicChartId(RequestId,CurChartId, 0,20,"");
+	int ret = MusicContentCenterPtr->getMusicCollectionByMusicChartId(RequestId, CurChartId, 0, 20, "");
 	UBFL_Logger::Print(FString::Printf(TEXT("%s Selected Chart %s"), *FString(FUNCTION_MACRO), UTF8_TO_TCHAR(Info.chartName)), LogMsgViewPtr);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s requestid=%s"), *FString(FUNCTION_MACRO), UTF8_TO_TCHAR(RequestId->c_str())), LogMsgViewPtr);
@@ -177,7 +178,7 @@ void UMusicPlayerWidget::OnBtnGetLyricClicked()
 	}
 
 	agora::util::AString RequestId;
-	int ret = MusicContentCenterPtr->getLyric(RequestId,CurSongId,0 );
+	int ret = MusicContentCenterPtr->getLyric(RequestId, CurSongId, 0);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s GetLyrics ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s RequestId=%s"), *FString(FUNCTION_MACRO), UTF8_TO_TCHAR(RequestId->c_str())), LogMsgViewPtr);
 }
@@ -197,7 +198,7 @@ void UMusicPlayerWidget::OnBtnOpenClicked()
 
 void UMusicPlayerWidget::OnBtnIsPreloadClicked()
 {
-	if(CurSongId == 0)
+	if (CurSongId == 0)
 	{
 		UBFL_Logger::PrintWarn(FString::Printf(TEXT("%s CurSong is Empty"), *FString(FUNCTION_MACRO)), LogMsgViewPtr);
 		return;
@@ -228,9 +229,9 @@ void UMusicPlayerWidget::OnBtnSearchMusicClicked()
 
 	FString MusicName = ET_SearchMusicName->GetText().ToString();
 	agora::util::AString RequestId;
-	int ret = MusicContentCenterPtr->searchMusic(RequestId, TCHAR_TO_UTF8(*MusicName),0,5,"");
+	int ret = MusicContentCenterPtr->searchMusic(RequestId, TCHAR_TO_UTF8(*MusicName), 0, 5, "");
 	UBFL_Logger::Print(FString::Printf(TEXT("%s MusicPlayer Open Ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
-	if(ret == 0){
+	if (ret == 0) {
 		MakeVideoView(MusicPlayer->getMediaPlayerId(), VIDEO_SOURCE_TYPE::VIDEO_SOURCE_MEDIA_PLAYER, "");
 	}
 }
@@ -248,14 +249,14 @@ void UMusicPlayerWidget::NativeDestruct()
 
 	UnInitAgoraEngine();
 
-	
+
 }
 
 void UMusicPlayerWidget::UnInitAgoraEngine()
 {
 	if (RtcEngineProxy != nullptr)
 	{
-		if(MusicPlayer){
+		if (MusicPlayer) {
 			MusicPlayer->unregisterPlayerSourceObserver(UserIMediaPlayerSourceObserver.Get());
 			RtcEngineProxy->destroyMediaPlayer(MusicPlayer);
 		}
@@ -304,13 +305,13 @@ void UMusicPlayerWidget::UpdateUIMusicCollectionList()
 	FScopeLock Lock(&CriticalSectionForMusicCollectionList);
 
 	CBS_SelectedSong->ClearOptions();
-	if(MusicCollectionList.Num() == 0)
+	if (MusicCollectionList.Num() == 0)
 		return;
 
-	for(int i =0;i < MusicCollectionList.Num();i++){
+	for (int i = 0; i < MusicCollectionList.Num(); i++) {
 		Music Tmp = MusicCollectionList[i];
 		CBS_SelectedSong->AddOption(UTF8_TO_TCHAR(Tmp.name));
-		if(i == 0){
+		if (i == 0) {
 			CurSongId = Tmp.songCode;
 			Txt_SelectedSong->SetText(FText::FromString(FString(UTF8_TO_TCHAR(Tmp.name))));
 		}
@@ -466,7 +467,11 @@ void UMusicPlayerWidget::FUserRtcEventHandlerEx::onJoinChannelSuccess(const agor
 	if (!IsWidgetValid())
 		return;
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!IsWidgetValid())
 			{
@@ -484,7 +489,11 @@ void UMusicPlayerWidget::FUserRtcEventHandlerEx::onLeaveChannel(const agora::rtc
 	if (!IsWidgetValid())
 		return;
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!IsWidgetValid())
 			{
@@ -502,14 +511,18 @@ void UMusicPlayerWidget::FUserRtcEventHandlerEx::onUserJoined(const agora::rtc::
 	if (!IsWidgetValid())
 		return;
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!IsWidgetValid())
 			{
 				UBFL_Logger::Print(FString::Printf(TEXT("%s bIsDestruct "), *FString(FUNCTION_MACRO)));
 				return;
 			}
-			UBFL_Logger::Print(FString::Printf(TEXT("%s remote uid=%d"), *FString(FUNCTION_MACRO), remoteUid), WidgetPtr->GetLogMsgViewPtr());
+			UBFL_Logger::Print(FString::Printf(TEXT("%s remote uid=%u"), *FString(FUNCTION_MACRO), remoteUid), WidgetPtr->GetLogMsgViewPtr());
 
 			WidgetPtr->MakeVideoView(remoteUid, agora::rtc::VIDEO_SOURCE_TYPE::VIDEO_SOURCE_REMOTE, WidgetPtr->GetChannelName());
 		});
@@ -520,14 +533,18 @@ void UMusicPlayerWidget::FUserRtcEventHandlerEx::onUserOffline(const agora::rtc:
 	if (!IsWidgetValid())
 		return;
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!IsWidgetValid())
 			{
 				UBFL_Logger::Print(FString::Printf(TEXT("%s bIsDestruct "), *FString(FUNCTION_MACRO)));
 				return;
 			}
-			UBFL_Logger::Print(FString::Printf(TEXT("%s remote uid=%d"), *FString(FUNCTION_MACRO), remoteUid), WidgetPtr->GetLogMsgViewPtr());
+			UBFL_Logger::Print(FString::Printf(TEXT("%s remote uid=%u"), *FString(FUNCTION_MACRO), remoteUid), WidgetPtr->GetLogMsgViewPtr());
 
 			WidgetPtr->ReleaseVideoView(remoteUid, agora::rtc::VIDEO_SOURCE_TYPE::VIDEO_SOURCE_REMOTE, WidgetPtr->GetChannelName());
 		});
@@ -541,7 +558,7 @@ void UMusicPlayerWidget::FUserRtcEventHandlerEx::onUserOffline(const agora::rtc:
 
 void UMusicPlayerWidget::FUserIMediaPlayerSourceObserver::onPlayerSourceStateChanged(media::base::MEDIA_PLAYER_STATE state, media::base::MEDIA_PLAYER_ERROR ec)
 {
-	if(state == media::base::MEDIA_PLAYER_STATE::PLAYER_STATE_OPEN_COMPLETED)
+	if (state == media::base::MEDIA_PLAYER_STATE::PLAYER_STATE_OPEN_COMPLETED)
 		WidgetPtr->GetMusicPlayer()->play();
 }
 
@@ -607,7 +624,11 @@ void UMusicPlayerWidget::FUserMusicContentCenterEventHandler::onMusicChartsResul
 
 	WidgetPtr->UpdateDataMusicChartInfoListData(result);
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 
 			if (!IsWidgetValid())
@@ -629,7 +650,11 @@ void UMusicPlayerWidget::FUserMusicContentCenterEventHandler::onMusicCollectionR
 
 	WidgetPtr->UpdateDataMusicCollectionList(result);
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 
 			if (!IsWidgetValid())
@@ -656,7 +681,11 @@ void UMusicPlayerWidget::FUserMusicContentCenterEventHandler::onLyricResult(cons
 	FString URLLyric = UTF8_TO_TCHAR(lyricUrl);
 
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!IsWidgetValid())
 			{
@@ -674,7 +703,11 @@ void UMusicPlayerWidget::FUserMusicContentCenterEventHandler::onPreLoadEvent(int
 
 	FString URLLyric = UTF8_TO_TCHAR(lyricUrl);
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!IsWidgetValid())
 			{
