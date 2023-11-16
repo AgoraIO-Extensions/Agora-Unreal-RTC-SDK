@@ -1,15 +1,15 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+//  Copyright (c) 2023 Agora.io. All rights reserved.
 
 #pragma once
 
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
 #include "AgoraBluePrintPlugin/URtcEngineProxyCompatibility.h"
-#include "AgoraCppPlugin/Include/AgoraHeaderBase.h"
+#include "AgoraCppPlugin/include/AgoraHeaderBase.h"
 #include "IMediaRecorderObserver.generated.h"
 
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnRecorderStateChanged,FString,channelId,int64, uid, FENUMWRAP_RecorderState, state, ERecorderErrorCode, error);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnRecorderStateChanged, FString, channelId, int64, uid, FENUMWRAP_RecorderState, state, ERecorderErrorCode, error);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnRecorderInfoUpdated, FString, channelId, int64, uid, const FRecorderInfo&, info);
 
 class IMediaRecorderObserverClassWrapper : public agora::media::IMediaRecorderObserver {};

@@ -15,6 +15,8 @@ void UAudioSpectrumWidget::InitAgoraWidget(FString APP_ID, FString TOKEN, FStrin
 
 	InitAgoraEngine(APP_ID, TOKEN, CHANNEL_NAME);
 
+	ShowUserGuide();
+
 	InitAgoraMediaPlayer();
 
 	JoinChannelWithMPK();
@@ -61,13 +63,26 @@ void UAudioSpectrumWidget::InitAgoraEngine(FString APP_ID, FString TOKEN, FStrin
 	RtcEngineProxy = agora::rtc::ue::createAgoraRtcEngine();
 
 	int SDKBuild = 0;
-	FString SDKInfo = FString::Printf(TEXT("SDK Version: %s Build: %d"), UTF8_TO_TCHAR(RtcEngineProxy->getVersion(&SDKBuild)), SDKBuild);
+	const char* SDKVersionInfo = RtcEngineProxy->getVersion(&SDKBuild);
+	FString SDKInfo = FString::Printf(TEXT("SDK Version: %s Build: %d"), UTF8_TO_TCHAR(SDKVersionInfo), SDKBuild);
 	UBFL_Logger::Print(FString::Printf(TEXT("SDK Info:  %s"), *SDKInfo), LogMsgViewPtr);
 
 	int ret = RtcEngineProxy->initialize(RtcEngineContext);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 }
 
+
+void UAudioSpectrumWidget::ShowUserGuide()
+{
+	FString Guide = ""
+		"Case: [AudioSpectrum]\n"
+		"1. If you don't enter a URL below, you will use the local file. Alternatively, you can enter a URL into the editable text.\n"
+		"2. <Loop>: If checked, enable infinite playback loops.\n"
+		"";
+
+	UBFL_Logger::DisplayUserGuide(Guide, LogMsgViewPtr);
+
+}
 
 void UAudioSpectrumWidget::InitAgoraMediaPlayer()
 {
@@ -76,8 +91,8 @@ void UAudioSpectrumWidget::InitAgoraMediaPlayer()
 	MediaPlayer->registerPlayerSourceObserver(UserIMediaPlayerSourceObserver.Get());
 	UBFL_Logger::Print(FString::Printf(TEXT("%s PlayerID=%d"), *FString(FUNCTION_MACRO), MediaPlayer->getMediaPlayerId()), LogMsgViewPtr);
 
-	UserAudioSpectrumObserver= MakeShared<FUserAudioSpectrumObserver>(this);
-	MediaPlayer->registerMediaPlayerAudioSpectrumObserver(UserAudioSpectrumObserver.Get(),16);
+	UserAudioSpectrumObserver = MakeShared<FUserAudioSpectrumObserver>(this);
+	MediaPlayer->registerMediaPlayerAudioSpectrumObserver(UserAudioSpectrumObserver.Get(), 16);
 }
 
 void UAudioSpectrumWidget::JoinChannelWithMPK()
@@ -120,34 +135,34 @@ void UAudioSpectrumWidget::VisualizeSpectrumData()
 	FScopeLock Lock(&CriticalSectionForAudioSpectrumDataRW);
 	FString StrData = "";
 	// CanvasPanel_Spectrum->ClearChildren(); They will be cleared at the end of the case
-	FVector2D StartPosition(50,100);
+	FVector2D StartPosition(50, 100);
 	std::function<void(UObject*)> DeSpawnFunc = [](UObject* Object) {
 		//UImage* Image = Cast<UImage>(Object);
 		//if (Image) {
 		//	Image->SetVisibility(ESlateVisibility::Collapsed);
 		//}
-	};
+		};
 	FAgoraUserObjectPool::GetInstance()->ReturnAllObject(DeSpawnFunc);
 	for (float Item : AudioSpectrumData) {
 		//StrData += FString::Printf(TEXT("%.2f"), Item) + TEXT("");
 
 		// process the height // Original [-300,1]
-		float Height =  2-Item;
+		float Height = 2 - Item;
 		StartPosition.X += 150;
 
-		std::function<UObject*()>SpawnFunc = []() {
+		std::function<UObject* ()>SpawnFunc = []() {
 			return (UObject*)NewObject<UImage>();
-		};
+			};
 
 		std::function<void(UObject*)> InitObjectFunc = [](UObject* Object) {
 			//UImage* Image = Cast<UImage>(Object);
 			//if (Image) {
 			//	Image->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 			//}
-		};
-		
+			};
+
 		UImage* Image = Cast<UImage>(FAgoraUserObjectPool::GetInstance()->GetObject(SpawnFunc, InitObjectFunc));
-		if(!CanvasPanel_Spectrum->HasChild(Image))
+		if (!CanvasPanel_Spectrum->HasChild(Image))
 			CanvasPanel_Spectrum->AddChild(Image);
 
 		UCanvasPanelSlot* ImageCanvasPanelSlot = UWidgetLayoutLibrary::SlotAsCanvasSlot(Image);
@@ -176,7 +191,7 @@ void UAudioSpectrumWidget::OnBtnBackToHomeClicked()
 		if (Image) {
 			Image->RemoveFromParent();
 		}
-	};
+		};
 	FAgoraUserObjectPool::ReleaseInstance(DestroyOneObjectFunc);
 	UnInitAgoraEngine();
 	UGameplayStatics::OpenLevel(UGameplayStatics::GetPlayerController(GWorld, 0)->GetWorld(), FName("MainLevel"));
@@ -260,7 +275,10 @@ void UAudioSpectrumWidget::UnInitAgoraEngine()
 	if (RtcEngineProxy != nullptr)
 	{
 		if (MediaPlayer)
+		{
+			MediaPlayer->stop();
 			MediaPlayer->unregisterPlayerSourceObserver(UserIMediaPlayerSourceObserver.Get());
+		}
 
 		RtcEngineProxy->destroyMediaPlayer(MediaPlayer);
 
@@ -365,7 +383,11 @@ void UAudioSpectrumWidget::FUserRtcEventHandler::onJoinChannelSuccess(const char
 	if (!IsWidgetValid())
 		return;
 
+#if  ((__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)) 
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!IsWidgetValid())
 			{
@@ -384,7 +406,11 @@ void UAudioSpectrumWidget::FUserRtcEventHandler::onUserJoined(agora::rtc::uid_t 
 	if (!IsWidgetValid())
 		return;
 
+#if  ((__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)) 
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!IsWidgetValid())
 			{
@@ -401,7 +427,11 @@ void UAudioSpectrumWidget::FUserRtcEventHandler::onUserOffline(agora::rtc::uid_t
 	if (!IsWidgetValid())
 		return;
 
+#if  ((__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)) 
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!IsWidgetValid())
 			{
@@ -418,7 +448,11 @@ void UAudioSpectrumWidget::FUserRtcEventHandler::onLeaveChannel(const agora::rtc
 	if (!IsWidgetValid())
 		return;
 
+#if  ((__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)) 
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!IsWidgetValid())
 			{
@@ -440,7 +474,11 @@ void UAudioSpectrumWidget::FUserIMediaPlayerSourceObserver::onPlayerSourceStateC
 	if (!IsWidgetValid())
 		return;
 
+#if  ((__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)) 
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!IsWidgetValid())
 			{
@@ -527,7 +565,11 @@ bool UAudioSpectrumWidget::FUserAudioSpectrumObserver::onLocalAudioSpectrum(cons
 
 	WidgetPtr->UpdateSpectrumData(data);
 
+#if  ((__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)) 
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!IsWidgetValid())
 			{

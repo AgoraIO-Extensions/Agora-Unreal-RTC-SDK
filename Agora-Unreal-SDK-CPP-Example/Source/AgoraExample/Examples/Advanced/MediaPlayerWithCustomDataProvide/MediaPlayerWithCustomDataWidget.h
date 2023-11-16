@@ -14,6 +14,7 @@
 // UI Utility
 #include "../../../Utility/BFL_VideoViewManager.h"
 #include "../../../Utility/BFL_Logger.h" 
+#include "../../../Utility/BFL_UtilityTool.h" 
 
 #if PLATFORM_ANDROID
 #include "AndroidPermission/Classes/AndroidPermissionFunctionLibrary.h"
@@ -28,7 +29,7 @@ using namespace agora;
 class FUserRtcEventHandler;
 
 /**
- * 
+ *
  */
 UCLASS()
 class AGORAEXAMPLE_API UMediaPlayerWithCustomDataWidget : public UBaseAgoraUserWidget
@@ -58,7 +59,7 @@ public:
 
 #pragma endregion
 
-				inline bool IsWidgetValid() { return WidgetPtr.IsValid(); }
+		inline bool IsWidgetValid() { return WidgetPtr.IsValid(); }
 
 	private:
 
@@ -108,7 +109,7 @@ public:
 		void  onAudioVolumeIndication(int volume) override;
 
 #pragma endregion
-				inline bool IsWidgetValid() { return WidgetPtr.IsValid(); }
+		inline bool IsWidgetValid() { return WidgetPtr.IsValid(); }
 
 
 	private:
@@ -125,8 +126,8 @@ public:
 		void Release();
 
 #pragma region AgoraCallback - IMediaPlayerCustomDataProvider
-		
-		
+
+
 		int onReadData(unsigned char* buffer, int bufferSize) override;
 
 
@@ -155,19 +156,19 @@ public:
 
 #pragma region UI
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-		UButton* Btn_BackToHome = nullptr;
-	
-	
+	UButton* Btn_BackToHome = nullptr;
+
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-		UButton* Btn_Open = nullptr;
+	UButton* Btn_Open = nullptr;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-		UButton* Btn_Play = nullptr;
+	UButton* Btn_Play = nullptr;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-		UButton* Btn_Stop = nullptr;
+	UButton* Btn_Stop = nullptr;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-		UButton* Btn_Pause = nullptr;
+	UButton* Btn_Pause = nullptr;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-		UButton* Btn_Resume = nullptr;
+	UButton* Btn_Resume = nullptr;
 
 
 	UFUNCTION(BlueprintCallable)
@@ -195,13 +196,13 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
 	UCanvasPanel* CanvasPanel_VideoView = nullptr;
-	
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<UDraggableVideoViewWidget> DraggableVideoViewTemplate;
-	
+
 protected:
 
-	int MakeVideoView(uint32 uid, agora::rtc::VIDEO_SOURCE_TYPE sourceType = VIDEO_SOURCE_CAMERA_PRIMARY,FString channelId = "");
+	int MakeVideoView(uint32 uid, agora::rtc::VIDEO_SOURCE_TYPE sourceType = VIDEO_SOURCE_CAMERA_PRIMARY, FString channelId = "");
 	int ReleaseVideoView(uint32 uid, agora::rtc::VIDEO_SOURCE_TYPE sourceType = VIDEO_SOURCE_CAMERA_PRIMARY, FString channelId = "");
 
 	TMap<FVideoViewIdentity, UDraggableVideoViewWidget*> VideoViewMap;
@@ -216,10 +217,10 @@ public:
 	UCanvasPanel* CanvasPanel_LogMsgView = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TSubclassOf<UDraggableLogMsgViewWidget> DraggableLogMsgViewTemplate;
+	TSubclassOf<UDraggableLogMsgViewWidget> DraggableLogMsgViewTemplate;
 
 public:
-	inline UDraggableLogMsgViewWidget* GetLogMsgViewPtr() {return LogMsgViewPtr;} 
+	inline UDraggableLogMsgViewWidget* GetLogMsgViewPtr() { return LogMsgViewPtr; }
 
 private:
 	UDraggableLogMsgViewWidget* LogMsgViewPtr = nullptr;
@@ -237,6 +238,7 @@ public:
 protected:
 	void CheckPermission();
 	void InitAgoraEngine(FString APP_ID, FString TOKEN, FString CHANNEL_NAME);
+	void ShowUserGuide();
 	void InitAgoraMediaPlayer();
 	void JoinChannelWithMPK();
 
@@ -251,7 +253,7 @@ protected:
 	agora::agora_refptr<agora::rtc::IMediaPlayer> MediaPlayer;
 
 
-		
+
 	TSharedPtr<FUserRtcEventHandlerEx> UserRtcEventHandlerEx;
 	TSharedPtr<FUserIMediaPlayerSourceObserver> UserIMediaPlayerSourceObserver;
 

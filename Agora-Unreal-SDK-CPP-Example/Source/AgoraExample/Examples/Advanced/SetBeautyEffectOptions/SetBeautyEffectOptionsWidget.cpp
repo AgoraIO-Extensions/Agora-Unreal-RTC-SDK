@@ -50,7 +50,8 @@ void USetBeautyEffectOptionsWidget::InitAgoraEngine(FString APP_ID, FString TOKE
 	RtcEngineProxy = agora::rtc::ue::createAgoraRtcEngineEx();
 
 	int SDKBuild = 0;
-	FString SDKInfo = FString::Printf(TEXT("SDK Version: %s Build: %d"), UTF8_TO_TCHAR(RtcEngineProxy->getVersion(&SDKBuild)), SDKBuild);
+	const char* SDKVersionInfo = RtcEngineProxy->getVersion(&SDKBuild);
+	FString SDKInfo = FString::Printf(TEXT("SDK Version: %s Build: %d"), UTF8_TO_TCHAR(SDKVersionInfo), SDKBuild);
 	UBFL_Logger::Print(FString::Printf(TEXT("SDK Info:  %s"), *SDKInfo), LogMsgViewPtr);
 
 	int ret = RtcEngineProxy->initialize(RtcEngineContext);
@@ -59,6 +60,16 @@ void USetBeautyEffectOptionsWidget::InitAgoraEngine(FString APP_ID, FString TOKE
 	int Ret2 = RtcEngineProxy->enableExtension("agora_video_filters_clear_vision", "clear_vision");
 	UBFL_Logger::Print(FString::Printf(TEXT("%s ret2 %d"), *FString(FUNCTION_MACRO), Ret2), LogMsgViewPtr);
 
+}
+
+void USetBeautyEffectOptionsWidget::ShowUserGuide()
+{
+	FString Guide =
+		"Case: [SetBeautyEffectOptions]\n"
+		"1. Apply beauty effects on video call.\n"
+		"";
+
+	UBFL_Logger::DisplayUserGuide(Guide, LogMsgViewPtr);
 }
 
 void USetBeautyEffectOptionsWidget::JoinChannel()
@@ -79,7 +90,7 @@ void USetBeautyEffectOptionsWidget::OnBtnApplyClicked()
 	Options.smoothnessLevel = Slider_SmoothnessLevel->GetValue();
 	Options.rednessLevel = Slider_RednessLevel->GetValue();
 	Options.sharpnessLevel = Slider_SharpnessLevel->GetValue();
-	int ret = RtcEngineProxy->setBeautyEffectOptions(true,Options /*PRIMARY_CAMERA_SOURCE*/);
+	int ret = RtcEngineProxy->setBeautyEffectOptions(true, Options /*PRIMARY_CAMERA_SOURCE*/);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 }
 
@@ -239,7 +250,11 @@ void USetBeautyEffectOptionsWidget::FUserRtcEventHandlerEx::onJoinChannelSuccess
 	if (!IsWidgetValid())
 		return;
 
+#if  ((__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)) 
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!IsWidgetValid())
 			{
@@ -257,7 +272,11 @@ void USetBeautyEffectOptionsWidget::FUserRtcEventHandlerEx::onLeaveChannel(const
 	if (!IsWidgetValid())
 		return;
 
+#if  ((__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)) 
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!IsWidgetValid())
 			{
@@ -275,14 +294,18 @@ void USetBeautyEffectOptionsWidget::FUserRtcEventHandlerEx::onUserJoined(const a
 	if (!IsWidgetValid())
 		return;
 
+#if  ((__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)) 
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!IsWidgetValid())
 			{
 				UBFL_Logger::Print(FString::Printf(TEXT("%s bIsDestruct "), *FString(FUNCTION_MACRO)));
 				return;
 			}
-			UBFL_Logger::Print(FString::Printf(TEXT("%s remote uid=%d"), *FString(FUNCTION_MACRO), remoteUid), WidgetPtr->GetLogMsgViewPtr());
+			UBFL_Logger::Print(FString::Printf(TEXT("%s remote uid=%u"), *FString(FUNCTION_MACRO), remoteUid), WidgetPtr->GetLogMsgViewPtr());
 
 			WidgetPtr->MakeVideoView(remoteUid, agora::rtc::VIDEO_SOURCE_TYPE::VIDEO_SOURCE_REMOTE, WidgetPtr->GetChannelName());
 		});
@@ -293,14 +316,18 @@ void USetBeautyEffectOptionsWidget::FUserRtcEventHandlerEx::onUserOffline(const 
 	if (!IsWidgetValid())
 		return;
 
+#if  ((__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)) 
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!IsWidgetValid())
 			{
 				UBFL_Logger::Print(FString::Printf(TEXT("%s bIsDestruct "), *FString(FUNCTION_MACRO)));
 				return;
 			}
-			UBFL_Logger::Print(FString::Printf(TEXT("%s remote uid=%d"), *FString(FUNCTION_MACRO), remoteUid), WidgetPtr->GetLogMsgViewPtr());
+			UBFL_Logger::Print(FString::Printf(TEXT("%s remote uid=%u"), *FString(FUNCTION_MACRO), remoteUid), WidgetPtr->GetLogMsgViewPtr());
 
 			WidgetPtr->ReleaseVideoView(remoteUid, agora::rtc::VIDEO_SOURCE_TYPE::VIDEO_SOURCE_REMOTE, WidgetPtr->GetChannelName());
 		});

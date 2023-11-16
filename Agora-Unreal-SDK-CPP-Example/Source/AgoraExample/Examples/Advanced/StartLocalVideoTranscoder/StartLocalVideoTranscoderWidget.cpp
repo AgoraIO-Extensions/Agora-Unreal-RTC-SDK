@@ -11,13 +11,15 @@ void UStartLocalVideoTranscoderWidget::InitAgoraWidget(FString APP_ID, FString T
 
 	InitAgoraEngine(APP_ID, TOKEN, CHANNEL_NAME);
 
+	ShowUserGuide();
+
 	InitAgoraMediaPlayer();
 
 	JoinChannel();
 }
 
 
-	
+
 
 void UStartLocalVideoTranscoderWidget::CheckPermission()
 {
@@ -55,11 +57,22 @@ void UStartLocalVideoTranscoderWidget::InitAgoraEngine(FString APP_ID, FString T
 	RtcEngineProxy = agora::rtc::ue::createAgoraRtcEngine();
 
 	int SDKBuild = 0;
-	FString SDKInfo = FString::Printf(TEXT("SDK Version: %s Build: %d"), UTF8_TO_TCHAR(RtcEngineProxy->getVersion(&SDKBuild)), SDKBuild);
+	const char* SDKVersionInfo = RtcEngineProxy->getVersion(&SDKBuild);
+	FString SDKInfo = FString::Printf(TEXT("SDK Version: %s Build: %d"), UTF8_TO_TCHAR(SDKVersionInfo), SDKBuild);
 	UBFL_Logger::Print(FString::Printf(TEXT("SDK Info:  %s"), *SDKInfo), LogMsgViewPtr);
 
 	int ret = RtcEngineProxy->initialize(RtcEngineContext);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
+}
+
+void UStartLocalVideoTranscoderWidget::ShowUserGuide()
+{
+	FString Guide =
+		"Case: [StartLocalVideoTranscoder]\n"
+		"1. Combine multiple video streams into one stream (e.g., Video Call, Screen Share, Media Player, Images, etc.).\n"
+		"";
+
+	UBFL_Logger::DisplayUserGuide(Guide, LogMsgViewPtr);
 }
 
 void UStartLocalVideoTranscoderWidget::InitAgoraMediaPlayer()
@@ -68,7 +81,7 @@ void UStartLocalVideoTranscoderWidget::InitAgoraMediaPlayer()
 	MediaPlayerSourceObserverWarpper = MakeShared<FUserIMediaPlayerSourceObserver>(this);
 	MediaPlayer->registerPlayerSourceObserver(MediaPlayerSourceObserverWarpper.Get());
 	UBFL_Logger::Print(FString::Printf(TEXT("%s PlayerID=%d"), *FString(FUNCTION_MACRO), MediaPlayer->getMediaPlayerId()), LogMsgViewPtr);
-	
+
 }
 
 void UStartLocalVideoTranscoderWidget::JoinChannel()
@@ -223,7 +236,7 @@ agora::rtc::LocalTranscoderConfiguration UStartLocalVideoTranscoderWidget::Gener
 	{
 		FString Path = FPaths::ProjectContentDir() / TEXT("Image/png.png");
 
-		if(!FPaths::FileExists(Path)){
+		if (!FPaths::FileExists(Path)) {
 			UBFL_Logger::PrintError(FString::Printf(TEXT("%s PNG Path[%s] is not valid"), *FString(FUNCTION_MACRO), *Path), LogMsgViewPtr);
 		}
 		else
@@ -233,7 +246,7 @@ agora::rtc::LocalTranscoderConfiguration UStartLocalVideoTranscoderWidget::Gener
 
 		TranscodingVideoStream TranscodingVideoStreamConfig;
 		TranscodingVideoStreamConfig.sourceType = VIDEO_SOURCE_RTC_IMAGE_PNG;
-		
+
 #if PLATFORM_ANDROID || PLATFORM_IOS
 		UBFL_Logger::Print(FString::Printf(TEXT("%s SrcPath=%s"), *FString(FUNCTION_MACRO), *Path), LogMsgViewPtr);
 
@@ -243,7 +256,7 @@ agora::rtc::LocalTranscoderConfiguration UStartLocalVideoTranscoderWidget::Gener
 		UBFL_UtilityTool::CreateMediaFileWithSource(Path, ValSavedFilePath);
 		Path = ValSavedFilePath;
 #endif 
-		
+
 		int Size = Path.Len() + 1;
 		char* URLDataPtr = new char[Size];
 		FMemory::Memcpy(URLDataPtr, TCHAR_TO_UTF8(*Path), Size);
@@ -375,7 +388,7 @@ agora::rtc::LocalTranscoderConfiguration UStartLocalVideoTranscoderWidget::Gener
 void UStartLocalVideoTranscoderWidget::ReleaseLocalTranscoderConfiguration(LocalTranscoderConfiguration& Config)
 {
 	if (Config.videoInputStreams) {
-		for(unsigned int i = 0;i < Config.streamCount;i++){
+		for (unsigned int i = 0; i < Config.streamCount; i++) {
 			if (Config.videoInputStreams[i].imageUrl) {
 				delete[] Config.videoInputStreams[i].imageUrl;
 				Config.videoInputStreams[i].imageUrl = nullptr;
@@ -448,13 +461,19 @@ void UStartLocalVideoTranscoderWidget::NativeDestruct()
 
 	UnInitAgoraEngine();
 
-	
+
 }
 
 void UStartLocalVideoTranscoderWidget::UnInitAgoraEngine()
 {
 	if (RtcEngineProxy != nullptr)
 	{
+		if (MediaPlayer)
+		{
+			MediaPlayer->stop();
+			MediaPlayer->unregisterPlayerSourceObserver(MediaPlayerSourceObserverWarpper.Get());
+		}
+
 		RtcEngineProxy->leaveChannel();
 		RtcEngineProxy->unregisterEventHandler(UserRtcEventHandlerEx.Get());
 		RtcEngineProxy->release();
@@ -559,7 +578,11 @@ void UStartLocalVideoTranscoderWidget::FUserRtcEventHandlerEx::onJoinChannelSucc
 	if (!IsWidgetValid())
 		return;
 
+#if  ((__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)) 
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!IsWidgetValid())
 			{
@@ -577,7 +600,11 @@ void UStartLocalVideoTranscoderWidget::FUserRtcEventHandlerEx::onLeaveChannel(co
 	if (!IsWidgetValid())
 		return;
 
+#if  ((__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)) 
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!IsWidgetValid())
 			{
@@ -595,14 +622,18 @@ void UStartLocalVideoTranscoderWidget::FUserRtcEventHandlerEx::onUserJoined(cons
 	if (!IsWidgetValid())
 		return;
 
+#if  ((__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)) 
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!IsWidgetValid())
 			{
 				UBFL_Logger::Print(FString::Printf(TEXT("%s bIsDestruct "), *FString(FUNCTION_MACRO)));
 				return;
 			}
-			UBFL_Logger::Print(FString::Printf(TEXT("%s remote uid=%d"), *FString(FUNCTION_MACRO), remoteUid), WidgetPtr->GetLogMsgViewPtr());
+			UBFL_Logger::Print(FString::Printf(TEXT("%s remote uid=%u"), *FString(FUNCTION_MACRO), remoteUid), WidgetPtr->GetLogMsgViewPtr());
 
 			WidgetPtr->MakeVideoView(remoteUid, agora::rtc::VIDEO_SOURCE_TYPE::VIDEO_SOURCE_REMOTE, WidgetPtr->GetChannelName());
 		});
@@ -613,14 +644,18 @@ void UStartLocalVideoTranscoderWidget::FUserRtcEventHandlerEx::onUserOffline(con
 	if (!IsWidgetValid())
 		return;
 
+#if  ((__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)) 
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!IsWidgetValid())
 			{
 				UBFL_Logger::Print(FString::Printf(TEXT("%s bIsDestruct "), *FString(FUNCTION_MACRO)));
 				return;
 			}
-			UBFL_Logger::Print(FString::Printf(TEXT("%s remote uid=%d"), *FString(FUNCTION_MACRO), remoteUid), WidgetPtr->GetLogMsgViewPtr());
+			UBFL_Logger::Print(FString::Printf(TEXT("%s remote uid=%u"), *FString(FUNCTION_MACRO), remoteUid), WidgetPtr->GetLogMsgViewPtr());
 
 			WidgetPtr->ReleaseVideoView(remoteUid, agora::rtc::VIDEO_SOURCE_TYPE::VIDEO_SOURCE_REMOTE, WidgetPtr->GetChannelName());
 		});
@@ -639,7 +674,11 @@ void UStartLocalVideoTranscoderWidget::FUserIMediaPlayerSourceObserver::onPlayer
 	if (!IsWidgetValid())
 		return;
 
+#if  ((__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)) 
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 
 			if (!IsWidgetValid())

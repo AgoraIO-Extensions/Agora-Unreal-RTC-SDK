@@ -1,4 +1,11 @@
+//  Copyright (c) 2023 Agora.io. All rights reserved.
+
 #pragma once
+
+// For compiling the plugin independently using UAT's BuildPlugin command
+#if PLATFORM_WINDOWS
+#include "Windows/WindowsHWrapper.h"
+#endif
 
 #include <AgoraCppPlugin/IAgoraMediaComponentFactory.h>
 #include <AgoraCppPlugin/IAgoraMediaEngine.h>
@@ -12,6 +19,10 @@
 
 // additional
 #include <AgoraCppPlugin/IAgoraMusicContentCenter.h>
+
+
+// #include "Runtime/Launch/Resources/Version.h"
+// #define UE_5_3_OR_LATER   (ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >= 3) 
 
 enum AGORA_UNREAL_PLUGIN_ERROR_CODE
 {
@@ -44,3 +55,16 @@ enum AppType {
 	kAppTypeCef = 13,
 	kAppTypeUniApp = 14,
 };
+
+
+// For UE4.25 or older versions - Target Platforms like: Android, define CONSTEXPR back
+// Currently AgoraOptional.h would undefine CONSTEXPR at the end of the file.
+// This issue would be resolved in a later SDK version.
+
+#ifndef CONSTEXPR
+#if __cplusplus >= 201103L || (defined(_MSVC_LANG) && _MSVC_LANG >= 201103L)
+#define CONSTEXPR constexpr
+#else
+#define CONSTEXPR
+#endif
+#endif  // !CONSTEXPR

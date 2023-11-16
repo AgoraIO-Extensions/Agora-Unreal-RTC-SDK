@@ -26,7 +26,7 @@
 using namespace agora::rtc;
 using namespace agora;
 /**
- * 
+ *
  */
 UCLASS(Abstract)
 class AGORAEXAMPLE_API UAgoraAudioWidget : public UBaseAgoraUserWidget
@@ -38,7 +38,7 @@ class AGORAEXAMPLE_API UAgoraAudioWidget : public UBaseAgoraUserWidget
 
 public:
 
-	class FUserRtcEventHandler : public agora::rtc::IRtcEngineEventHandler 
+	class FUserRtcEventHandler : public agora::rtc::IRtcEngineEventHandler
 	{
 	public:
 
@@ -73,38 +73,38 @@ public:
 
 #pragma region UI
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-		UButton* Btn_BackToHome = nullptr;
+	UButton* Btn_BackToHome = nullptr;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-		UButton* Btn_StartEchoTest = nullptr;
+	UButton* Btn_StartEchoTest = nullptr;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-		UButton* Btn_StopEchoTest = nullptr;
+	UButton* Btn_StopEchoTest = nullptr;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-		UButton* Btn_JoinChannel = nullptr;
+	UButton* Btn_JoinChannel = nullptr;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-		UButton* Btn_LeaveChannel = nullptr;
+	UButton* Btn_LeaveChannel = nullptr;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-		UButton* Btn_StartPublish = nullptr;
+	UButton* Btn_StartPublish = nullptr;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-		UButton* Btn_StopPublish = nullptr;
+	UButton* Btn_StopPublish = nullptr;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-		USlider* Slider_PlaybackSignalVolume = nullptr;
+	USlider* Slider_PlaybackSignalVolume = nullptr;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-		USlider* Slider_RecordingSignalVolume = nullptr;
+	USlider* Slider_RecordingSignalVolume = nullptr;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-		UTextBlock* Txt_PlaybackSignalVolume = nullptr;
+	UTextBlock* Txt_PlaybackSignalVolume = nullptr;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-		UTextBlock* Txt_RecordingSignalVolume = nullptr;
+	UTextBlock* Txt_RecordingSignalVolume = nullptr;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-		UButton* Btn_EnableAudioIndication = nullptr;
+	UButton* Btn_EnableAudioIndication = nullptr;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget))
-		UComboBoxString* CBS_AudioProfile = nullptr;
+	UComboBoxString* CBS_AudioProfile = nullptr;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget))
-		UComboBoxString* CBS_AudioSenario = nullptr;
+	UComboBoxString* CBS_AudioSenario = nullptr;
 
 	UFUNCTION(BlueprintCallable)
 	void OnBtnBackToHomeClicked();
@@ -146,9 +146,9 @@ public:
 	UCanvasPanel* CanvasPanel_LogMsgView = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TSubclassOf<UDraggableLogMsgViewWidget> DraggableLogMsgViewTemplate;
+	TSubclassOf<UDraggableLogMsgViewWidget> DraggableLogMsgViewTemplate;
 public:
-	inline UDraggableLogMsgViewWidget* GetLogMsgViewPtr() {return LogMsgViewPtr;} 
+	inline UDraggableLogMsgViewWidget* GetLogMsgViewPtr() { return LogMsgViewPtr; }
 private:
 	UDraggableLogMsgViewWidget* LogMsgViewPtr = nullptr;
 #pragma endregion
@@ -164,6 +164,7 @@ protected:
 	void InitUI();
 	void CheckPermission();
 	void InitAgoraEngine(FString APP_ID, FString TOKEN, FString CHANNEL_NAME);
+	void ShowUserGuide();
 	void UnInitAgoraEngine();
 
 	void NativeDestruct() override;
@@ -175,6 +176,6 @@ protected:
 	IRtcEngine* RtcEngineProxy;
 
 
-	
+
 	TSharedPtr<FUserRtcEventHandler> UserRtcEventHandler;
 };

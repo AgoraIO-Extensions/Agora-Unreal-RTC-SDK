@@ -9,7 +9,9 @@ void UDeviceManagerUserWidget::InitAgoraWidget(FString APP_ID, FString TOKEN, FS
 	LogMsgViewPtr = UBFL_Logger::CreateLogView(CanvasPanel_LogMsgView, DraggableLogMsgViewTemplate);
 
 	InitAgoraEngine(APP_ID, TOKEN, CHANNEL_NAME);
-	
+
+	ShowUserGuide();
+
 	CallDeviceManagerApi();
 }
 
@@ -31,7 +33,8 @@ void UDeviceManagerUserWidget::InitAgoraEngine(FString APP_ID, FString TOKEN, FS
 	RtcEngineProxy = agora::rtc::ue::createAgoraRtcEngineEx();
 
 	int SDKBuild = 0;
-	FString SDKInfo = FString::Printf(TEXT("SDK Version: %s Build: %d"), UTF8_TO_TCHAR(RtcEngineProxy->getVersion(&SDKBuild)), SDKBuild);
+	const char* SDKVersionInfo = RtcEngineProxy->getVersion(&SDKBuild);
+	FString SDKInfo = FString::Printf(TEXT("SDK Version: %s Build: %d"), UTF8_TO_TCHAR(SDKVersionInfo), SDKBuild);
 	UBFL_Logger::Print(FString::Printf(TEXT("SDK Info:  %s"), *SDKInfo), LogMsgViewPtr);
 
 	int ret = RtcEngineProxy->initialize(RtcEngineContext);
@@ -40,6 +43,17 @@ void UDeviceManagerUserWidget::InitAgoraEngine(FString APP_ID, FString TOKEN, FS
 
 	RtcEngineProxy->queryInterface(AGORA_IID_AUDIO_DEVICE_MANAGER, (void**)&AudioDeviceManager);
 	RtcEngineProxy->queryInterface(AGORA_IID_VIDEO_DEVICE_MANAGER, (void**)&VideoDeviceManager);
+}
+
+void UDeviceManagerUserWidget::ShowUserGuide()
+{
+	FString Guide =
+		"Case: [DeviceManager]\n"
+		"1. It will show your recording and playback devices.\n"
+		"2. IOS/Android is not supported, but you could see how it works on the Editor for Windows/MacOS.\n"
+		"";
+
+	UBFL_Logger::DisplayUserGuide(Guide, LogMsgViewPtr);
 }
 
 void UDeviceManagerUserWidget::CallDeviceManagerApi()
@@ -177,7 +191,7 @@ void UDeviceManagerUserWidget::NativeDestruct()
 	Super::NativeDestruct();
 
 	UnInitAgoraEngine();
-	
+
 }
 
 

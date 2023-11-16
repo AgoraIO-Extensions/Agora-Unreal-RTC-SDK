@@ -1,10 +1,10 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+//  Copyright (c) 2023 Agora.io. All rights reserved.
 
 #pragma once
 
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
-#include "AgoraCppPlugin/Include/AgoraHeaderBase.h"
+#include "AgoraCppPlugin/include/AgoraHeaderBase.h"
 #include "AgoraBluePrintPlugin/URtcEngineProxyCompatibility.h"
 #include "IMediaStreamingSourceObserver.generated.h"
 
@@ -18,7 +18,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnMetaData, const int64, data, int
 class IMediaStreamingSourceObserverClassWrapper : public agora::rtc::IMediaStreamingSourceObserver {};
 
 /**
- * 
+ *
  */
 UCLASS(Blueprintable)
 class AGORAPLUGIN_API UIMediaStreamingSourceObserver : public UObject, public IMediaStreamingSourceObserverClassWrapper

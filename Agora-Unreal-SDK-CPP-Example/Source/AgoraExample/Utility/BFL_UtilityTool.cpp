@@ -14,7 +14,7 @@ FString UBFL_UtilityTool::ConvertToAbsolutePath(FString InRelativePath, bool bAn
 
 	extern FString GFilePathBase;
 	extern FString GInternalFilePath;
-	static FString BasePath = GFilePathBase / FString("UE4Game")  / FApp::GetProjectName() + FString("/");
+	static FString BasePath = GFilePathBase / FString("UE4Game") / FApp::GetProjectName() + FString("/");
 
 	if (InRelativePath.StartsWith(TEXT("../"), ESearchCase::CaseSensitive))
 	{
@@ -33,7 +33,7 @@ FString UBFL_UtilityTool::ConvertToAbsolutePath(FString InRelativePath, bool bAn
 
 void UBFL_UtilityTool::CreateMediaFileWithSource(FString SrcPath, FString DstPath)
 {
-	
+
 	TArray<uint8> FileData;
 	//FFileHelper::LoadFileToArray(FileData, *SrcPath, 0);
 
@@ -68,10 +68,12 @@ void UBFL_UtilityTool::CreateMediaFileWithSource(FString SrcPath, FString DstPat
 		}
 		return;
 	}
-	// 写入数据到文件
+
+	// Write the file data
 	FileDataWriter->Serialize(FileData.GetData(), FileData.Num());
-	bool bWriterSuccess  = FileDataWriter->Close();
-	// 关闭文件写入器
+
+	// Close the file
+	bool bWriterSuccess = FileDataWriter->Close();
 	delete FileDataWriter;
 	return;
 
@@ -80,4 +82,27 @@ void UBFL_UtilityTool::CreateMediaFileWithSource(FString SrcPath, FString DstPat
 	//TUniquePtr<FArchive> DstAr(IFileManager::Get().CreateFileWriter(*PackageFilename, FILEWRITE_EvenIfReadOnly));
 	//bSuccess = DstAr && ConcertUtil::Copy(*DstAr, *InPackageDataStream.DataAr, InPackageDataStream.DataSize);
 
+}
+
+FString UBFL_UtilityTool::GenSimpleUIDPart_MachineCode()
+{
+	return FString::FromInt(FMath::RandRange(100, 900));
+}
+
+
+FString UBFL_UtilityTool::GenSimpleUIDPart_FuncCode(EUIDFuncType Type)
+{
+	int ValType = (uint8)Type;
+	return  "00" + FString::FromInt(ValType);
+}
+
+void UBFL_UtilityTool::SetCBSTextColor(UComboBoxString* CBSPtr)
+{
+	// Because in UE5.2.1, the default style of ComboBoxString is the black text on the black background.
+	// We need to change it manually.
+	if (CBSPtr)
+	{
+		CBSPtr->ItemStyle.TextColor = FSlateColor(FColor::FromHex("FFFFFFFF"));
+		CBSPtr->ItemStyle.SelectedTextColor = FSlateColor(FColor::FromHex("B7B7B7FF"));
+	}
 }

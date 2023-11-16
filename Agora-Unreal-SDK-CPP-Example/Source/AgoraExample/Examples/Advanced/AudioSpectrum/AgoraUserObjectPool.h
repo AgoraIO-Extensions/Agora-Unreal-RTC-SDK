@@ -17,7 +17,7 @@ protected:
 
 public:
 
-	UObject* GetObject(std::function<UObject*()>& SpawnFunc, std::function<void(UObject*)>& InitObjectFunc);
+	UObject* GetObject(std::function<UObject* ()>& SpawnFunc, std::function<void(UObject*)>& InitObjectFunc);
 
 	void ReturnAllObject(std::function<void(UObject*)>& DeSpawnFunc);
 
@@ -29,7 +29,7 @@ private:
 	TQueue<UObject*> InActiveObjectQueue;
 	TQueue<UObject*> ActiveObjectQueue;
 	int CurrentCount = 0;
-	int MaxLimit =0;
+	int MaxLimit = 0;
 	int OneTimeCreated = 256;
 };
 

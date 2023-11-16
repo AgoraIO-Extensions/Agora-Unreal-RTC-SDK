@@ -13,9 +13,11 @@ void UMediaplayerWidget::InitAgoraWidget(FString APP_ID, FString TOKEN, FString 
 	CheckPermission();
 
 	InitAgoraEngine(APP_ID, TOKEN, CHANNEL_NAME);
-	
+
+	ShowUserGuide();
+
 	InitAgoraMediaPlayer();
-	
+
 	JoinChannelWithMPK();
 }
 
@@ -60,13 +62,25 @@ void UMediaplayerWidget::InitAgoraEngine(FString APP_ID, FString TOKEN, FString 
 	RtcEngineProxy = agora::rtc::ue::createAgoraRtcEngine();
 
 	int SDKBuild = 0;
-	FString SDKInfo = FString::Printf(TEXT("SDK Version: %s Build: %d"), UTF8_TO_TCHAR(RtcEngineProxy->getVersion(&SDKBuild)), SDKBuild);
+	const char* SDKVersionInfo = RtcEngineProxy->getVersion(&SDKBuild);
+	FString SDKInfo = FString::Printf(TEXT("SDK Version: %s Build: %d"), UTF8_TO_TCHAR(SDKVersionInfo), SDKBuild);
 	UBFL_Logger::Print(FString::Printf(TEXT("SDK Info:  %s"), *SDKInfo), LogMsgViewPtr);
 
 	int ret = RtcEngineProxy->initialize(RtcEngineContext);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 }
 
+
+void UMediaplayerWidget::ShowUserGuide()
+{
+	FString Guide = ""
+		"Case: [Mediaplayer]\n"
+		"1. If you don't enter a URL below, you will use the local file. Alternatively, you can enter a URL into the editable text.\n"
+		"2. <Loop>: If checked, enable infinite playback loops.\n"
+		"";
+
+	UBFL_Logger::DisplayUserGuide(Guide, LogMsgViewPtr);
+}
 
 void UMediaplayerWidget::InitAgoraMediaPlayer()
 {
@@ -118,8 +132,8 @@ void UMediaplayerWidget::OnBtnOpenClicked()
 	else
 	{
 		FString ValPath = FPaths::ProjectContentDir() / TEXT("Movies/MPK.mp4");
-		
-		
+
+
 #if PLATFORM_ANDROID || PLATFORM_IOS
 		UBFL_Logger::Print(FString::Printf(TEXT("%s SrcPath=%s"), *FString(FUNCTION_MACRO), *ValPath), LogMsgViewPtr);
 
@@ -140,7 +154,7 @@ void UMediaplayerWidget::OnBtnOpenClicked()
 
 void UMediaplayerWidget::OnBtnPlayClicked()
 {
-	if(CB_Loop->CheckedState == ECheckBoxState::Checked){
+	if (CB_Loop->CheckedState == ECheckBoxState::Checked) {
 		MediaPlayer->setLoopCount(-1);
 	}
 	else
@@ -182,9 +196,12 @@ void UMediaplayerWidget::UnInitAgoraEngine()
 {
 	if (RtcEngineProxy != nullptr)
 	{
-		if(MediaPlayer)
+		if (MediaPlayer)
+		{
+			MediaPlayer->stop();
 			MediaPlayer->unregisterPlayerSourceObserver(UserIMediaPlayerSourceObserver.Get());
-		
+		}
+
 		RtcEngineProxy->destroyMediaPlayer(MediaPlayer);
 
 		RtcEngineProxy->leaveChannel();
@@ -288,7 +305,11 @@ void UMediaplayerWidget::FUserRtcEventHandler::onJoinChannelSuccess(const char* 
 	if (!IsWidgetValid())
 		return;
 
+#if  ((__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)) 
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!IsWidgetValid())
 			{
@@ -307,7 +328,11 @@ void UMediaplayerWidget::FUserRtcEventHandler::onUserJoined(agora::rtc::uid_t ui
 	if (!IsWidgetValid())
 		return;
 
+#if  ((__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)) 
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!IsWidgetValid())
 			{
@@ -324,7 +349,11 @@ void UMediaplayerWidget::FUserRtcEventHandler::onUserOffline(agora::rtc::uid_t u
 	if (!IsWidgetValid())
 		return;
 
+#if  ((__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)) 
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!IsWidgetValid())
 			{
@@ -341,7 +370,11 @@ void UMediaplayerWidget::FUserRtcEventHandler::onLeaveChannel(const agora::rtc::
 	if (!IsWidgetValid())
 		return;
 
+#if  ((__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)) 
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!IsWidgetValid())
 			{
@@ -363,7 +396,11 @@ void UMediaplayerWidget::FUserIMediaPlayerSourceObserver::onPlayerSourceStateCha
 	if (!IsWidgetValid())
 		return;
 
+#if  ((__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)) 
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!IsWidgetValid())
 			{

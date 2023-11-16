@@ -137,6 +137,11 @@ Double click to open *Contents/Info.plist* in XCode, then click **Information Pr
 
 ![privacy_plist](./DocImages/PrivacyPlist.gif)
 
+Notice: For UE5, the method mentioned above may fail. Therefore, you should add permissions to the info.plist template. The path would be:
+```
+/Users/Shared/Epic Games/<YourUE5Ver>/Engine/Source/Runtime/Launch/Resources/Mac
+```
+
 If you are editing with Xcode, you can just open the plist file with a text editor and paste the following XML snippet into it:
 ```xml
 	<key>NSCameraUsageDescription</key>
@@ -221,11 +226,17 @@ bOverrideBuildEnvironment = true;
 AdditionalCompilerArguments = "-Wno-unused-but-set-variable";
 ```
 
-### When opening the project on MacOS, there are blocking errors on framework.  How to quickly get over this?
+### When opening the project on macOS, you may encounter blocking errors related to frameworks or receive notifications that the app is damaged.How to quickly get over this?
+
 ![framework](./DocImages/Framework.png)
 
-Mac's Gatekeeper blocks unsigned frameworks and you have to unblock them one by one.  If your environment is safe, you can temporarily allow Apps to run from Anywhere.  See this checkbox in System Preferences:
-![Security_Privacy](./DocImages/SecurityPrivacy.png)
+Even on older versions of macOS, you may encounter the following error message: **"AppXXX is damaged and can’t be opened. You should move it to the Trash."**
+
+This error occurs because Mac's Gatekeeper blocks unsigned frameworks.
+
+To resolve issues related to trusted execution, you can run the script **MacRATrust.sh** located in the project folder. **Remember to replace the value of "PathToYourProject" with your project path in this script.**
+
+Alternatively, you can manually unlock the application by allowing the target framework in the **Privacy & Security** tab of your Mac's **System Preferences**.
 
 
 ### What should I do for the error "failed to load because module 'AgoraPlugin' could not be loaded" ?

@@ -12,7 +12,8 @@
 
 // UI Utility
 #include "../../../Utility/BFL_VideoViewManager.h"
-#include "../../../Utility/BFL_Logger.h" 
+#include "../../../Utility/BFL_Logger.h"
+#include "../../../Utility/BFL_UtilityTool.h"
 
 #if PLATFORM_ANDROID
 #include "AndroidPermission/Classes/AndroidPermissionFunctionLibrary.h"
@@ -26,7 +27,7 @@ using namespace agora;
 
 
 /**
- * 
+ *
  */
 UCLASS()
 class AGORAEXAMPLE_API USpatialAudioWithMPWidget : public UBaseAgoraUserWidget
@@ -119,24 +120,24 @@ public:
 
 #pragma region UI
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-		UButton* Btn_BackToHome = nullptr;
+	UButton* Btn_BackToHome = nullptr;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-		UButton* Btn_Left = nullptr;
+	UButton* Btn_Left = nullptr;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-		UButton* Btn_Play = nullptr;
+	UButton* Btn_Play = nullptr;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-		UButton* Btn_Right = nullptr;
+	UButton* Btn_Right = nullptr;
 
 
 	UFUNCTION(BlueprintCallable)
-		void OnBtnBackToHomeClicked();
+	void OnBtnBackToHomeClicked();
 	UFUNCTION(BlueprintCallable)
-		void OnBtnLeftClicked();
+	void OnBtnLeftClicked();
 	UFUNCTION(BlueprintCallable)
-		void OnBtnPlayClicked();
+	void OnBtnPlayClicked();
 	UFUNCTION(BlueprintCallable)
-		void OnBtnRightClicked();
+	void OnBtnRightClicked();
 #pragma endregion
 
 
@@ -149,13 +150,13 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
 	UCanvasPanel* CanvasPanel_VideoView = nullptr;
-	
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<UDraggableVideoViewWidget> DraggableVideoViewTemplate;
-	
+
 protected:
 
-	int MakeVideoView(uint32 uid, agora::rtc::VIDEO_SOURCE_TYPE sourceType = VIDEO_SOURCE_CAMERA_PRIMARY,FString channelId = "");
+	int MakeVideoView(uint32 uid, agora::rtc::VIDEO_SOURCE_TYPE sourceType = VIDEO_SOURCE_CAMERA_PRIMARY, FString channelId = "");
 	int ReleaseVideoView(uint32 uid, agora::rtc::VIDEO_SOURCE_TYPE sourceType = VIDEO_SOURCE_CAMERA_PRIMARY, FString channelId = "");
 
 	TMap<FVideoViewIdentity, UDraggableVideoViewWidget*> VideoViewMap;
@@ -169,10 +170,10 @@ public:
 	UCanvasPanel* CanvasPanel_LogMsgView = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TSubclassOf<UDraggableLogMsgViewWidget> DraggableLogMsgViewTemplate;
+	TSubclassOf<UDraggableLogMsgViewWidget> DraggableLogMsgViewTemplate;
 
 public:
-	inline UDraggableLogMsgViewWidget* GetLogMsgViewPtr() {return LogMsgViewPtr;} 
+	inline UDraggableLogMsgViewWidget* GetLogMsgViewPtr() { return LogMsgViewPtr; }
 
 private:
 	UDraggableLogMsgViewWidget* LogMsgViewPtr = nullptr;
@@ -185,7 +186,7 @@ public:
 	inline agora::agora_refptr<agora::rtc::IMediaPlayer> GetMediaPlayer() { return MediaPlayer; }
 	inline FString GetChannelName() { return ChannelName; }
 	inline ILocalSpatialAudioEngine* GetLocalSpatialAudioEngine() { return LocalSpatialAudioEngine; }
-	inline uint32 GetUID_Camrea()	{return UID;}
+	inline uint32 GetUID_Camrea() { return UID; }
 	inline uint32 GetUID_UsedInMPK() { return UID_UsedInMPK; }
 protected:
 	void CheckPermission();
@@ -196,6 +197,8 @@ protected:
 	void InitAgoraMediaPlayer();
 	void InitAgoraSpatialAudioEngine();
 	void InitAgoraEngine(FString APP_ID, FString TOKEN, FString CHANNEL_NAME);
+	void InitData();
+	void ShowUserGuide();
 	void UnInitAgoraEngine();
 
 	FString AppId = "";
@@ -210,7 +213,12 @@ protected:
 
 #if AGORA_UESDK_AUDIO_ONLY
 	// In 4.2.1 AudioOnly SDK, the mp4 format is not supported.
-	FString MPL_URL = "https://agora-adc-artifacts.oss-cn-beijing.aliyuncs.com/video/meta_live_mpk.mov";
+
+	// You could use the following URL, but playback may experience stuttering or lagging due to the current audio - only SDK's use of the system's SimplePlayer.
+	// FString MPL_URL = "https://agora-adc-artifacts.oss-cn-beijing.aliyuncs.com/video/meta_live_mpk.mov";
+
+	FString MPL_URL = "https://download.agora.io/demo/test/Agora.io-Interactions.wav";
+
 #else
 	FString MPL_URL =
 		"https://agoracdn.s3.us-west-1.amazonaws.com/videos/Agora.io-Interactions.mp4";

@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+//  Copyright (c) 2023 Agora.io. All rights reserved.
 
 
 #include "AgoraBluePrintPlugin/AgoraSpatialAudio.h"
@@ -112,7 +112,7 @@ int UILocalSpatialAudioEngine::SetRemoteAudioAttenuation(int64 uid, bool forceSe
 	if (LocalSpatialAudioEngine != nullptr)
 	{
 		double ValAttenuation = FCString::Atod(*attenuation);
-		auto ret = LocalSpatialAudioEngine->setRemoteAudioAttenuation(uid,ValAttenuation, forceSet);
+		auto ret = LocalSpatialAudioEngine->setRemoteAudioAttenuation(uid, ValAttenuation, forceSet);
 		return ret;
 	}
 	return -ERROR_NULLPTR;
@@ -230,7 +230,7 @@ int UILocalSpatialAudioEngine::UpdatePlayerPositionInfo(int playerId, const FRem
 	agora::rtc::RemoteVoicePositionInfo Info;
 
 	float pos[3];
-	
+
 	float forward[3];
 
 	pos[0] = positionInfo.position.X;
@@ -316,7 +316,7 @@ int UILocalSpatialAudioEngine::SetPlayerAttenuation(int playerId, bool forceSet,
 	if (LocalSpatialAudioEngine != nullptr)
 	{
 		double ValAttenuation = FCString::Atod(*attenuation);
-		auto ret = LocalSpatialAudioEngine->setPlayerAttenuation(playerId,ValAttenuation, forceSet);
+		auto ret = LocalSpatialAudioEngine->setPlayerAttenuation(playerId, ValAttenuation, forceSet);
 		return ret;
 	}
 	return -ERROR_NULLPTR;

@@ -7,21 +7,17 @@ void UPushEncodedVideoImageWidget::InitAgoraWidget(FString APP_ID, FString TOKEN
 {
 	LogMsgViewPtr = UBFL_Logger::CreateLogView(CanvasPanel_LogMsgView, DraggableLogMsgViewTemplate);
 
-	InitData();
-
 	CheckPermission();
 
 	InitAgoraEngine(APP_ID, TOKEN, CHANNEL_NAME);
 
+	InitData();
+
+	ShowUserGuide();
+
 	JoinChannel();
 
 	JoinChannel2();
-}
-
-void UPushEncodedVideoImageWidget::InitData()
-{
-	UID1 = FMath::RandRange(1, 1000);
-	UID2 = FMath::RandRange(1, 1000) + 1000;
 }
 
 void UPushEncodedVideoImageWidget::CheckPermission()
@@ -66,6 +62,31 @@ void UPushEncodedVideoImageWidget::InitAgoraEngine(FString APP_ID, FString TOKEN
 	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 }
 
+void UPushEncodedVideoImageWidget::InitData()
+{
+	FString MachineCode = UBFL_UtilityTool::GenSimpleUIDPart_MachineCode();
+	FString FuncCode = UBFL_UtilityTool::GenSimpleUIDPart_FuncCode(EUIDFuncType::CAMERA);
+	FString BaseUID = MachineCode + FuncCode;
+
+	UID1 = FCString::Atoi(*(BaseUID + "1"));
+	UID2 = FCString::Atoi(*(BaseUID + "2"));
+
+	UBFL_Logger::Print(FString::Printf(TEXT(" >>>> UID Generation <<< ")), LogMsgViewPtr);
+	UBFL_Logger::Print(FString::Printf(TEXT("UID1:  %d"), UID1), LogMsgViewPtr);
+	UBFL_Logger::Print(FString::Printf(TEXT("UID2:  %d"), UID2), LogMsgViewPtr);
+}
+
+void UPushEncodedVideoImageWidget::ShowUserGuide()
+{
+	FString Guide =
+		"Case: [PushEncodedVideoImage]\n"
+		"1. You can use 2 PushEncodedVideoImage examples to connect with each other. One handles the image pushing job, and the other one receives the images.\n"
+		"2. It will launch a timer to send data continuously.\n"
+		"3. Currently, the example case only prints logs.\n"
+		"";
+
+	UBFL_Logger::DisplayUserGuide(Guide, LogMsgViewPtr);
+}
 
 void UPushEncodedVideoImageWidget::JoinChannel()
 {
@@ -86,7 +107,7 @@ void UPushEncodedVideoImageWidget::JoinChannel()
 	connection.channelId = StdStrChannelName.c_str();
 	connection.localUid = UID1;
 
-	int ret = ((agora::rtc::IRtcEngineEx*)RtcEngineProxy)->joinChannelEx(TCHAR_TO_UTF8(*Token), connection, option,nullptr);
+	int ret = ((agora::rtc::IRtcEngineEx*)RtcEngineProxy)->joinChannelEx(TCHAR_TO_UTF8(*Token), connection, option, nullptr);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 }
 
@@ -101,16 +122,22 @@ void UPushEncodedVideoImageWidget::JoinChannel2()
 	MediaEngine->setExternalVideoSource(true, true, agora::media::EXTERNAL_VIDEO_SOURCE_TYPE::ENCODED_VIDEO_FRAME, SenderOptions);
 
 
+	/*
+		If a client wants to add multiple connections to the same channel,
+		then auto-subscribing to audio and video in just one connection is enough, [autoSubscribeAudio/autoSubscribeVideo]
+		and set subscriptions to false for other connections.
+	*/
+
 	ChannelMediaOptions option;
-	option.autoSubscribeVideo = true;
-	option.autoSubscribeAudio = true;
+	option.autoSubscribeVideo = false;
+	option.autoSubscribeAudio = false;
 	option.publishCustomAudioTrack = false;
 	option.publishCameraTrack = false;
 	option.publishCustomVideoTrack = false;
 	option.publishEncodedVideoTrack = true;
 	option.clientRoleType = CLIENT_ROLE_TYPE::CLIENT_ROLE_BROADCASTER;
 	option.channelProfile = agora::CHANNEL_PROFILE_TYPE::CHANNEL_PROFILE_LIVE_BROADCASTING;
-	
+
 	RtcConnection connection;
 	std::string StdStrChannelName = TCHAR_TO_UTF8(*ChannelName);
 	connection.channelId = StdStrChannelName.c_str();
@@ -132,7 +159,7 @@ void UPushEncodedVideoImageWidget::NativeDestruct()
 
 	UnInitAgoraEngine();
 
-	
+
 }
 
 void UPushEncodedVideoImageWidget::UnInitAgoraEngine()
@@ -150,7 +177,7 @@ void UPushEncodedVideoImageWidget::UnInitAgoraEngine()
 
 void UPushEncodedVideoImageWidget::StartPushEncodeVideoImage()
 {
-	GetWorld()->GetTimerManager().SetTimer(TimerHandler, this, &UPushEncodedVideoImageWidget::UpdateForPushEncodeVideoImage,0.1f,true,0.f);
+	GetWorld()->GetTimerManager().SetTimer(TimerHandler, this, &UPushEncodedVideoImageWidget::UpdateForPushEncodeVideoImage, 0.1f, true, 0.f);
 }
 
 void UPushEncodedVideoImageWidget::StopPushEncodeVideoImage()
@@ -161,18 +188,18 @@ void UPushEncodedVideoImageWidget::StopPushEncodeVideoImage()
 void UPushEncodedVideoImageWidget::UpdateForPushEncodeVideoImage()
 {
 
-	UE_LOG(LogTemp,Warning,TEXT("UpdateForPushEncodeVideoImage"));
-	// you can send any data not just  video image byte
+	UE_LOG(LogTemp, Warning, TEXT("UpdateForPushEncodeVideoImage"));
+	// you can send any data, not only video image.
 	agora::rtc::EncodedVideoFrameInfo ValEncodedVideoFrameInfo;
 	ValEncodedVideoFrameInfo.framesPerSecond = 60;
 	ValEncodedVideoFrameInfo.codecType = VIDEO_CODEC_TYPE::VIDEO_CODEC_GENERIC;
 	ValEncodedVideoFrameInfo.frameType = VIDEO_FRAME_TYPE::VIDEO_FRAME_TYPE_KEY_FRAME;
 	RtcEngineProxy->queryInterface(AGORA_IID_MEDIA_ENGINE, (void**)&MediaEngine);
-	
 
 
 
-	UTexture2D* Texture2D = NewObject<UTexture2D>(this,TEXT("EncodedData"));
+
+	//UTexture2D* Texture2D = NewObject<UTexture2D>(this,TEXT("EncodedData"));
 	FString Path = FPaths::ProjectContentDir() / TEXT("Image/jpg.jpg");
 	TArray<uint8> FileData;
 	if (!FFileHelper::LoadFileToArray(FileData, *Path))
@@ -279,7 +306,11 @@ void UPushEncodedVideoImageWidget::FUserRtcEventHandlerEx::onJoinChannelSuccess(
 	if (!IsWidgetValid())
 		return;
 
+#if  ((__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)) 
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!IsWidgetValid())
 			{
@@ -297,7 +328,7 @@ void UPushEncodedVideoImageWidget::FUserRtcEventHandlerEx::onJoinChannelSuccess(
 				UBFL_Logger::Print(FString::Printf(TEXT("%s  In [UID1]"), *FString(FUNCTION_MACRO)), WidgetPtr->GetLogMsgViewPtr());
 				WidgetPtr->MakeVideoView(0, agora::rtc::VIDEO_SOURCE_TYPE::VIDEO_SOURCE_CAMERA);
 			}
-			
+
 		});
 }
 
@@ -306,7 +337,11 @@ void UPushEncodedVideoImageWidget::FUserRtcEventHandlerEx::onLeaveChannel(const 
 	if (!IsWidgetValid())
 		return;
 
+#if  ((__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)) 
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!IsWidgetValid())
 			{
@@ -325,7 +360,7 @@ void UPushEncodedVideoImageWidget::FUserRtcEventHandlerEx::onLeaveChannel(const 
 			{
 				WidgetPtr->ReleaseVideoView(0, agora::rtc::VIDEO_SOURCE_TYPE::VIDEO_SOURCE_CAMERA);
 			}
-			
+
 		});
 }
 
@@ -337,30 +372,34 @@ void UPushEncodedVideoImageWidget::FUserRtcEventHandlerEx::onUserJoined(const ag
 	if (remoteUid == WidgetPtr->GetUID1() || remoteUid == WidgetPtr->GetUID2())
 		return;
 
+#if  ((__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)) 
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!IsWidgetValid())
 			{
 				UBFL_Logger::Print(FString::Printf(TEXT("%s bIsDestruct "), *FString(FUNCTION_MACRO)));
 				return;
 			}
-			UBFL_Logger::Print(FString::Printf(TEXT("%s remote uid=%d"), *FString(FUNCTION_MACRO), remoteUid), WidgetPtr->GetLogMsgViewPtr());
+			UBFL_Logger::Print(FString::Printf(TEXT("%s remote uid=%u"), *FString(FUNCTION_MACRO), remoteUid), WidgetPtr->GetLogMsgViewPtr());
 
 
 			if (remoteUid > 1000) {
-				
+
 				WidgetPtr->StartPushEncodeVideoImage();
 				VideoSubscriptionOptions options;
 				options.encodedFrameOnly = true;
 				int ret = WidgetPtr->GetRtcEngine()->setRemoteVideoSubscriptionOptionsEx(remoteUid, options, connection);
 				UBFL_Logger::Print(FString::Printf(TEXT("%s rUPushEncodedVideoImageWidget::onUserJoined In [UID2] %d  ret %d"), *FString(FUNCTION_MACRO), remoteUid, ret), WidgetPtr->GetLogMsgViewPtr());
-			
+
 			}
 			else {
 				UBFL_Logger::Print(FString::Printf(TEXT("%s In [UID1] "), *FString(FUNCTION_MACRO)), WidgetPtr->GetLogMsgViewPtr());
 				WidgetPtr->MakeVideoView(remoteUid, agora::rtc::VIDEO_SOURCE_TYPE::VIDEO_SOURCE_REMOTE, WidgetPtr->GetChannelName());
 			}
-			
+
 		});
 }
 
@@ -372,16 +411,20 @@ void UPushEncodedVideoImageWidget::FUserRtcEventHandlerEx::onUserOffline(const a
 	if (remoteUid == WidgetPtr->GetUID1() || remoteUid == WidgetPtr->GetUID2())
 		return;
 
+#if  ((__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)) 
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!IsWidgetValid())
 			{
 				UBFL_Logger::Print(FString::Printf(TEXT("%s bIsDestruct "), *FString(FUNCTION_MACRO)));
 				return;
 			}
-			UBFL_Logger::Print(FString::Printf(TEXT("%s remote uid=%d"), *FString(FUNCTION_MACRO), remoteUid), WidgetPtr->GetLogMsgViewPtr());
+			UBFL_Logger::Print(FString::Printf(TEXT("%s remote uid=%u"), *FString(FUNCTION_MACRO), remoteUid), WidgetPtr->GetLogMsgViewPtr());
 
-			
+
 			if (remoteUid >= 1000)
 			{
 
@@ -390,7 +433,7 @@ void UPushEncodedVideoImageWidget::FUserRtcEventHandlerEx::onUserOffline(const a
 			{
 				WidgetPtr->ReleaseVideoView(remoteUid, agora::rtc::VIDEO_SOURCE_TYPE::VIDEO_SOURCE_REMOTE, WidgetPtr->GetChannelName());
 			}
-			
+
 		});
 }
 
@@ -412,10 +455,14 @@ UPushEncodedVideoImageWidget::FUserIVideoEncodedFrameObserver::~FUserIVideoEncod
 
 bool UPushEncodedVideoImageWidget::FUserIVideoEncodedFrameObserver::onEncodedVideoFrameReceived(rtc::uid_t uid, const uint8_t* imageBuffer, size_t length, const rtc::EncodedVideoFrameInfo& videoEncodedFrameInfo)
 {
-	if(!IsWidgetValid())
+	if (!IsWidgetValid())
 		return false;
 
+#if  ((__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)) 
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (IsWidgetValid())
 			{
@@ -423,7 +470,7 @@ bool UPushEncodedVideoImageWidget::FUserIVideoEncodedFrameObserver::onEncodedVid
 				// Otherwise, you will also receive the video data.
 				if (videoEncodedFrameInfo.codecType == VIDEO_CODEC_GENERIC)
 				{
-					UBFL_Logger::Print(FString::Printf(TEXT("%s  uid=%d"), *FString(FUNCTION_MACRO), uid), WidgetPtr->GetLogMsgViewPtr());
+					UBFL_Logger::Print(FString::Printf(TEXT("%s  uid=%u"), *FString(FUNCTION_MACRO), uid), WidgetPtr->GetLogMsgViewPtr());
 				}
 
 			}

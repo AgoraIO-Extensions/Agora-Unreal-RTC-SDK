@@ -1,6 +1,8 @@
-// Copyright (c) 2019 Agora.io. All rights reserved.
+//  Copyright (c) 2023 Agora.io. All rights reserved.
 
 #pragma once
+
+#if AGORA_UESDK_ENABLE_VIDEO
 
 #include "CoreMinimal.h"
 #include "SlateOptMacros.h"
@@ -10,48 +12,51 @@
 #include "VideoObserverInternal.h"
 #include <memory>
 #include <map>
+#include "Tickable.h"
 #include "Templates/SharedPointer.h"
 /**
  *
  */
 namespace agora {
-    namespace rtc {
-        namespace ue {
+	namespace rtc {
+		namespace ue {
 
-            class VideoRenderManager : public FTickableGameObject
-            {
-            public:
-                VideoRenderManager();
+			class VideoRenderManager : public FTickableGameObject
+			{
+			public:
+				VideoRenderManager();
 
-                ~VideoRenderManager();
+				~VideoRenderManager();
 
-                void setRenderImage(UImage* RenderImage, unsigned int Uid, const char* ChannelId, VIDEO_SOURCE_TYPE SourceType);
+				void setRenderImage(UImage* RenderImage, unsigned int Uid, const char* ChannelId, VIDEO_SOURCE_TYPE SourceType);
 
-                void releaseVideoRender(unsigned int Uid, const char* ChannelId, VIDEO_SOURCE_TYPE SourceType);
+				void releaseVideoRender(unsigned int Uid, const char* ChannelId, VIDEO_SOURCE_TYPE SourceType);
 
-                void releaseAllVideoRender();
+				void releaseAllVideoRender();
 
-                virtual void Tick(float DeltaTime) override;
+				virtual void Tick(float DeltaTime) override;
 
-                virtual bool IsTickable() const override
-                {
-                    return true;
-                }
-                virtual bool IsTickableWhenPaused() const override
-                {
-                    return true;
-                }
+				virtual bool IsTickable() const override
+				{
+					return true;
+				}
+				virtual bool IsTickableWhenPaused() const override
+				{
+					return true;
+				}
 
-                virtual TStatId GetStatId() const override;
+				virtual TStatId GetStatId() const override;
 
-            private:
-                //std::mutex VideoRenderMutex;
+			private:
+				//std::mutex VideoRenderMutex;
 
-                std::map<VideoFrameIdentity, TSharedPtr<class VideoRender>> VideoRenderMap;
+				std::map<VideoFrameIdentity, TSharedPtr<class VideoRender>> VideoRenderMap;
 
-                std::map<VideoFrameIdentity, TSharedPtr<class VideoRender>>::iterator VideoRenderIter;
-            };
+				std::map<VideoFrameIdentity, TSharedPtr<class VideoRender>>::iterator VideoRenderIter;
+			};
 
-        }
-    }
+		}
+	}
 }
+
+#endif

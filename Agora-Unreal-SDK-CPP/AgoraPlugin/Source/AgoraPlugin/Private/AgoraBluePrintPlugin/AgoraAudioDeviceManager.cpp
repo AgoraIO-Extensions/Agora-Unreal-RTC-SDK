@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+//  Copyright (c) 2023 Agora.io. All rights reserved.
 
 
 #include "AgoraBluePrintPlugin/AgoraAudioDeviceManager.h"
@@ -24,7 +24,7 @@ int UIAudioDeviceCollection::GetDevice(int index, FString& deviceName, FString& 
 
 		deviceName = UTF8_TO_TCHAR(tempDeviceName);
 
-		deviceId =  UTF8_TO_TCHAR(tempDeviceId);
+		deviceId = UTF8_TO_TCHAR(tempDeviceId);
 
 		return ret;
 
@@ -56,7 +56,7 @@ int UIAudioDeviceCollection::GetDefaultDevice(FString& deviceName, FString& devi
 
 		deviceName = StdStrDeviceName.c_str();
 		deviceId = StdStrDeviceId.c_str();
-			
+
 		return ret;
 	}
 	return -ERROR_NULLPTR;
@@ -198,7 +198,7 @@ int UIAudioDeviceManager::SetRecordingDevice(FString deviceId)
 	if (AudioDeviceManager != nullptr)
 	{
 		int ret = AudioDeviceManager->setRecordingDevice(TCHAR_TO_UTF8(*deviceId));
-		
+
 		return ret;
 	}
 	return -ERROR_NULLPTR;

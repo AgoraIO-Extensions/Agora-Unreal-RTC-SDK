@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+//  Copyright (c) 2023 Agora.io. All rights reserved.
 
 using System;
 using System.Collections.Generic;
@@ -18,17 +18,17 @@ public class AgoraPluginLibrary : ModuleRules
         Type = ModuleType.External;
         if (Target.Platform == UnrealTargetPlatform.Win64)
         {
-            LoadWindowsLibrary(Path.Combine(ModuleDirectory, "Win", "Release","x86_64"));
+            LoadWindowsLibrary(Path.Combine(ModuleDirectory, "Win", "Release", "x86_64"));
         }
         //else if(Target.Platform == UnrealTargetPlatform.Win32)
         //{
-          //  LoadWindowsLibrary(Path.Combine(ModuleDirectory, "Win", "Release", "x86"));
+        //  LoadWindowsLibrary(Path.Combine(ModuleDirectory, "Win", "Release", "x86"));
         //}
-        else if(Target.Platform == UnrealTargetPlatform.Android)
+        else if (Target.Platform == UnrealTargetPlatform.Android)
         {
             LoadAndroidLibrary(Path.Combine(ModuleDirectory, "Android", "Release"));
         }
-        else if(Target.Platform == UnrealTargetPlatform.IOS)
+        else if (Target.Platform == UnrealTargetPlatform.IOS)
         {
             LoadIOSLibrary(Path.Combine(ModuleDirectory, "IOS", "Release"));
         }
@@ -86,7 +86,7 @@ public class AgoraPluginLibrary : ModuleRules
                 if (extension == ".so")
                 {
                     string sopath = string.Format(soFormatStr, filename);
-                    if(!sopathwrite.Contains(sopath))
+                    if (!sopathwrite.Contains(sopath))
                     {
                         sopathwrite += sopath + "\r\n";
                     }
@@ -122,7 +122,7 @@ public class AgoraPluginLibrary : ModuleRules
                 Console.WriteLine("DelayLoadDLL Add" + filename);
             }
 
-            RuntimeDependencies.Add(Path.Combine("$(ProjectDir)/Binaries/", Target.Platform+"", filename), Path.Combine(librarypath, filename));
+            RuntimeDependencies.Add(Path.Combine("$(ProjectDir)/Binaries/", Target.Platform + "", filename), Path.Combine(librarypath, filename));
 
             Console.WriteLine("RuntimeDependencies Add" + filename);
         }

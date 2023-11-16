@@ -8,7 +8,7 @@
 #include "DraggableLogMsgViewWidget.generated.h"
 
 /**
- * 
+ *
  */
 UCLASS()
 class AGORAEXAMPLE_API UDraggableLogMsgViewWidget : public UUserWidget
@@ -16,7 +16,7 @@ class AGORAEXAMPLE_API UDraggableLogMsgViewWidget : public UUserWidget
 	GENERATED_BODY()
 
 public:
-	inline bool IsWidgetValid() const {return !bIsDestruct;}
+	inline bool IsWidgetValid() const { return !bIsDestruct; }
 
 	void NativeConstruct() override;
 	void NativeDestruct() override;

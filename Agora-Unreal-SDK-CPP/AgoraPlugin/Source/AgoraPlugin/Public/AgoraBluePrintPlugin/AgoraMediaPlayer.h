@@ -1,10 +1,10 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+//  Copyright (c) 2023 Agora.io. All rights reserved.
 
 #pragma once
 
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
-#include "AgoraCppPlugin/Include/AgoraHeaderBase.h"
+#include "AgoraCppPlugin/include/AgoraHeaderBase.h"
 #include "URtcEngineProxyCompatibility.h"
 #include "AgoraIMediaPlayerSourceObserver.h"
 #include "IFrameObserver.h"
@@ -16,22 +16,25 @@ struct FAgoraMediaSource
 	GENERATED_BODY()
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|MediaSource")
-	FString url;
+	FString url = "";
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|MediaSource")
-	FString uri;
+	FString uri = "";
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|MediaSource")
-	int startPos;
+	int startPos = 0;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|MediaSource")
-	bool autoPlay;
+	bool autoPlay = false;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|MediaSource")
-	bool enableCache;
+	bool enableCache = false;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|MediaSource")
-	AGORAOPTIONAL isAgoraSource;
+	AGORAOPTIONAL isAgoraSource = AGORAOPTIONAL::AGORA_NULL_VALUE;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|MediaSource")
-	AGORAOPTIONAL isLiveSource;
+	AGORAOPTIONAL isLiveSource = AGORAOPTIONAL::AGORA_NULL_VALUE;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|MediaSource")
-	UIMediaPlayerCustomDataProvider* provider;
+	UIMediaPlayerCustomDataProvider* provider = nullptr;
+
 };
+
+
 UENUM(BlueprintType)
 enum class EAUDIO_DUAL_MONO_MODE : uint8 {
 	AUDIO_DUAL_MONO_STEREO = 0,
@@ -58,37 +61,37 @@ struct FPlayerStreamInfo
 	GENERATED_BODY()
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|PlayerStreamInfo")
-	int streamIndex;
+	int streamIndex = 0;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|PlayerStreamInfo")
-	EMEDIA_STREAM_TYPE streamType;
+	EMEDIA_STREAM_TYPE streamType = EMEDIA_STREAM_TYPE::STREAM_TYPE_AUDIO;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|PlayerStreamInfo")
-	FString codecName;
+	FString codecName = "";
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|PlayerStreamInfo")
-	FString language;
+	FString language = "";
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|PlayerStreamInfo")
-	int videoFrameRate;
+	int videoFrameRate = 0;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|PlayerStreamInfo")
-	int videoBitRate;
+	int videoBitRate = 0;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|PlayerStreamInfo")
-	int videoWidth;
+	int videoWidth = 0;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|PlayerStreamInfo")
-	int videoHeight;
+	int videoHeight = 0;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|PlayerStreamInfo")
-	int videoRotation;
+	int videoRotation = 0;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|PlayerStreamInfo")
-	int audioSampleRate;
+	int audioSampleRate = 0;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|PlayerStreamInfo")
-	int audioChannels;
+	int audioChannels = 0;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|PlayerStreamInfo")
-	int audioBitsPerSample;
+	int audioBitsPerSample = 0;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|PlayerStreamInfo")
-	int duration;
+	int duration = 0;
 };
 
 
 
 /**
- * 
+ *
  */
 UCLASS(Blueprintable)
 class AGORAPLUGIN_API UIMediaPlayer : public UObject

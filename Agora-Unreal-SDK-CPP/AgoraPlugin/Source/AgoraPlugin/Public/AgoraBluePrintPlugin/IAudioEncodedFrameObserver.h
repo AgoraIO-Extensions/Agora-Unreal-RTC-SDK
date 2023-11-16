@@ -1,10 +1,10 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+//  Copyright (c) 2023 Agora.io. All rights reserved.
 
 #pragma once
 
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
-#include "AgoraCppPlugin/Include/AgoraHeaderBase.h"
+#include "AgoraCppPlugin/include/AgoraHeaderBase.h"
 #include "AgoraBluePrintPlugin/URtcEngineProxyCompatibility.h"
 #include "IAudioEncodedFrameObserver.generated.h"
 
@@ -15,7 +15,7 @@ struct FPacket {
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|Packet")
 	TArray<int64> buffer;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|Packet")
-	int64 size;
+	int64 size = 0;
 };
 
 UENUM(BlueprintType)
@@ -47,7 +47,7 @@ USTRUCT(BlueprintType)
 struct FEncodedAudioFrameAdvancedSettings {
 	GENERATED_BODY()
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|EncodedAudioFrameAdvancedSettings")
-	bool speech =true;
+	bool speech = true;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|EncodedAudioFrameAdvancedSettings")
 	bool sendEvenIfEmpty = true;
 };
@@ -56,24 +56,25 @@ struct FEncodedAudioFrameAdvancedSettings {
 USTRUCT(BlueprintType)
 struct FEncodedAudioFrameInfo {
 	GENERATED_BODY()
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|EncodedAudioFrameInfo")
-	EAUDIO_CODEC_TYPE codec;
+	EAUDIO_CODEC_TYPE codec = EAUDIO_CODEC_TYPE::AUDIO_CODEC_NULL;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|EncodedAudioFrameInfo")
-	int sampleRateHz;
+	int sampleRateHz = 44100;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|EncodedAudioFrameInfo")
-	int samplesPerChannel;
+	int samplesPerChannel = 441;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|EncodedAudioFrameInfo")
-	int numberOfChannels;
+	int numberOfChannels = 1;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|EncodedAudioFrameInfo")
-	FEncodedAudioFrameAdvancedSettings advancedSettings;
+	FEncodedAudioFrameAdvancedSettings advancedSettings = FEncodedAudioFrameAdvancedSettings();
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|EncodedAudioFrameInfo")
-	int64 captureTimeMs;
+	int64 captureTimeMs = 0;
 };
 
 
 
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSendAudioPacket,const FPacket&, packet);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSendAudioPacket, const FPacket&, packet);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSendVideoPacket, const FPacket&, packet);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnReceiveAudioPacket, const FPacket&, packet);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnReceiveVideoPacket, const FPacket&, packet);
@@ -88,7 +89,9 @@ UCLASS(Blueprintable)
 class AGORAPLUGIN_API UIPacketObserver : public UObject, public IPacketObserverClassWrapper
 {
 	GENERATED_BODY()
+
 public:
+
 	UPROPERTY(BlueprintAssignable, Category = "Agora|Event")
 	FOnSendAudioPacket OnSendAudioPacket;
 	UPROPERTY(BlueprintAssignable, Category = "Agora|Event")
