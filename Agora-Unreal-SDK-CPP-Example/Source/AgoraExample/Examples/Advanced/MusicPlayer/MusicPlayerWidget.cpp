@@ -467,7 +467,7 @@ void UMusicPlayerWidget::FUserRtcEventHandlerEx::onJoinChannelSuccess(const agor
 	if (!IsWidgetValid())
 		return;
 
-#if AGORA_CPP_VER_20_OR_LATER
+#if  ((__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)) 
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -489,7 +489,7 @@ void UMusicPlayerWidget::FUserRtcEventHandlerEx::onLeaveChannel(const agora::rtc
 	if (!IsWidgetValid())
 		return;
 
-#if AGORA_CPP_VER_20_OR_LATER
+#if  ((__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)) 
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -511,7 +511,7 @@ void UMusicPlayerWidget::FUserRtcEventHandlerEx::onUserJoined(const agora::rtc::
 	if (!IsWidgetValid())
 		return;
 
-#if AGORA_CPP_VER_20_OR_LATER
+#if  ((__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)) 
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -533,7 +533,7 @@ void UMusicPlayerWidget::FUserRtcEventHandlerEx::onUserOffline(const agora::rtc:
 	if (!IsWidgetValid())
 		return;
 
-#if AGORA_CPP_VER_20_OR_LATER
+#if  ((__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)) 
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -624,7 +624,7 @@ void UMusicPlayerWidget::FUserMusicContentCenterEventHandler::onMusicChartsResul
 
 	WidgetPtr->UpdateDataMusicChartInfoListData(result);
 
-#if AGORA_CPP_VER_20_OR_LATER
+#if  ((__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)) 
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -650,7 +650,7 @@ void UMusicPlayerWidget::FUserMusicContentCenterEventHandler::onMusicCollectionR
 
 	WidgetPtr->UpdateDataMusicCollectionList(result);
 
-#if AGORA_CPP_VER_20_OR_LATER
+#if  ((__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)) 
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -681,7 +681,7 @@ void UMusicPlayerWidget::FUserMusicContentCenterEventHandler::onLyricResult(cons
 	FString URLLyric = UTF8_TO_TCHAR(lyricUrl);
 
 
-#if AGORA_CPP_VER_20_OR_LATER
+#if  ((__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)) 
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -703,7 +703,7 @@ void UMusicPlayerWidget::FUserMusicContentCenterEventHandler::onPreLoadEvent(int
 
 	FString URLLyric = UTF8_TO_TCHAR(lyricUrl);
 
-#if AGORA_CPP_VER_20_OR_LATER
+#if  ((__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)) 
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()

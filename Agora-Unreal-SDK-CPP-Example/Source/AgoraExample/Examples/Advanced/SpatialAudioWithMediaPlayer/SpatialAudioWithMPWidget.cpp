@@ -336,7 +336,7 @@ void USpatialAudioWithMPWidget::FUserRtcEventHandlerEx::onJoinChannelSuccess(con
 	if (!IsWidgetValid())
 		return;
 
-#if AGORA_CPP_VER_20_OR_LATER
+#if  ((__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)) 
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -368,7 +368,7 @@ void USpatialAudioWithMPWidget::FUserRtcEventHandlerEx::onLeaveChannel(const ago
 	if (!IsWidgetValid())
 		return;
 
-#if AGORA_CPP_VER_20_OR_LATER
+#if  ((__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)) 
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -393,7 +393,7 @@ void USpatialAudioWithMPWidget::FUserRtcEventHandlerEx::onUserJoined(const agora
 	if (!IsWidgetValid())
 		return;
 
-#if AGORA_CPP_VER_20_OR_LATER
+#if  ((__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)) 
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -418,7 +418,7 @@ void USpatialAudioWithMPWidget::FUserRtcEventHandlerEx::onUserOffline(const agor
 	if (!IsWidgetValid())
 		return;
 
-#if AGORA_CPP_VER_20_OR_LATER
+#if  ((__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)) 
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -450,7 +450,7 @@ void USpatialAudioWithMPWidget::FUserIMediaPlayerSourceObserver::onPlayerSourceS
 	if (!IsWidgetValid())
 		return;
 
-#if AGORA_CPP_VER_20_OR_LATER
+#if  ((__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)) 
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()

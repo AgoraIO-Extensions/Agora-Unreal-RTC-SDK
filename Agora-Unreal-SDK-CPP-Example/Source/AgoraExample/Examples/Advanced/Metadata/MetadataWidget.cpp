@@ -221,7 +221,7 @@ void UMetadataWidget::FUserRtcEventHandlerEx::onJoinChannelSuccess(const agora::
 	if (!IsWidgetValid())
 		return;
 
-#if AGORA_CPP_VER_20_OR_LATER
+#if  ((__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)) 
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -243,7 +243,7 @@ void UMetadataWidget::FUserRtcEventHandlerEx::onLeaveChannel(const agora::rtc::R
 	if (!IsWidgetValid())
 		return;
 
-#if AGORA_CPP_VER_20_OR_LATER
+#if  ((__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)) 
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -265,7 +265,7 @@ void UMetadataWidget::FUserRtcEventHandlerEx::onUserJoined(const agora::rtc::Rtc
 	if (!IsWidgetValid())
 		return;
 
-#if AGORA_CPP_VER_20_OR_LATER
+#if  ((__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)) 
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -287,7 +287,7 @@ void UMetadataWidget::FUserRtcEventHandlerEx::onUserOffline(const agora::rtc::Rt
 	if (!IsWidgetValid())
 		return;
 
-#if AGORA_CPP_VER_20_OR_LATER
+#if  ((__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)) 
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -334,7 +334,7 @@ bool UMetadataWidget::FUserMetadataObserver::onReadyToSendMetadata(Metadata& met
 			FString Str = "[MetaData]: TickInfo" + FString::FromInt(tick);
 			FMemory::Memcpy(metadata.buffer, TCHAR_TO_UTF8(*Str), Str.Len() * sizeof(unsigned char));
 			metadata.size = Str.Len() * sizeof(unsigned char);
-#if AGORA_CPP_VER_20_OR_LATER
+#if  ((__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)) 
 			AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 			AsyncTask(ENamedThreads::GameThread, [=]()
@@ -356,7 +356,7 @@ bool UMetadataWidget::FUserMetadataObserver::onReadyToSendMetadata(Metadata& met
 void UMetadataWidget::FUserMetadataObserver::onMetadataReceived(const Metadata& metadata)
 {
 	FString Data((char*)metadata.buffer);
-#if AGORA_CPP_VER_20_OR_LATER
+#if  ((__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)) 
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()

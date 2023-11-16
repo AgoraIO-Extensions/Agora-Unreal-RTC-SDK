@@ -286,7 +286,7 @@ void UMediaPlayerWithCustomDataWidget::FUserRtcEventHandlerEx::onJoinChannelSucc
 	if (!IsWidgetValid())
 		return;
 
-#if AGORA_CPP_VER_20_OR_LATER
+#if  ((__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)) 
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -308,7 +308,7 @@ void UMediaPlayerWithCustomDataWidget::FUserRtcEventHandlerEx::onLeaveChannel(co
 	if (!IsWidgetValid())
 		return;
 
-#if AGORA_CPP_VER_20_OR_LATER
+#if  ((__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)) 
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -330,7 +330,7 @@ void UMediaPlayerWithCustomDataWidget::FUserRtcEventHandlerEx::onUserJoined(cons
 	if (!IsWidgetValid())
 		return;
 
-#if AGORA_CPP_VER_20_OR_LATER
+#if  ((__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)) 
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -352,7 +352,7 @@ void UMediaPlayerWithCustomDataWidget::FUserRtcEventHandlerEx::onUserOffline(con
 	if (!IsWidgetValid())
 		return;
 
-#if AGORA_CPP_VER_20_OR_LATER
+#if  ((__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)) 
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -379,7 +379,7 @@ void UMediaPlayerWithCustomDataWidget::FUserIMediaPlayerSourceObserver::onPlayer
 	if (!IsWidgetValid())
 		return;
 
-#if AGORA_CPP_VER_20_OR_LATER
+#if  ((__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)) 
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -474,7 +474,7 @@ void UMediaPlayerWithCustomDataWidget::FUserIMediaPlayerCustomDataProvider::Init
 	}
 	else
 	{
-#if AGORA_CPP_VER_20_OR_LATER
+#if  ((__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)) 
 		AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 		AsyncTask(ENamedThreads::GameThread, [=]()
@@ -490,7 +490,7 @@ void UMediaPlayerWithCustomDataWidget::FUserIMediaPlayerCustomDataProvider::Init
 		return;
 	}
 
-#if AGORA_CPP_VER_20_OR_LATER
+#if  ((__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)) 
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -511,7 +511,7 @@ void UMediaPlayerWithCustomDataWidget::FUserIMediaPlayerCustomDataProvider::Rele
 		fclose(DataFile);
 		FileSize = 0;
 	}
-#if AGORA_CPP_VER_20_OR_LATER
+#if  ((__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)) 
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()

@@ -8,7 +8,7 @@
 #include "Rendering/SlateRenderer.h"
 #include "Widgets/SWindow.h"
 #include "RHIDefinitions.h"
-
+#include <chrono>
 
 void UCustomCaptureVideoScene::InitAgoraWidget(FString APP_ID, FString TOKEN, FString CHANNEL_NAME)
 {
