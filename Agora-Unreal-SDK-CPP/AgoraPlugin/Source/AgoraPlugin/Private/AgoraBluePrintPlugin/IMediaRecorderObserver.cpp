@@ -10,7 +10,7 @@ void UIMediaRecorderObserver::onRecorderStateChanged(const char* channelId, agor
 	if (!SelfWeakPtr.IsValid())
 		return;
 
-#if UE_5_3_OR_LATER
+#if AGORA_CPP_VER_20_OR_LATER
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -28,7 +28,7 @@ void UIMediaRecorderObserver::onRecorderInfoUpdated(const char* channelId, agora
 	if (!SelfWeakPtr.IsValid())
 		return;
 
-#if UE_5_3_OR_LATER
+#if AGORA_CPP_VER_20_OR_LATER
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()

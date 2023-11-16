@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "../Private/AgoraCppPlugin/Include/AgoraHeaderBase.h"
+#include "../Private/AgoraCppPlugin/include/AgoraHeaderBase.h"
 
 namespace agora
 {

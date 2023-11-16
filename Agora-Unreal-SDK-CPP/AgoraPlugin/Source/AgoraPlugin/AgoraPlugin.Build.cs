@@ -79,14 +79,17 @@ public class AgoraPlugin : ModuleRules
 				// ... add any modules that your module loads dynamically here ...
 			}
             );
-        
-        
+
+
         // Add Compile Options
         if (Target.Platform == UnrealTargetPlatform.Mac || Target.Platform == UnrealTargetPlatform.IOS)
         {
+            // -Wno-gcc-compat: gcc does not allow an atrribute in this position on a function declaration
+            // -Wno-reorder-ctor: fix error "field 'eventHandler' will be initialized after field 'mccUid'"
+            // -Wno-nonportable-include-path: In some cases, path <Private\AgoraCppPlugin\Include> would be changed from <Include> to <include>.
             Type TargetType = Target.GetType();
-            FieldInfo InnerField = TargetType.GetField("Inner",BindingFlags.Instance | BindingFlags.NonPublic);
-            TargetRules Inner = (TargetRules) InnerField.GetValue(Target);
+            FieldInfo InnerField = TargetType.GetField("Inner", BindingFlags.Instance | BindingFlags.NonPublic);
+            TargetRules Inner = (TargetRules)InnerField.GetValue(Target);
             Inner.AdditionalCompilerArguments += " -Wno-gcc-compat -Wno-reorder-ctor -Wno-nonportable-include-path ";
         }
     }

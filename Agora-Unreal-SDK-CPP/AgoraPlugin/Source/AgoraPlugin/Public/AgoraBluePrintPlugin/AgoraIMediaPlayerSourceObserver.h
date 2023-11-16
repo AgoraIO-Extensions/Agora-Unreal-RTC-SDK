@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
-#include "AgoraCppPlugin/Include/AgoraHeaderBase.h"
+#include "AgoraCppPlugin/include/AgoraHeaderBase.h"
 #include "AgoraBluePrintPlugin/URtcEngineProxyCompatibility.h"
 #include "AgoraIMediaPlayerSourceObserver.generated.h"
 

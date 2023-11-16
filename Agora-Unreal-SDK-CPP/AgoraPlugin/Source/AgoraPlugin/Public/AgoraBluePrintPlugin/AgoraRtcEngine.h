@@ -12,7 +12,7 @@
 #include "IAudioEncodedFrameObserver.h"
 #include "IFrameObserver.h"
 #include "string.h"
-#include "AgoraCppPlugin/Include/RtcEngineProxy.h"
+#include "AgoraCppPlugin/include/RtcEngineProxy.h"
 #include "AgoraRtcEngine.generated.h"
 
 

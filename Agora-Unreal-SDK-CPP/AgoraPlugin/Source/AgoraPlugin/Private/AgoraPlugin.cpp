@@ -5,7 +5,7 @@
 #include "Modules/ModuleManager.h"
 #include "Interfaces/IPluginManager.h"
 #include <string>
-#include "AgoraCppPlugin/Include/AgoraHeaderBase.h"
+#include "AgoraCppPlugin/include/AgoraHeaderBase.h"
 
 #define LOCTEXT_NAMESPACE "FAgoraPluginModule"
 

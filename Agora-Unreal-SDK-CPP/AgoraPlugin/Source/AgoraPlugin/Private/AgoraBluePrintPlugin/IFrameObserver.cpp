@@ -9,7 +9,7 @@ bool UIAudioFrameObserver::onPlaybackAudioFrameBeforeMixing(const char* channelI
 	if (!SelfWeakPtr.IsValid())
 		return false;
 
-#if UE_5_3_OR_LATER
+#if AGORA_CPP_VER_20_OR_LATER
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -55,7 +55,7 @@ bool UIAudioSpectrumObserver::onLocalAudioSpectrum(const agora::media::AudioSpec
 	if (!SelfWeakPtr.IsValid())
 		return false;
 
-#if UE_5_3_OR_LATER
+#if AGORA_CPP_VER_20_OR_LATER
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -83,7 +83,7 @@ bool UIAudioSpectrumObserver::onRemoteAudioSpectrum(const agora::media::UserAudi
 	if (!SelfWeakPtr.IsValid())
 		return false;
 
-#if UE_5_3_OR_LATER
+#if AGORA_CPP_VER_20_OR_LATER
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -128,7 +128,7 @@ bool UIVideoFrameObserver::onCaptureVideoFrame(agora::rtc::VIDEO_SOURCE_TYPE sou
 	if (!SelfWeakPtr.IsValid())
 		return false;
 
-#if UE_5_3_OR_LATER
+#if AGORA_CPP_VER_20_OR_LATER
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -192,7 +192,7 @@ bool UIVideoFrameObserver::onPreEncodeVideoFrame(agora::rtc::VIDEO_SOURCE_TYPE s
 	if (!SelfWeakPtr.IsValid())
 		return false;
 
-#if UE_5_3_OR_LATER
+#if AGORA_CPP_VER_20_OR_LATER
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -257,7 +257,7 @@ bool UIVideoFrameObserver::onMediaPlayerVideoFrame(agora::media::base::VideoFram
 	if (!SelfWeakPtr.IsValid())
 		return false;
 
-#if UE_5_3_OR_LATER
+#if AGORA_CPP_VER_20_OR_LATER
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -322,7 +322,7 @@ bool UIVideoFrameObserver::onRenderVideoFrame(const char* channelId, agora::rtc:
 	if (!SelfWeakPtr.IsValid())
 		return false;
 
-#if UE_5_3_OR_LATER
+#if AGORA_CPP_VER_20_OR_LATER
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -386,7 +386,7 @@ bool UIVideoFrameObserver::onTranscodedVideoFrame(agora::media::base::VideoFrame
 	if (!SelfWeakPtr.IsValid())
 		return false;
 
-#if UE_5_3_OR_LATER
+#if AGORA_CPP_VER_20_OR_LATER
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -450,7 +450,7 @@ agora::media::IVideoFrameObserver::VIDEO_FRAME_PROCESS_MODE UIVideoFrameObserver
 	if (!SelfWeakPtr.IsValid())
 		return PROCESS_MODE_READ_ONLY;
 
-#if UE_5_3_OR_LATER
+#if AGORA_CPP_VER_20_OR_LATER
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -469,7 +469,7 @@ agora::media::base::VIDEO_PIXEL_FORMAT UIVideoFrameObserver::getVideoFormatPrefe
 	if (!SelfWeakPtr.IsValid())
 		return agora::media::base::VIDEO_PIXEL_RGBA;
 
-#if UE_5_3_OR_LATER
+#if AGORA_CPP_VER_20_OR_LATER
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -490,7 +490,7 @@ bool UIAudioFrameObserver::onRecordAudioFrame(const char* channelId, agora::medi
 	if (!SelfWeakPtr.IsValid())
 		return false;
 
-#if UE_5_3_OR_LATER
+#if AGORA_CPP_VER_20_OR_LATER
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -522,7 +522,7 @@ bool UIAudioFrameObserver::onPlaybackAudioFrame(const char* channelId, agora::me
 	if (!SelfWeakPtr.IsValid())
 		return false;
 
-#if UE_5_3_OR_LATER
+#if AGORA_CPP_VER_20_OR_LATER
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -554,7 +554,7 @@ bool UIAudioFrameObserver::onMixedAudioFrame(const char* channelId, agora::media
 	if (!SelfWeakPtr.IsValid())
 		return false;
 
-#if UE_5_3_OR_LATER
+#if AGORA_CPP_VER_20_OR_LATER
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -587,7 +587,7 @@ int UIAudioFrameObserver::getObservedAudioFramePosition()
 	if (!SelfWeakPtr.IsValid())
 		return 0;
 
-#if UE_5_3_OR_LATER
+#if AGORA_CPP_VER_20_OR_LATER
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -608,7 +608,7 @@ agora::media::IAudioFrameObserverBase::AudioParams UIAudioFrameObserver::getPlay
 	if (!SelfWeakPtr.IsValid())
 		return params;
 
-#if UE_5_3_OR_LATER
+#if AGORA_CPP_VER_20_OR_LATER
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -630,7 +630,7 @@ agora::media::IAudioFrameObserverBase::AudioParams UIAudioFrameObserver::getReco
 	if (!SelfWeakPtr.IsValid())
 		return params;
 
-#if UE_5_3_OR_LATER
+#if AGORA_CPP_VER_20_OR_LATER
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -652,7 +652,7 @@ agora::media::IAudioFrameObserverBase::AudioParams UIAudioFrameObserver::getMixe
 	if (!SelfWeakPtr.IsValid())
 		return params;
 
-#if UE_5_3_OR_LATER
+#if AGORA_CPP_VER_20_OR_LATER
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -673,7 +673,7 @@ bool UIVideoFrameObserver::getRotationApplied()
 	if (!SelfWeakPtr.IsValid())
 		return false;
 
-#if UE_5_3_OR_LATER
+#if AGORA_CPP_VER_20_OR_LATER
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -692,7 +692,7 @@ bool UIVideoFrameObserver::getMirrorApplied()
 	if (!SelfWeakPtr.IsValid())
 		return false;
 
-#if UE_5_3_OR_LATER
+#if AGORA_CPP_VER_20_OR_LATER
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -711,7 +711,7 @@ uint32_t UIVideoFrameObserver::getObservedFramePosition()
 	if (!SelfWeakPtr.IsValid())
 		return agora::media::base::POSITION_POST_CAPTURER | agora::media::base::POSITION_PRE_RENDERER;
 
-#if UE_5_3_OR_LATER
+#if AGORA_CPP_VER_20_OR_LATER
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -730,7 +730,7 @@ bool UIVideoFrameObserver::isExternal()
 	if (!SelfWeakPtr.IsValid())
 		return false;
 
-#if UE_5_3_OR_LATER
+#if AGORA_CPP_VER_20_OR_LATER
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -750,7 +750,7 @@ void UIAudioPcmFrameSink::onFrame(agora::media::base::AudioPcmFrame* frame)
 	if (!SelfWeakPtr.IsValid())
 		return;
 
-#if UE_5_3_OR_LATER
+#if AGORA_CPP_VER_20_OR_LATER
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()

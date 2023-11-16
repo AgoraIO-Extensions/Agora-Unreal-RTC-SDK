@@ -6,7 +6,7 @@
 #include "UObject/NoExportTypes.h"
 #include "Components/Image.h"
 #include "Async/Async.h"
-#include "AgoraCppPlugin/Include/AgoraHeaderBase.h"
+#include "AgoraCppPlugin/include/AgoraHeaderBase.h"
 #include "URtcEngineProxyCompatibility.generated.h"
 
 class UIRtcEngineEventHandler;

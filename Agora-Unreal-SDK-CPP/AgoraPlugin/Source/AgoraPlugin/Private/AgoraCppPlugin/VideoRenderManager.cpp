@@ -2,7 +2,7 @@
 
 #if AGORA_UESDK_ENABLE_VIDEO
 
-#include "AgoraCppPlugin/Include/VideoRenderManager.h"
+#include "AgoraCppPlugin/include/VideoRenderManager.h"
 
 namespace agora {
 	namespace rtc {

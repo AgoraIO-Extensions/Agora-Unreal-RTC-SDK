@@ -2,7 +2,7 @@
 
 #if AGORA_UESDK_ENABLE_VIDEO
 
-#include "AgoraCppPlugin/Include/CacheManagerImpl.h"
+#include "AgoraCppPlugin/include/CacheManagerImpl.h"
 namespace agora {
 	namespace rtc {
 		namespace ue {

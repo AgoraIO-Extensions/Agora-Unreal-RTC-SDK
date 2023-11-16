@@ -2,10 +2,10 @@
 
 #if AGORA_UESDK_ENABLE_VIDEO
 
-#include "AgoraCppPlugin/Include/VideoRender.h"
-#include "AgoraCppPlugin/Include/AgoraHeaderBase.h"
-#include "AgoraCppPlugin/Include/RtcEngineProxy.h"
-#include "AgoraCppPlugin/Include/VideoObserverInternal.h"
+#include "AgoraCppPlugin/include/VideoRender.h"
+#include "AgoraCppPlugin/include/AgoraHeaderBase.h"
+#include "AgoraCppPlugin/include/RtcEngineProxy.h"
+#include "AgoraCppPlugin/include/VideoObserverInternal.h"
 namespace agora {
 	namespace rtc {
 		namespace ue {

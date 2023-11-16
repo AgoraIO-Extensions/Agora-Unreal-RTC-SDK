@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
-#include "AgoraCppPlugin/Include/AgoraHeaderBase.h"
+#include "AgoraCppPlugin/include/AgoraHeaderBase.h"
 #include "URtcEngineProxyCompatibility.h"
 #include "AgoraBluePrintPlugin/AgoraIRtcEngineEventHandler.h"
 #include "AgoraIRtcEngineEventHandlerEx.generated.h"

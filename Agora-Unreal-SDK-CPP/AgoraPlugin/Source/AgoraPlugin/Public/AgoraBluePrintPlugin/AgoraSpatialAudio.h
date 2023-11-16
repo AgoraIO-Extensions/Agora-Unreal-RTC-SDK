@@ -6,7 +6,7 @@
 #include "UObject/NoExportTypes.h"
 #include "URtcEngineProxyCompatibility.h"
 #include "AgoraBluePrintPlugin/AgoraRtcEngine.h"
-#include "AgoraCppPlugin/Include/AgoraHeaderBase.h"
+#include "AgoraCppPlugin/include/AgoraHeaderBase.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "AgoraSpatialAudio.generated.h"
 

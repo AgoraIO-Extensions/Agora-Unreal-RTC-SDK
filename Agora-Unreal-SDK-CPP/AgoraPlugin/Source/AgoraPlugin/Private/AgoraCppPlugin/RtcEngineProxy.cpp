@@ -1,6 +1,6 @@
 //  Copyright (c) 2023 Agora.io. All rights reserved.
 
-#include "AgoraCppPlugin/Include/RtcEngineProxy.h"
+#include "AgoraCppPlugin/include/RtcEngineProxy.h"
 #include "AgoraPluginInterface.h"
 
 namespace agora

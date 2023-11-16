@@ -10,7 +10,7 @@ void UIMediaStreamingSourceObserver::onStateChanged(agora::rtc::STREAMING_SRC_ST
 	if (!SelfWeakPtr.IsValid())
 		return;
 
-#if UE_5_3_OR_LATER
+#if AGORA_CPP_VER_20_OR_LATER
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -28,7 +28,7 @@ void UIMediaStreamingSourceObserver::onOpenDone(agora::rtc::STREAMING_SRC_ERR er
 	if (!SelfWeakPtr.IsValid())
 		return;
 
-#if UE_5_3_OR_LATER
+#if AGORA_CPP_VER_20_OR_LATER
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -46,7 +46,7 @@ void UIMediaStreamingSourceObserver::onSeekDone(agora::rtc::STREAMING_SRC_ERR er
 	if (!SelfWeakPtr.IsValid())
 		return;
 
-#if UE_5_3_OR_LATER
+#if AGORA_CPP_VER_20_OR_LATER
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -64,7 +64,7 @@ void UIMediaStreamingSourceObserver::onEofOnce(int64_t progress_ms, int64_t repe
 	if (!SelfWeakPtr.IsValid())
 		return;
 
-#if UE_5_3_OR_LATER
+#if AGORA_CPP_VER_20_OR_LATER
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -82,7 +82,7 @@ void UIMediaStreamingSourceObserver::onProgress(int64_t position_ms)
 	if (!SelfWeakPtr.IsValid())
 		return;
 
-#if UE_5_3_OR_LATER
+#if AGORA_CPP_VER_20_OR_LATER
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -100,7 +100,7 @@ void UIMediaStreamingSourceObserver::onMetaData(const void* data, int length)
 	if (!SelfWeakPtr.IsValid())
 		return;
 
-#if UE_5_3_OR_LATER
+#if AGORA_CPP_VER_20_OR_LATER
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
