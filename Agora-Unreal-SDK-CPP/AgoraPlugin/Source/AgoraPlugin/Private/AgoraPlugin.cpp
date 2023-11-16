@@ -1,4 +1,4 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
+//  Copyright (c) 2023 Agora.io. All rights reserved.
 
 #include "AgoraPlugin.h"
 #include "Core.h"
@@ -15,7 +15,7 @@ void FAgoraPluginModule::StartupModule()
 
 	FString LibraryPath;
 #if PLATFORM_WINDOWS
-	LibraryPath = FPaths::Combine(*BaseDir, TEXT("Source/ThirdParty/AgoraPluginLibrary/x64/Release/agora_rtc_sdk.dll"));
+	LibraryPath = FPaths::Combine(*BaseDir, TEXT("Source/ThirdParty/AgoraPluginLibrary/Win/Release/x86_64/agora_rtc_sdk.dll"));
 
 	AgoraLibraryHandle = !LibraryPath.IsEmpty() ? FPlatformProcess::GetDllHandle(*LibraryPath) : nullptr;
 

@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+//  Copyright (c) 2023 Agora.io. All rights reserved.
 
 #pragma once
 
@@ -16,7 +16,7 @@ struct FLocalSpatialAudioConfig
 	GENERATED_BODY()
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LocalSpatialAudioConfig")
-	UAgoraRtcEngine* rtcEngine;
+	UAgoraRtcEngine* rtcEngine = nullptr;
 };
 
 USTRUCT(BlueprintType)
@@ -25,9 +25,9 @@ struct FRemoteVoicePositionInfo
 	GENERATED_BODY()
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RemoteVoicePositionInfo")
-	FVector position;
+	FVector position = FVector(0,0,0);
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RemoteVoicePositionInfo")
-	FVector forward;
+	FVector forward = FVector(0, 0, 0);
 };
 
 UCLASS(Blueprintable)

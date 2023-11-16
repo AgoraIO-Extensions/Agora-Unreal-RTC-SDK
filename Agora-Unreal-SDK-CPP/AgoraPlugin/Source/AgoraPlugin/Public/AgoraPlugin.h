@@ -1,4 +1,4 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
+//  Copyright (c) 2023 Agora.io. All rights reserved.
 
 #pragma once
 

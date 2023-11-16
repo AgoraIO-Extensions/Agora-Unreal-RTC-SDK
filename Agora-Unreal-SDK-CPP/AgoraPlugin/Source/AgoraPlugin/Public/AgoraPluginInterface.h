@@ -1,3 +1,5 @@
+//  Copyright (c) 2023 Agora.io. All rights reserved.
+
 #pragma once
 
 #include "../Private/AgoraCppPlugin/Include/AgoraHeaderBase.h"

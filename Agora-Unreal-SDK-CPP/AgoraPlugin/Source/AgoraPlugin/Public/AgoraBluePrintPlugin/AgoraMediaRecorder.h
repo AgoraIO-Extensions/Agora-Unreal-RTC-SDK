@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+//  Copyright (c) 2023 Agora.io. All rights reserved.
 
 #pragma once
 
@@ -32,15 +32,15 @@ struct FMediaRecorderConfiguration
 	GENERATED_BODY()
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|MediaRecorderConfiguration")
-	FString storagePath;
+	FString storagePath = "";
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|MediaRecorderConfiguration")
 	EMediaRecorderContainerFormat containerFormat = EMediaRecorderContainerFormat::FORMAT_MP4;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|MediaRecorderConfiguration")
 	EMediaRecorderStreamType streamType = EMediaRecorderStreamType::STREAM_TYPE_BOTH;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|MediaRecorderConfiguration")
-	int maxDurationMs;
+	int maxDurationMs = 0;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|MediaRecorderConfiguration")
-	int recorderInfoUpdateInterval;
+	int recorderInfoUpdateInterval = 0;
 };
 /**
  *

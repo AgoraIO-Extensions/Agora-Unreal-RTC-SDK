@@ -1,3 +1,5 @@
+//  Copyright (c) 2023 Agora.io. All rights reserved.
+
 #if AGORA_UESDK_ENABLE_VIDEO
 
 #include "AgoraCppPlugin/Include/VideoRenderManager.h"

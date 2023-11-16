@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+//  Copyright (c) 2023 Agora.io. All rights reserved.
 
 
 #include "AgoraBluePrintPlugin/IMediaRecorderObserver.h"
@@ -10,7 +10,11 @@ void UIMediaRecorderObserver::onRecorderStateChanged(const char* channelId, agor
 	if (!SelfWeakPtr.IsValid())
 		return;
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!SelfWeakPtr.IsValid())
 				return;
@@ -24,7 +28,11 @@ void UIMediaRecorderObserver::onRecorderInfoUpdated(const char* channelId, agora
 	if (!SelfWeakPtr.IsValid())
 		return;
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!SelfWeakPtr.IsValid())
 				return;

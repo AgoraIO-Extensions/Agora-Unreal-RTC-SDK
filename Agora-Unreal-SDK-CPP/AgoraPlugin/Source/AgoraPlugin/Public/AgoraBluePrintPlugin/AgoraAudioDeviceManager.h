@@ -1,10 +1,10 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+//  Copyright (c) 2023 Agora.io. All rights reserved.
 
 #pragma once
 
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
-#include "AgoraCppPlugin/include/AgoraHeaderBase.h"
+#include "AgoraCppPlugin/Include/AgoraHeaderBase.h"
 #include "AgoraAudioDeviceManager.generated.h"
 
 /**

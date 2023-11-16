@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+//  Copyright (c) 2023 Agora.io. All rights reserved.
 
 
 #include "AgoraBluePrintPlugin/AgoraIMediaPlayerSourceObserver.h"
@@ -9,7 +9,11 @@ void UIMediaPlayerSourceObserver::onPlayerSourceStateChanged(agora::media::base:
 	if (!SelfWeakPtr.IsValid())
 		return;
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!SelfWeakPtr.IsValid())
 				return;
@@ -23,7 +27,11 @@ void UIMediaPlayerSourceObserver::onPositionChanged(int64_t position_ms)
 	if (!SelfWeakPtr.IsValid())
 		return;
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!SelfWeakPtr.IsValid())
 				return;
@@ -37,7 +45,11 @@ void UIMediaPlayerSourceObserver::onPlayerEvent(agora::media::base::MEDIA_PLAYER
 	if (!SelfWeakPtr.IsValid())
 		return;
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!SelfWeakPtr.IsValid())
 				return;
@@ -51,7 +63,11 @@ void UIMediaPlayerSourceObserver::onMetaData(const void* data, int length)
 	if (!SelfWeakPtr.IsValid())
 		return;
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!SelfWeakPtr.IsValid())
 				return;
@@ -65,7 +81,11 @@ void UIMediaPlayerSourceObserver::onPlayBufferUpdated(int64_t playCachedBuffer)
 	if (!SelfWeakPtr.IsValid())
 		return;
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!SelfWeakPtr.IsValid())
 				return;
@@ -79,7 +99,11 @@ void UIMediaPlayerSourceObserver::onPreloadEvent(const char* src, agora::media::
 	if (!SelfWeakPtr.IsValid())
 		return;
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!SelfWeakPtr.IsValid())
 				return;
@@ -93,7 +117,11 @@ void UIMediaPlayerSourceObserver::onCompleted()
 	if (!SelfWeakPtr.IsValid())
 		return;
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!SelfWeakPtr.IsValid())
 				return;
@@ -107,7 +135,11 @@ void UIMediaPlayerSourceObserver::onAgoraCDNTokenWillExpire()
 	if (!SelfWeakPtr.IsValid())
 		return;
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!SelfWeakPtr.IsValid())
 				return;
@@ -121,7 +153,11 @@ void UIMediaPlayerSourceObserver::onPlayerSrcInfoChanged(const agora::media::bas
 	if (!SelfWeakPtr.IsValid())
 		return;
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!SelfWeakPtr.IsValid())
 				return;
@@ -141,7 +177,11 @@ void UIMediaPlayerSourceObserver::onPlayerInfoUpdated(const agora::media::base::
 	if (!SelfWeakPtr.IsValid())
 		return;
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!SelfWeakPtr.IsValid())
 				return;
@@ -173,7 +213,11 @@ void UIMediaPlayerSourceObserver::onAudioVolumeIndication(int volume)
 	if (!SelfWeakPtr.IsValid())
 		return;
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!SelfWeakPtr.IsValid())
 				return;
@@ -189,7 +233,11 @@ int UIMediaPlayerCustomDataProvider::onReadData(unsigned char* buffer, int buffe
 	if (!SelfWeakPtr.IsValid())
 		return bufferSize;
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!SelfWeakPtr.IsValid())
 				return;
@@ -214,7 +262,11 @@ int64_t UIMediaPlayerCustomDataProvider::onSeek(int64_t offset, int whence)
 	if (!SelfWeakPtr.IsValid())
 		return offset;
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!SelfWeakPtr.IsValid())
 				return;

@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+//  Copyright (c) 2023 Agora.io. All rights reserved.
 
 
 #include "AgoraBluePrintPlugin/IMediaStreamingSourceObserver.h"
@@ -10,7 +10,11 @@ void UIMediaStreamingSourceObserver::onStateChanged(agora::rtc::STREAMING_SRC_ST
 	if (!SelfWeakPtr.IsValid())
 		return;
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!SelfWeakPtr.IsValid())
 				return;
@@ -24,7 +28,11 @@ void UIMediaStreamingSourceObserver::onOpenDone(agora::rtc::STREAMING_SRC_ERR er
 	if (!SelfWeakPtr.IsValid())
 		return;
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!SelfWeakPtr.IsValid())
 				return;
@@ -38,7 +46,11 @@ void UIMediaStreamingSourceObserver::onSeekDone(agora::rtc::STREAMING_SRC_ERR er
 	if (!SelfWeakPtr.IsValid())
 		return;
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!SelfWeakPtr.IsValid())
 				return;
@@ -52,7 +64,11 @@ void UIMediaStreamingSourceObserver::onEofOnce(int64_t progress_ms, int64_t repe
 	if (!SelfWeakPtr.IsValid())
 		return;
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!SelfWeakPtr.IsValid())
 				return;
@@ -66,7 +82,11 @@ void UIMediaStreamingSourceObserver::onProgress(int64_t position_ms)
 	if (!SelfWeakPtr.IsValid())
 		return;
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!SelfWeakPtr.IsValid())
 				return;
@@ -80,7 +100,11 @@ void UIMediaStreamingSourceObserver::onMetaData(const void* data, int length)
 	if (!SelfWeakPtr.IsValid())
 		return;
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!SelfWeakPtr.IsValid())
 				return;

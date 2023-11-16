@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+//  Copyright (c) 2023 Agora.io. All rights reserved.
 
 
 #include "AgoraBluePrintPlugin/IAudioEncodedFrameObserver.h"
@@ -7,7 +7,11 @@
 bool UIPacketObserver::onSendAudioPacket(agora::rtc::IPacketObserver::Packet& packet)
 {
 	FPacket pack;
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			OnSendAudioPacket.Broadcast(pack);
 		});
@@ -25,7 +29,11 @@ bool UIPacketObserver::onSendAudioPacket(agora::rtc::IPacketObserver::Packet& pa
 bool UIPacketObserver::onSendVideoPacket(agora::rtc::IPacketObserver::Packet& packet)
 {
 	FPacket pack;
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			OnSendVideoPacket.Broadcast(pack);
 		});
@@ -41,7 +49,11 @@ bool UIPacketObserver::onSendVideoPacket(agora::rtc::IPacketObserver::Packet& pa
 }
 bool UIPacketObserver::onReceiveAudioPacket(agora::rtc::IPacketObserver::Packet& packet)
 {
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			FPacket pack;
 			unsigned char* tempdata = new unsigned char[packet.size];
@@ -60,7 +72,11 @@ bool UIPacketObserver::onReceiveAudioPacket(agora::rtc::IPacketObserver::Packet&
 }
 bool UIPacketObserver::onReceiveVideoPacket(agora::rtc::IPacketObserver::Packet& packet)
 {
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			FPacket pack;
 			unsigned char* tempdata = new unsigned char[packet.size];
@@ -80,7 +96,11 @@ bool UIPacketObserver::onReceiveVideoPacket(agora::rtc::IPacketObserver::Packet&
 
 void UIAudioEncodedFrameObserver::onRecordAudioEncodedFrame(const uint8_t* frameBuffer, int length, const agora::rtc::EncodedAudioFrameInfo& audioEncodedFrameInfo)
 {
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			FEncodedAudioFrameInfo encodedAudioFrameInfo;
 			encodedAudioFrameInfo.codec = (EAUDIO_CODEC_TYPE)audioEncodedFrameInfo.codec;
@@ -106,7 +126,11 @@ void UIAudioEncodedFrameObserver::onRecordAudioEncodedFrame(const uint8_t* frame
 
 void UIAudioEncodedFrameObserver::onPlaybackAudioEncodedFrame(const uint8_t* frameBuffer, int length, const agora::rtc::EncodedAudioFrameInfo& audioEncodedFrameInfo)
 {
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			FEncodedAudioFrameInfo encodedAudioFrameInfo;
 			encodedAudioFrameInfo.codec = (EAUDIO_CODEC_TYPE)audioEncodedFrameInfo.codec;
@@ -133,7 +157,11 @@ void UIAudioEncodedFrameObserver::onPlaybackAudioEncodedFrame(const uint8_t* fra
 
 void UIAudioEncodedFrameObserver::onMixedAudioEncodedFrame(const uint8_t* frameBuffer, int length, const agora::rtc::EncodedAudioFrameInfo& audioEncodedFrameInfo)
 {
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			FEncodedAudioFrameInfo encodedAudioFrameInfo;
 			encodedAudioFrameInfo.codec = (EAUDIO_CODEC_TYPE)audioEncodedFrameInfo.codec;

@@ -1,7 +1,8 @@
-// C// Copyright Epic Games, Inc. All Rights Reserved.
+//  Copyright (c) 2023 Agora.io. All rights reserved.
 
 using System;
 using UnrealBuildTool;
+using System.Reflection;
 
 public class AgoraPlugin : ModuleRules
 {
@@ -12,7 +13,7 @@ public class AgoraPlugin : ModuleRules
         // [Voice (audio-only) / Full]
         // SDK is [Voice] Version or not.
         bool bIsAudioOnlySDK = false;
-        
+
         // Notice: for now, the audio-only plugin is only available for Android and iOS. The [Windows/Mac] version still remains the FULL version, even if you have downloaded the voice version SDK.
         PublicDefinitions.Add(String.Format("AGORA_UESDK_AUDIO_ONLY={0}", (bIsAudioOnlySDK ? 1 : 0)));
 
@@ -21,7 +22,8 @@ public class AgoraPlugin : ModuleRules
         {
             PublicDefinitions.Add("AGORA_UESDK_ENABLE_VIDEO=1");
         }
-        else {
+        else
+        {
             PublicDefinitions.Add("AGORA_UESDK_ENABLE_VIDEO=0");
         }
 
@@ -77,5 +79,15 @@ public class AgoraPlugin : ModuleRules
 				// ... add any modules that your module loads dynamically here ...
 			}
             );
+        
+        
+        // Add Compile Options
+        if (Target.Platform == UnrealTargetPlatform.Mac || Target.Platform == UnrealTargetPlatform.IOS)
+        {
+            Type TargetType = Target.GetType();
+            FieldInfo InnerField = TargetType.GetField("Inner",BindingFlags.Instance | BindingFlags.NonPublic);
+            TargetRules Inner = (TargetRules) InnerField.GetValue(Target);
+            Inner.AdditionalCompilerArguments += " -Wno-gcc-compat -Wno-reorder-ctor -Wno-nonportable-include-path ";
+        }
     }
 }

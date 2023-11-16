@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+//  Copyright (c) 2023 Agora.io. All rights reserved.
 
 
 #include "AgoraBluePrintPlugin/AgoraRtcEngine.h"
@@ -130,7 +130,7 @@ int UAgoraRtcEngine::Initialize(const FRtcEngineContext& context)
 	std::string FilePath = TCHAR_TO_UTF8(*context.logConfig.filePath);
 	log.filePath = FilePath.c_str();
 	log.fileSizeInKB = context.logConfig.fileSizeInKB;
-	log.level = (agora::commons::LOG_LEVEL)context.logConfig.level.GetValue();
+	log.level = (agora::commons::LOG_LEVEL)context.logConfig.level;
 	rtcEngineContext.logConfig = log;
 	if (context.threadPriority_SetValue)
 	{
@@ -167,7 +167,7 @@ int UAgoraRtcEngine::InitializeEx(const FRtcEngineContextEx& context)
 	std::string FilePath = TCHAR_TO_UTF8(*context.logConfig.filePath);
 	log.filePath = FilePath.c_str();
 	log.fileSizeInKB = context.logConfig.fileSizeInKB;
-	log.level = (agora::commons::LOG_LEVEL)context.logConfig.level.GetValue();
+	log.level = (agora::commons::LOG_LEVEL)context.logConfig.level;
 	rtcEngineContext.logConfig = log;
 	if (context.threadPriority_SetValue)
 	{
@@ -1672,15 +1672,15 @@ int UAgoraRtcEngine::StartRtmpStreamWithTranscoding(FString url, FLiveTranscodin
 	}
 	liveTranscoding.backgroundImage = bgImage;
 	liveTranscoding.backgroundImageCount = transcoding.backgroundImageCount;
-	if (transcoding.audioSampleRate.GetValue() == 1)
+	if (transcoding.audioSampleRate == EAUDIO_SAMPLE_RATE_TYPE::AUDIO_SAMPLE_RATE_32000)
 	{
 		liveTranscoding.audioSampleRate = agora::rtc::AUDIO_SAMPLE_RATE_TYPE::AUDIO_SAMPLE_RATE_32000;
 	}
-	else if (transcoding.audioSampleRate.GetValue() == 2)
+	else if (transcoding.audioSampleRate == EAUDIO_SAMPLE_RATE_TYPE::AUDIO_SAMPLE_RATE_44100)
 	{
 		liveTranscoding.audioSampleRate = agora::rtc::AUDIO_SAMPLE_RATE_TYPE::AUDIO_SAMPLE_RATE_44100;
 	}
-	else if (transcoding.audioSampleRate.GetValue() == 3)
+	else if (transcoding.audioSampleRate == EAUDIO_SAMPLE_RATE_TYPE::AUDIO_SAMPLE_RATE_48000)
 	{
 		liveTranscoding.audioSampleRate = agora::rtc::AUDIO_SAMPLE_RATE_TYPE::AUDIO_SAMPLE_RATE_48000;
 	}
@@ -1764,15 +1764,15 @@ int UAgoraRtcEngine::UpdateRtmpTranscoding(FLiveTranscoding& transcoding)
 	}
 	liveTranscoding.backgroundImage = bgImage;
 	liveTranscoding.backgroundImageCount = transcoding.backgroundImageCount;
-	if (transcoding.audioSampleRate.GetValue() == 1)
+	if (transcoding.audioSampleRate == EAUDIO_SAMPLE_RATE_TYPE::AUDIO_SAMPLE_RATE_32000)
 	{
 		liveTranscoding.audioSampleRate = agora::rtc::AUDIO_SAMPLE_RATE_TYPE::AUDIO_SAMPLE_RATE_32000;
 	}
-	else if (transcoding.audioSampleRate.GetValue() == 2)
+	else if (transcoding.audioSampleRate == EAUDIO_SAMPLE_RATE_TYPE::AUDIO_SAMPLE_RATE_44100)
 	{
 		liveTranscoding.audioSampleRate = agora::rtc::AUDIO_SAMPLE_RATE_TYPE::AUDIO_SAMPLE_RATE_44100;
 	}
-	else if (transcoding.audioSampleRate.GetValue() == 3)
+	else if (transcoding.audioSampleRate == EAUDIO_SAMPLE_RATE_TYPE::AUDIO_SAMPLE_RATE_48000)
 	{
 		liveTranscoding.audioSampleRate = agora::rtc::AUDIO_SAMPLE_RATE_TYPE::AUDIO_SAMPLE_RATE_48000;
 	}
@@ -3005,15 +3005,15 @@ int UAgoraRtcEngine::StartRtmpStreamWithTranscodingEx(FString url, const FLiveTr
 	}
 	liveTranscoding.backgroundImage = bgImage;
 	liveTranscoding.backgroundImageCount = transcoding.backgroundImageCount;
-	if (transcoding.audioSampleRate.GetValue() == 1)
+	if (transcoding.audioSampleRate == EAUDIO_SAMPLE_RATE_TYPE::AUDIO_SAMPLE_RATE_32000)
 	{
 		liveTranscoding.audioSampleRate = agora::rtc::AUDIO_SAMPLE_RATE_TYPE::AUDIO_SAMPLE_RATE_32000;
 	}
-	else if (transcoding.audioSampleRate.GetValue() == 2)
+	else if (transcoding.audioSampleRate == EAUDIO_SAMPLE_RATE_TYPE::AUDIO_SAMPLE_RATE_44100)
 	{
 		liveTranscoding.audioSampleRate = agora::rtc::AUDIO_SAMPLE_RATE_TYPE::AUDIO_SAMPLE_RATE_44100;
 	}
-	else if (transcoding.audioSampleRate.GetValue() == 3)
+	else if (transcoding.audioSampleRate == EAUDIO_SAMPLE_RATE_TYPE::AUDIO_SAMPLE_RATE_48000)
 	{
 		liveTranscoding.audioSampleRate = agora::rtc::AUDIO_SAMPLE_RATE_TYPE::AUDIO_SAMPLE_RATE_48000;
 	}
@@ -3099,15 +3099,15 @@ int UAgoraRtcEngine::UpdateRtmpTranscodingEx(const FLiveTranscoding& transcoding
 	}
 	liveTranscoding.backgroundImage = bgImage;
 	liveTranscoding.backgroundImageCount = transcoding.backgroundImageCount;
-	if (transcoding.audioSampleRate.GetValue() == 1)
+	if (transcoding.audioSampleRate == EAUDIO_SAMPLE_RATE_TYPE::AUDIO_SAMPLE_RATE_32000)
 	{
 		liveTranscoding.audioSampleRate = agora::rtc::AUDIO_SAMPLE_RATE_TYPE::AUDIO_SAMPLE_RATE_32000;
 	}
-	else if (transcoding.audioSampleRate.GetValue() == 2)
+	else if (transcoding.audioSampleRate == EAUDIO_SAMPLE_RATE_TYPE::AUDIO_SAMPLE_RATE_44100)
 	{
 		liveTranscoding.audioSampleRate = agora::rtc::AUDIO_SAMPLE_RATE_TYPE::AUDIO_SAMPLE_RATE_44100;
 	}
-	else if (transcoding.audioSampleRate.GetValue() == 3)
+	else if (transcoding.audioSampleRate == EAUDIO_SAMPLE_RATE_TYPE::AUDIO_SAMPLE_RATE_48000)
 	{
 		liveTranscoding.audioSampleRate = agora::rtc::AUDIO_SAMPLE_RATE_TYPE::AUDIO_SAMPLE_RATE_48000;
 	}

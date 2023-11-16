@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+//  Copyright (c) 2023 Agora.io. All rights reserved.
 
 
 #include "AgoraBluePrintPlugin/AgoraIRtcEngineEventHandlerEx.h"
@@ -14,7 +14,11 @@ void UIRtcEngineEventHandlerEx::onJoinChannelSuccess(const agora::rtc::RtcConnec
 	if (!SelfWeakPtr.IsValid())
 		return;
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!SelfWeakPtr.IsValid())
 				return;
@@ -32,7 +36,11 @@ void UIRtcEngineEventHandlerEx::onRejoinChannelSuccess(const agora::rtc::RtcConn
 	if (!SelfWeakPtr.IsValid())
 		return;
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!SelfWeakPtr.IsValid())
 				return;
@@ -50,7 +58,11 @@ void UIRtcEngineEventHandlerEx::onAudioQuality(const agora::rtc::RtcConnection& 
 	if (!SelfWeakPtr.IsValid())
 		return;
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!SelfWeakPtr.IsValid())
 				return;
@@ -78,7 +90,11 @@ void UIRtcEngineEventHandlerEx::onAudioVolumeIndication(const agora::rtc::RtcCon
 	if (!SelfWeakPtr.IsValid())
 		return;
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!SelfWeakPtr.IsValid())
 				return;
@@ -131,7 +147,11 @@ void UIRtcEngineEventHandlerEx::onLeaveChannel(const agora::rtc::RtcConnection& 
 	if (!SelfWeakPtr.IsValid())
 		return;
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!SelfWeakPtr.IsValid())
 				return;
@@ -183,7 +203,11 @@ void UIRtcEngineEventHandlerEx::onRtcStats(const agora::rtc::RtcConnection& conn
 	if (!SelfWeakPtr.IsValid())
 		return;
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!SelfWeakPtr.IsValid())
 				return;
@@ -201,7 +225,11 @@ void UIRtcEngineEventHandlerEx::onNetworkQuality(const agora::rtc::RtcConnection
 	if (!SelfWeakPtr.IsValid())
 		return;
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!SelfWeakPtr.IsValid())
 				return;
@@ -220,7 +248,11 @@ void UIRtcEngineEventHandlerEx::onIntraRequestReceived(const agora::rtc::RtcConn
 	if (!SelfWeakPtr.IsValid())
 		return;
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!SelfWeakPtr.IsValid())
 				return;
@@ -239,7 +271,11 @@ void UIRtcEngineEventHandlerEx::onFirstLocalVideoFramePublished(const agora::rtc
 	if (!SelfWeakPtr.IsValid())
 		return;
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!SelfWeakPtr.IsValid())
 				return;
@@ -257,7 +293,11 @@ void UIRtcEngineEventHandlerEx::onFirstRemoteVideoDecoded(const agora::rtc::RtcC
 	if (!SelfWeakPtr.IsValid())
 		return;
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!SelfWeakPtr.IsValid())
 				return;
@@ -275,7 +315,11 @@ void UIRtcEngineEventHandlerEx::onVideoSizeChanged(const agora::rtc::RtcConnecti
 	if (!SelfWeakPtr.IsValid())
 		return;
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!SelfWeakPtr.IsValid())
 				return;
@@ -293,7 +337,11 @@ void UIRtcEngineEventHandlerEx::onLocalVideoStateChanged(const agora::rtc::RtcCo
 	if (!SelfWeakPtr.IsValid())
 		return;
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!SelfWeakPtr.IsValid())
 				return;
@@ -312,7 +360,11 @@ void UIRtcEngineEventHandlerEx::onRemoteVideoStateChanged(const agora::rtc::RtcC
 	if (!SelfWeakPtr.IsValid())
 		return;
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!SelfWeakPtr.IsValid())
 				return;
@@ -330,7 +382,11 @@ void UIRtcEngineEventHandlerEx::onFirstRemoteVideoFrame(const agora::rtc::RtcCon
 	if (!SelfWeakPtr.IsValid())
 		return;
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!SelfWeakPtr.IsValid())
 				return;
@@ -348,7 +404,11 @@ void UIRtcEngineEventHandlerEx::onUserJoined(const agora::rtc::RtcConnection& co
 	if (!SelfWeakPtr.IsValid())
 		return;
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!SelfWeakPtr.IsValid())
 				return;
@@ -366,7 +426,11 @@ void UIRtcEngineEventHandlerEx::onUserOffline(const agora::rtc::RtcConnection& c
 	if (!SelfWeakPtr.IsValid())
 		return;
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!SelfWeakPtr.IsValid())
 				return;
@@ -384,7 +448,11 @@ void UIRtcEngineEventHandlerEx::onUserMuteAudio(const agora::rtc::RtcConnection&
 	if (!SelfWeakPtr.IsValid())
 		return;
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!SelfWeakPtr.IsValid())
 				return;
@@ -402,7 +470,11 @@ void UIRtcEngineEventHandlerEx::onUserMuteVideo(const agora::rtc::RtcConnection&
 	if (!SelfWeakPtr.IsValid())
 		return;
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!SelfWeakPtr.IsValid())
 				return;
@@ -420,7 +492,11 @@ void UIRtcEngineEventHandlerEx::onUserEnableVideo(const agora::rtc::RtcConnectio
 	if (!SelfWeakPtr.IsValid())
 		return;
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!SelfWeakPtr.IsValid())
 				return;
@@ -439,7 +515,11 @@ void UIRtcEngineEventHandlerEx::onUserEnableLocalVideo(const agora::rtc::RtcConn
 	if (!SelfWeakPtr.IsValid())
 		return;
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!SelfWeakPtr.IsValid())
 				return;
@@ -458,7 +538,11 @@ void UIRtcEngineEventHandlerEx::onUserStateChanged(const agora::rtc::RtcConnecti
 	if (!SelfWeakPtr.IsValid())
 		return;
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!SelfWeakPtr.IsValid())
 				return;
@@ -485,7 +569,11 @@ void UIRtcEngineEventHandlerEx::onLocalAudioStats(const agora::rtc::RtcConnectio
 	if (!SelfWeakPtr.IsValid())
 		return;
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!SelfWeakPtr.IsValid())
 				return;
@@ -520,7 +608,11 @@ void UIRtcEngineEventHandlerEx::onRemoteAudioStats(const agora::rtc::RtcConnecti
 	if (!SelfWeakPtr.IsValid())
 		return;
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!SelfWeakPtr.IsValid())
 				return;
@@ -562,7 +654,11 @@ void UIRtcEngineEventHandlerEx::onLocalVideoStats(const agora::rtc::RtcConnectio
 	if (!SelfWeakPtr.IsValid())
 		return;
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!SelfWeakPtr.IsValid())
 				return;
@@ -597,7 +693,11 @@ void UIRtcEngineEventHandlerEx::onRemoteVideoStats(const agora::rtc::RtcConnecti
 	if (!SelfWeakPtr.IsValid())
 		return;
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!SelfWeakPtr.IsValid())
 				return;
@@ -615,7 +715,11 @@ void UIRtcEngineEventHandlerEx::onConnectionLost(const agora::rtc::RtcConnection
 	if (!SelfWeakPtr.IsValid())
 		return;
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!SelfWeakPtr.IsValid())
 				return;
@@ -633,7 +737,11 @@ void UIRtcEngineEventHandlerEx::onConnectionInterrupted(const agora::rtc::RtcCon
 	if (!SelfWeakPtr.IsValid())
 		return;
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!SelfWeakPtr.IsValid())
 				return;
@@ -652,7 +760,11 @@ void UIRtcEngineEventHandlerEx::onConnectionBanned(const agora::rtc::RtcConnecti
 	if (!SelfWeakPtr.IsValid())
 		return;
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!SelfWeakPtr.IsValid())
 				return;
@@ -676,7 +788,11 @@ void UIRtcEngineEventHandlerEx::onStreamMessage(const agora::rtc::RtcConnection&
 	if (!SelfWeakPtr.IsValid())
 		return;
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!SelfWeakPtr.IsValid())
 				return;
@@ -695,7 +811,11 @@ void UIRtcEngineEventHandlerEx::onStreamMessageError(const agora::rtc::RtcConnec
 	if (!SelfWeakPtr.IsValid())
 		return;
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!SelfWeakPtr.IsValid())
 				return;
@@ -714,7 +834,11 @@ void UIRtcEngineEventHandlerEx::onRequestToken(const agora::rtc::RtcConnection& 
 	if (!SelfWeakPtr.IsValid())
 		return;
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!SelfWeakPtr.IsValid())
 				return;
@@ -736,7 +860,11 @@ void UIRtcEngineEventHandlerEx::onLicenseValidationFailure(const agora::rtc::Rtc
 	if (!SelfWeakPtr.IsValid())
 		return;
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!SelfWeakPtr.IsValid())
 				return;
@@ -755,7 +883,11 @@ void UIRtcEngineEventHandlerEx::onTokenPrivilegeWillExpire(const agora::rtc::Rtc
 	if (!SelfWeakPtr.IsValid())
 		return;
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!SelfWeakPtr.IsValid())
 				return;
@@ -773,7 +905,11 @@ void UIRtcEngineEventHandlerEx::onFirstLocalAudioFramePublished(const agora::rtc
 	if (!SelfWeakPtr.IsValid())
 		return;
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!SelfWeakPtr.IsValid())
 				return;
@@ -791,7 +927,11 @@ void UIRtcEngineEventHandlerEx::onFirstRemoteAudioFrame(const agora::rtc::RtcCon
 	if (!SelfWeakPtr.IsValid())
 		return;
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!SelfWeakPtr.IsValid())
 				return;
@@ -809,7 +949,11 @@ void UIRtcEngineEventHandlerEx::onFirstRemoteAudioDecoded(const agora::rtc::RtcC
 	if (!SelfWeakPtr.IsValid())
 		return;
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!SelfWeakPtr.IsValid())
 				return;
@@ -827,7 +971,11 @@ void UIRtcEngineEventHandlerEx::onLocalAudioStateChanged(const agora::rtc::RtcCo
 	if (!SelfWeakPtr.IsValid())
 		return;
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!SelfWeakPtr.IsValid())
 				return;
@@ -846,7 +994,11 @@ void UIRtcEngineEventHandlerEx::onRemoteAudioStateChanged(const agora::rtc::RtcC
 	if (!SelfWeakPtr.IsValid())
 		return;
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!SelfWeakPtr.IsValid())
 				return;
@@ -865,7 +1017,11 @@ void UIRtcEngineEventHandlerEx::onActiveSpeaker(const agora::rtc::RtcConnection&
 	if (!SelfWeakPtr.IsValid())
 		return;
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!SelfWeakPtr.IsValid())
 				return;
@@ -887,7 +1043,11 @@ void UIRtcEngineEventHandlerEx::onClientRoleChanged(const agora::rtc::RtcConnect
 	if (!SelfWeakPtr.IsValid())
 		return;
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!SelfWeakPtr.IsValid())
 				return;
@@ -905,7 +1065,11 @@ void UIRtcEngineEventHandlerEx::onClientRoleChangeFailed(const agora::rtc::RtcCo
 	if (!SelfWeakPtr.IsValid())
 		return;
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!SelfWeakPtr.IsValid())
 				return;
@@ -923,7 +1087,11 @@ void UIRtcEngineEventHandlerEx::onRemoteAudioTransportStats(const agora::rtc::Rt
 	if (!SelfWeakPtr.IsValid())
 		return;
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!SelfWeakPtr.IsValid())
 				return;
@@ -941,7 +1109,11 @@ void UIRtcEngineEventHandlerEx::onRemoteVideoTransportStats(const agora::rtc::Rt
 	if (!SelfWeakPtr.IsValid())
 		return;
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!SelfWeakPtr.IsValid())
 				return;
@@ -959,7 +1131,11 @@ void UIRtcEngineEventHandlerEx::onConnectionStateChanged(const agora::rtc::RtcCo
 	if (!SelfWeakPtr.IsValid())
 		return;
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!SelfWeakPtr.IsValid())
 				return;
@@ -977,7 +1153,11 @@ void UIRtcEngineEventHandlerEx::onWlAccMessage(const agora::rtc::RtcConnection& 
 	if (!SelfWeakPtr.IsValid())
 		return;
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!SelfWeakPtr.IsValid())
 				return;
@@ -1003,7 +1183,11 @@ void UIRtcEngineEventHandlerEx::onWlAccStats(const agora::rtc::RtcConnection& co
 	if (!SelfWeakPtr.IsValid())
 		return;
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!SelfWeakPtr.IsValid())
 				return;
@@ -1021,7 +1205,11 @@ void UIRtcEngineEventHandlerEx::onNetworkTypeChanged(const agora::rtc::RtcConnec
 	if (!SelfWeakPtr.IsValid())
 		return;
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!SelfWeakPtr.IsValid())
 				return;
@@ -1039,7 +1227,11 @@ void UIRtcEngineEventHandlerEx::onEncryptionError(const agora::rtc::RtcConnectio
 	if (!SelfWeakPtr.IsValid())
 		return;
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!SelfWeakPtr.IsValid())
 				return;
@@ -1057,7 +1249,11 @@ void UIRtcEngineEventHandlerEx::onUploadLogResult(const agora::rtc::RtcConnectio
 	if (!SelfWeakPtr.IsValid())
 		return;
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!SelfWeakPtr.IsValid())
 				return;
@@ -1075,7 +1271,11 @@ void UIRtcEngineEventHandlerEx::onUserAccountUpdated(const agora::rtc::RtcConnec
 	if (!SelfWeakPtr.IsValid())
 		return;
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!SelfWeakPtr.IsValid())
 				return;
@@ -1093,7 +1293,11 @@ void UIRtcEngineEventHandlerEx::onSnapshotTaken(const agora::rtc::RtcConnection&
 	if (!SelfWeakPtr.IsValid())
 		return;
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!SelfWeakPtr.IsValid())
 				return;
@@ -1108,7 +1312,11 @@ void UIRtcEngineEventHandlerEx::onVideoRenderingTracingResult(const agora::rtc::
 	if (!SelfWeakPtr.IsValid())
 		return;
 
+#if UE_5_3_OR_LATER
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!SelfWeakPtr.IsValid())
 				return;

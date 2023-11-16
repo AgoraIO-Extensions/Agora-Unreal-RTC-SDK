@@ -1,3 +1,5 @@
+//  Copyright (c) 2023 Agora.io. All rights reserved.
+
 #include "AgoraCppPlugin/Include/RtcEngineProxy.h"
 #include "AgoraPluginInterface.h"
 
@@ -51,11 +53,15 @@ namespace agora
 
 			void RtcEngineProxy::UnInitInstance(bool sync /*= false*/)
 			{
-				RtcEngine->release(sync);
-				RtcEngine = nullptr;
+				if(RtcEngine){
+
+					RtcEngine->release(sync);
+					RtcEngine = nullptr;
 #if AGORA_UESDK_ENABLE_VIDEO
-				VideoRenderMgr = nullptr;
+					VideoRenderMgr = nullptr;
 #endif
+				
+				}
 			}
 
 

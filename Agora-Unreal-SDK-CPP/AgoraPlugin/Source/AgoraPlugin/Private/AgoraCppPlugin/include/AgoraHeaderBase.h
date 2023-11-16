@@ -1,3 +1,5 @@
+//  Copyright (c) 2023 Agora.io. All rights reserved.
+
 #pragma once
 
 // For compiling the plugin independently using UAT's BuildPlugin command
@@ -17,6 +19,10 @@
 
 // additional
 #include <AgoraCppPlugin/IAgoraMusicContentCenter.h>
+
+
+#include "Runtime/Launch/Resources/Version.h"
+#define UE_5_3_OR_LATER   (ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >= 3) // C++ Standard Version: C++20
 
 
 enum AGORA_UNREAL_PLUGIN_ERROR_CODE
