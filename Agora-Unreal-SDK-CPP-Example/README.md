@@ -191,6 +191,11 @@ Double click to open *Contents/Info.plist* in XCode, then click **Information Pr
 
 ![privacy_plist](./DocImages/PrivacyPlist.gif)
 
+Notice: For UE5, it would be better to add permissions to info.plist template, the path would be:
+```
+/Users/Shared/Epic Games/<YourUE5Ver>/Engine/Source/Runtime/Launch/Resources/Mac
+```
+
 If you are editing with Xcode, you can just open the plist file with a text editor and paste the following XML snippet into it:
 ```xml
 	<key>NSCameraUsageDescription</key>
