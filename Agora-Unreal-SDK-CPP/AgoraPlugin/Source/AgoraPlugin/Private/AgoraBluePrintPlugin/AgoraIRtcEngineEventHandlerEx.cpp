@@ -14,7 +14,7 @@ void UIRtcEngineEventHandlerEx::onJoinChannelSuccess(const agora::rtc::RtcConnec
 	if (!SelfWeakPtr.IsValid())
 		return;
 
-#if AGORA_CPP_VER_20_OR_LATER
+#if (__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -36,7 +36,7 @@ void UIRtcEngineEventHandlerEx::onRejoinChannelSuccess(const agora::rtc::RtcConn
 	if (!SelfWeakPtr.IsValid())
 		return;
 
-#if AGORA_CPP_VER_20_OR_LATER
+#if (__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -58,7 +58,7 @@ void UIRtcEngineEventHandlerEx::onAudioQuality(const agora::rtc::RtcConnection& 
 	if (!SelfWeakPtr.IsValid())
 		return;
 
-#if AGORA_CPP_VER_20_OR_LATER
+#if (__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -90,7 +90,7 @@ void UIRtcEngineEventHandlerEx::onAudioVolumeIndication(const agora::rtc::RtcCon
 	if (!SelfWeakPtr.IsValid())
 		return;
 
-#if AGORA_CPP_VER_20_OR_LATER
+#if (__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -147,7 +147,7 @@ void UIRtcEngineEventHandlerEx::onLeaveChannel(const agora::rtc::RtcConnection& 
 	if (!SelfWeakPtr.IsValid())
 		return;
 
-#if AGORA_CPP_VER_20_OR_LATER
+#if (__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -203,7 +203,7 @@ void UIRtcEngineEventHandlerEx::onRtcStats(const agora::rtc::RtcConnection& conn
 	if (!SelfWeakPtr.IsValid())
 		return;
 
-#if AGORA_CPP_VER_20_OR_LATER
+#if (__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -225,7 +225,7 @@ void UIRtcEngineEventHandlerEx::onNetworkQuality(const agora::rtc::RtcConnection
 	if (!SelfWeakPtr.IsValid())
 		return;
 
-#if AGORA_CPP_VER_20_OR_LATER
+#if (__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -248,7 +248,7 @@ void UIRtcEngineEventHandlerEx::onIntraRequestReceived(const agora::rtc::RtcConn
 	if (!SelfWeakPtr.IsValid())
 		return;
 
-#if AGORA_CPP_VER_20_OR_LATER
+#if (__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -271,7 +271,7 @@ void UIRtcEngineEventHandlerEx::onFirstLocalVideoFramePublished(const agora::rtc
 	if (!SelfWeakPtr.IsValid())
 		return;
 
-#if AGORA_CPP_VER_20_OR_LATER
+#if (__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -293,7 +293,7 @@ void UIRtcEngineEventHandlerEx::onFirstRemoteVideoDecoded(const agora::rtc::RtcC
 	if (!SelfWeakPtr.IsValid())
 		return;
 
-#if AGORA_CPP_VER_20_OR_LATER
+#if (__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -315,7 +315,7 @@ void UIRtcEngineEventHandlerEx::onVideoSizeChanged(const agora::rtc::RtcConnecti
 	if (!SelfWeakPtr.IsValid())
 		return;
 
-#if AGORA_CPP_VER_20_OR_LATER
+#if (__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -337,7 +337,7 @@ void UIRtcEngineEventHandlerEx::onLocalVideoStateChanged(const agora::rtc::RtcCo
 	if (!SelfWeakPtr.IsValid())
 		return;
 
-#if AGORA_CPP_VER_20_OR_LATER
+#if (__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -360,7 +360,7 @@ void UIRtcEngineEventHandlerEx::onRemoteVideoStateChanged(const agora::rtc::RtcC
 	if (!SelfWeakPtr.IsValid())
 		return;
 
-#if AGORA_CPP_VER_20_OR_LATER
+#if (__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -382,7 +382,7 @@ void UIRtcEngineEventHandlerEx::onFirstRemoteVideoFrame(const agora::rtc::RtcCon
 	if (!SelfWeakPtr.IsValid())
 		return;
 
-#if AGORA_CPP_VER_20_OR_LATER
+#if (__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -404,7 +404,7 @@ void UIRtcEngineEventHandlerEx::onUserJoined(const agora::rtc::RtcConnection& co
 	if (!SelfWeakPtr.IsValid())
 		return;
 
-#if AGORA_CPP_VER_20_OR_LATER
+#if (__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -426,7 +426,7 @@ void UIRtcEngineEventHandlerEx::onUserOffline(const agora::rtc::RtcConnection& c
 	if (!SelfWeakPtr.IsValid())
 		return;
 
-#if AGORA_CPP_VER_20_OR_LATER
+#if (__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -448,7 +448,7 @@ void UIRtcEngineEventHandlerEx::onUserMuteAudio(const agora::rtc::RtcConnection&
 	if (!SelfWeakPtr.IsValid())
 		return;
 
-#if AGORA_CPP_VER_20_OR_LATER
+#if (__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -470,7 +470,7 @@ void UIRtcEngineEventHandlerEx::onUserMuteVideo(const agora::rtc::RtcConnection&
 	if (!SelfWeakPtr.IsValid())
 		return;
 
-#if AGORA_CPP_VER_20_OR_LATER
+#if (__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -492,7 +492,7 @@ void UIRtcEngineEventHandlerEx::onUserEnableVideo(const agora::rtc::RtcConnectio
 	if (!SelfWeakPtr.IsValid())
 		return;
 
-#if AGORA_CPP_VER_20_OR_LATER
+#if (__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -515,7 +515,7 @@ void UIRtcEngineEventHandlerEx::onUserEnableLocalVideo(const agora::rtc::RtcConn
 	if (!SelfWeakPtr.IsValid())
 		return;
 
-#if AGORA_CPP_VER_20_OR_LATER
+#if (__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -538,7 +538,7 @@ void UIRtcEngineEventHandlerEx::onUserStateChanged(const agora::rtc::RtcConnecti
 	if (!SelfWeakPtr.IsValid())
 		return;
 
-#if AGORA_CPP_VER_20_OR_LATER
+#if (__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -569,7 +569,7 @@ void UIRtcEngineEventHandlerEx::onLocalAudioStats(const agora::rtc::RtcConnectio
 	if (!SelfWeakPtr.IsValid())
 		return;
 
-#if AGORA_CPP_VER_20_OR_LATER
+#if (__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -608,7 +608,7 @@ void UIRtcEngineEventHandlerEx::onRemoteAudioStats(const agora::rtc::RtcConnecti
 	if (!SelfWeakPtr.IsValid())
 		return;
 
-#if AGORA_CPP_VER_20_OR_LATER
+#if (__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -654,7 +654,7 @@ void UIRtcEngineEventHandlerEx::onLocalVideoStats(const agora::rtc::RtcConnectio
 	if (!SelfWeakPtr.IsValid())
 		return;
 
-#if AGORA_CPP_VER_20_OR_LATER
+#if (__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -693,7 +693,7 @@ void UIRtcEngineEventHandlerEx::onRemoteVideoStats(const agora::rtc::RtcConnecti
 	if (!SelfWeakPtr.IsValid())
 		return;
 
-#if AGORA_CPP_VER_20_OR_LATER
+#if (__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -715,7 +715,7 @@ void UIRtcEngineEventHandlerEx::onConnectionLost(const agora::rtc::RtcConnection
 	if (!SelfWeakPtr.IsValid())
 		return;
 
-#if AGORA_CPP_VER_20_OR_LATER
+#if (__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -737,7 +737,7 @@ void UIRtcEngineEventHandlerEx::onConnectionInterrupted(const agora::rtc::RtcCon
 	if (!SelfWeakPtr.IsValid())
 		return;
 
-#if AGORA_CPP_VER_20_OR_LATER
+#if (__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -760,7 +760,7 @@ void UIRtcEngineEventHandlerEx::onConnectionBanned(const agora::rtc::RtcConnecti
 	if (!SelfWeakPtr.IsValid())
 		return;
 
-#if AGORA_CPP_VER_20_OR_LATER
+#if (__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -788,7 +788,7 @@ void UIRtcEngineEventHandlerEx::onStreamMessage(const agora::rtc::RtcConnection&
 	if (!SelfWeakPtr.IsValid())
 		return;
 
-#if AGORA_CPP_VER_20_OR_LATER
+#if (__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -811,7 +811,7 @@ void UIRtcEngineEventHandlerEx::onStreamMessageError(const agora::rtc::RtcConnec
 	if (!SelfWeakPtr.IsValid())
 		return;
 
-#if AGORA_CPP_VER_20_OR_LATER
+#if (__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -834,7 +834,7 @@ void UIRtcEngineEventHandlerEx::onRequestToken(const agora::rtc::RtcConnection& 
 	if (!SelfWeakPtr.IsValid())
 		return;
 
-#if AGORA_CPP_VER_20_OR_LATER
+#if (__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -860,7 +860,7 @@ void UIRtcEngineEventHandlerEx::onLicenseValidationFailure(const agora::rtc::Rtc
 	if (!SelfWeakPtr.IsValid())
 		return;
 
-#if AGORA_CPP_VER_20_OR_LATER
+#if (__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -883,7 +883,7 @@ void UIRtcEngineEventHandlerEx::onTokenPrivilegeWillExpire(const agora::rtc::Rtc
 	if (!SelfWeakPtr.IsValid())
 		return;
 
-#if AGORA_CPP_VER_20_OR_LATER
+#if (__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -905,7 +905,7 @@ void UIRtcEngineEventHandlerEx::onFirstLocalAudioFramePublished(const agora::rtc
 	if (!SelfWeakPtr.IsValid())
 		return;
 
-#if AGORA_CPP_VER_20_OR_LATER
+#if (__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -927,7 +927,7 @@ void UIRtcEngineEventHandlerEx::onFirstRemoteAudioFrame(const agora::rtc::RtcCon
 	if (!SelfWeakPtr.IsValid())
 		return;
 
-#if AGORA_CPP_VER_20_OR_LATER
+#if (__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -949,7 +949,7 @@ void UIRtcEngineEventHandlerEx::onFirstRemoteAudioDecoded(const agora::rtc::RtcC
 	if (!SelfWeakPtr.IsValid())
 		return;
 
-#if AGORA_CPP_VER_20_OR_LATER
+#if (__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -971,7 +971,7 @@ void UIRtcEngineEventHandlerEx::onLocalAudioStateChanged(const agora::rtc::RtcCo
 	if (!SelfWeakPtr.IsValid())
 		return;
 
-#if AGORA_CPP_VER_20_OR_LATER
+#if (__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -994,7 +994,7 @@ void UIRtcEngineEventHandlerEx::onRemoteAudioStateChanged(const agora::rtc::RtcC
 	if (!SelfWeakPtr.IsValid())
 		return;
 
-#if AGORA_CPP_VER_20_OR_LATER
+#if (__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -1017,7 +1017,7 @@ void UIRtcEngineEventHandlerEx::onActiveSpeaker(const agora::rtc::RtcConnection&
 	if (!SelfWeakPtr.IsValid())
 		return;
 
-#if AGORA_CPP_VER_20_OR_LATER
+#if (__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -1043,7 +1043,7 @@ void UIRtcEngineEventHandlerEx::onClientRoleChanged(const agora::rtc::RtcConnect
 	if (!SelfWeakPtr.IsValid())
 		return;
 
-#if AGORA_CPP_VER_20_OR_LATER
+#if (__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -1065,7 +1065,7 @@ void UIRtcEngineEventHandlerEx::onClientRoleChangeFailed(const agora::rtc::RtcCo
 	if (!SelfWeakPtr.IsValid())
 		return;
 
-#if AGORA_CPP_VER_20_OR_LATER
+#if (__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -1087,7 +1087,7 @@ void UIRtcEngineEventHandlerEx::onRemoteAudioTransportStats(const agora::rtc::Rt
 	if (!SelfWeakPtr.IsValid())
 		return;
 
-#if AGORA_CPP_VER_20_OR_LATER
+#if (__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -1109,7 +1109,7 @@ void UIRtcEngineEventHandlerEx::onRemoteVideoTransportStats(const agora::rtc::Rt
 	if (!SelfWeakPtr.IsValid())
 		return;
 
-#if AGORA_CPP_VER_20_OR_LATER
+#if (__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -1131,7 +1131,7 @@ void UIRtcEngineEventHandlerEx::onConnectionStateChanged(const agora::rtc::RtcCo
 	if (!SelfWeakPtr.IsValid())
 		return;
 
-#if AGORA_CPP_VER_20_OR_LATER
+#if (__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -1153,7 +1153,7 @@ void UIRtcEngineEventHandlerEx::onWlAccMessage(const agora::rtc::RtcConnection& 
 	if (!SelfWeakPtr.IsValid())
 		return;
 
-#if AGORA_CPP_VER_20_OR_LATER
+#if (__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -1183,7 +1183,7 @@ void UIRtcEngineEventHandlerEx::onWlAccStats(const agora::rtc::RtcConnection& co
 	if (!SelfWeakPtr.IsValid())
 		return;
 
-#if AGORA_CPP_VER_20_OR_LATER
+#if (__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -1205,7 +1205,7 @@ void UIRtcEngineEventHandlerEx::onNetworkTypeChanged(const agora::rtc::RtcConnec
 	if (!SelfWeakPtr.IsValid())
 		return;
 
-#if AGORA_CPP_VER_20_OR_LATER
+#if (__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -1227,7 +1227,7 @@ void UIRtcEngineEventHandlerEx::onEncryptionError(const agora::rtc::RtcConnectio
 	if (!SelfWeakPtr.IsValid())
 		return;
 
-#if AGORA_CPP_VER_20_OR_LATER
+#if (__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -1249,7 +1249,7 @@ void UIRtcEngineEventHandlerEx::onUploadLogResult(const agora::rtc::RtcConnectio
 	if (!SelfWeakPtr.IsValid())
 		return;
 
-#if AGORA_CPP_VER_20_OR_LATER
+#if (__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -1271,7 +1271,7 @@ void UIRtcEngineEventHandlerEx::onUserAccountUpdated(const agora::rtc::RtcConnec
 	if (!SelfWeakPtr.IsValid())
 		return;
 
-#if AGORA_CPP_VER_20_OR_LATER
+#if (__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -1293,7 +1293,7 @@ void UIRtcEngineEventHandlerEx::onSnapshotTaken(const agora::rtc::RtcConnection&
 	if (!SelfWeakPtr.IsValid())
 		return;
 
-#if AGORA_CPP_VER_20_OR_LATER
+#if (__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -1312,7 +1312,7 @@ void UIRtcEngineEventHandlerEx::onVideoRenderingTracingResult(const agora::rtc::
 	if (!SelfWeakPtr.IsValid())
 		return;
 
-#if AGORA_CPP_VER_20_OR_LATER
+#if (__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()

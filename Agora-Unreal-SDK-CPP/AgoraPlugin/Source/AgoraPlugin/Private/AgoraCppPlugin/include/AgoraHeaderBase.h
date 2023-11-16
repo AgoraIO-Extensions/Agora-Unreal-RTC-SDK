@@ -24,10 +24,6 @@
 // #include "Runtime/Launch/Resources/Version.h"
 // #define UE_5_3_OR_LATER   (ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >= 3) 
 
-// if your compiler is not covered by the following macros, you could add it yourself here.
-#define AGORA_CPP_VER_20_OR_LATER   ((__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)) // C++ Standard Version: C++20
-
-
 enum AGORA_UNREAL_PLUGIN_ERROR_CODE
 {
 	ERROR_OK = 0,

@@ -9,7 +9,7 @@ void UIMediaPlayerSourceObserver::onPlayerSourceStateChanged(agora::media::base:
 	if (!SelfWeakPtr.IsValid())
 		return;
 
-#if AGORA_CPP_VER_20_OR_LATER
+#if (__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -27,7 +27,7 @@ void UIMediaPlayerSourceObserver::onPositionChanged(int64_t position_ms)
 	if (!SelfWeakPtr.IsValid())
 		return;
 
-#if AGORA_CPP_VER_20_OR_LATER
+#if (__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -45,7 +45,7 @@ void UIMediaPlayerSourceObserver::onPlayerEvent(agora::media::base::MEDIA_PLAYER
 	if (!SelfWeakPtr.IsValid())
 		return;
 
-#if AGORA_CPP_VER_20_OR_LATER
+#if (__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -63,7 +63,7 @@ void UIMediaPlayerSourceObserver::onMetaData(const void* data, int length)
 	if (!SelfWeakPtr.IsValid())
 		return;
 
-#if AGORA_CPP_VER_20_OR_LATER
+#if (__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -81,7 +81,7 @@ void UIMediaPlayerSourceObserver::onPlayBufferUpdated(int64_t playCachedBuffer)
 	if (!SelfWeakPtr.IsValid())
 		return;
 
-#if AGORA_CPP_VER_20_OR_LATER
+#if (__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -99,7 +99,7 @@ void UIMediaPlayerSourceObserver::onPreloadEvent(const char* src, agora::media::
 	if (!SelfWeakPtr.IsValid())
 		return;
 
-#if AGORA_CPP_VER_20_OR_LATER
+#if (__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -117,7 +117,7 @@ void UIMediaPlayerSourceObserver::onCompleted()
 	if (!SelfWeakPtr.IsValid())
 		return;
 
-#if AGORA_CPP_VER_20_OR_LATER
+#if (__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -135,7 +135,7 @@ void UIMediaPlayerSourceObserver::onAgoraCDNTokenWillExpire()
 	if (!SelfWeakPtr.IsValid())
 		return;
 
-#if AGORA_CPP_VER_20_OR_LATER
+#if (__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -153,7 +153,7 @@ void UIMediaPlayerSourceObserver::onPlayerSrcInfoChanged(const agora::media::bas
 	if (!SelfWeakPtr.IsValid())
 		return;
 
-#if AGORA_CPP_VER_20_OR_LATER
+#if (__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -177,7 +177,7 @@ void UIMediaPlayerSourceObserver::onPlayerInfoUpdated(const agora::media::base::
 	if (!SelfWeakPtr.IsValid())
 		return;
 
-#if AGORA_CPP_VER_20_OR_LATER
+#if (__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -213,7 +213,7 @@ void UIMediaPlayerSourceObserver::onAudioVolumeIndication(int volume)
 	if (!SelfWeakPtr.IsValid())
 		return;
 
-#if AGORA_CPP_VER_20_OR_LATER
+#if (__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -233,7 +233,7 @@ int UIMediaPlayerCustomDataProvider::onReadData(unsigned char* buffer, int buffe
 	if (!SelfWeakPtr.IsValid())
 		return bufferSize;
 
-#if AGORA_CPP_VER_20_OR_LATER
+#if (__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -262,7 +262,7 @@ int64_t UIMediaPlayerCustomDataProvider::onSeek(int64_t offset, int whence)
 	if (!SelfWeakPtr.IsValid())
 		return offset;
 
-#if AGORA_CPP_VER_20_OR_LATER
+#if (__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()

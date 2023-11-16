@@ -7,7 +7,7 @@
 bool UIPacketObserver::onSendAudioPacket(agora::rtc::IPacketObserver::Packet& packet)
 {
 	FPacket pack;
-#if AGORA_CPP_VER_20_OR_LATER
+#if (__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -29,7 +29,7 @@ bool UIPacketObserver::onSendAudioPacket(agora::rtc::IPacketObserver::Packet& pa
 bool UIPacketObserver::onSendVideoPacket(agora::rtc::IPacketObserver::Packet& packet)
 {
 	FPacket pack;
-#if AGORA_CPP_VER_20_OR_LATER
+#if (__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -49,7 +49,7 @@ bool UIPacketObserver::onSendVideoPacket(agora::rtc::IPacketObserver::Packet& pa
 }
 bool UIPacketObserver::onReceiveAudioPacket(agora::rtc::IPacketObserver::Packet& packet)
 {
-#if AGORA_CPP_VER_20_OR_LATER
+#if (__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -72,7 +72,7 @@ bool UIPacketObserver::onReceiveAudioPacket(agora::rtc::IPacketObserver::Packet&
 }
 bool UIPacketObserver::onReceiveVideoPacket(agora::rtc::IPacketObserver::Packet& packet)
 {
-#if AGORA_CPP_VER_20_OR_LATER
+#if (__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -96,7 +96,7 @@ bool UIPacketObserver::onReceiveVideoPacket(agora::rtc::IPacketObserver::Packet&
 
 void UIAudioEncodedFrameObserver::onRecordAudioEncodedFrame(const uint8_t* frameBuffer, int length, const agora::rtc::EncodedAudioFrameInfo& audioEncodedFrameInfo)
 {
-#if AGORA_CPP_VER_20_OR_LATER
+#if (__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -126,7 +126,7 @@ void UIAudioEncodedFrameObserver::onRecordAudioEncodedFrame(const uint8_t* frame
 
 void UIAudioEncodedFrameObserver::onPlaybackAudioEncodedFrame(const uint8_t* frameBuffer, int length, const agora::rtc::EncodedAudioFrameInfo& audioEncodedFrameInfo)
 {
-#if AGORA_CPP_VER_20_OR_LATER
+#if (__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
@@ -157,7 +157,7 @@ void UIAudioEncodedFrameObserver::onPlaybackAudioEncodedFrame(const uint8_t* fra
 
 void UIAudioEncodedFrameObserver::onMixedAudioEncodedFrame(const uint8_t* frameBuffer, int length, const agora::rtc::EncodedAudioFrameInfo& audioEncodedFrameInfo)
 {
-#if AGORA_CPP_VER_20_OR_LATER
+#if (__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
 	AsyncTask(ENamedThreads::GameThread, [=]()
