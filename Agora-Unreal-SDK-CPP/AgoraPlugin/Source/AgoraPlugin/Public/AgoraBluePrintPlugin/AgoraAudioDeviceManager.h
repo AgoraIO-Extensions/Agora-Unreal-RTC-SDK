@@ -30,7 +30,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Agora|IAudioDeviceCollection")
 	int SetApplicationVolume(int volume);
 	UFUNCTION(BlueprintCallable, Category = "Agora|IAudioDeviceCollection")
-	int GetApplicationVolume(int volume);
+	int GetApplicationVolume(int& volume);
 	UFUNCTION(BlueprintCallable, Category = "Agora|IAudioDeviceCollection")
 	int SetApplicationMute(bool mute);
 	UFUNCTION(BlueprintCallable, Category = "Agora|IAudioDeviceCollection")
