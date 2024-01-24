@@ -69,7 +69,7 @@ int UIAudioDeviceCollection::SetApplicationVolume(int volume)
 	}
 	return -ERROR_NULLPTR;
 }
-int UIAudioDeviceCollection::GetApplicationVolume(int& volume)
+int UIAudioDeviceCollection::GetApplicationVolume(int & volume)
 {
 	if (AudioDeviceCollection != nullptr)
 	{
