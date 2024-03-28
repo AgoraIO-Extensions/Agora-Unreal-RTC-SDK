@@ -150,7 +150,7 @@ void USetBeautyEffectOptionsWidget::UnInitAgoraEngine()
 	{
 		RtcEngineProxy->leaveChannel();
 		RtcEngineProxy->unregisterEventHandler(UserRtcEventHandlerEx.Get());
-		RtcEngineProxy->release();
+		agora::rtc::ue::releaseAgoraRtcEngine();
 		RtcEngineProxy = nullptr;
 
 		UBFL_Logger::Print(FString::Printf(TEXT("%s release agora engine"), *FString(FUNCTION_MACRO)), LogMsgViewPtr);

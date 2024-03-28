@@ -249,7 +249,7 @@ void UScreenShareWidget::OnBtnBackToHomeClicked()
 	{
 		UE_LOG(LogTemp, Warning, TEXT("UJoinChannelVideoTokenWidget::NativeDestruct"));
 		RtcEngineProxy->unregisterEventHandler(UserRtcEventHandlerEx.Get());
-		RtcEngineProxy->release();
+		agora::rtc::ue::releaseAgoraRtcEngine();
 		RtcEngineProxy = nullptr;
 	}
 	UGameplayStatics::OpenLevel(UGameplayStatics::GetPlayerController(GWorld, 0)->GetWorld(), FName("MainLevel"));
@@ -271,7 +271,7 @@ void UScreenShareWidget::UnInitAgoraEngine()
 		RtcEngineProxy->stopScreenCapture();
 		RtcEngineProxy->leaveChannel();
 		RtcEngineProxy->unregisterEventHandler(UserRtcEventHandlerEx.Get());
-		RtcEngineProxy->release();
+		agora::rtc::ue::releaseAgoraRtcEngine();
 		RtcEngineProxy = nullptr;
 
 		UBFL_Logger::Print(FString::Printf(TEXT("%s release agora engine"), *FString(FUNCTION_MACRO)), LogMsgViewPtr);

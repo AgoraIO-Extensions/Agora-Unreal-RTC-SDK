@@ -234,7 +234,7 @@ void USpatialAudioWithMPWidget::UnInitAgoraEngine()
 
 		RtcEngineProxy->leaveChannel();
 		RtcEngineProxy->unregisterEventHandler(UserRtcEventHandlerEx.Get());
-		RtcEngineProxy->release();
+		agora::rtc::ue::releaseAgoraRtcEngine();
 		RtcEngineProxy = nullptr;
 
 		UBFL_Logger::Print(FString::Printf(TEXT("%s release agora engine"), *FString(FUNCTION_MACRO)), LogMsgViewPtr);
@@ -442,7 +442,7 @@ void USpatialAudioWithMPWidget::FUserRtcEventHandlerEx::onUserOffline(const agor
 
 #pragma region  AgoraCallback - IMediaPlayerSourceObserver
 
-void USpatialAudioWithMPWidget::FUserIMediaPlayerSourceObserver::onPlayerSourceStateChanged(media::base::MEDIA_PLAYER_STATE state, media::base::MEDIA_PLAYER_ERROR ec)
+void USpatialAudioWithMPWidget::FUserIMediaPlayerSourceObserver::onPlayerSourceStateChanged(media::base::MEDIA_PLAYER_STATE state, media::base::MEDIA_PLAYER_REASON reason)
 {
 	if (state != media::base::MEDIA_PLAYER_STATE::PLAYER_STATE_OPEN_COMPLETED)
 		return;
@@ -475,7 +475,7 @@ void USpatialAudioWithMPWidget::FUserIMediaPlayerSourceObserver::onPlayerSourceS
 		});
 }
 
-void USpatialAudioWithMPWidget::FUserIMediaPlayerSourceObserver::onPositionChanged(int64_t position_ms)
+void USpatialAudioWithMPWidget::FUserIMediaPlayerSourceObserver::onPositionChanged(int64_t positionMs, int64_t timestampMs)
 {
 
 }

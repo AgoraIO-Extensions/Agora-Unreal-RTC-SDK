@@ -188,7 +188,7 @@ void URtmpStreamWithTranscodingWidget::UnInitAgoraEngine()
 	{
 		RtcEngineProxy->leaveChannel();
 		RtcEngineProxy->unregisterEventHandler(UserRtcEventHandler.Get());
-		RtcEngineProxy->release();
+		agora::rtc::ue::releaseAgoraRtcEngine();
 		RtcEngineProxy = nullptr;
 
 		UBFL_Logger::Print(FString::Printf(TEXT("%s release agora engine"), *FString(FUNCTION_MACRO)), LogMsgViewPtr);
@@ -393,7 +393,7 @@ void URtmpStreamWithTranscodingWidget::FUserRtcEventHandler::onTranscodingUpdate
 		});
 }
 
-void URtmpStreamWithTranscodingWidget::FUserRtcEventHandler::onRtmpStreamingStateChanged(const char* url, RTMP_STREAM_PUBLISH_STATE state, RTMP_STREAM_PUBLISH_ERROR_TYPE errCode)
+void URtmpStreamWithTranscodingWidget::FUserRtcEventHandler::onRtmpStreamingStateChanged(const char* url, RTMP_STREAM_PUBLISH_STATE state, RTMP_STREAM_PUBLISH_REASON reason)
 {
 	if (!IsWidgetValid())
 		return;
@@ -410,7 +410,7 @@ void URtmpStreamWithTranscodingWidget::FUserRtcEventHandler::onRtmpStreamingStat
 				return;
 			}
 
-			UBFL_Logger::Print(FString::Printf(TEXT("%s url:%s,state:%d ,errCode:%d "), *FString(FUNCTION_MACRO), UTF8_TO_TCHAR(url), state, errCode), WidgetPtr->GetLogMsgViewPtr());
+			UBFL_Logger::Print(FString::Printf(TEXT("%s url:%s,state:%d ,reason:%d "), *FString(FUNCTION_MACRO), UTF8_TO_TCHAR(url), state, reason), WidgetPtr->GetLogMsgViewPtr());
 		});
 }
 

@@ -284,7 +284,7 @@ void UAudioSpectrumWidget::UnInitAgoraEngine()
 
 		RtcEngineProxy->leaveChannel();
 		RtcEngineProxy->unregisterEventHandler(UserRtcEventHandler.Get());
-		RtcEngineProxy->release();
+		agora::rtc::ue::releaseAgoraRtcEngine();
 		RtcEngineProxy = nullptr;
 
 		UBFL_Logger::Print(FString::Printf(TEXT("%s release agora engine"), *FString(FUNCTION_MACRO)), LogMsgViewPtr);
@@ -469,7 +469,7 @@ void UAudioSpectrumWidget::FUserRtcEventHandler::onLeaveChannel(const agora::rtc
 
 #pragma region AgoraCallback - IMediaPlayerSourceObserver
 
-void UAudioSpectrumWidget::FUserIMediaPlayerSourceObserver::onPlayerSourceStateChanged(media::base::MEDIA_PLAYER_STATE state, media::base::MEDIA_PLAYER_ERROR ec)
+void UAudioSpectrumWidget::FUserIMediaPlayerSourceObserver::onPlayerSourceStateChanged(media::base::MEDIA_PLAYER_STATE state, media::base::MEDIA_PLAYER_REASON reason)
 {
 	if (!IsWidgetValid())
 		return;
@@ -502,7 +502,7 @@ void UAudioSpectrumWidget::FUserIMediaPlayerSourceObserver::onPlayerSourceStateC
 		});
 }
 
-void UAudioSpectrumWidget::FUserIMediaPlayerSourceObserver::onPositionChanged(int64_t position_ms)
+void UAudioSpectrumWidget::FUserIMediaPlayerSourceObserver::onPositionChanged(int64_t positionMs, int64_t timestampMs)
 {
 
 }

@@ -182,7 +182,7 @@ void UStartRhythmPlayerWidget::UnInitAgoraEngine()
 	{
 		RtcEngineProxy->leaveChannel();
 		RtcEngineProxy->unregisterEventHandler(UserRtcEventHandlerEx.Get());
-		RtcEngineProxy->release();
+		agora::rtc::ue::releaseAgoraRtcEngine();
 		RtcEngineProxy = nullptr;
 
 		UBFL_Logger::Print(FString::Printf(TEXT("%s release agora engine"), *FString(FUNCTION_MACRO)), LogMsgViewPtr);
@@ -365,7 +365,7 @@ void UStartRhythmPlayerWidget::FUserRtcEventHandlerEx::onUserOffline(const agora
 		});
 }
 
-void UStartRhythmPlayerWidget::FUserRtcEventHandlerEx::onRhythmPlayerStateChanged(RHYTHM_PLAYER_STATE_TYPE state, RHYTHM_PLAYER_ERROR_TYPE errorCode)
+void UStartRhythmPlayerWidget::FUserRtcEventHandlerEx::onRhythmPlayerStateChanged(RHYTHM_PLAYER_STATE_TYPE state, RHYTHM_PLAYER_REASON reason)
 {
 	if (!IsWidgetValid())
 		return;
@@ -381,7 +381,7 @@ void UStartRhythmPlayerWidget::FUserRtcEventHandlerEx::onRhythmPlayerStateChange
 				UBFL_Logger::Print(FString::Printf(TEXT("%s bIsDestruct "), *FString(FUNCTION_MACRO)));
 				return;
 			}
-			UBFL_Logger::Print(FString::Printf(TEXT("%s state=%d errorcode=%d"), *FString(FUNCTION_MACRO), (int)state, (int)errorCode), WidgetPtr->GetLogMsgViewPtr());
+			UBFL_Logger::Print(FString::Printf(TEXT("%s state=%d reason=%d"), *FString(FUNCTION_MACRO), (int)state, (int)reason), WidgetPtr->GetLogMsgViewPtr());
 		});
 }
 

@@ -275,7 +275,7 @@ void UDualCameraWidget::UnInitAgoraEngine()
 		RtcEngineProxy->leaveChannel();
 		RtcEngineProxy->leaveChannelEx(RtcConnection(TCHAR_TO_UTF8(*ChannelName), UID2));
 		RtcEngineProxy->unregisterEventHandler(UserRtcEventHandlerEx.Get());
-		RtcEngineProxy->release();
+		agora::rtc::ue::releaseAgoraRtcEngine();
 		RtcEngineProxy = nullptr;
 
 		UBFL_Logger::Print(FString::Printf(TEXT("%s release agora engine"), *FString(FUNCTION_MACRO)), LogMsgViewPtr);

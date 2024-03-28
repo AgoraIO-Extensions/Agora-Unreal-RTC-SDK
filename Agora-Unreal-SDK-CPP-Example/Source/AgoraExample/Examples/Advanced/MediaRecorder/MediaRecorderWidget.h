@@ -72,7 +72,7 @@ public:
 #pragma region AgoraCallback - IMediaRecorderObserver
 
 
-		void onRecorderStateChanged(const char* channelId, agora::rtc::uid_t uid, agora::media::RecorderState state, agora::media::RecorderErrorCode error) override;
+		void onRecorderStateChanged(const char* channelId, agora::rtc::uid_t uid, agora::media::RecorderState state, agora::media::RecorderReasonCode reason) override;
 
 
 		void onRecorderInfoUpdated(const char* channelId, agora::rtc::uid_t uid, const  agora::media::RecorderInfo& info) override;

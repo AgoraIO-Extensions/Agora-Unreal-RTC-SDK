@@ -142,7 +142,7 @@ void UStartDirectCdnStreamingWidget::UnInitAgoraEngine()
 		RtcEngineProxy->stopPreview();
 		RtcEngineProxy->stopDirectCdnStreaming();
 		RtcEngineProxy->unregisterEventHandler(UserRtcEventHandlerEx.Get());
-		RtcEngineProxy->release();
+		agora::rtc::ue::releaseAgoraRtcEngine();
 		RtcEngineProxy = nullptr;
 
 		UBFL_Logger::Print(FString::Printf(TEXT("%s release agora engine"), *FString(FUNCTION_MACRO)), LogMsgViewPtr);
@@ -332,7 +332,7 @@ void UStartDirectCdnStreamingWidget::FUserRtcEventHandlerEx::onUserOffline(const
 #pragma region AgoraCallback - IDirectCdnStreamingEventHandler
 
 
-void UStartDirectCdnStreamingWidget::FUserIDirectCdnStreamingEventHandler::onDirectCdnStreamingStateChanged(DIRECT_CDN_STREAMING_STATE state, DIRECT_CDN_STREAMING_ERROR error, const char* message)
+void UStartDirectCdnStreamingWidget::FUserIDirectCdnStreamingEventHandler::onDirectCdnStreamingStateChanged(DIRECT_CDN_STREAMING_STATE state, DIRECT_CDN_STREAMING_REASON reason, const char* message)
 {
 
 }

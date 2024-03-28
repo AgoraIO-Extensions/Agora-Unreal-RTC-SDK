@@ -180,7 +180,7 @@ void UCustomCaptureVideoScene::UnInitAgoraEngine()
 	{
 		RtcEngineProxy->leaveChannel();
 		RtcEngineProxy->unregisterEventHandler(UserRtcEventHandler.Get());
-		RtcEngineProxy->release();
+		agora::rtc::ue::releaseAgoraRtcEngine();
 		RtcEngineProxy = nullptr;
 		MediaEngineManager = nullptr;
 

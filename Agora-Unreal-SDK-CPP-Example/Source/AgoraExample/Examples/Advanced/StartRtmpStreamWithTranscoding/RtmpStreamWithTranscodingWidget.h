@@ -54,7 +54,7 @@ public:
 
 		void onTranscodingUpdated() override;
 
-		void onRtmpStreamingStateChanged(const char* url, RTMP_STREAM_PUBLISH_STATE state, RTMP_STREAM_PUBLISH_ERROR_TYPE errCode) override;
+		void onRtmpStreamingStateChanged(const char* url, RTMP_STREAM_PUBLISH_STATE state, RTMP_STREAM_PUBLISH_REASON reason) override;
 
 #pragma endregion
 

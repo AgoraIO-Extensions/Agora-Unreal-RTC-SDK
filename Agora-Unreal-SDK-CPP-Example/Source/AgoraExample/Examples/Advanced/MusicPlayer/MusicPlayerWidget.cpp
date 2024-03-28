@@ -270,7 +270,7 @@ void UMusicPlayerWidget::UnInitAgoraEngine()
 		RtcEngineProxy->leaveChannel();
 		RtcEngineProxy->unregisterEventHandler(UserRtcEventHandlerEx.Get());
 
-		RtcEngineProxy->release();
+		agora::rtc::ue::releaseAgoraRtcEngine();
 		RtcEngineProxy = nullptr;
 
 		UBFL_Logger::Print(FString::Printf(TEXT("%s release agora engine"), *FString(FUNCTION_MACRO)), LogMsgViewPtr);
@@ -556,13 +556,13 @@ void UMusicPlayerWidget::FUserRtcEventHandlerEx::onUserOffline(const agora::rtc:
 #pragma region AgoraCallback - IMediaPlayerSourceObserver
 
 
-void UMusicPlayerWidget::FUserIMediaPlayerSourceObserver::onPlayerSourceStateChanged(media::base::MEDIA_PLAYER_STATE state, media::base::MEDIA_PLAYER_ERROR ec)
+void UMusicPlayerWidget::FUserIMediaPlayerSourceObserver::onPlayerSourceStateChanged(media::base::MEDIA_PLAYER_STATE state, media::base::MEDIA_PLAYER_REASON reason)
 {
 	if (state == media::base::MEDIA_PLAYER_STATE::PLAYER_STATE_OPEN_COMPLETED)
 		WidgetPtr->GetMusicPlayer()->play();
 }
 
-void UMusicPlayerWidget::FUserIMediaPlayerSourceObserver::onPositionChanged(int64_t position_ms)
+void UMusicPlayerWidget::FUserIMediaPlayerSourceObserver::onPositionChanged(int64_t positionMs, int64_t timestampMs)
 {
 
 }
@@ -617,7 +617,7 @@ void UMusicPlayerWidget::FUserIMediaPlayerSourceObserver::onAudioVolumeIndicatio
 
 #pragma region AgoraCallback - IMusicContentCenterEventHandler
 
-void UMusicPlayerWidget::FUserMusicContentCenterEventHandler::onMusicChartsResult(const char* requestId, agora_refptr<MusicChartCollection> result, MusicContentCenterStatusCode error_code)
+void UMusicPlayerWidget::FUserMusicContentCenterEventHandler::onMusicChartsResult(const char* requestId, agora_refptr<MusicChartCollection> result, MusicContentCenterStateReason reason)
 {
 	if (!IsWidgetValid())
 		return;
@@ -643,7 +643,7 @@ void UMusicPlayerWidget::FUserMusicContentCenterEventHandler::onMusicChartsResul
 		});
 }
 
-void UMusicPlayerWidget::FUserMusicContentCenterEventHandler::onMusicCollectionResult(const char* requestId, agora_refptr<MusicCollection> result, MusicContentCenterStatusCode error_code)
+void UMusicPlayerWidget::FUserMusicContentCenterEventHandler::onMusicCollectionResult(const char* requestId, agora_refptr<MusicCollection> result, MusicContentCenterStateReason reason)
 {
 	if (!IsWidgetValid())
 		return;
@@ -670,7 +670,7 @@ void UMusicPlayerWidget::FUserMusicContentCenterEventHandler::onMusicCollectionR
 		});
 }
 
-void UMusicPlayerWidget::FUserMusicContentCenterEventHandler::onLyricResult(const char* requestId, const char* lyricUrl, MusicContentCenterStatusCode error_code)
+void UMusicPlayerWidget::FUserMusicContentCenterEventHandler::onLyricResult(const char* requestId, int64_t songCode, const char* lyricUrl, MusicContentCenterStateReason reason)
 {
 
 	if (!IsWidgetValid())
@@ -692,12 +692,39 @@ void UMusicPlayerWidget::FUserMusicContentCenterEventHandler::onLyricResult(cons
 				UBFL_Logger::Print(FString::Printf(TEXT("%s bIsDestruct "), *FString(FUNCTION_MACRO)));
 				return;
 			}
-			UBFL_Logger::Print(FString::Printf(TEXT("%s LyricURL=%s RequestId=%s error_code=%d"), *FString(FUNCTION_MACRO), *URLLyric, *RequestId, error_code), WidgetPtr->GetLogMsgViewPtr());
+			UBFL_Logger::Print(FString::Printf(TEXT("%s SongCode=%lld LyricURL=%s RequestId=%s reason=%d"), *FString(FUNCTION_MACRO),songCode, *URLLyric, *RequestId, reason), WidgetPtr->GetLogMsgViewPtr());
 		});
 }
 
-void UMusicPlayerWidget::FUserMusicContentCenterEventHandler::onPreLoadEvent(int64_t songCode, int percent, const char* lyricUrl, PreloadStatusCode status, MusicContentCenterStatusCode error_code)
+
+void UMusicPlayerWidget::FUserMusicContentCenterEventHandler::onSongSimpleInfoResult(const char* requestId, int64_t songCode, const char* simpleInfo, MusicContentCenterStateReason reason)
 {
+	if (!IsWidgetValid())
+		return;
+
+	FString FSTRRequestID = UTF8_TO_TCHAR(requestId);
+	FString FSTRSimpleInfo = UTF8_TO_TCHAR(simpleInfo);
+
+#if  ((__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)) 
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
+	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
+		{
+			if (!IsWidgetValid())
+			{
+				UBFL_Logger::Print(FString::Printf(TEXT("%s bIsDestruct "), *FString(FUNCTION_MACRO)));
+				return;
+			}
+			UBFL_Logger::Print(FString::Printf(TEXT("%s RequestID=%s SongCode=%lld SimpleInfo=%s Reason=%d"), *FString(FUNCTION_MACRO),*FSTRRequestID, songCode, reason), WidgetPtr->GetLogMsgViewPtr());
+		});
+}
+
+
+
+void UMusicPlayerWidget::FUserMusicContentCenterEventHandler::onPreLoadEvent(const char* requestId, int64_t songCode, int percent, const char* lyricUrl, PreloadState state, MusicContentCenterStateReason reason)
+{
+	
 	if (!IsWidgetValid())
 		return;
 
@@ -714,7 +741,7 @@ void UMusicPlayerWidget::FUserMusicContentCenterEventHandler::onPreLoadEvent(int
 				UBFL_Logger::Print(FString::Printf(TEXT("%s bIsDestruct "), *FString(FUNCTION_MACRO)));
 				return;
 			}
-			UBFL_Logger::Print(FString::Printf(TEXT("%s songcode=%d percent=%d LyricURL=%s status=%d errorcode=%d "), *FString(FUNCTION_MACRO), songCode, percent, *URLLyric, status, error_code), WidgetPtr->GetLogMsgViewPtr());
+			UBFL_Logger::Print(FString::Printf(TEXT("%s songcode=%d percent=%d LyricURL=%s state=%d reason=%d "), *FString(FUNCTION_MACRO), songCode, percent, *URLLyric, state, reason), WidgetPtr->GetLogMsgViewPtr());
 		});
 }
 

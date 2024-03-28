@@ -120,7 +120,7 @@ void UMetadataWidget::UnInitAgoraEngine()
 		RtcEngineProxy->leaveChannel();
 		RtcEngineProxy->unregisterEventHandler(UserRtcEventHandlerEx.Get());
 		RtcEngineProxy->unregisterMediaMetadataObserver(MetadataObserver.Get(), IMetadataObserver::METADATA_TYPE::VIDEO_METADATA);
-		RtcEngineProxy->release();
+		agora::rtc::ue::releaseAgoraRtcEngine();
 		RtcEngineProxy = nullptr;
 
 		UBFL_Logger::Print(FString::Printf(TEXT("%s release agora engine"), *FString(FUNCTION_MACRO)), LogMsgViewPtr);

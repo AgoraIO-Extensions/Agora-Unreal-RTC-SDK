@@ -206,7 +206,7 @@ void UMediaplayerWidget::UnInitAgoraEngine()
 
 		RtcEngineProxy->leaveChannel();
 		RtcEngineProxy->unregisterEventHandler(UserRtcEventHandler.Get());
-		RtcEngineProxy->release();
+		agora::rtc::ue::releaseAgoraRtcEngine();
 		RtcEngineProxy = nullptr;
 
 		UBFL_Logger::Print(FString::Printf(TEXT("%s release agora engine"), *FString(FUNCTION_MACRO)), LogMsgViewPtr);
@@ -391,7 +391,7 @@ void UMediaplayerWidget::FUserRtcEventHandler::onLeaveChannel(const agora::rtc::
 
 #pragma region AgoraCallback - IMediaPlayerSourceObserver
 
-void UMediaplayerWidget::FUserIMediaPlayerSourceObserver::onPlayerSourceStateChanged(media::base::MEDIA_PLAYER_STATE state, media::base::MEDIA_PLAYER_ERROR ec)
+void UMediaplayerWidget::FUserIMediaPlayerSourceObserver::onPlayerSourceStateChanged(media::base::MEDIA_PLAYER_STATE state, media::base::MEDIA_PLAYER_REASON reason)
 {
 	if (!IsWidgetValid())
 		return;
@@ -424,7 +424,7 @@ void UMediaplayerWidget::FUserIMediaPlayerSourceObserver::onPlayerSourceStateCha
 		});
 }
 
-void UMediaplayerWidget::FUserIMediaPlayerSourceObserver::onPositionChanged(int64_t position_ms)
+void UMediaplayerWidget::FUserIMediaPlayerSourceObserver::onPositionChanged(int64_t positionMs, int64_t timestampMs)
 {
 
 }

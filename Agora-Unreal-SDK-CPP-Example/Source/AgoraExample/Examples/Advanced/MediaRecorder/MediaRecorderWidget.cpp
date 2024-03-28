@@ -138,7 +138,7 @@ void UMediaRecorderWidget::UnInitAgoraEngine()
 	{
 		RtcEngineProxy->leaveChannel();
 		RtcEngineProxy->unregisterEventHandler(UserRtcEventHandlerEx.Get());
-		RtcEngineProxy->release();
+		agora::rtc::ue::releaseAgoraRtcEngine();
 		RtcEngineProxy = nullptr;
 
 		UBFL_Logger::Print(FString::Printf(TEXT("%s release agora engine"), *FString(FUNCTION_MACRO)), LogMsgViewPtr);
@@ -331,7 +331,7 @@ void UMediaRecorderWidget::FUserRtcEventHandlerEx::onUserOffline(const agora::rt
 #pragma region AgoraCallback - IMediaRecorderObserver
 
 
-void UMediaRecorderWidget::FUserMediaRecorderObserver::onRecorderStateChanged(const char* channelId, agora::rtc::uid_t uid, agora::media::RecorderState state, agora::media::RecorderErrorCode error)
+void UMediaRecorderWidget::FUserMediaRecorderObserver::onRecorderStateChanged(const char* channelId, agora::rtc::uid_t uid, agora::media::RecorderState state, agora::media::RecorderReasonCode reason)
 {
 	if (!IsWidgetValid())
 		return;
@@ -347,7 +347,7 @@ void UMediaRecorderWidget::FUserMediaRecorderObserver::onRecorderStateChanged(co
 				UBFL_Logger::Print(FString::Printf(TEXT("%s bIsDestruct "), *FString(FUNCTION_MACRO)));
 				return;
 			}
-			UBFL_Logger::Print(FString::Printf(TEXT("%s channelId=%s uid=%u state=%d error=%d"), *FString(FUNCTION_MACRO), UTF8_TO_TCHAR(channelId), uid, (int)state, (int)error), WidgetPtr->GetLogMsgViewPtr());
+			UBFL_Logger::Print(FString::Printf(TEXT("%s channelId=%s uid=%u state=%d reason=%d"), *FString(FUNCTION_MACRO), UTF8_TO_TCHAR(channelId), uid, (int)state, (int)reason), WidgetPtr->GetLogMsgViewPtr());
 		});
 }
 
