@@ -24,13 +24,19 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Agora|IAudioDeviceCollection")
 	int GetDevice(int index, FString& deviceName, FString& deviceId);
 	UFUNCTION(BlueprintCallable, Category = "Agora|IAudioDeviceCollection")
+	int GetDeviceWithDetail(int index,const FString & deviceName,const FString & deviceTypeName, const FString & deviceId);
+	UFUNCTION(BlueprintCallable, Category = "Agora|IAudioDeviceCollection")
 	int SetDevice(FString deviceId);
+
 	UFUNCTION(BlueprintCallable, Category = "Agora|IAudioDeviceCollection")
 	int GetDefaultDevice(FString& deviceName, FString& deviceId);
 	UFUNCTION(BlueprintCallable, Category = "Agora|IAudioDeviceCollection")
+	int GetDefaultDeviceWithDetail(FString& deviceName, FString& deviceTypeName, FString& deviceId);
+
+	UFUNCTION(BlueprintCallable, Category = "Agora|IAudioDeviceCollection")
 	int SetApplicationVolume(int volume);
 	UFUNCTION(BlueprintCallable, Category = "Agora|IAudioDeviceCollection")
-	int GetApplicationVolume(int& volume);
+	int GetApplicationVolume(int & volume);
 	UFUNCTION(BlueprintCallable, Category = "Agora|IAudioDeviceCollection")
 	int SetApplicationMute(bool mute);
 	UFUNCTION(BlueprintCallable, Category = "Agora|IAudioDeviceCollection")
@@ -60,6 +66,10 @@ public:
 	int GetPlaybackDevice(FString& deviceId);
 	UFUNCTION(BlueprintCallable, Category = "Agora|IAudioDeviceManager")
 	int GetPlaybackDeviceInfo(FString& deviceId, FString& deviceName);
+
+	UFUNCTION(BlueprintCallable, Category = "Agora|IAudioDeviceManager")
+	int GetPlaybackDeviceInfoWithDetail(FString& deviceId, FString& deviceName, FString& deviceTypeName);
+
 	UFUNCTION(BlueprintCallable, Category = "Agora|IAudioDeviceManager")
 	int SetPlaybackDeviceVolume(int volume);
 	UFUNCTION(BlueprintCallable, Category = "Agora|IAudioDeviceManager")
@@ -70,6 +80,10 @@ public:
 	int GetRecordingDevice(FString& deviceId);
 	UFUNCTION(BlueprintCallable, Category = "Agora|IAudioDeviceManager")
 	int GetRecordingDeviceInfo(FString& deviceId, FString& deviceName);
+
+	UFUNCTION(BlueprintCallable, Category = "Agora|IAudioDeviceManager")
+	virtual int GetRecordingDeviceInfoWithDetail(FString& deviceId, FString& deviceName, FString& deviceTypeName);
+
 	UFUNCTION(BlueprintCallable, Category = "Agora|IAudioDeviceManager")
 	int SetRecordingDeviceVolume(int volume);
 	UFUNCTION(BlueprintCallable, Category = "Agora|IAudioDeviceManager")

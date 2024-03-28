@@ -9,7 +9,7 @@
 #include "IMediaRecorderObserver.generated.h"
 
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnRecorderStateChanged, FString, channelId, int64, uid, FENUMWRAP_RecorderState, state, ERecorderErrorCode, error);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnRecorderStateChanged, FString, channelId, int64, uid, FENUMWRAP_RecorderState, state, ERecorderReasonCode, reason);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnRecorderInfoUpdated, FString, channelId, int64, uid, const FRecorderInfo&, info);
 
 class IMediaRecorderObserverClassWrapper : public agora::media::IMediaRecorderObserver {};
@@ -23,7 +23,7 @@ public:
 	FOnRecorderStateChanged OnRecorderStateChanged;
 	UPROPERTY(BlueprintAssignable, Category = "Agora|Event")
 	FOnRecorderInfoUpdated OnRecorderInfoUpdated;
-	void onRecorderStateChanged(const char* channelId, agora::rtc::uid_t uid, agora::media::RecorderState state, agora::media::RecorderErrorCode error) override;
+	void onRecorderStateChanged(const char* channelId, agora::rtc::uid_t uid, agora::media::RecorderState state, agora::media::RecorderReasonCode error) override;
 	void onRecorderInfoUpdated(const char* channelId, agora::rtc::uid_t uid, const agora::media::RecorderInfo& info) override;
 
 };

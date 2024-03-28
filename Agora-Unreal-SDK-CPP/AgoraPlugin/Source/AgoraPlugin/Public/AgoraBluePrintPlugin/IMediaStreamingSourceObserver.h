@@ -13,7 +13,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnOpenDone, ESTREAMING_SRC_ERR, err
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSeekDone, ESTREAMING_SRC_ERR, err_code);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnEofOnce, int64, progress_ms, int64, repeat_count);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnProgress, int64, position_ms);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnMetaData, const int64, data, int, length);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnMetaData, FString, data);
 
 class IMediaStreamingSourceObserverClassWrapper : public agora::rtc::IMediaStreamingSourceObserver {};
 

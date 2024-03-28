@@ -21,25 +21,13 @@ int UIMediaPlayer::OpenWithCustomSource(int64 startPos, UIMediaPlayerCustomDataP
 }
 int UIMediaPlayer::OpenWithMediaSource(const FAgoraMediaSource& source)
 {
-	agora::media::base::MediaSource mediaSource;
-	std::string StdStringURL = TCHAR_TO_UTF8(*source.url);
-	std::string StdStringURI = TCHAR_TO_UTF8(*source.uri);
-	mediaSource.url = StdStringURL.c_str();
-	mediaSource.uri = StdStringURI.c_str();
-	mediaSource.startPos = source.startPos;
-	mediaSource.autoPlay = source.autoPlay;
-	mediaSource.enableCache = source.enableCache;
-	if (source.isAgoraSource != AGORAOPTIONAL::AGORA_NULL_VALUE)
-	{
-		mediaSource.isAgoraSource = source.isAgoraSource == AGORAOPTIONAL::AGORA_TRUE_VALUE;
-	}
-	if (source.isLiveSource != AGORAOPTIONAL::AGORA_NULL_VALUE)
-	{
-		mediaSource.isLiveSource = source.isLiveSource == AGORAOPTIONAL::AGORA_TRUE_VALUE;
-	}
-	mediaSource.provider = source.provider;
+	agora::media::base::MediaSource mediaSource = source.CreateAgoraData();
 
-	return MediaPlayer->openWithMediaSource(mediaSource);
+	int ret = MediaPlayer->openWithMediaSource(mediaSource);
+
+	source.FreeAgoraData(mediaSource);
+
+	return ret;
 }
 int UIMediaPlayer::Play()
 {
@@ -99,20 +87,7 @@ int UIMediaPlayer::GetStreamInfo(int64 index, FPlayerStreamInfo& info)
 {
 	agora::media::base::PlayerStreamInfo playerStreamInfo;
 	int ret = MediaPlayer->getStreamInfo(index, &playerStreamInfo);
-	info.streamIndex = playerStreamInfo.streamIndex;
-	info.streamType = (EMEDIA_STREAM_TYPE)playerStreamInfo.streamType;
-	info.codecName = FString(playerStreamInfo.codecName);
-	info.language = FString(playerStreamInfo.language);
-	info.videoFrameRate = playerStreamInfo.videoFrameRate;
-	info.videoBitRate = playerStreamInfo.videoBitRate;
-	info.videoWidth = playerStreamInfo.videoWidth;
-	info.videoHeight = playerStreamInfo.videoHeight;
-	info.videoRotation = playerStreamInfo.videoRotation;
-	info.audioSampleRate = playerStreamInfo.audioSampleRate;
-	info.audioChannels = playerStreamInfo.audioChannels;
-	info.audioBitsPerSample = playerStreamInfo.audioBitsPerSample;
-	info.duration = playerStreamInfo.duration;
-
+	info = playerStreamInfo;
 	return -ERROR_NULLPTR;
 }
 int UIMediaPlayer::SetLoopCount(int loopCount)
@@ -126,6 +101,12 @@ int UIMediaPlayer::SetPlaybackSpeed(int speed)
 int UIMediaPlayer::SelectAudioTrack(int index)
 {
 	return MediaPlayer->selectAudioTrack(index);
+}
+
+
+int UIMediaPlayer::SelectMultiAudioTrack(int playoutTrackIndex, int publishTrackIndex)
+{
+	return MediaPlayer->selectMultiAudioTrack(playoutTrackIndex, publishTrackIndex);
 }
 
 int UIMediaPlayer::SetPlayerOptionInInt(FString key, int value)
@@ -278,9 +259,10 @@ int UIMediaPlayer::UnloadSrc(FString src)
 }
 int UIMediaPlayer::SetSpatialAudioParams(const FSpatialAudioParams& params)
 {
-	agora::SpatialAudioParams spatialAudioParams;
-	SET_AGORA_DATA_SPATIALAUDIOPARAMS(spatialAudioParams, params);
-	return MediaPlayer->setSpatialAudioParams(spatialAudioParams);
+	agora::SpatialAudioParams AgoraSpatialAudioParams = params.CreateAgoraData();
+	int ret = MediaPlayer->setSpatialAudioParams(AgoraSpatialAudioParams);
+	params.FreeAgoraData(AgoraSpatialAudioParams);
+	return ret;
 }
 int UIMediaPlayer::SetSoundPositionParams(float pan, float gain)
 {

@@ -1,4 +1,3 @@
-//
 //  Agora Engine SDK
 //
 //  Created by Sting Feng in 2017-11.
@@ -35,9 +34,7 @@ static const unsigned int INVALID_TRACK_ID = 0xffffffff;
 static const unsigned int DEFAULT_CONNECTION_ID = 0;
 static const unsigned int DUMMY_CONNECTION_ID = (std::numeric_limits<unsigned int>::max)();
 
-
 struct EncodedVideoFrameInfo;
-
 
 /**
 * Video source types definition.
@@ -91,6 +88,9 @@ enum VIDEO_SOURCE_TYPE {
   /** Video for fourth screen sharing.
    */
   VIDEO_SOURCE_SCREEN_FOURTH = 14,
+  /** Video for voice drive.
+  */
+ VIDEO_SOURCE_SPEECH_DRIVEN = 15,
 
   VIDEO_SOURCE_UNKNOWN = 100
 };
@@ -105,45 +105,49 @@ enum AudioRoute
    */
   ROUTE_DEFAULT = -1,
   /**
-   * The headset.
+   * The Headset.
    */
   ROUTE_HEADSET = 0,
   /**
-   * The earpiece.
+   * The Earpiece.
    */
   ROUTE_EARPIECE = 1,
   /**
-   * The headset with no microphone.
+   * The Headset with no microphone.
    */
   ROUTE_HEADSETNOMIC = 2,
   /**
-   * The speakerphone.
+   * The Speakerphone.
    */
   ROUTE_SPEAKERPHONE = 3,
   /**
-   * The loudspeaker.
+   * The Loudspeaker.
    */
   ROUTE_LOUDSPEAKER = 4,
   /**
-   * The Bluetooth headset.
+   * The Bluetooth Device via HFP.
    */
-  ROUTE_HEADSETBLUETOOTH = 5,
+  ROUTE_BLUETOOTH_DEVICE_HFP = 5,
   /**
-   * The USB
+   * The USB.
    */
   ROUTE_USB = 6,
   /**
-   * The HDMI
+   * The HDMI.
    */
   ROUTE_HDMI = 7,
   /**
-   * The DISPLAYPORT
+   * The DisplayPort.
    */
   ROUTE_DISPLAYPORT = 8,
   /**
-   * The AIRPLAY
+   * The AirPlay.
    */
   ROUTE_AIRPLAY = 9,
+  /**
+   * The Bluetooth Device via A2DP.
+   */
+  ROUTE_BLUETOOTH_DEVICE_A2DP = 10,
 };
 
 /**
@@ -242,6 +246,10 @@ enum MEDIA_SOURCE_TYPE {
    */
   TRANSCODED_VIDEO_SOURCE = 12,
   /**
+   * 13: Video for voice drive.
+   */
+  SPEECH_DRIVEN_VIDEO_SOURCE = 13,
+  /**
    * 100: Internal Usage only.
    */
   UNKNOWN_MEDIA_SOURCE = 100
@@ -261,13 +269,18 @@ enum CONTENT_INSPECT_TYPE {
  */
 CONTENT_INSPECT_INVALID = 0,
 /**
+ * @deprecated
  * Content inspect type moderation
  */
-CONTENT_INSPECT_MODERATION = 1,
+CONTENT_INSPECT_MODERATION __deprecated = 1,
 /**
  * Content inspect type supervise
  */
-CONTENT_INSPECT_SUPERVISION = 2
+CONTENT_INSPECT_SUPERVISION = 2,
+/**
+ * Content inspect type image moderation
+ */
+CONTENT_INSPECT_IMAGE_MODERATION = 3
 };
 
 struct ContentInspectModule {
@@ -288,7 +301,10 @@ struct ContentInspectModule {
  */
 struct ContentInspectConfig {
   const char* extraInfo;
-
+  /**
+   * The specific server configuration for image moderation. Please contact technical support.
+   */
+  const char* serverConfig;
   /**The content inspect modules, max length of modules is 32.
    * the content(snapshot of send video stream, image) can be used to max of 32 types functions.
    */
@@ -299,11 +315,12 @@ struct ContentInspectConfig {
    ContentInspectConfig& operator=(const ContentInspectConfig& rth)
 	{
         extraInfo = rth.extraInfo;
+        serverConfig = rth.serverConfig;
         moduleCount = rth.moduleCount;
 		memcpy(&modules, &rth.modules,  MAX_CONTENT_INSPECT_MODULE_COUNT * sizeof(ContentInspectModule));
 		return *this;
 	}
-  ContentInspectConfig() :extraInfo(NULL), moduleCount(0){}
+  ContentInspectConfig() :extraInfo(NULL), serverConfig(NULL), moduleCount(0){}
 };
 
 namespace base {
@@ -496,6 +513,15 @@ enum VIDEO_PIXEL_FORMAT {
    * 16: I422.
    */
   VIDEO_PIXEL_I422 = 16,
+  /**
+   * 17: ID3D11Texture2D, only support DXGI_FORMAT_B8G8R8A8_UNORM, DXGI_FORMAT_B8G8R8A8_TYPELESS, DXGI_FORMAT_NV12 texture format
+   */
+  VIDEO_TEXTURE_ID3D11TEXTURE2D = 17,
+  /**
+   * 18: I010. 10bit I420 data.
+   * @technical preview
+   */
+  VIDEO_PIXEL_I010 = 18,
 };
 
 /**
@@ -539,6 +565,19 @@ enum CAMERA_VIDEO_SOURCE_TYPE {
 };
 
 /**
+ * The IVideoFrameMetaInfo class.
+ * This interface provides access to metadata information.
+ */
+class IVideoFrameMetaInfo {
+  public:
+    enum META_INFO_KEY {
+      KEY_FACE_CAPTURE = 0,
+    };
+    virtual ~IVideoFrameMetaInfo() {};
+    virtual const char* getMetaInfoStr(META_INFO_KEY key) const = 0;
+};
+
+/**
  * The definition of the ExternalVideoFrame struct.
  */
 struct ExternalVideoFrame {
@@ -559,7 +598,10 @@ struct ExternalVideoFrame {
         textureId(0),
         metadata_buffer(NULL),
         metadata_size(0),
-        alphaBuffer(NULL){}
+        alphaBuffer(NULL),
+        fillAlphaBuffer(false),
+        d3d11_texture_2d(NULL),
+        texture_slice_index(0){}
 
    /**
    * The EGL context type.
@@ -676,11 +718,28 @@ struct ExternalVideoFrame {
    */
   int metadata_size;
   /**
-   *  Indicates the output data of the portrait segmentation algorithm, which is consistent with the size of the video frame.
-   *  The value range of each pixel is [0,255], where 0 represents the background; 255 represents the foreground (portrait).
-   *  The default value is NULL
+   *  Indicates the alpha channel of current frame, which is consistent with the dimension of the video frame.
+   *  The value range of each pixel is [0,255], where 0 represents the background; 255 represents the foreground.
+   *  The default value is NULL.
+   *  @technical preview
    */
   uint8_t* alphaBuffer;
+  /**
+   *  Extract alphaBuffer from bgra or rgba data. Set it true if you do not explicitly specify the alphabuffer.
+   *  The default value is false
+   *  @technical preview
+   */
+  bool fillAlphaBuffer;
+
+  /**
+   * [For Windows only] The pointer of ID3D11Texture2D used by the video frame.
+   */
+  void *d3d11_texture_2d;
+
+  /**
+   * [For Windows only] The index of ID3D11Texture2D array used by the video frame.
+   */
+  int texture_slice_index;
 };
 
 /**
@@ -704,8 +763,10 @@ struct VideoFrame {
   metadata_size(0),
   sharedContext(0),
   textureId(0),
+  d3d11Texture2d(NULL),
   alphaBuffer(NULL),
-  pixelBuffer(NULL){
+  pixelBuffer(NULL),
+  metaInfo(NULL){
     memset(matrix, 0, sizeof(matrix));
   }
   /**
@@ -778,19 +839,28 @@ struct VideoFrame {
    */
   int textureId;
   /**
+   * [Texture related parameter] The pointer of ID3D11Texture2D used by the video frame,for Windows only.
+   */
+  void* d3d11Texture2d;
+  /**
    * [Texture related parameter], Incoming 4 &times; 4 transformational matrix.
    */
   float matrix[16];
   /**
-   *  Indicates the output data of the portrait segmentation algorithm, which is consistent with the size of the video frame.
-   *  The value range of each pixel is [0,255], where 0 represents the background; 255 represents the foreground (portrait).
-   *  The default value is NULL
+   *  Indicates the alpha channel of current frame, which is consistent with the dimension of the video frame.
+   *  The value range of each pixel is [0,255], where 0 represents the background; 255 represents the foreground.
+   *  The default value is NULL.
+   *  @technical preview
    */
   uint8_t* alphaBuffer;
   /**
    *The type of CVPixelBufferRef, for iOS and macOS only.
    */
   void* pixelBuffer;
+  /**
+   *  The pointer to IVideoFrameMetaInfo, which is the interface to get metainfo contents from VideoFrame. 
+   */
+  IVideoFrameMetaInfo* metaInfo;
 };
 
 /**
@@ -835,6 +905,7 @@ enum VIDEO_MODULE_POSITION {
   POSITION_POST_CAPTURER = 1 << 0,
   POSITION_PRE_RENDERER = 1 << 1,
   POSITION_PRE_ENCODER = 1 << 2,
+  POSITION_POST_CAPTURER_ORIGIN = 1 << 3,
 };
 
 }  // namespace base
@@ -894,14 +965,14 @@ class IAudioFrameObserverBase {
      */
     int channels;
     /**
-     *The number of samples per channel in the audio frame.
+     * The sample rate
      */
     int samplesPerSec;
     /**
      * The data buffer of the audio frame. When the audio frame uses a stereo channel, the data 
      * buffer is interleaved.
      *
-     * Buffer data size: buffer = samples × channels × bytesPerSample.
+     * Buffer data size: buffer = samplesPerChannel × channels × bytesPerSample.
      */
     void* buffer;
     /**
@@ -914,8 +985,27 @@ class IAudioFrameObserverBase {
     int64_t renderTimeMs;
     /**
      * A reserved parameter.
+     * 
+     * You can use this presentationMs parameter to indicate the presenation milisecond timestamp,
+     * this will then filled into audio4 extension part, the remote side could use this pts in av
+     * sync process with video frame.
      */
     int avsync_type;
+    /**
+     * The pts timestamp of this audio frame.
+     *
+     * This timestamp is used to indicate the origin pts time of the frame, and sync with video frame by
+     * the pts time stamp
+     */
+    int64_t presentationMs;
+     /**
+     * The number of the audio track.
+     */
+    int audioTrackNumber;
+    /**
+     * RTP timestamp of the first sample in the audio frame
+     */
+    uint32_t rtpTimestamp;
 
     AudioFrame() : type(FRAME_TYPE_PCM16),
                    samplesPerChannel(0),
@@ -924,7 +1014,10 @@ class IAudioFrameObserverBase {
                    samplesPerSec(0),
                    buffer(NULL),
                    renderTimeMs(0),
-                   avsync_type(0) {}
+                   avsync_type(0),
+                   presentationMs(0),
+                   audioTrackNumber(0),
+                   rtpTimestamp(0) {}
   };
 
   enum AUDIO_FRAME_POSITION {
@@ -1141,9 +1234,9 @@ struct UserAudioSpectrumInfo  {
    */
   struct AudioSpectrumData spectrumData;
 
-  UserAudioSpectrumInfo () : uid(0), spectrumData() {}
-  UserAudioSpectrumInfo(agora::rtc::uid_t _uid, const float *data, int length) :
-    uid(_uid) { spectrumData.audioSpectrumData = data; spectrumData.dataLength = length; }
+  UserAudioSpectrumInfo() : uid(0) {}
+
+  UserAudioSpectrumInfo(agora::rtc::uid_t uid, const float* data, int length) : uid(uid), spectrumData(data, length) {}
 };
 
 /**
@@ -1166,7 +1259,6 @@ public:
    * - false: Not processed.
    */
   virtual bool onLocalAudioSpectrum(const AudioSpectrumData& data) = 0;
-
   /**
    * Reports the audio spectrum of remote user.
    *
@@ -1184,7 +1276,7 @@ public:
    * - true: Processed.
    * - false: Not processed.
    */
-  virtual bool onRemoteAudioSpectrum(const UserAudioSpectrumInfo * spectrums, unsigned int spectrumNumber) = 0;
+  virtual bool onRemoteAudioSpectrum(const UserAudioSpectrumInfo* spectrums, unsigned int spectrumNumber) = 0;
 };
 
 /**
@@ -1466,7 +1558,7 @@ enum MediaRecorderStreamType {
  */
 enum RecorderState {
   /**
-   * -1: An error occurs during the recording. See RecorderErrorCode for the reason.
+   * -1: An error occurs during the recording. See RecorderReasonCode for the reason.
    */
   RECORDER_STATE_ERROR = -1,
   /**
@@ -1483,27 +1575,27 @@ enum RecorderState {
  *
  * @since v3.5.2
  */
-enum RecorderErrorCode {
+enum RecorderReasonCode {
   /**
    * 0: No error occurs.
    */
-  RECORDER_ERROR_NONE = 0,
+  RECORDER_REASON_NONE = 0,
   /**
    * 1: The SDK fails to write the recorded data to a file.
    */
-  RECORDER_ERROR_WRITE_FAILED = 1,
+  RECORDER_REASON_WRITE_FAILED = 1,
   /**
    * 2: The SDK does not detect audio and video streams to be recorded, or audio and video streams are interrupted for more than five seconds during recording.
    */
-  RECORDER_ERROR_NO_STREAM = 2,
+  RECORDER_REASON_NO_STREAM = 2,
   /**
    * 3: The recording duration exceeds the upper limit.
    */
-  RECORDER_ERROR_OVER_MAX_DURATION = 3,
+  RECORDER_REASON_OVER_MAX_DURATION = 3,
   /**
    * 4: The recording configuration changes.
    */
-  RECORDER_ERROR_CONFIG_CHANGED = 4,
+  RECORDER_REASON_CONFIG_CHANGED = 4,
 };
 /**
  * Configurations for the local audio and video recording.
@@ -1543,6 +1635,21 @@ struct MediaRecorderConfiguration {
   MediaRecorderConfiguration() : storagePath(NULL), containerFormat(FORMAT_MP4), streamType(STREAM_TYPE_BOTH), maxDurationMs(120000), recorderInfoUpdateInterval(0) {}
   MediaRecorderConfiguration(const char* path, MediaRecorderContainerFormat format, MediaRecorderStreamType type, int duration, int interval) : storagePath(path), containerFormat(format), streamType(type), maxDurationMs(duration), recorderInfoUpdateInterval(interval) {}
 };
+
+class IFaceInfoObserver {
+public:
+   /**
+    * Occurs when the face info is received.
+    * @param outFaceInfo The output face info.
+    * @return
+    * - true: The face info is valid.
+    * - false: The face info is invalid.
+   */
+   virtual bool onFaceInfo(const char* outFaceInfo) = 0;
+  
+   virtual ~IFaceInfoObserver() {}
+};
+
 /**
  * Information for the recording file.
  *
@@ -1566,7 +1673,6 @@ struct RecorderInfo {
   RecorderInfo(const char* name, unsigned int dur, unsigned int size) : fileName(name), durationMs(dur), fileSize(size) {}
 };
 
-
 class IMediaRecorderObserver {
  public:
   /**
@@ -1580,9 +1686,9 @@ class IMediaRecorderObserver {
    * @param channelId The channel name.
    * @param uid ID of the user.
    * @param state The current recording state. See \ref agora::media::RecorderState "RecorderState".
-   * @param error The reason for the state change. See \ref agora::media::RecorderErrorCode "RecorderErrorCode".
+   * @param reason The reason for the state change. See \ref agora::media::RecorderReasonCode "RecorderReasonCode".
    */
-  virtual void onRecorderStateChanged(const char* channelId, rtc::uid_t uid, RecorderState state, RecorderErrorCode error) = 0;
+  virtual void onRecorderStateChanged(const char* channelId, rtc::uid_t uid, RecorderState state, RecorderReasonCode reason) = 0;
   /**
    * Occurs when the recording information is updated.
    *
@@ -1598,7 +1704,9 @@ class IMediaRecorderObserver {
    *
    */
   virtual void onRecorderInfoUpdated(const char* channelId, rtc::uid_t uid, const RecorderInfo& info) = 0;
+
   virtual ~IMediaRecorderObserver() {}
 };
+
 }  // namespace media
 }  // namespace agora

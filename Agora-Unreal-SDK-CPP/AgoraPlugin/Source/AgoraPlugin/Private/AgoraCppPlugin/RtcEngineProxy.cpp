@@ -2,6 +2,7 @@
 
 #include "AgoraCppPlugin/include/RtcEngineProxy.h"
 #include "AgoraPluginInterface.h"
+#include <cstdarg> // For va_start, va_end, va_arg
 
 namespace agora
 {
@@ -20,6 +21,9 @@ namespace agora
 				return RtcEngineProxy::GetInstance();
 			}
 
+			void releaseAgoraRtcEngine(bool sync){
+				RtcEngineProxy::release(sync);
+			}
 
 			// RtcEngineProxy 
 			RtcEngineProxy* RtcEngineProxy::Instance = nullptr;
@@ -173,6 +177,42 @@ namespace agora
 			{
 				if (RtcEngine != nullptr) {
 					return RtcEngine->queryCodecCapability(codecInfo, size);
+				}
+				return -ERROR_NULLPTR;
+			}
+
+
+			int RtcEngineProxy::queryDeviceScore()
+			{
+				if (RtcEngine != nullptr) {
+					return RtcEngine->queryDeviceScore();
+				}
+				return -ERROR_NULLPTR;
+			}
+
+
+			int RtcEngineProxy::preloadChannel(const char* token, const char* channelId, uid_t uid)
+			{
+				if (RtcEngine != nullptr) {
+					return RtcEngine->preloadChannel(token, channelId,uid);
+				}
+				return -ERROR_NULLPTR;
+			}
+
+
+			int RtcEngineProxy::preloadChannelWithUserAccount(const char* token, const char* channelId, const char* userAccount)
+			{
+				if (RtcEngine != nullptr) {
+					return RtcEngine->preloadChannelWithUserAccount(token, channelId, userAccount);
+				}
+				return -ERROR_NULLPTR;
+			}
+
+
+			int RtcEngineProxy::updatePreloadChannelToken(const char* token)
+			{
+				if (RtcEngine != nullptr) {
+					return RtcEngine->updatePreloadChannelToken(token);
 				}
 				return -ERROR_NULLPTR;
 			}
@@ -401,6 +441,15 @@ namespace agora
 			{
 				if (RtcEngine != nullptr) {
 					return RtcEngine->setVideoScenario(scenarioType);
+				}
+				return -ERROR_NULLPTR;
+			}
+
+
+			int RtcEngineProxy::setVideoQoEPreference(VIDEO_QOE_PREFERENCE_TYPE qoePreference)
+			{
+				if (RtcEngine != nullptr) {
+					return RtcEngine->setVideoQoEPreference(qoePreference);
 				}
 				return -ERROR_NULLPTR;
 			}
@@ -777,6 +826,15 @@ namespace agora
 				return -ERROR_NULLPTR;
 			}
 
+
+			int RtcEngineProxy::setAudioMixingPlaybackSpeed(int speed)
+			{
+				if (RtcEngine != nullptr) {
+					return RtcEngine->setAudioMixingPlaybackSpeed(speed);
+				}
+				return -ERROR_NULLPTR;
+			}
+
 			int RtcEngineProxy::getEffectsVolume() {
 				if (RtcEngine != nullptr) {
 					return RtcEngine->getEffectsVolume();
@@ -1038,6 +1096,34 @@ namespace agora
 				return -ERROR_NULLPTR;
 			}
 
+
+			int RtcEngineProxy::writeLog(commons::LOG_LEVEL level, const char* fmt, ...)
+			{
+				if (RtcEngine != nullptr) {
+					
+
+					va_list args;
+					va_start(args, fmt);
+
+					// to get the length
+					int length = std::vsnprintf(nullptr, 0, fmt, args);
+					va_end(args);
+
+					std::vector<char> buffer(length + 1); // +1 for null terminator
+					buffer.clear();
+
+					va_start(args, fmt);
+					std::vsnprintf(buffer.data(), buffer.size(), fmt, args);
+					va_end(args);
+
+					std::string Content = (buffer.data());
+		
+					int result = RtcEngine->writeLog(level, Content.c_str());
+					return result;
+				}
+				return -ERROR_NULLPTR;
+			}
+
 			int RtcEngineProxy::setLocalRenderMode(media::base::RENDER_MODE_TYPE renderMode, agora::rtc::VIDEO_MIRROR_MODE_TYPE mirrorMode) {
 				if (RtcEngine != nullptr) {
 					return RtcEngine->setLocalRenderMode(renderMode, mirrorMode);
@@ -1198,7 +1284,8 @@ namespace agora
 				return -ERROR_NULLPTR;
 			}
 
-			int RtcEngineProxy::adjustUserPlaybackSignalVolume(unsigned int uid, int volume) {
+			int RtcEngineProxy::adjustUserPlaybackSignalVolume(uid_t uid, int volume)
+			{
 				if (RtcEngine != nullptr) {
 					return RtcEngine->adjustUserPlaybackSignalVolume(uid, volume);
 				}
@@ -1311,19 +1398,19 @@ namespace agora
 				return -ERROR_NULLPTR;
 			}
 
-			int RtcEngineProxy::getExtensionProperty(const char* provider, const char* extension, const char* key, char* value, int buf_len, agora::media::MEDIA_SOURCE_TYPE type /*= agora::media::UNKNOWN_MEDIA_SOURCE*/)
+			int RtcEngineProxy::getExtensionProperty(const char* provider, const char* extension, const ExtensionInfo& extensionInfo, const char* key, char* value, int buf_len)
 			{
 				if (RtcEngine != nullptr) {
-					return RtcEngine->getExtensionProperty(provider, extension, key, value, buf_len, type);
+					return RtcEngine->getExtensionProperty(provider, extension, extensionInfo, key, value, buf_len);
 				}
 				return -ERROR_NULLPTR;
 			}
 
 
-			int RtcEngineProxy::getExtensionProperty(const char* provider, const char* extension, const ExtensionInfo& extensionInfo, const char* key, char* value, int buf_len)
+			int RtcEngineProxy::getExtensionProperty(const char* provider, const char* extension, const char* key, char* value, int buf_len, agora::media::MEDIA_SOURCE_TYPE type /*= agora::media::UNKNOWN_MEDIA_SOURCE*/)
 			{
 				if (RtcEngine != nullptr) {
-					return RtcEngine->getExtensionProperty(provider, extension, extensionInfo, key, value, buf_len);
+					return RtcEngine->getExtensionProperty(provider, extension, key, value, buf_len, type);
 				}
 				return -ERROR_NULLPTR;
 			}
@@ -1460,6 +1547,24 @@ namespace agora
 				}
 				return -ERROR_NULLPTR;
 			}
+
+			bool RtcEngineProxy::isCameraExposureSupported()
+			{
+				if (RtcEngine != nullptr) {
+					return RtcEngine->isCameraExposureSupported();
+				}
+				return true;
+			}
+
+
+			int RtcEngineProxy::setCameraExposureFactor(float factor)
+			{
+				if (RtcEngine != nullptr) {
+					return RtcEngine->setCameraExposureFactor(factor);
+				}
+				return -ERROR_NULLPTR;
+			}
+
 #if defined(__APPLE__)
 			bool RtcEngineProxy::isCameraAutoExposureFaceModeSupported() {
 				if (RtcEngine != nullptr) {
@@ -1474,6 +1579,15 @@ namespace agora
 				}
 				return -ERROR_NULLPTR;
 			}
+
+			int RtcEngineProxy::setCameraStabilizationMode(CAMERA_STABILIZATION_MODE mode)
+			{
+				if (RtcEngine != nullptr) {
+					return RtcEngine->setCameraStabilizationMode(mode);
+				}
+				return -ERROR_NULLPTR;
+			}
+
 #endif
 			int RtcEngineProxy::setDefaultAudioRouteToSpeakerphone(bool defaultToSpeaker) {
 				if (RtcEngine != nullptr) {
@@ -1495,6 +1609,37 @@ namespace agora
 				}
 				return true;
 			}
+
+			int RtcEngineProxy::setRouteInCommunicationMode(int route)
+			{
+				if (RtcEngine != nullptr) {
+					return RtcEngine->setRouteInCommunicationMode(route);
+				}
+				return -ERROR_NULLPTR;
+			}
+
+
+
+#endif
+
+#if defined(__APPLE__)
+
+			bool RtcEngineProxy::isSupportPortraitCenterStage()
+			{
+				if (RtcEngine != nullptr) {
+					return RtcEngine->isSupportPortraitCenterStage();
+				}
+				return true;
+			}
+
+			int RtcEngineProxy::enablePortraitCenterStage(bool enabled)
+			{
+				if (RtcEngine != nullptr) {
+					return RtcEngine->enablePortraitCenterStage(enabled);
+				}
+				return  -ERROR_NULLPTR;
+			}
+
 #endif
 #if defined(_WIN32) || (defined(__APPLE__) && TARGET_OS_MAC && !TARGET_OS_IPHONE)
 			agora::rtc::IScreenCaptureSourceList* RtcEngineProxy::getScreenCaptureSources(SIZE const& thumbSize, SIZE const& iconSize, bool const includeScreen) {
@@ -1591,6 +1736,14 @@ namespace agora
 			}
 
 
+
+			int RtcEngineProxy::queryCameraFocalLengthCapability(agora::rtc::FocalLengthInfo* focalLengthInfos, int& size)
+			{
+				if (RtcEngine != nullptr) {
+					return RtcEngine->queryCameraFocalLengthCapability(focalLengthInfos, size);
+				}
+				return -ERROR_NULLPTR;
+			}
 
 #endif
 #if defined(_WIN32) || defined(__APPLE__) || defined(__ANDROID__)
@@ -1798,7 +1951,7 @@ namespace agora
 				return -ERROR_NULLPTR;
 			}
 
-			int RtcEngineProxy::createDataStream(int* streamId, agora::rtc::DataStreamConfig& config) {
+			int RtcEngineProxy::createDataStream(int* streamId, const agora::rtc::DataStreamConfig& config) {
 				if (RtcEngine != nullptr) {
 					return RtcEngine->createDataStream(streamId, config);
 				}
@@ -1981,20 +2134,6 @@ namespace agora
 			{
 				if (RtcEngine != nullptr) {
 					return RtcEngine->startOrUpdateChannelMediaRelay(configuration);
-				}
-				return -ERROR_NULLPTR;
-			}
-
-			int RtcEngineProxy::startChannelMediaRelay(agora::rtc::ChannelMediaRelayConfiguration const& configuration) {
-				if (RtcEngine != nullptr) {
-					return RtcEngine->startChannelMediaRelay(configuration);
-				}
-				return -ERROR_NULLPTR;
-			}
-
-			int RtcEngineProxy::updateChannelMediaRelay(agora::rtc::ChannelMediaRelayConfiguration const& configuration) {
-				if (RtcEngine != nullptr) {
-					return RtcEngine->updateChannelMediaRelay(configuration);
 				}
 				return -ERROR_NULLPTR;
 			}
@@ -2222,7 +2361,7 @@ namespace agora
 				return -ERROR_NULLPTR;
 			}
 
-			int RtcEngineProxy::adjustUserPlaybackSignalVolumeEx(unsigned int uid, int volume, const RtcConnection& connection)
+			int RtcEngineProxy::adjustUserPlaybackSignalVolumeEx(uid_t uid, int volume, const RtcConnection& connection)
 			{
 				if (RtcEngine != nullptr) {
 					return ((IRtcEngineEx*)RtcEngine)->adjustUserPlaybackSignalVolumeEx(uid, volume, connection);
@@ -2267,22 +2406,6 @@ namespace agora
 			{
 				if (RtcEngine != nullptr) {
 					return ((IRtcEngineEx*)RtcEngine)->startOrUpdateChannelMediaRelayEx(configuration, connection);
-				}
-				return -ERROR_NULLPTR;
-			}
-
-			int RtcEngineProxy::startChannelMediaRelayEx(const ChannelMediaRelayConfiguration& configuration, const RtcConnection& connection)
-			{
-				if (RtcEngine != nullptr) {
-					return ((IRtcEngineEx*)RtcEngine)->startChannelMediaRelayEx(configuration, connection);
-				}
-				return -ERROR_NULLPTR;
-			}
-
-			int RtcEngineProxy::updateChannelMediaRelayEx(const ChannelMediaRelayConfiguration& configuration, const RtcConnection& connection)
-			{
-				if (RtcEngine != nullptr) {
-					return ((IRtcEngineEx*)RtcEngine)->updateChannelMediaRelayEx(configuration, connection);
 				}
 				return -ERROR_NULLPTR;
 			}
@@ -2459,7 +2582,7 @@ namespace agora
 				return -ERROR_NULLPTR;
 			}
 
-			int RtcEngineProxy::createDataStreamEx(int* streamId, agora::rtc::DataStreamConfig& config, agora::rtc::RtcConnection const& connection) {
+			int RtcEngineProxy::createDataStreamEx(int* streamId, const agora::rtc::DataStreamConfig& config, agora::rtc::RtcConnection const& connection) {
 				if (RtcEngine != nullptr) {
 					return ((IRtcEngineEx*)RtcEngine)->createDataStreamEx(streamId, config, connection);
 				}
@@ -2529,6 +2652,15 @@ namespace agora
 				return -ERROR_NULLPTR;
 			}
 
+
+			int RtcEngineProxy::enableContentInspectEx(bool enabled, const media::ContentInspectConfig& config, const RtcConnection& connection)
+			{
+				if (RtcEngine != nullptr) {
+					return ((IRtcEngineEx*)RtcEngine)->enableContentInspectEx(enabled, config, connection);
+				}
+				return -ERROR_NULLPTR;
+			}
+
 			int RtcEngineProxy::startMediaRenderingTracingEx(const RtcConnection& connection)
 			{
 				if (RtcEngine != nullptr) {
@@ -2537,6 +2669,32 @@ namespace agora
 				return -ERROR_NULLPTR;
 			}
 
+
+			int RtcEngineProxy::setParametersEx(const RtcConnection& connection, const char* parameters)
+			{
+				if (RtcEngine != nullptr) {
+					return ((IRtcEngineEx*)RtcEngine)->setParametersEx(connection, parameters);
+				}
+				return -ERROR_NULLPTR;
+			}
+
+
+			int RtcEngineProxy::getCallIdEx(agora::util::AString& callId, const RtcConnection& connection)
+			{
+				if (RtcEngine != nullptr) {
+					return ((IRtcEngineEx*)RtcEngine)->getCallIdEx(callId, connection);
+				}
+				return -ERROR_NULLPTR;
+			}
+
+
+			int RtcEngineProxy::sendAudioMetadataEx(const RtcConnection& connection, const char* metadata, size_t length)
+			{
+				if (RtcEngine != nullptr) {
+					return ((IRtcEngineEx*)RtcEngine)->sendAudioMetadataEx(connection, metadata, length);
+				}
+				return -ERROR_NULLPTR;
+			}
 
 			int RtcEngineProxy::startMediaRenderingTracing()
 			{
@@ -2560,6 +2718,24 @@ namespace agora
 			{
 				if (RtcEngine != nullptr) {
 					return ((IRtcEngineEx*)RtcEngine)->getNtpWallTimeInMs();
+				}
+				return -ERROR_NULLPTR;
+			}
+
+
+			bool RtcEngineProxy::isFeatureAvailableOnDevice(FeatureType type)
+			{
+				if (RtcEngine != nullptr) {
+					return RtcEngine->isFeatureAvailableOnDevice(type);
+				}
+				return true;
+			}
+
+
+			int RtcEngineProxy::sendAudioMetadata(const char* metadata, size_t length)
+			{
+				if (RtcEngine != nullptr) {
+					return RtcEngine->sendAudioMetadata(metadata, length);
 				}
 				return -ERROR_NULLPTR;
 			}

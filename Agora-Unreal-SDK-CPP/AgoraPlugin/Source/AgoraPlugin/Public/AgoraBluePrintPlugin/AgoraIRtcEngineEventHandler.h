@@ -35,7 +35,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnFirstLocalVideoFramePublished, E
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnVideoSourceFrameSizeChanged, EVIDEO_SOURCE_TYPE, sourceType, int, width, int, height);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnFirstRemoteVideoDecoded, int64, uid, int, width, int, height, int, elapsed);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_FiveParams(FOnVideoSizeChanged, EVIDEO_SOURCE_TYPE, sourceType, int64, uid, int, width, int, height, int, rotation);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnLocalVideoStateChanged, EVIDEO_SOURCE_TYPE, source, ELOCAL_VIDEO_STREAM_STATE, state, ELOCAL_VIDEO_STREAM_ERROR, error);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnLocalVideoStateChanged, EVIDEO_SOURCE_TYPE, source, ELOCAL_VIDEO_STREAM_STATE, state, ELOCAL_VIDEO_STREAM_REASON, reason);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnRemoteVideoStateChanged, int64, uid, EREMOTE_VIDEO_STATE, state, EREMOTE_VIDEO_STATE_REASON, reason, int, elapsed);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnFirstRemoteVideoFrame, int64, userId, int, width, int, height, int, elapsed);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnUserJoined, int64, uid, int, elapsed);
@@ -43,7 +43,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnUserOffline, int64, uid, EUSER_O
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnUserMuteAudio, int64, uid, bool, muted);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnUserMuteVideo, int64, userId, bool, muted);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnUserEnableVideo, int64, uid, bool, enabled);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnUserStateChanged, int64, uid, int, state);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnUserStateChanged, int64, uid, FENUMWRAP_REMOTE_USER_STATE, state);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnUserEnableLocalVideo, int64, uid, bool, enabled);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnLocalAudioStats, const FLocalAudioStats&, stats);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnRemoteAudioStats, const FRemoteAudioStats&, stats);
@@ -52,22 +52,23 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnRemoteVideoStats, const FRemoteVi
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnCameraReady);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnCameraFocusAreaChanged, int, x, int, y, int, width, int, height);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnCameraExposureAreaChanged, int, x, int, y, int, width, int, height);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_FiveParams(FOnFacePositionChanged, int, imageWidth, int, imageHeight, FRectangle, vecRectangle, TArray<int>, vecDistance, int, numFaces);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_FiveParams(FOnFacePositionChanged, int, imageWidth, int, imageHeight, TArray<FRectangle>, vecRectangle, TArray<int>, vecDistance, int, numFaces);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_FiveParams(FOnCameraCapturerConfigurationChanged, int ,direction, int, focalLengthType, int, width, int, height, int, frameRate);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnVideoStopped);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnAudioMixingStateChanged, FENUMWRAP_AUDIO_MIXING_STATE_TYPE, state, FENUMWRAP_AUDIO_MIXING_REASON_TYPE, reason);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnRhythmPlayerStateChanged, FENUMWRAP_RHYTHM_PLAYER_STATE_TYPE, state, FENUMWRAP_RHYTHM_PLAYER_ERROR_TYPE, errorCode);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnRhythmPlayerStateChanged, FENUMWRAP_RHYTHM_PLAYER_STATE_TYPE, state, FENUMWRAP_RHYTHM_PLAYER_REASON, reason);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnConnectionLost);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnConnectionInterrupted);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnConnectionBanned);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_FiveParams(FOnStreamMessage, int64, userId, int, streamId, FString, data, int64, length, int, sentTs);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_FiveParams(FOnStreamMessageError, int64, userId, int, streamId, int, code, int, missed, int, cached);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_FiveParams(FOnStreamMessage, int64, uid, int, streamId, FString, data, int64, length, int, sentTs);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_FiveParams(FOnStreamMessageError, int64, uid, int, streamId, int, code, int, missed, int, cached);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnRequestToken);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnTokenPrivilegeWillExpire, FString, token);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnLicenseValidationFailure, ELICENSE_ERROR_TYPE, error);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnFirstLocalAudioFramePublished, int, elapsed);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnFirstRemoteAudioFrame, int64, uid, int, elapsed);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnFirstRemoteAudioDecoded, int64, uid, int, elapsed);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnLocalAudioStateChanged, ELOCAL_AUDIO_STREAM_STATE, state, ELOCAL_AUDIO_STREAM_ERROR, error);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnLocalAudioStateChanged, ELOCAL_AUDIO_STREAM_STATE, state, ELOCAL_AUDIO_STREAM_REASON, reason);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnRemoteAudioStateChanged, int64, uid, EREMOTE_AUDIO_STATE, state, EREMOTE_AUDIO_STATE_REASON, reason, int, elapsed);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnActiveSpeaker, int64, userId);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnContentInspectResult, ECONTENT_INSPECT_RESULT, result);
@@ -75,40 +76,50 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_FiveParams(FOnSnapshotTaken, int64, uid, FStr
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnClientRoleChanged, ECLIENT_ROLE_TYPE, oldRole, ECLIENT_ROLE_TYPE, newRole, FClientRoleOptions, roleoption);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnClientRoleChangeFailed, ECLIENT_ROLE_CHANGE_FAILED_REASON, reason, ECLIENT_ROLE_TYPE, currentRole);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnAudioDeviceVolumeChanged, FENUMWRAP_MEDIA_DEVICE_TYPE, deviceType, int, volume, bool, muted);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnRtmpStreamingStateChanged, FString, url, ERTMP_STREAM_PUBLISH_STATE, state, ERTMP_STREAM_PUBLISH_ERROR_TYPE, errCode);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnRtmpStreamingStateChanged, FString, url, ERTMP_STREAM_PUBLISH_STATE, state, ERTMP_STREAM_PUBLISH_REASON, reason);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnRtmpStreamingEvent, FString, url, ERTMP_STREAMING_EVENT, eventCode);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnTranscodingUpdated);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAudioRoutingChanged, int, routing);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnChannelMediaRelayStateChanged, int, state, int, code);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnChannelMediaRelayEvent, int, code);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnLocalPublishFallbackToAudioOnly, bool, isFallbackOrRecover);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnRemoteSubscribeFallbackToAudioOnly, int64, uid, bool, isFallbackOrRecover);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnRemoteAudioTransportStats, int64, uid, int, delay, int, lost, int, rxKBitRate);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnRemoteVideoTransportStats, int64, uid, int, delay, int, lost, int, rxKBitRate);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnConnectionStateChanged, ECONNECTION_STATE_TYPE, state, ECONNECTION_CHANGED_REASON_TYPE, reason);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnWlAccMessage, EWLACC_MESSAGE_REASON, reason, EWLACC_SUGGEST_ACTION, action, FString, wlAccMsg);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnWlAccStats, FWlAccStats, currentStats, FWlAccStats, averageStats);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnWlAccStats, const FWlAccStats &, currentStats, const FWlAccStats &, averageStats);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNetworkTypeChanged, FENUMWRAP_NETWORK_TYPE, type);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnEncryptionError, EENCRYPTION_ERROR_TYPE, errorType);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPermissionError, EPERMISSION_TYPE, permissionType);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnLocalUserRegistered, int64, uid, FString, userAccount);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnUserInfoUpdated, int64, uid, const FUserInfo&, info);
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnUserAccountUpdated, int64, uid, FString, userAccount);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnVideoRenderingTracingResult, int64, uid, EMEDIA_TRACE_EVENT, currentEvent, FVideoRenderingTracingInfo, tracingInfo);
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnLocalVideoTranscoderError, const FTranscodingVideoStream &, stream, EVIDEO_TRANSCODER_ERROR, error);
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnUploadLogResult, FString, requestId, bool, success, EUPLOAD_ERROR_REASON, reason);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_FiveParams(FOnAudioSubscribeStateChanged, FString, channel, int64, uid, ESTREAM_SUBSCRIBE_STATE, oldState, ESTREAM_SUBSCRIBE_STATE, newState, int, elapseSinceLastState);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_FiveParams(FOnVideoSubscribeStateChanged, FString, channel, int64, uid, ESTREAM_SUBSCRIBE_STATE, oldState, ESTREAM_SUBSCRIBE_STATE, newState, int, elapseSinceLastState);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnAudioPublishStateChanged, FString, channel, ESTREAM_PUBLISH_STATE, oldState, ESTREAM_PUBLISH_STATE, newState, int, elapseSinceLastState);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_FiveParams(FOnVideoPublishStateChanged, EVIDEO_SOURCE_TYPE, source, FString, channel, ESTREAM_PUBLISH_STATE, oldState, ESTREAM_PUBLISH_STATE, newState, int, elapseSinceLastState);
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_FiveParams(FOnTranscodedStreamLayoutInfo, int64, uid, int, width, int, height, int, layoutCount, TArray<FVideoLayout> ,layoutlist);
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnAudioMetadataReceived, int64, uid, FString ,metadata, FString, length);
+
+
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnExtensionEvent, FString, provider, FString, extension, FString, key, FString, value);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnExtensionStarted, FString, provider, FString, extension);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnExtensionStopped, FString, provider, FString, extension);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnExtensionError, FString, provider, FString, extension, int, error, FString, message);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnUserAccountUpdated, int64, uid, FString, userAccount);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnLocalVideoTranscoderError, const FTranscodingVideoStream&, stream, EVIDEO_TRANSCODER_ERROR, error);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnVideoRenderingTracingResult, int64, uid, EMEDIA_TRACE_EVENT, currentEvent, FVideoRenderingTracingInfo, tracingInfo);
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FGetMaxMetadataSize);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnReadyToSendMetadata, const FAgoraMetadata&, metadata, EVIDEO_SOURCE_TYPE, source_type);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnMetadataReceived, const FAgoraMetadata&, metadata);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnDirectCdnStreamingStateChanged, EDIRECT_CDN_STREAMING_STATE, state, EDIRECT_CDN_STREAMING_ERROR, error, FString, message);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnDirectCdnStreamingStateChanged, EDIRECT_CDN_STREAMING_STATE, state, EDIRECT_CDN_STREAMING_REASON, error, FString, message);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnDirectCdnStreamingStats, const FDirectCdnStreamingStats&, stats);
 
 class IRtcEngineEventHandlerClassWrapper : public agora::rtc::IRtcEngineEventHandler {};
@@ -209,6 +220,8 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "Agora|Event")
 	FOnFacePositionChanged OnFacePositionChanged;
 	UPROPERTY(BlueprintAssignable, Category = "Agora|Event")
+	FOnCameraCapturerConfigurationChanged OnCameraCapturerConfigurationChanged;
+	UPROPERTY(BlueprintAssignable, Category = "Agora|Event")
 	FOnVideoStopped OnVideoStopped;
 	UPROPERTY(BlueprintAssignable, Category = "Agora|Event")
 	FOnAudioMixingStateChanged OnAudioMixingStateChanged;
@@ -263,8 +276,6 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "Agora|Event")
 	FOnChannelMediaRelayStateChanged OnChannelMediaRelayStateChanged;
 	UPROPERTY(BlueprintAssignable, Category = "Agora|Event")
-	FOnChannelMediaRelayEvent OnChannelMediaRelayEvent;
-	UPROPERTY(BlueprintAssignable, Category = "Agora|Event")
 	FOnLocalPublishFallbackToAudioOnly OnLocalPublishFallbackToAudioOnly;
 	UPROPERTY(BlueprintAssignable, Category = "Agora|Event")
 	FOnRemoteSubscribeFallbackToAudioOnly OnRemoteSubscribeFallbackToAudioOnly;
@@ -298,6 +309,13 @@ public:
 	FOnAudioPublishStateChanged OnAudioPublishStateChanged;
 	UPROPERTY(BlueprintAssignable, Category = "Agora|Event")
 	FOnVideoPublishStateChanged OnVideoPublishStateChanged;
+
+	UPROPERTY(BlueprintAssignable, Category = "Agora|Event")
+	FOnTranscodedStreamLayoutInfo OnTranscodedStreamLayoutInfo;
+
+	UPROPERTY(BlueprintAssignable, Category = "Agora|Event")
+	FOnAudioMetadataReceived OnAudioMetadataReceived;
+
 	UPROPERTY(BlueprintAssignable, Category = "Agora|Event")
 	FOnExtensionEvent OnExtensionEvent;
 	UPROPERTY(BlueprintAssignable, Category = "Agora|Event")
@@ -361,11 +379,11 @@ public:
 
 	void onVideoSizeChanged(agora::rtc::VIDEO_SOURCE_TYPE sourceType, agora::rtc::uid_t uid, int width, int height, int rotation) override;
 
-	void onLocalVideoStateChanged(agora::rtc::VIDEO_SOURCE_TYPE source, agora::rtc::LOCAL_VIDEO_STREAM_STATE state, agora::rtc::LOCAL_VIDEO_STREAM_ERROR error) override;
+	void onLocalVideoStateChanged(agora::rtc::VIDEO_SOURCE_TYPE source, agora::rtc::LOCAL_VIDEO_STREAM_STATE state, agora::rtc::LOCAL_VIDEO_STREAM_REASON reason) override;
 
 	void onRemoteVideoStateChanged(agora::rtc::uid_t uid, agora::rtc::REMOTE_VIDEO_STATE state, agora::rtc::REMOTE_VIDEO_STATE_REASON reason, int elapsed) override;
 
-	void onFirstRemoteVideoFrame(agora::rtc::uid_t userId, int width, int height, int elapsed) override;
+	void onFirstRemoteVideoFrame(agora::rtc::uid_t uid, int width, int height, int elapsed) override;
 
 	void onUserJoined(agora::rtc::uid_t uid, int elapsed) override;
 
@@ -373,11 +391,11 @@ public:
 
 	void onUserMuteAudio(agora::rtc::uid_t uid, bool muted) override;
 
-	void onUserMuteVideo(agora::rtc::uid_t userId, bool muted) override;
+	void onUserMuteVideo(agora::rtc::uid_t uid, bool muted) override;
 
 	void onUserEnableVideo(agora::rtc::uid_t uid, bool enabled) override;
 
-	void onUserStateChanged(agora::rtc::uid_t uid, uint32_t state) override;
+	void onUserStateChanged(agora::rtc::uid_t uid, agora::rtc::REMOTE_USER_STATE state) override;
 
 	void onUserEnableLocalVideo(agora::rtc::uid_t uid, bool enabled) override;
 
@@ -397,11 +415,15 @@ public:
 #if defined(__ANDROID__) || (defined(__APPLE__) && TARGET_OS_IOS)
 	void onFacePositionChanged(int imageWidth, int imageHeight, const agora::rtc::Rectangle* vecRectangle, const int* vecDistance, int numFaces) override;
 #endif
+
+#if defined(__ANDROID__)
+	void onCameraCapturerConfigurationChanged(int direction, int focalLengthType, int width, int height, int frameRate) override;
+#endif
 	void onVideoStopped() override;
 
 	void onAudioMixingStateChanged(agora::rtc::AUDIO_MIXING_STATE_TYPE state, agora::rtc::AUDIO_MIXING_REASON_TYPE reason) override;
 
-	void onRhythmPlayerStateChanged(agora::rtc::RHYTHM_PLAYER_STATE_TYPE state, agora::rtc::RHYTHM_PLAYER_ERROR_TYPE errorCode) override;
+	void onRhythmPlayerStateChanged(agora::rtc::RHYTHM_PLAYER_STATE_TYPE state, agora::rtc::RHYTHM_PLAYER_REASON reason) override;
 
 	void onConnectionLost() override;
 
@@ -409,9 +431,9 @@ public:
 
 	void onConnectionBanned() override;
 
-	void onStreamMessage(agora::rtc::uid_t userId, int streamId, const char* data, size_t length, uint64_t sentTs) override;
+	void onStreamMessage(agora::rtc::uid_t uid, int streamId, const char* data, size_t length, uint64_t sentTs) override;
 
-	void onStreamMessageError(agora::rtc::uid_t userId, int streamId, int code, int missed, int cached) override;
+	void onStreamMessageError(agora::rtc::uid_t uid, int streamId, int code, int missed, int cached) override;
 
 	void onRequestToken() override;
 
@@ -425,11 +447,11 @@ public:
 
 	void onFirstRemoteAudioDecoded(agora::rtc::uid_t uid, int elapsed) override;
 
-	void onLocalAudioStateChanged(agora::rtc::LOCAL_AUDIO_STREAM_STATE state, agora::rtc::LOCAL_AUDIO_STREAM_ERROR error) override;
+	void onLocalAudioStateChanged(agora::rtc::LOCAL_AUDIO_STREAM_STATE state, agora::rtc::LOCAL_AUDIO_STREAM_REASON reason) override;
 
 	void onRemoteAudioStateChanged(agora::rtc::uid_t uid, agora::rtc::REMOTE_AUDIO_STATE state, agora::rtc::REMOTE_AUDIO_STATE_REASON reason, int elapsed) override;
 
-	void onActiveSpeaker(agora::rtc::uid_t userId) override;
+	void onActiveSpeaker(agora::rtc::uid_t uid) override;
 
 	void onContentInspectResult(agora::media::CONTENT_INSPECT_RESULT result) override;
 
@@ -441,7 +463,7 @@ public:
 
 	void onAudioDeviceVolumeChanged(agora::rtc::MEDIA_DEVICE_TYPE deviceType, int volume, bool muted) override;
 
-	void onRtmpStreamingStateChanged(const char* url, agora::rtc::RTMP_STREAM_PUBLISH_STATE state, agora::rtc::RTMP_STREAM_PUBLISH_ERROR_TYPE errCode) override;
+	void onRtmpStreamingStateChanged(const char* url, agora::rtc::RTMP_STREAM_PUBLISH_STATE state, agora::rtc::RTMP_STREAM_PUBLISH_REASON reason) override;
 
 	void onRtmpStreamingEvent(const char* url, agora::rtc::RTMP_STREAMING_EVENT eventCode) override;
 
@@ -450,8 +472,6 @@ public:
 	void onAudioRoutingChanged(int routing) override;
 
 	void onChannelMediaRelayStateChanged(int state, int code) override;
-
-	void onChannelMediaRelayEvent(int code) override;
 
 	void onLocalPublishFallbackToAudioOnly(bool isFallbackOrRecover) override;
 
@@ -465,7 +485,7 @@ public:
 
 	void onWlAccMessage(agora::rtc::WLACC_MESSAGE_REASON reason, agora::rtc::WLACC_SUGGEST_ACTION action, const char* wlAccMsg) override;
 
-	void onWlAccStats(agora::rtc::WlAccStats currentStats, agora::rtc::WlAccStats averageStats) override;
+	void onWlAccStats(const agora::rtc::WlAccStats & currentStats,  const agora::rtc::WlAccStats & averageStats) override;
 
 	void onNetworkTypeChanged(agora::rtc::NETWORK_TYPE type) override;
 
@@ -477,6 +497,12 @@ public:
 
 	void onUserInfoUpdated(agora::rtc::uid_t uid, const agora::rtc::UserInfo& info) override;
 
+	void onUserAccountUpdated(agora::rtc::uid_t uid, const char* userAccount) override;
+
+	void onLocalVideoTranscoderError(const agora::rtc::TranscodingVideoStream& stream, agora::rtc::VIDEO_TRANSCODER_ERROR error) override;
+
+	void onVideoRenderingTracingResult(agora::rtc::uid_t uid, agora::rtc::MEDIA_TRACE_EVENT currentEvent, agora::rtc::VideoRenderingTracingInfo tracingInfo) override;
+
 	void onUploadLogResult(const char* requestId, bool success, agora::rtc::UPLOAD_ERROR_REASON reason) override;
 
 	void onAudioSubscribeStateChanged(const char* channel, agora::rtc::uid_t uid, agora::rtc::STREAM_SUBSCRIBE_STATE oldState, agora::rtc::STREAM_SUBSCRIBE_STATE newState, int elapseSinceLastState) override;
@@ -487,6 +513,10 @@ public:
 
 	void onVideoPublishStateChanged(agora::rtc::VIDEO_SOURCE_TYPE source, const char* channel, agora::rtc::STREAM_PUBLISH_STATE oldState, agora::rtc::STREAM_PUBLISH_STATE newState, int elapseSinceLastState) override;
 
+	void onTranscodedStreamLayoutInfo(agora::rtc::uid_t uid, int width, int height, int layoutCount, const agora::VideoLayout* layoutlist);
+
+	void onAudioMetadataReceived(agora::rtc::uid_t uid, const char* metadata, size_t length);
+
 	void onExtensionEvent(const char* provider, const char* extension, const char* key, const char* value) override;
 
 	void onExtensionStarted(const char* provider, const char* extension) override;
@@ -495,11 +525,6 @@ public:
 
 	void onExtensionError(const char* provider, const char* extension, int error, const char* message) override;
 
-	void onUserAccountUpdated(agora::rtc::uid_t uid, const char* userAccount) override;
-
-	void onLocalVideoTranscoderError(const agora::rtc::TranscodingVideoStream& stream, agora::rtc::VIDEO_TRANSCODER_ERROR error) override;
-
-	void onVideoRenderingTracingResult(agora::rtc::uid_t uid, agora::rtc::MEDIA_TRACE_EVENT currentEvent, agora::rtc::VideoRenderingTracingInfo tracingInfo) override;
 
 };
 
@@ -540,7 +565,7 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "Agora|Event")
 	FOnDirectCdnStreamingStats OnDirectCdnStreamingStats;
 
-	void onDirectCdnStreamingStateChanged(agora::rtc::DIRECT_CDN_STREAMING_STATE state, agora::rtc::DIRECT_CDN_STREAMING_ERROR error, const char* message) override;
+	void onDirectCdnStreamingStateChanged(agora::rtc::DIRECT_CDN_STREAMING_STATE state, agora::rtc::DIRECT_CDN_STREAMING_REASON reason, const char* message) override;
 
 	void onDirectCdnStreamingStats(const agora::rtc::DirectCdnStreamingStats& stats) override;
 

@@ -96,6 +96,8 @@ void UIMediaStreamingSourceObserver::onProgress(int64_t position_ms)
 }
 void UIMediaStreamingSourceObserver::onMetaData(const void* data, int length)
 {
+	FString UEMetaData = UTF8_TO_TCHAR((char*)data);
+
 	TWeakObjectPtr<UIMediaStreamingSourceObserver> SelfWeakPtr(this);
 	if (!SelfWeakPtr.IsValid())
 		return;
@@ -109,6 +111,6 @@ void UIMediaStreamingSourceObserver::onMetaData(const void* data, int length)
 			if (!SelfWeakPtr.IsValid())
 				return;
 
-			OnMetaData.Broadcast((int64)data, length);
+			OnMetaData.Broadcast(UEMetaData);
 		});
 }

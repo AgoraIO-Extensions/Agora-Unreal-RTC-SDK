@@ -3,7 +3,7 @@
 
 #include "AgoraBluePrintPlugin/AgoraIMediaPlayerSourceObserver.h"
 
-void UIMediaPlayerSourceObserver::onPlayerSourceStateChanged(agora::media::base::MEDIA_PLAYER_STATE state, agora::media::base::MEDIA_PLAYER_ERROR ec)
+void UIMediaPlayerSourceObserver::onPlayerSourceStateChanged(agora::media::base::MEDIA_PLAYER_STATE state, agora::media::base::MEDIA_PLAYER_REASON ec)
 {
 	TWeakObjectPtr<UIMediaPlayerSourceObserver> SelfWeakPtr(this);
 	if (!SelfWeakPtr.IsValid())
@@ -18,10 +18,10 @@ void UIMediaPlayerSourceObserver::onPlayerSourceStateChanged(agora::media::base:
 			if (!SelfWeakPtr.IsValid())
 				return;
 
-			OnPlayerSourceStateChanged.Broadcast((EMEDIA_PLAYER_STATE)state, FENUMWRAP_MEDIA_PLAYER_ERROR(ec));
+			OnPlayerSourceStateChanged.Broadcast((EMEDIA_PLAYER_STATE)state, FENUMWRAP_MEDIA_PLAYER_REASON(ec));
 		});
 }
-void UIMediaPlayerSourceObserver::onPositionChanged(int64_t position_ms)
+void UIMediaPlayerSourceObserver::onPositionChanged(int64_t position_ms, int64_t timestampMs)
 {
 	TWeakObjectPtr<UIMediaPlayerSourceObserver> SelfWeakPtr(this);
 	if (!SelfWeakPtr.IsValid())
@@ -36,11 +36,13 @@ void UIMediaPlayerSourceObserver::onPositionChanged(int64_t position_ms)
 			if (!SelfWeakPtr.IsValid())
 				return;
 
-			OnPositionChanged.Broadcast(position_ms);
+			OnPositionChanged.Broadcast(position_ms, timestampMs);
 		});
 }
 void UIMediaPlayerSourceObserver::onPlayerEvent(agora::media::base::MEDIA_PLAYER_EVENT eventCode, int64_t elapsedTime, const char* message)
 {
+	FString UEMessage = UTF8_TO_TCHAR(message);
+
 	TWeakObjectPtr<UIMediaPlayerSourceObserver> SelfWeakPtr(this);
 	if (!SelfWeakPtr.IsValid())
 		return;
@@ -54,11 +56,13 @@ void UIMediaPlayerSourceObserver::onPlayerEvent(agora::media::base::MEDIA_PLAYER
 			if (!SelfWeakPtr.IsValid())
 				return;
 
-			OnPlayerEvent.Broadcast((EMEDIA_PLAYER_EVENT)eventCode, elapsedTime, FString(message));
+			OnPlayerEvent.Broadcast((EMEDIA_PLAYER_EVENT)eventCode, elapsedTime, UEMessage);
 		});
 }
 void UIMediaPlayerSourceObserver::onMetaData(const void* data, int length)
 {
+	FString UEStr = UTF8_TO_TCHAR((char*)data);
+	
 	TWeakObjectPtr<UIMediaPlayerSourceObserver> SelfWeakPtr(this);
 	if (!SelfWeakPtr.IsValid())
 		return;
@@ -72,7 +76,7 @@ void UIMediaPlayerSourceObserver::onMetaData(const void* data, int length)
 			if (!SelfWeakPtr.IsValid())
 				return;
 
-			OnMetaData.Broadcast((int64)data, length);
+			OnMetaData.Broadcast(UEStr);
 		});
 }
 void UIMediaPlayerSourceObserver::onPlayBufferUpdated(int64_t playCachedBuffer)
@@ -95,6 +99,7 @@ void UIMediaPlayerSourceObserver::onPlayBufferUpdated(int64_t playCachedBuffer)
 }
 void UIMediaPlayerSourceObserver::onPreloadEvent(const char* src, agora::media::base::PLAYER_PRELOAD_EVENT event)
 {
+	FString UEStr = UTF8_TO_TCHAR(src);
 	TWeakObjectPtr<UIMediaPlayerSourceObserver> SelfWeakPtr(this);
 	if (!SelfWeakPtr.IsValid())
 		return;
@@ -108,7 +113,7 @@ void UIMediaPlayerSourceObserver::onPreloadEvent(const char* src, agora::media::
 			if (!SelfWeakPtr.IsValid())
 				return;
 
-			OnPreloadEvent.Broadcast(FString(src), (EPLAYER_PRELOAD_EVENT)event);
+			OnPreloadEvent.Broadcast(UEStr, (EPLAYER_PRELOAD_EVENT)event);
 		});
 }
 void UIMediaPlayerSourceObserver::onCompleted()
@@ -149,6 +154,10 @@ void UIMediaPlayerSourceObserver::onAgoraCDNTokenWillExpire()
 }
 void UIMediaPlayerSourceObserver::onPlayerSrcInfoChanged(const agora::media::base::SrcInfo& from, const agora::media::base::SrcInfo& to)
 {
+	
+	FSrcInfo UESrcInfoFrom = from;
+	FSrcInfo UESrcInfoTo = to;
+
 	TWeakObjectPtr<UIMediaPlayerSourceObserver> SelfWeakPtr(this);
 	if (!SelfWeakPtr.IsValid())
 		return;
@@ -162,17 +171,13 @@ void UIMediaPlayerSourceObserver::onPlayerSrcInfoChanged(const agora::media::bas
 			if (!SelfWeakPtr.IsValid())
 				return;
 
-			FSrcInfo fromInfo;
-			fromInfo.bitrateInKbps = from.bitrateInKbps;
-			fromInfo.name = FString(from.name);
-			FSrcInfo toInfo;
-			toInfo.bitrateInKbps = to.bitrateInKbps;
-			toInfo.name = FString(to.name);
-			OnPlayerSrcInfoChanged.Broadcast(fromInfo, toInfo);
+			OnPlayerSrcInfoChanged.Broadcast(UESrcInfoFrom, UESrcInfoTo);
 		});
 }
 void UIMediaPlayerSourceObserver::onPlayerInfoUpdated(const agora::media::base::PlayerUpdatedInfo& info)
 {
+	FPlayerUpdatedInfo UEPlayerUpdatedInfo = info;
+
 	TWeakObjectPtr<UIMediaPlayerSourceObserver> SelfWeakPtr(this);
 	if (!SelfWeakPtr.IsValid())
 		return;
@@ -186,25 +191,7 @@ void UIMediaPlayerSourceObserver::onPlayerInfoUpdated(const agora::media::base::
 			if (!SelfWeakPtr.IsValid())
 				return;
 
-			FPlayerUpdatedInfo playerUpdatedInfo;
-			playerUpdatedInfo.playerId_SetValue = info.playerId.has_value();
-			playerUpdatedInfo.deviceId_SetValue = info.deviceId.has_value();
-			playerUpdatedInfo.cacheStatistics_SetValue = info.cacheStatistics.has_value();
-			if (info.playerId.has_value()) {
-				playerUpdatedInfo.playerId = FString(*info.playerId);
-			}
-			if (info.deviceId.has_value()) {
-				playerUpdatedInfo.deviceId = FString(*info.deviceId);
-			}
-			if (info.deviceId.has_value())
-			{
-				FCacheStatistics Statistics;
-				Statistics.cacheSize = info.cacheStatistics->cacheSize;
-				Statistics.downloadSize = info.cacheStatistics->downloadSize;
-				Statistics.fileSize = info.cacheStatistics->fileSize;
-				playerUpdatedInfo.cacheStatistics = Statistics;
-			}
-			OnPlayerInfoUpdated.Broadcast(playerUpdatedInfo);
+			OnPlayerInfoUpdated.Broadcast(UEPlayerUpdatedInfo);
 		});
 }
 void UIMediaPlayerSourceObserver::onAudioVolumeIndication(int volume)
@@ -229,6 +216,15 @@ void UIMediaPlayerSourceObserver::onAudioVolumeIndication(int volume)
 
 int UIMediaPlayerCustomDataProvider::onReadData(unsigned char* buffer, int bufferSize)
 {
+	unsigned char* tempdata = new unsigned char[bufferSize];
+	FMemory::Memcpy((void*)tempdata, buffer, bufferSize);
+	TArray<int> callBackdata;
+	for (int i = 0; i < bufferSize; i++)
+	{
+		callBackdata.Add(tempdata[i]);
+	}
+	delete[] tempdata;
+
 	TWeakObjectPtr<UIMediaPlayerCustomDataProvider> SelfWeakPtr(this);
 	if (!SelfWeakPtr.IsValid())
 		return bufferSize;
@@ -242,22 +238,58 @@ int UIMediaPlayerCustomDataProvider::onReadData(unsigned char* buffer, int buffe
 			if (!SelfWeakPtr.IsValid())
 				return;
 
-			unsigned char* tempdata = new unsigned char[bufferSize];
-			FMemory::Memcpy((void*)tempdata, buffer, bufferSize);
-			TArray<int64> callBackdata;
-			for (int i = 0; i < bufferSize; i++)
-			{
-				callBackdata.Add(tempdata[i]);
-			}
-			delete[] tempdata;
 
-			OnReadData.Broadcast(callBackdata, bufferSize);
+
+			OnReadData.Broadcast(callBackdata);
 		});
 	return bufferSize;
 }
 
+void UIMediaPlayerSourceObserver::onPlayerCacheStats(const agora::media::base::CacheStatistics& stats)
+{
+	FCacheStatistics UEStats = stats;
+	TWeakObjectPtr<UIMediaPlayerSourceObserver> SelfWeakPtr(this);
+	if (!SelfWeakPtr.IsValid())
+		return;
+
+#if (__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
+	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
+		{
+			if (!SelfWeakPtr.IsValid())
+				return;
+
+			OnPlayerCacheStats.Broadcast(UEStats);
+		});
+}
+
+
+
+void UIMediaPlayerSourceObserver::onPlayerPlaybackStats(const agora::media::base::PlayerPlaybackStats& stats)
+{
+	FPlayerPlaybackStats UEStats = stats;
+	TWeakObjectPtr<UIMediaPlayerSourceObserver> SelfWeakPtr(this);
+	if (!SelfWeakPtr.IsValid())
+		return;
+
+#if (__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
+	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
+		{
+			if (!SelfWeakPtr.IsValid())
+				return;
+
+			OnPlayerPlaybackStats.Broadcast(UEStats);
+		});
+}
+
 int64_t UIMediaPlayerCustomDataProvider::onSeek(int64_t offset, int whence)
 {
+
 	TWeakObjectPtr<UIMediaPlayerCustomDataProvider> SelfWeakPtr(this);
 	if (!SelfWeakPtr.IsValid())
 		return offset;

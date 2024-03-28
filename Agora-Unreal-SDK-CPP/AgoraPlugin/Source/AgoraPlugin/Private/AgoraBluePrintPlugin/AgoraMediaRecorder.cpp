@@ -14,17 +14,12 @@ int UIMediaRecorder::SetMediaRecorderObserver(UIMediaRecorderObserver* callback)
 }
 int UIMediaRecorder::StartRecording(FMediaRecorderConfiguration& config)
 {
-	agora::media::MediaRecorderConfiguration mediaRecorderConfiguration;
-	std::string StdStrStoragePath = TCHAR_TO_UTF8(*config.storagePath);
-	mediaRecorderConfiguration.storagePath = StdStrStoragePath.c_str();
-	mediaRecorderConfiguration.containerFormat = (agora::media::MediaRecorderContainerFormat)config.containerFormat;
-	mediaRecorderConfiguration.streamType = (agora::media::MediaRecorderStreamType)config.streamType;
-	mediaRecorderConfiguration.maxDurationMs = config.maxDurationMs;
-	mediaRecorderConfiguration.recorderInfoUpdateInterval = config.recorderInfoUpdateInterval;
+	agora::media::MediaRecorderConfiguration mediaRecorderConfiguration =config.CreateAgoraData();
 	if (MediaRecorder != nullptr)
 	{
 		return MediaRecorder->startRecording(mediaRecorderConfiguration);
 	}
+	config.FreeAgoraData(mediaRecorderConfiguration);
 	return -ERROR_NULLPTR;
 }
 int UIMediaRecorder::StopRecording()

@@ -6,21 +6,35 @@
 #include "UObject/NoExportTypes.h"
 #include "Components/Image.h"
 #include "Async/Async.h"
+#include "UEEnumAgoraConvertMacro.h"
+#include "UABTTypeBase.h"
+#include <string>
 #include "AgoraCppPlugin/include/AgoraHeaderBase.h"
 #include "URtcEngineProxyCompatibility.generated.h"
 
 class UIRtcEngineEventHandler;
 class UIRtcEngineEventHandlerEx;
+
 UENUM(BlueprintType)
-enum class AGORAOPTIONAL : uint8 {
-	AGORA_NULL_VALUE = 0,
-	AGORA_TRUE_VALUE = 1,
-	AGORA_FALSE_VALUE = 2,
+enum class EMETA_INFO_KEY : uint8 {
+	KEY_FACE_CAPTURE = 0,
 };
+
+UCLASS()
+class UIVideoFrameMetaInfo : public UObject {
+	
+  GENERATED_BODY()
+  public:
+
+    virtual ~UIVideoFrameMetaInfo() {};
+    //virtual const char* getMetaInfoStr(EMETA_INFO_KEY key) const = 0;
+
+};
+
 
 UENUM(BlueprintType)
 enum class EINTERFACE_ID_TYPE : uint8 {
-	AGORA_IID_NULL = 0,
+	INVALID_OPT_BPGEN_NULL = 0,
 	AGORA_IID_AUDIO_DEVICE_MANAGER = 1,
 	AGORA_IID_VIDEO_DEVICE_MANAGER = 2,
 	AGORA_IID_PARAMETER_ENGINE = 3,
@@ -30,13 +44,13 @@ enum class EINTERFACE_ID_TYPE : uint8 {
 	AGORA_IID_RTC_CONNECTION = 7,
 	AGORA_IID_SIGNALING_ENGINE = 8,
 	AGORA_IID_MEDIA_ENGINE_REGULATOR = 9,
-	AGORA_IID_CLOUD_SPATIAL_AUDIO = 10,
 	AGORA_IID_LOCAL_SPATIAL_AUDIO = 11,
 	AGORA_IID_STATE_SYNC = 13,
-	AGORA_IID_METACHAT_SERVICE = 14,
+	AGORA_IID_META_SERVICE = 14,
 	AGORA_IID_MUSIC_CONTENT_CENTER = 15,
 	AGORA_IID_H265_TRANSCODER = 16,
 };
+
 UENUM(BlueprintType)
 enum class ECOMPRESSION_PREFERENCE : uint8 {
 
@@ -59,28 +73,19 @@ enum class EENUMCUSTOM_ENCODING_PREFERENCE :uint8 {
 
 USTRUCT(BlueprintType)
 struct FENUMWRAP_ENCODING_PREFERENCE {
+	
 	GENERATED_BODY()
-
 
 public:
 	// require to call [GetRawValue] method to get the raw value
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|FENUMWRAP_ENCODING_PREFERENCE")
 	EENUMCUSTOM_ENCODING_PREFERENCE ValueWrapper = EENUMCUSTOM_ENCODING_PREFERENCE::PREFER_AUTO;
 
-	// default
-	FENUMWRAP_ENCODING_PREFERENCE() :ValueWrapper(EENUMCUSTOM_ENCODING_PREFERENCE::PREFER_AUTO) {}
-
-
-	FENUMWRAP_ENCODING_PREFERENCE(EENUMCUSTOM_ENCODING_PREFERENCE Val) :ValueWrapper(Val) {}
-	void operator = (EENUMCUSTOM_ENCODING_PREFERENCE InValue) {
-		ValueWrapper = InValue;
-	}
-
-	int GetRawValue() const {
-		return ((int)ValueWrapper - 1);
-	}
+	AGORA_CREATE_UEENUM_CONVERT_STRUCT_INNER_3_ENTRIES(FENUMWRAP_ENCODING_PREFERENCE,agora::rtc::ENCODING_PREFERENCE, EENUMCUSTOM_ENCODING_PREFERENCE,
+		PREFER_AUTO, 
+		PREFER_SOFTWARE, 
+		PREFER_HARDWARE)
 };
-
 
 USTRUCT(BlueprintType)
 struct FAdvanceOptions {
@@ -91,7 +96,25 @@ struct FAdvanceOptions {
 	FENUMWRAP_ENCODING_PREFERENCE encodingPreference = EENUMCUSTOM_ENCODING_PREFERENCE::PREFER_AUTO;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|AdvanceOptions")
-	ECOMPRESSION_PREFERENCE compressionPreference = ECOMPRESSION_PREFERENCE::PREFER_LOW_LATENCY;
+	ECOMPRESSION_PREFERENCE compressionPreference = ECOMPRESSION_PREFERENCE::PREFER_QUALITY;
+
+	FAdvanceOptions() {}
+
+	FAdvanceOptions(const agora::rtc::AdvanceOptions & AgoraData){
+		encodingPreference = AgoraData.encodingPreference;
+		compressionPreference = static_cast<ECOMPRESSION_PREFERENCE>(AgoraData.compressionPreference);
+	}
+
+	agora::rtc::AdvanceOptions CreateAgoraData() const{
+		agora::rtc::AdvanceOptions AgoraData;
+		AgoraData.encodingPreference = encodingPreference.GetRawValue();
+		AgoraData.compressionPreference =static_cast<agora::rtc::COMPRESSION_PREFERENCE>(compressionPreference);
+		return AgoraData;
+	}
+
+	void FreeAgoraData(agora::rtc::AdvanceOptions& AgoraData) const {
+		// no need to free
+	}
 };
 
 USTRUCT(BlueprintType)
@@ -113,6 +136,42 @@ struct FRtcImage
 	int zOrder = 0;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RtcImage")
 	float alpha = 0;
+
+	FRtcImage() {}
+
+	FRtcImage(const agora::rtc::RtcImage& AgoraData) {
+		url = UTF8_TO_TCHAR(AgoraData.url);
+		x = AgoraData.x;
+		y = AgoraData.y;
+		width = AgoraData.width;
+		height = AgoraData.height;
+		zOrder = AgoraData.zOrder;
+		alpha = AgoraData.alpha;
+	}
+
+	agora::rtc::RtcImage CreateAgoraData() const {
+		agora::rtc::RtcImage AgoraData;
+		
+		char* URLCharPtr = new char[url.Len() + 1];
+		FMemory::Memcpy(URLCharPtr, TCHAR_TO_UTF8(*url), url.Len());
+		URLCharPtr[url.Len()] = '\0';
+		AgoraData.url = URLCharPtr;
+
+		AgoraData.x = x;
+		AgoraData.y = y;
+		AgoraData.width = width;
+		AgoraData.height = height;
+		AgoraData.zOrder = zOrder;
+		AgoraData.alpha = alpha;
+		return AgoraData;
+	}
+
+	void FreeAgoraData(agora::rtc::RtcImage& AgoraData) const {
+		if (AgoraData.url) {
+			delete[] AgoraData.url;
+			AgoraData.url = nullptr;
+		}
+	}
 };
 
 
@@ -138,7 +197,7 @@ enum class ECHANNEL_PROFILE_TYPE : uint8 {
 UENUM(BlueprintType)
 enum class EAUDIO_SAMPLE_RATE_TYPE:uint8 {
 
-	AUDIO_SAMPLE_NULL = 0,
+	INVALID_OPT_BPGEN_NULL UMETA(Hidden, DisplayName = "AGORA NULL VALUE"),
 
 	AUDIO_SAMPLE_RATE_32000 = 1,
 
@@ -151,7 +210,7 @@ enum class EAUDIO_SAMPLE_RATE_TYPE:uint8 {
 
 UENUM(BlueprintType)
 enum class ECLIENT_ROLE_TYPE : uint8 {
-	CLIENT_ROLE_NULL = 0,
+	INVALID_OPT_BPGEN_NULL = 0,
 	CLIENT_ROLE_BROADCASTER = 1,
 	CLIENT_ROLE_AUDIENCE = 2,
 };
@@ -175,6 +234,7 @@ enum class EVIDEO_SOURCE_TYPE : uint8 {
 	VIDEO_SOURCE_CAMERA_FOURTH = 12,
 	VIDEO_SOURCE_SCREEN_THIRD = 13,
 	VIDEO_SOURCE_SCREEN_FOURTH = 14,
+	VIDEO_SOURCE_SPEECH_DRIVEN = 15,
 	VIDEO_SOURCE_UNKNOWN = 100,
 };
 
@@ -194,6 +254,47 @@ enum class EMEDIA_SOURCE_TYPE : uint8 {
 	REMOTE_VIDEO_SOURCE = 11,
 	TRANSCODED_VIDEO_SOURCE = 12,
 	UNKNOWN_MEDIA_SOURCE = 100,
+};
+
+UENUM(BlueprintType)
+enum class EENUMCUSTOM_AudioRoute : uint8
+{
+	ROUTE_DEFAULT,
+	ROUTE_HEADSET,
+	ROUTE_EARPIECE,
+	ROUTE_HEADSETNOMIC,
+	ROUTE_SPEAKERPHONE,
+	ROUTE_LOUDSPEAKER,
+	ROUTE_BLUETOOTH_DEVICE_HFP,
+	ROUTE_USB,
+	ROUTE_HDMI,
+	ROUTE_DISPLAYPORT,
+	ROUTE_AIRPLAY,
+	ROUTE_BLUETOOTH_DEVICE_A2DP,
+};
+
+USTRUCT(BlueprintType)
+struct FENUMWRAP_AudioRoute {
+	GENERATED_BODY()
+public:
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|FENUMWRAP_AudioRoute")
+	EENUMCUSTOM_AudioRoute ValueWrapper = EENUMCUSTOM_AudioRoute::ROUTE_DEFAULT;
+
+	AGORA_CREATE_UEENUM_CONVERT_STRUCT_INNER_12_ENTRIES(FENUMWRAP_AudioRoute, agora::rtc::AudioRoute, EENUMCUSTOM_AudioRoute,
+		ROUTE_DEFAULT,
+		ROUTE_HEADSET,
+		ROUTE_EARPIECE,
+		ROUTE_HEADSETNOMIC,
+		ROUTE_SPEAKERPHONE,
+		ROUTE_LOUDSPEAKER,
+		ROUTE_BLUETOOTH_DEVICE_HFP,
+		ROUTE_USB,
+		ROUTE_HDMI,
+		ROUTE_DISPLAYPORT,
+		ROUTE_AIRPLAY,
+		ROUTE_BLUETOOTH_DEVICE_A2DP)
+
 };
 
 UENUM(BlueprintType)
@@ -240,23 +341,23 @@ enum class EAUDIO_MIXING_DUAL_MONO_MODE : uint8 {
 	AUDIO_MIXING_DUAL_MONO_MIX = 3,
 };
 
-UENUM(BlueprintType)
-enum EVOICE_BEAUTIFIER_PRESET {
-	VOICE_BEAUTIFIER_OFF = 0x00000000,
-	CHAT_BEAUTIFIER_MAGNETIC = 0x01010100,
-	CHAT_BEAUTIFIER_FRESH = 0x01010200,
-	CHAT_BEAUTIFIER_VITALITY = 0x01010300,
-	SINGING_BEAUTIFIER = 0x01020100,
-	TIMBRE_TRANSFORMATION_VIGOROUS = 0x01030100,
-	TIMBRE_TRANSFORMATION_DEEP = 0x01030200,
-	TIMBRE_TRANSFORMATION_MELLOW = 0x01030300,
-	TIMBRE_TRANSFORMATION_FALSETTO = 0x01030400,
-	TIMBRE_TRANSFORMATION_FULL = 0x01030500,
-	TIMBRE_TRANSFORMATION_CLEAR = 0x01030600,
-	TIMBRE_TRANSFORMATION_RESOUNDING = 0x01030700,
-	TIMBRE_TRANSFORMATION_RINGING = 0x01030800,
-	ULTRA_HIGH_QUALITY_VOICE = 0x01040100,
-};
+
+//enum VOICE_BEAUTIFIER_PRESET {
+//	VOICE_BEAUTIFIER_OFF = 0x00000000,
+//	CHAT_BEAUTIFIER_MAGNETIC = 0x01010100,
+//	CHAT_BEAUTIFIER_FRESH = 0x01010200,
+//	CHAT_BEAUTIFIER_VITALITY = 0x01010300,
+//	SINGING_BEAUTIFIER = 0x01020100,
+//	TIMBRE_TRANSFORMATION_VIGOROUS = 0x01030100,
+//	TIMBRE_TRANSFORMATION_DEEP = 0x01030200,
+//	TIMBRE_TRANSFORMATION_MELLOW = 0x01030300,
+//	TIMBRE_TRANSFORMATION_FALSETTO = 0x01030400,
+//	TIMBRE_TRANSFORMATION_FULL = 0x01030500,
+//	TIMBRE_TRANSFORMATION_CLEAR = 0x01030600,
+//	TIMBRE_TRANSFORMATION_RESOUNDING = 0x01030700,
+//	TIMBRE_TRANSFORMATION_RINGING = 0x01030800,
+//	ULTRA_HIGH_QUALITY_VOICE = 0x01040100,
+//};
 
 UENUM(BlueprintType)
 enum class EENUMCUSTOM_VOICE_BEAUTIFIER_PRESET :uint8 {
@@ -286,58 +387,28 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|FENUMWRAP_VOICE_BEAUTIFIER_PRESET")
 	EENUMCUSTOM_VOICE_BEAUTIFIER_PRESET ValueWrapper = EENUMCUSTOM_VOICE_BEAUTIFIER_PRESET::VOICE_BEAUTIFIER_OFF;
 
-	// default
-	FENUMWRAP_VOICE_BEAUTIFIER_PRESET() :ValueWrapper(EENUMCUSTOM_VOICE_BEAUTIFIER_PRESET::VOICE_BEAUTIFIER_OFF) {}
 
-
-	FENUMWRAP_VOICE_BEAUTIFIER_PRESET(EENUMCUSTOM_VOICE_BEAUTIFIER_PRESET Val) :ValueWrapper(Val) {}
-	void operator = (EENUMCUSTOM_VOICE_BEAUTIFIER_PRESET InValue) {
-		ValueWrapper = InValue;
-	}
-
-	agora::rtc::VOICE_BEAUTIFIER_PRESET GetRawValue() const {
-		switch (ValueWrapper)
-		{
-		case EENUMCUSTOM_VOICE_BEAUTIFIER_PRESET::VOICE_BEAUTIFIER_OFF:
-			return agora::rtc::VOICE_BEAUTIFIER_PRESET::VOICE_BEAUTIFIER_OFF;
-		case EENUMCUSTOM_VOICE_BEAUTIFIER_PRESET::CHAT_BEAUTIFIER_MAGNETIC:
-			return agora::rtc::VOICE_BEAUTIFIER_PRESET::CHAT_BEAUTIFIER_MAGNETIC;
-		case EENUMCUSTOM_VOICE_BEAUTIFIER_PRESET::CHAT_BEAUTIFIER_FRESH:
-			return agora::rtc::VOICE_BEAUTIFIER_PRESET::CHAT_BEAUTIFIER_FRESH;
-		case EENUMCUSTOM_VOICE_BEAUTIFIER_PRESET::CHAT_BEAUTIFIER_VITALITY:
-			return agora::rtc::VOICE_BEAUTIFIER_PRESET::CHAT_BEAUTIFIER_VITALITY;
-		case EENUMCUSTOM_VOICE_BEAUTIFIER_PRESET::SINGING_BEAUTIFIER:
-			return agora::rtc::VOICE_BEAUTIFIER_PRESET::SINGING_BEAUTIFIER;
-		case EENUMCUSTOM_VOICE_BEAUTIFIER_PRESET::TIMBRE_TRANSFORMATION_VIGOROUS:
-			return agora::rtc::VOICE_BEAUTIFIER_PRESET::TIMBRE_TRANSFORMATION_VIGOROUS;
-		case EENUMCUSTOM_VOICE_BEAUTIFIER_PRESET::TIMBRE_TRANSFORMATION_DEEP:
-			return agora::rtc::VOICE_BEAUTIFIER_PRESET::TIMBRE_TRANSFORMATION_DEEP;
-		case EENUMCUSTOM_VOICE_BEAUTIFIER_PRESET::TIMBRE_TRANSFORMATION_MELLOW:
-			return agora::rtc::VOICE_BEAUTIFIER_PRESET::TIMBRE_TRANSFORMATION_MELLOW;
-		case EENUMCUSTOM_VOICE_BEAUTIFIER_PRESET::TIMBRE_TRANSFORMATION_FALSETTO:
-			return agora::rtc::VOICE_BEAUTIFIER_PRESET::TIMBRE_TRANSFORMATION_FALSETTO;
-
-		case EENUMCUSTOM_VOICE_BEAUTIFIER_PRESET::TIMBRE_TRANSFORMATION_FULL:
-			return agora::rtc::VOICE_BEAUTIFIER_PRESET::TIMBRE_TRANSFORMATION_FULL;
-		case EENUMCUSTOM_VOICE_BEAUTIFIER_PRESET::TIMBRE_TRANSFORMATION_CLEAR:
-			return agora::rtc::VOICE_BEAUTIFIER_PRESET::TIMBRE_TRANSFORMATION_CLEAR;
-		case EENUMCUSTOM_VOICE_BEAUTIFIER_PRESET::TIMBRE_TRANSFORMATION_RESOUNDING:
-			return agora::rtc::VOICE_BEAUTIFIER_PRESET::TIMBRE_TRANSFORMATION_RESOUNDING;
-		case EENUMCUSTOM_VOICE_BEAUTIFIER_PRESET::TIMBRE_TRANSFORMATION_RINGING:
-			return agora::rtc::VOICE_BEAUTIFIER_PRESET::TIMBRE_TRANSFORMATION_RINGING;
-		case EENUMCUSTOM_VOICE_BEAUTIFIER_PRESET::ULTRA_HIGH_QUALITY_VOICE:
-			return agora::rtc::VOICE_BEAUTIFIER_PRESET::ULTRA_HIGH_QUALITY_VOICE;
-
-		default:
-			return agora::rtc::VOICE_BEAUTIFIER_PRESET::VOICE_BEAUTIFIER_OFF;
-		}
-	}
+	AGORA_CREATE_UEENUM_CONVERT_STRUCT_INNER_14_ENTRIES(FENUMWRAP_VOICE_BEAUTIFIER_PRESET, agora::rtc::VOICE_BEAUTIFIER_PRESET, EENUMCUSTOM_VOICE_BEAUTIFIER_PRESET, 
+		VOICE_BEAUTIFIER_OFF,
+		CHAT_BEAUTIFIER_MAGNETIC,
+		CHAT_BEAUTIFIER_FRESH ,
+		CHAT_BEAUTIFIER_VITALITY ,
+		SINGING_BEAUTIFIER ,
+		TIMBRE_TRANSFORMATION_VIGOROUS,
+		TIMBRE_TRANSFORMATION_DEEP ,
+		TIMBRE_TRANSFORMATION_MELLOW,
+		TIMBRE_TRANSFORMATION_FALSETTO,
+		TIMBRE_TRANSFORMATION_FULL,
+		TIMBRE_TRANSFORMATION_CLEAR ,
+		TIMBRE_TRANSFORMATION_RESOUNDING,
+		TIMBRE_TRANSFORMATION_RINGING,
+		ULTRA_HIGH_QUALITY_VOICE
+	)
 };
 
 
-//
-//UENUM(BlueprintType)
-//enum EAUDIO_EFFECT_PRESET {
+
+//enum AUDIO_EFFECT_PRESET {
 //	AUDIO_EFFECT_OFF = 0x00000000,
 //	ROOM_ACOUSTICS_KTV = 0x02010100,
 //	ROOM_ACOUSTICS_VOCAL_CONCERT = 0x02010200,
@@ -362,26 +433,27 @@ public:
 
 UENUM(BlueprintType)
 enum class EENUMCUSTOM_AUDIO_EFFECT_PRESET : uint8 {
-	AUDIO_EFFECT_OFF = 0,
-	ROOM_ACOUSTICS_KTV = 1,
-	ROOM_ACOUSTICS_VOCAL_CONCERT = 2,
-	ROOM_ACOUSTICS_STUDIO = 3,
-	ROOM_ACOUSTICS_PHONOGRAPH = 4,
-	ROOM_ACOUSTICS_VIRTUAL_STEREO = 5,
-	ROOM_ACOUSTICS_SPACIAL = 6,
-	ROOM_ACOUSTICS_ETHEREAL = 7,
-	ROOM_ACOUSTICS_3D_VOICE = 8,
-	ROOM_ACOUSTICS_VIRTUAL_SURROUND_SOUND = 9,
-	VOICE_CHANGER_EFFECT_UNCLE = 10,
-	VOICE_CHANGER_EFFECT_OLDMAN = 11,
-	VOICE_CHANGER_EFFECT_BOY = 12,
-	VOICE_CHANGER_EFFECT_SISTER = 13,
-	VOICE_CHANGER_EFFECT_GIRL = 14,
-	VOICE_CHANGER_EFFECT_PIGKING = 15,
-	VOICE_CHANGER_EFFECT_HULK = 16,
-	STYLE_TRANSFORMATION_RNB = 17,
-	STYLE_TRANSFORMATION_POPULAR = 18,
-	PITCH_CORRECTION = 19
+	AUDIO_EFFECT_OFF,
+	ROOM_ACOUSTICS_KTV,
+	ROOM_ACOUSTICS_VOCAL_CONCERT,
+	ROOM_ACOUSTICS_STUDIO,
+	ROOM_ACOUSTICS_PHONOGRAPH,
+	ROOM_ACOUSTICS_VIRTUAL_STEREO,
+	ROOM_ACOUSTICS_SPACIAL,
+	ROOM_ACOUSTICS_ETHEREAL,
+	ROOM_ACOUSTICS_3D_VOICE,
+	ROOM_ACOUSTICS_VIRTUAL_SURROUND_SOUND,
+	ROOM_ACOUSTICS_CHORUS,
+	VOICE_CHANGER_EFFECT_UNCLE,
+	VOICE_CHANGER_EFFECT_OLDMAN,
+	VOICE_CHANGER_EFFECT_BOY,
+	VOICE_CHANGER_EFFECT_SISTER,
+	VOICE_CHANGER_EFFECT_GIRL,
+	VOICE_CHANGER_EFFECT_PIGKING,
+	VOICE_CHANGER_EFFECT_HULK,
+	STYLE_TRANSFORMATION_RNB,
+	STYLE_TRANSFORMATION_POPULAR,
+	PITCH_CORRECTION
 };
 
 USTRUCT(BlueprintType)
@@ -393,65 +465,33 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|FENUMWRAP_AUDIO_EFFECT_PRESET")
 	EENUMCUSTOM_AUDIO_EFFECT_PRESET ValueWrapper = EENUMCUSTOM_AUDIO_EFFECT_PRESET::AUDIO_EFFECT_OFF;
 
-	// default
-	FENUMWRAP_AUDIO_EFFECT_PRESET() :ValueWrapper(EENUMCUSTOM_AUDIO_EFFECT_PRESET::AUDIO_EFFECT_OFF) {}
 
-	FENUMWRAP_AUDIO_EFFECT_PRESET(EENUMCUSTOM_AUDIO_EFFECT_PRESET Val) :ValueWrapper(Val) {}
-	void operator = (EENUMCUSTOM_AUDIO_EFFECT_PRESET InValue) {
-		ValueWrapper = InValue;
-	}
-
-	agora::rtc::AUDIO_EFFECT_PRESET GetRawValue() const {
-		switch (ValueWrapper)
-		{
-		case EENUMCUSTOM_AUDIO_EFFECT_PRESET::AUDIO_EFFECT_OFF:
-			return agora::rtc::AUDIO_EFFECT_PRESET::AUDIO_EFFECT_OFF;
-		case EENUMCUSTOM_AUDIO_EFFECT_PRESET::ROOM_ACOUSTICS_KTV:
-			return agora::rtc::AUDIO_EFFECT_PRESET::ROOM_ACOUSTICS_KTV;
-		case EENUMCUSTOM_AUDIO_EFFECT_PRESET::ROOM_ACOUSTICS_VOCAL_CONCERT:
-			return agora::rtc::AUDIO_EFFECT_PRESET::ROOM_ACOUSTICS_VOCAL_CONCERT;
-		case EENUMCUSTOM_AUDIO_EFFECT_PRESET::ROOM_ACOUSTICS_STUDIO:
-			return agora::rtc::AUDIO_EFFECT_PRESET::ROOM_ACOUSTICS_STUDIO;
-		case EENUMCUSTOM_AUDIO_EFFECT_PRESET::ROOM_ACOUSTICS_PHONOGRAPH:
-			return agora::rtc::AUDIO_EFFECT_PRESET::ROOM_ACOUSTICS_PHONOGRAPH;
-		case EENUMCUSTOM_AUDIO_EFFECT_PRESET::ROOM_ACOUSTICS_VIRTUAL_STEREO:
-			return agora::rtc::AUDIO_EFFECT_PRESET::ROOM_ACOUSTICS_VIRTUAL_STEREO;
-		case EENUMCUSTOM_AUDIO_EFFECT_PRESET::ROOM_ACOUSTICS_SPACIAL:
-			return agora::rtc::AUDIO_EFFECT_PRESET::ROOM_ACOUSTICS_SPACIAL;
-		case EENUMCUSTOM_AUDIO_EFFECT_PRESET::ROOM_ACOUSTICS_ETHEREAL:
-			return agora::rtc::AUDIO_EFFECT_PRESET::ROOM_ACOUSTICS_ETHEREAL;
-		case EENUMCUSTOM_AUDIO_EFFECT_PRESET::ROOM_ACOUSTICS_3D_VOICE:
-			return agora::rtc::AUDIO_EFFECT_PRESET::ROOM_ACOUSTICS_3D_VOICE;
-		case EENUMCUSTOM_AUDIO_EFFECT_PRESET::ROOM_ACOUSTICS_VIRTUAL_SURROUND_SOUND:
-			return agora::rtc::AUDIO_EFFECT_PRESET::ROOM_ACOUSTICS_VIRTUAL_SURROUND_SOUND;
-		case EENUMCUSTOM_AUDIO_EFFECT_PRESET::VOICE_CHANGER_EFFECT_UNCLE:
-			return agora::rtc::AUDIO_EFFECT_PRESET::VOICE_CHANGER_EFFECT_UNCLE;
-		case EENUMCUSTOM_AUDIO_EFFECT_PRESET::VOICE_CHANGER_EFFECT_OLDMAN:
-			return agora::rtc::AUDIO_EFFECT_PRESET::VOICE_CHANGER_EFFECT_OLDMAN;
-		case EENUMCUSTOM_AUDIO_EFFECT_PRESET::VOICE_CHANGER_EFFECT_BOY:
-			return agora::rtc::AUDIO_EFFECT_PRESET::VOICE_CHANGER_EFFECT_BOY;
-		case EENUMCUSTOM_AUDIO_EFFECT_PRESET::VOICE_CHANGER_EFFECT_SISTER:
-			return agora::rtc::AUDIO_EFFECT_PRESET::VOICE_CHANGER_EFFECT_SISTER;
-		case EENUMCUSTOM_AUDIO_EFFECT_PRESET::VOICE_CHANGER_EFFECT_GIRL:
-			return agora::rtc::AUDIO_EFFECT_PRESET::VOICE_CHANGER_EFFECT_GIRL;
-		case EENUMCUSTOM_AUDIO_EFFECT_PRESET::VOICE_CHANGER_EFFECT_PIGKING:
-			return agora::rtc::AUDIO_EFFECT_PRESET::VOICE_CHANGER_EFFECT_PIGKING;
-		case EENUMCUSTOM_AUDIO_EFFECT_PRESET::VOICE_CHANGER_EFFECT_HULK:
-			return agora::rtc::AUDIO_EFFECT_PRESET::VOICE_CHANGER_EFFECT_HULK;
-		case EENUMCUSTOM_AUDIO_EFFECT_PRESET::STYLE_TRANSFORMATION_RNB:
-			return agora::rtc::AUDIO_EFFECT_PRESET::STYLE_TRANSFORMATION_RNB;
-		case EENUMCUSTOM_AUDIO_EFFECT_PRESET::STYLE_TRANSFORMATION_POPULAR:
-			return agora::rtc::AUDIO_EFFECT_PRESET::STYLE_TRANSFORMATION_POPULAR;
-		case EENUMCUSTOM_AUDIO_EFFECT_PRESET::PITCH_CORRECTION:
-			return agora::rtc::AUDIO_EFFECT_PRESET::PITCH_CORRECTION;
-		default:
-			return agora::rtc::AUDIO_EFFECT_PRESET::AUDIO_EFFECT_OFF;
-		}
-	}
+	AGORA_CREATE_UEENUM_CONVERT_STRUCT_INNER_21_ENTRIES(FENUMWRAP_AUDIO_EFFECT_PRESET, agora::rtc::AUDIO_EFFECT_PRESET, EENUMCUSTOM_AUDIO_EFFECT_PRESET,
+		AUDIO_EFFECT_OFF,
+		ROOM_ACOUSTICS_KTV,
+		ROOM_ACOUSTICS_VOCAL_CONCERT,
+		ROOM_ACOUSTICS_STUDIO,
+		ROOM_ACOUSTICS_PHONOGRAPH,
+		ROOM_ACOUSTICS_VIRTUAL_STEREO,
+		ROOM_ACOUSTICS_SPACIAL,
+		ROOM_ACOUSTICS_ETHEREAL,
+		ROOM_ACOUSTICS_3D_VOICE,
+		ROOM_ACOUSTICS_VIRTUAL_SURROUND_SOUND,
+		ROOM_ACOUSTICS_CHORUS,
+		VOICE_CHANGER_EFFECT_UNCLE,
+		VOICE_CHANGER_EFFECT_OLDMAN,
+		VOICE_CHANGER_EFFECT_BOY,
+		VOICE_CHANGER_EFFECT_SISTER,
+		VOICE_CHANGER_EFFECT_GIRL,
+		VOICE_CHANGER_EFFECT_PIGKING,
+		VOICE_CHANGER_EFFECT_HULK,
+		STYLE_TRANSFORMATION_RNB,
+		STYLE_TRANSFORMATION_POPULAR,
+		PITCH_CORRECTION)
 };
 
-//UENUM(BlueprintType)
-//enum EVOICE_CONVERSION_PRESET {
+
+//enum VOICE_CONVERSION_PRESET {
 //
 //	VOICE_CONVERSION_OFF = 0x00000000,
 //	VOICE_CHANGER_NEUTRAL = 0x03010100,
@@ -502,51 +542,24 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|FENUMWRAP_VOICE_CONVERSION_PRESET")
 	EENUMCUSTOM_VOICE_CONVERSION_PRESET ValueWrapper = EENUMCUSTOM_VOICE_CONVERSION_PRESET::VOICE_CONVERSION_OFF;
 
-	// default 
-	FENUMWRAP_VOICE_CONVERSION_PRESET() :ValueWrapper(EENUMCUSTOM_VOICE_CONVERSION_PRESET::VOICE_CONVERSION_OFF) {}
 
-	FENUMWRAP_VOICE_CONVERSION_PRESET(EENUMCUSTOM_VOICE_CONVERSION_PRESET Val) :ValueWrapper(Val) {}
-	void operator = (EENUMCUSTOM_VOICE_CONVERSION_PRESET InValue) {
-		ValueWrapper = InValue;
-	}
-
-	agora::rtc::VOICE_CONVERSION_PRESET GetRawValue() const {
-		switch (ValueWrapper)
-		{
-		case EENUMCUSTOM_VOICE_CONVERSION_PRESET::VOICE_CONVERSION_OFF:
-			return agora::rtc::VOICE_CONVERSION_PRESET::VOICE_CONVERSION_OFF;
-		case EENUMCUSTOM_VOICE_CONVERSION_PRESET::VOICE_CHANGER_NEUTRAL:
-			return agora::rtc::VOICE_CONVERSION_PRESET::VOICE_CHANGER_NEUTRAL;
-		case EENUMCUSTOM_VOICE_CONVERSION_PRESET::VOICE_CHANGER_SWEET:
-			return agora::rtc::VOICE_CONVERSION_PRESET::VOICE_CHANGER_SWEET;
-		case EENUMCUSTOM_VOICE_CONVERSION_PRESET::VOICE_CHANGER_SOLID:
-			return agora::rtc::VOICE_CONVERSION_PRESET::VOICE_CHANGER_SOLID;
-		case EENUMCUSTOM_VOICE_CONVERSION_PRESET::VOICE_CHANGER_BASS:
-			return agora::rtc::VOICE_CONVERSION_PRESET::VOICE_CHANGER_BASS;
-		case EENUMCUSTOM_VOICE_CONVERSION_PRESET::VOICE_CHANGER_CARTOON:
-			return agora::rtc::VOICE_CONVERSION_PRESET::VOICE_CHANGER_CARTOON;
-		case EENUMCUSTOM_VOICE_CONVERSION_PRESET::VOICE_CHANGER_CHILDLIKE:
-			return agora::rtc::VOICE_CONVERSION_PRESET::VOICE_CHANGER_CHILDLIKE;
-		case EENUMCUSTOM_VOICE_CONVERSION_PRESET::VOICE_CHANGER_PHONE_OPERATOR:
-			return agora::rtc::VOICE_CONVERSION_PRESET::VOICE_CHANGER_PHONE_OPERATOR;
-		case EENUMCUSTOM_VOICE_CONVERSION_PRESET::VOICE_CHANGER_MONSTER:
-			return agora::rtc::VOICE_CONVERSION_PRESET::VOICE_CHANGER_MONSTER;
-		case EENUMCUSTOM_VOICE_CONVERSION_PRESET::VOICE_CHANGER_TRANSFORMERS:
-			return agora::rtc::VOICE_CONVERSION_PRESET::VOICE_CHANGER_TRANSFORMERS;
-		case EENUMCUSTOM_VOICE_CONVERSION_PRESET::VOICE_CHANGER_GROOT:
-			return agora::rtc::VOICE_CONVERSION_PRESET::VOICE_CHANGER_GROOT;
-		case EENUMCUSTOM_VOICE_CONVERSION_PRESET::VOICE_CHANGER_IRON_LADY:
-			return agora::rtc::VOICE_CONVERSION_PRESET::VOICE_CHANGER_IRON_LADY;
-		case EENUMCUSTOM_VOICE_CONVERSION_PRESET::VOICE_CHANGER_SHIN_CHAN:
-			return agora::rtc::VOICE_CONVERSION_PRESET::VOICE_CHANGER_SHIN_CHAN;
-		case EENUMCUSTOM_VOICE_CONVERSION_PRESET::VOICE_CHANGER_GIRLISH_MAN:
-			return agora::rtc::VOICE_CONVERSION_PRESET::VOICE_CHANGER_GIRLISH_MAN;
-		case EENUMCUSTOM_VOICE_CONVERSION_PRESET::VOICE_CHANGER_CHIPMUNK:
-			return agora::rtc::VOICE_CONVERSION_PRESET::VOICE_CHANGER_CHIPMUNK;
-		default:
-			return agora::rtc::VOICE_CONVERSION_PRESET::VOICE_CONVERSION_OFF;
-		}
-	}
+	AGORA_CREATE_UEENUM_CONVERT_STRUCT_INNER_16_ENTRIES(FENUMWRAP_VOICE_CONVERSION_PRESET, agora::rtc::VOICE_CONVERSION_PRESET, EENUMCUSTOM_VOICE_CONVERSION_PRESET,
+		VOICE_CONVERSION_OFF,
+		VOICE_CHANGER_NEUTRAL,
+		VOICE_CHANGER_SWEET,
+		VOICE_CHANGER_SOLID,
+		VOICE_CHANGER_BASS,
+		VOICE_CHANGER_CARTOON,
+		VOICE_CHANGER_CHILDLIKE,
+		VOICE_CHANGER_PHONE_OPERATOR,
+		VOICE_CHANGER_MONSTER,
+		VOICE_CHANGER_TRANSFORMERS,
+		VOICE_CHANGER_GROOT,
+		VOICE_CHANGER_DARTH_VADER,
+		VOICE_CHANGER_IRON_LADY,
+		VOICE_CHANGER_SHIN_CHAN,
+		VOICE_CHANGER_GIRLISH_MAN,
+		VOICE_CHANGER_CHIPMUNK)
 };
 
 
@@ -575,7 +588,7 @@ enum class EAUDIO_REVERB_TYPE : uint8 {
 
 UENUM(BlueprintType)
 enum class ERENDER_MODE_TYPE : uint8 {
-	RENDER_NULL = 0,
+	INVALID_OPT_BPGEN_NULL = 0,
 	RENDER_MODE_HIDDEN = 1,
 	RENDER_MODE_FIT = 2,
 	RENDER_MODE_ADAPTIVE = 3,
@@ -588,8 +601,66 @@ enum class EVIDEO_MIRROR_MODE_TYPE : uint8 {
 	VIDEO_MIRROR_MODE_DISABLED = 2,
 };
 
-//UENUM(BlueprintType)
-//enum ESIMULCAST_STREAM_MODE {
+UENUM(BlueprintType)
+enum class EENUMCUSTOM_VIDEO_CODEC_CAPABILITY_LEVEL : uint8{
+	CODEC_CAPABILITY_LEVEL_UNSPECIFIED,
+	CODEC_CAPABILITY_LEVEL_BASIC_SUPPORT,
+	CODEC_CAPABILITY_LEVEL_1080P30FPS,
+	CODEC_CAPABILITY_LEVEL_1080P60FPS,
+	CODEC_CAPABILITY_LEVEL_4K60FPS
+};
+
+
+USTRUCT(BlueprintType)
+struct FENUMWRAP_VIDEO_CODEC_CAPABILITY_LEVEL
+{
+	GENERATED_BODY()
+
+public:
+	// require to call [GetRawValue] method to get the raw value 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|FENUMWRAP_VIDEO_CODEC_CAPABILITY_LEVEL")
+	EENUMCUSTOM_VIDEO_CODEC_CAPABILITY_LEVEL ValueWrapper = EENUMCUSTOM_VIDEO_CODEC_CAPABILITY_LEVEL::CODEC_CAPABILITY_LEVEL_UNSPECIFIED;
+
+	AGORA_CREATE_UEENUM_CONVERT_STRUCT_INNER_5_ENTRIES(FENUMWRAP_VIDEO_CODEC_CAPABILITY_LEVEL, agora::rtc::VIDEO_CODEC_CAPABILITY_LEVEL, EENUMCUSTOM_VIDEO_CODEC_CAPABILITY_LEVEL,
+		CODEC_CAPABILITY_LEVEL_UNSPECIFIED,
+		CODEC_CAPABILITY_LEVEL_BASIC_SUPPORT,
+		CODEC_CAPABILITY_LEVEL_1080P30FPS,
+		CODEC_CAPABILITY_LEVEL_1080P60FPS,
+		CODEC_CAPABILITY_LEVEL_4K60FPS)
+};
+
+
+USTRUCT(BlueprintType)
+struct FCodecCapLevels {
+
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|FCodecCapLevels")
+	FENUMWRAP_VIDEO_CODEC_CAPABILITY_LEVEL hwDecodingLevel;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|FCodecCapLevels")
+	FENUMWRAP_VIDEO_CODEC_CAPABILITY_LEVEL swDecodingLevel;
+	
+	FCodecCapLevels() {}
+	FCodecCapLevels(const agora::rtc::CodecCapLevels& AgoraData) {
+		hwDecodingLevel = AgoraData.hwDecodingLevel;
+		swDecodingLevel = AgoraData.swDecodingLevel;
+	}
+
+	agora::rtc::CodecCapLevels CreateAgoraData() const {
+		agora::rtc::CodecCapLevels AgoraData;
+		AgoraData.hwDecodingLevel = hwDecodingLevel.GetRawValue();
+		AgoraData.swDecodingLevel = swDecodingLevel.GetRawValue();
+		return AgoraData;
+	}
+
+	void FreeAgoraData(agora::rtc::CodecCapLevels& AgoraData) const {
+		// no need to free
+	}
+};
+
+
+//enum SIMULCAST_STREAM_MODE {
 //	AUTO_SIMULCAST_STREAM = -1,
 //	DISABLE_SIMULCAST_STREM = 0,
 //	ENABLE_SIMULCAST_STREAM = 1,
@@ -608,31 +679,16 @@ struct FENUMWRAP_SIMULCAST_STREAM_MODE
 	GENERATED_BODY()
 
 public:
+
 	// require to call [GetRawValue] method to get the raw value 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|FENUMWRAP_SIMULCAST_STREAM_MODE")
 	EENUMCUSTOM_SIMULCAST_STREAM_MODE ValueWrapper = EENUMCUSTOM_SIMULCAST_STREAM_MODE::AUTO_SIMULCAST_STREAM;
 
-	// default 
-	FENUMWRAP_SIMULCAST_STREAM_MODE() :ValueWrapper(EENUMCUSTOM_SIMULCAST_STREAM_MODE::AUTO_SIMULCAST_STREAM) {}
+	AGORA_CREATE_UEENUM_CONVERT_STRUCT_INNER_3_ENTRIES(FENUMWRAP_SIMULCAST_STREAM_MODE, agora::rtc::SIMULCAST_STREAM_MODE, EENUMCUSTOM_SIMULCAST_STREAM_MODE,
+			AUTO_SIMULCAST_STREAM,
+			DISABLE_SIMULCAST_STREAM,
+			ENABLE_SIMULCAST_STREAM)
 
-	FENUMWRAP_SIMULCAST_STREAM_MODE(EENUMCUSTOM_SIMULCAST_STREAM_MODE Val) :ValueWrapper(Val) {}
-	void operator = (EENUMCUSTOM_SIMULCAST_STREAM_MODE InValue) {
-		ValueWrapper = InValue;
-	}
-
-	agora::rtc::SIMULCAST_STREAM_MODE GetRawValue() const {
-		switch (ValueWrapper)
-		{
-		case EENUMCUSTOM_SIMULCAST_STREAM_MODE::AUTO_SIMULCAST_STREAM:
-			return agora::rtc::SIMULCAST_STREAM_MODE::AUTO_SIMULCAST_STREAM;
-		case EENUMCUSTOM_SIMULCAST_STREAM_MODE::DISABLE_SIMULCAST_STREAM:
-			return agora::rtc::SIMULCAST_STREAM_MODE::DISABLE_SIMULCAST_STREAM;
-		case EENUMCUSTOM_SIMULCAST_STREAM_MODE::ENABLE_SIMULCAST_STREAM:
-			return agora::rtc::SIMULCAST_STREAM_MODE::ENABLE_SIMULCAST_STREAM;
-		default:
-			return agora::rtc::SIMULCAST_STREAM_MODE::AUTO_SIMULCAST_STREAM;
-		}
-	}
 };
 
 UENUM(BlueprintType)
@@ -650,7 +706,7 @@ enum class ESTREAM_FALLBACK_OPTIONS : uint8 {
 UENUM(BlueprintType)
 enum class ELICENSE_ERROR_TYPE : uint8 {
 
-	LICENSE_ERR_NULL = 0,
+	INVALID_OPT_BPGEN_NULL = 0,
 
 	LICENSE_ERR_INVALID = 1,
 
@@ -685,7 +741,7 @@ enum class EVIDEO_CONTENT_HINT : uint8 {
 
 UENUM(BlueprintType)
 enum class ESCREEN_SCENARIO_TYPE : uint8 {
-	SCREEN_SCENARIO_NULL = 0,
+	INVALID_OPT_BPGEN_NULL = 0,
 	SCREEN_SCENARIO_DOCUMENT = 1,
 	SCREEN_SCENARIO_GAMING = 2,
 	SCREEN_SCENARIO_VIDEO = 3,
@@ -698,8 +754,46 @@ enum class EVIDEO_APPLICATION_SCENARIO_TYPE : uint8 {
 	APPLICATION_SCENARIO_VIDEO = 1,
 };
 
-//UENUM(BlueprintType)
-//enum EVIDEO_ORIENTATION {
+UENUM(BlueprintType)
+enum class EVIDEO_QOE_PREFERENCE_TYPE : uint8 {
+	INVALID_OPT_BPGEN_NULL UMETA(Hidden, DisplayName = "AGORA NULL VALUE"),
+	VIDEO_QOE_PREFERENCE_BALANCE = 1,
+	VIDEO_QOE_PREFERENCE_DELAY_FIRST = 2,
+	VIDEO_QOE_PREFERENCE_PICTURE_QUALITY_FIRST = 3,
+	VIDEO_QOE_PREFERENCE_FLUENCY_FIRST = 4
+
+};
+
+UENUM(BlueprintType)
+enum class EENUMCUSTOM_CAMERA_STABILIZATION_MODE : uint8{
+	CAMERA_STABILIZATION_MODE_OFF,
+	CAMERA_STABILIZATION_MODE_AUTO,
+	CAMERA_STABILIZATION_MODE_LEVEL_1,
+	CAMERA_STABILIZATION_MODE_LEVEL_2,
+	CAMERA_STABILIZATION_MODE_LEVEL_3
+};
+
+USTRUCT(BlueprintType)
+struct FENUMWRAP_CAMERA_STABILIZATION_MODE {
+	
+	GENERATED_BODY()
+
+public:
+		// require to call [GetRawValue] method to get the raw value 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|FENUMWRAP_CAMERA_STABILIZATION_MODE")
+	EENUMCUSTOM_CAMERA_STABILIZATION_MODE ValueWrapper = EENUMCUSTOM_CAMERA_STABILIZATION_MODE::CAMERA_STABILIZATION_MODE_OFF;
+
+	AGORA_CREATE_UEENUM_CONVERT_STRUCT_INNER_5_ENTRIES(FENUMWRAP_CAMERA_STABILIZATION_MODE, agora::rtc::CAMERA_STABILIZATION_MODE, EENUMCUSTOM_CAMERA_STABILIZATION_MODE,
+		CAMERA_STABILIZATION_MODE_OFF,
+		CAMERA_STABILIZATION_MODE_AUTO,
+		CAMERA_STABILIZATION_MODE_LEVEL_1,
+		CAMERA_STABILIZATION_MODE_LEVEL_2,
+		CAMERA_STABILIZATION_MODE_LEVEL_3)
+
+};
+
+
+//enum VIDEO_ORIENTATION {
 //	VIDEO_ORIENTATION_0 = 0,
 //	VIDEO_ORIENTATION_90 = 90,
 //	VIDEO_ORIENTATION_180 = 180,
@@ -724,36 +818,18 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|FENUMWRAP_VIDEO_ORIENTATION")
 	EENUMCUSTOM_VIDEO_ORIENTATION ValueWrapper = EENUMCUSTOM_VIDEO_ORIENTATION::VIDEO_ORIENTATION_0;
 
-	// default
-	FENUMWRAP_VIDEO_ORIENTATION() :ValueWrapper(EENUMCUSTOM_VIDEO_ORIENTATION::VIDEO_ORIENTATION_0) {}
 
-
-	FENUMWRAP_VIDEO_ORIENTATION(EENUMCUSTOM_VIDEO_ORIENTATION Val) :ValueWrapper(Val) {}
-	void operator = (EENUMCUSTOM_VIDEO_ORIENTATION InValue) {
-		ValueWrapper = InValue;
-	}
-
-	agora::rtc::VIDEO_ORIENTATION GetRawValue() const {
-		switch (ValueWrapper)
-		{
-		case EENUMCUSTOM_VIDEO_ORIENTATION::VIDEO_ORIENTATION_0:
-			return agora::rtc::VIDEO_ORIENTATION::VIDEO_ORIENTATION_0;
-		case EENUMCUSTOM_VIDEO_ORIENTATION::VIDEO_ORIENTATION_90:
-			return agora::rtc::VIDEO_ORIENTATION::VIDEO_ORIENTATION_90;
-		case EENUMCUSTOM_VIDEO_ORIENTATION::VIDEO_ORIENTATION_180:
-			return agora::rtc::VIDEO_ORIENTATION::VIDEO_ORIENTATION_180;
-		case EENUMCUSTOM_VIDEO_ORIENTATION::VIDEO_ORIENTATION_270:
-			return agora::rtc::VIDEO_ORIENTATION::VIDEO_ORIENTATION_270;
-		default:
-			return agora::rtc::VIDEO_ORIENTATION::VIDEO_ORIENTATION_0;
-		}
-	}
+	AGORA_CREATE_UEENUM_CONVERT_STRUCT_INNER_4_ENTRIES(FENUMWRAP_VIDEO_ORIENTATION, agora::rtc::VIDEO_ORIENTATION, EENUMCUSTOM_VIDEO_ORIENTATION,
+			VIDEO_ORIENTATION_0,
+			VIDEO_ORIENTATION_90,
+			VIDEO_ORIENTATION_180,
+			VIDEO_ORIENTATION_270)
 };
 
 
 UENUM(BlueprintType)
 enum class ECONNECTION_STATE_TYPE : uint8 {
-	CONNECTION_NULL = 0,
+	INVALID_OPT_BPGEN_NULL = 0,
 	CONNECTION_STATE_DISCONNECTED = 1,
 	CONNECTION_STATE_CONNECTING = 2,
 	CONNECTION_STATE_CONNECTED = 3,
@@ -763,7 +839,7 @@ enum class ECONNECTION_STATE_TYPE : uint8 {
 
 UENUM(BlueprintType)
 enum class EPRIORITY_TYPE : uint8 {
-	PRIORITY_NULL = 0,
+	INVALID_OPT_BPGEN_NULL = 0,
 	PRIORITY_HIGH = 50,
 	PRIORITY_NORMAL = 100,
 };
@@ -776,7 +852,7 @@ enum class ECLOUD_PROXY_TYPE : uint8 {
 };
 UENUM(BlueprintType)
 enum class EAUDIENCE_LATENCY_LEVEL_TYPE : uint8 {
-	AUDIENCE_NULL = 0,
+	INVALID_OPT_BPGEN_NULL = 0,
 	AUDIENCE_LATENCY_LEVEL_LOW_LATENCY = 1,
 	AUDIENCE_LATENCY_LEVEL_ULTRA_LOW_LATENCY = 2,
 };
@@ -785,6 +861,8 @@ USTRUCT(BlueprintType)
 struct FLogUploadServerInfo {
 
 	GENERATED_BODY()
+
+public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LogUploadServerInfo")
 	FString serverDomain = "";
@@ -797,6 +875,29 @@ struct FLogUploadServerInfo {
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LogUploadServerInfo")
 	bool serverHttps = true;
+
+	FLogUploadServerInfo() {}
+	FLogUploadServerInfo(const agora::rtc::LogUploadServerInfo& AgoraData) {
+		serverDomain = UTF8_TO_TCHAR(AgoraData.serverDomain);
+		serverPath = UTF8_TO_TCHAR(AgoraData.serverPath);
+		serverPort = AgoraData.serverPort;
+		serverHttps = AgoraData.serverHttps;
+	}
+
+	agora::rtc::LogUploadServerInfo CreateAgoraData() const {
+		agora::rtc::LogUploadServerInfo AgoraData;
+		SET_UABT_FSTRING_TO_CONST_CHAR___MEMALLOC(AgoraData.serverDomain, serverDomain)
+		SET_UABT_FSTRING_TO_CONST_CHAR___MEMALLOC(AgoraData.serverPath, serverPath)
+		
+		AgoraData.serverPort = serverPort;
+		AgoraData.serverHttps = serverHttps;
+		return AgoraData;
+	}
+
+	void FreeAgoraData(agora::rtc::LogUploadServerInfo& AgoraData) const {
+		SET_UABT_FSTRING_TO_CONST_CHAR___MEMFREE(AgoraData.serverDomain)
+		SET_UABT_FSTRING_TO_CONST_CHAR___MEMFREE(AgoraData.serverPath)
+	}
 };
 
 USTRUCT(BlueprintType)
@@ -804,8 +905,24 @@ struct FAdvancedConfigInfo {
 
 	GENERATED_BODY()
 
+public: 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|AdvancedConfigInfo")
 	FLogUploadServerInfo logUploadServer = FLogUploadServerInfo();
+
+	FAdvancedConfigInfo(){}
+	FAdvancedConfigInfo(const agora::rtc::AdvancedConfigInfo& AgoraData) {
+		logUploadServer = FLogUploadServerInfo(AgoraData.logUploadServer);
+	}
+
+	agora::rtc::AdvancedConfigInfo CreateAgoraData() const {
+		agora::rtc::AdvancedConfigInfo AgoraData;
+		AgoraData.logUploadServer = logUploadServer.CreateAgoraData();
+		return AgoraData;
+	}
+
+	void FreeAgoraData(agora::rtc::AdvancedConfigInfo& AgoraData) const {
+		logUploadServer.FreeAgoraData(AgoraData.logUploadServer);
+	}
 };
 
 UENUM(BlueprintType)
@@ -829,6 +946,7 @@ enum class EVIDEO_CODEC_TYPE : uint8 {
 
 	VIDEO_CODEC_GENERIC_JPEG = 20,
 };
+
 
 UENUM(BlueprintType)
 enum class EORIENTATION_MODE : uint8 {
@@ -899,6 +1017,7 @@ struct FVideoRenderingTracingInfo {
 
 	GENERATED_BODY()
 
+public: 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|VideoRenderingTracingInfo")
 	int elapsedTime = 0;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|VideoRenderingTracingInfo")
@@ -913,6 +1032,33 @@ struct FVideoRenderingTracingInfo {
 	int remoteJoined2UnmuteVideo = 0;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|VideoRenderingTracingInfo")
 	int remoteJoined2PacketReceived = 0;
+
+	FVideoRenderingTracingInfo() {}
+	FVideoRenderingTracingInfo(const agora::rtc::VideoRenderingTracingInfo& AgoraData) {
+		elapsedTime = AgoraData.elapsedTime;
+		start2JoinChannel = AgoraData.start2JoinChannel;
+		join2JoinSuccess = AgoraData.join2JoinSuccess;
+		joinSuccess2RemoteJoined = AgoraData.joinSuccess2RemoteJoined;
+		remoteJoined2SetView = AgoraData.remoteJoined2SetView;
+		remoteJoined2UnmuteVideo = AgoraData.remoteJoined2UnmuteVideo;
+		remoteJoined2PacketReceived = AgoraData.remoteJoined2PacketReceived;
+	}
+
+	agora::rtc::VideoRenderingTracingInfo CreateAgoraData() const {
+		agora::rtc::VideoRenderingTracingInfo AgoraData;
+		AgoraData.elapsedTime = elapsedTime;
+		AgoraData.start2JoinChannel = start2JoinChannel;
+		AgoraData.join2JoinSuccess = join2JoinSuccess;
+		AgoraData.joinSuccess2RemoteJoined = joinSuccess2RemoteJoined;
+		AgoraData.remoteJoined2SetView = remoteJoined2SetView;
+		AgoraData.remoteJoined2UnmuteVideo = remoteJoined2UnmuteVideo;
+		AgoraData.remoteJoined2PacketReceived = remoteJoined2PacketReceived;
+		return AgoraData;
+	}
+
+	void FreeAgoraData(agora::rtc::VideoRenderingTracingInfo& AgoraData) const {
+		// no need to free
+	}
 };
 
 
@@ -922,12 +1068,41 @@ struct FLogConfig {
 
 	GENERATED_BODY()
 
+public:
+	
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LogConfig")
 	FString filePath = "";
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LogConfig")
 	int64 fileSizeInKB = 1024;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LogConfig")
 	ELOG_LEVEL level = ELOG_LEVEL::LOG_LEVEL_INFO;
+
+	FLogConfig() {}
+	FLogConfig(const agora::commons::LogConfig& AgoraData) {
+		filePath = UTF8_TO_TCHAR(AgoraData.filePath);
+		fileSizeInKB = AgoraData.fileSizeInKB;
+		level = (ELOG_LEVEL)AgoraData.level;
+	}
+
+	agora::commons::LogConfig CreateAgoraData() const {
+		agora::commons::LogConfig AgoraData;
+
+		char* FilePathCharPtr = new char[filePath.Len() + 1];
+		FMemory::Memcpy(FilePathCharPtr, TCHAR_TO_UTF8(*filePath), filePath.Len());
+		FilePathCharPtr[filePath.Len()] = '\0';
+
+		AgoraData.filePath = FilePathCharPtr;
+		AgoraData.fileSizeInKB = fileSizeInKB;
+		AgoraData.level = (agora::commons::LOG_LEVEL)level;
+		return AgoraData;
+	}
+
+	void FreeAgoraData(agora::commons::LogConfig& AgoraData) const {
+		if (AgoraData.filePath) {
+			delete[] AgoraData.filePath;
+			AgoraData.filePath = nullptr;
+		}
+	}
 };
 
 USTRUCT(BlueprintType)
@@ -935,17 +1110,39 @@ struct FRecorderStreamInfo {
 
 	GENERATED_BODY()
 
+public:
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RecorderStreamInfo")
 	FString channelId = "";
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RecorderStreamInfo")
 	int64 uid = 0;
 
+
+	FRecorderStreamInfo() {}
+	FRecorderStreamInfo(const agora::rtc::RecorderStreamInfo& AgoraData) {
+		channelId = UTF8_TO_TCHAR(AgoraData.channelId);
+		uid = AgoraData.uid;
+	}
+
+	agora::rtc::RecorderStreamInfo CreateAgoraData() const {
+		agora::rtc::RecorderStreamInfo AgoraData;
+		char* ChannelIdCharPtr = new char[channelId.Len() + 1];
+		FMemory::Memcpy(ChannelIdCharPtr, TCHAR_TO_UTF8(*channelId), channelId.Len());
+		ChannelIdCharPtr[channelId.Len()] = '\0';
+		AgoraData.channelId = ChannelIdCharPtr;
+		AgoraData.uid = uid;
+		return AgoraData;
+	}
+
+	void FreeAgoraData(agora::rtc::RecorderStreamInfo& AgoraData) const {
+		if (AgoraData.channelId) {
+			delete[] AgoraData.channelId;
+			AgoraData.channelId = nullptr;
+		}
+	}
 };
 
-
-
-//UENUM(BlueprintType)
-//enum EAREA_CODE {
+//enum AREA_CODE {
 //
 //	AREA_CODE_NULL = 0,
 //
@@ -967,7 +1164,7 @@ struct FRecorderStreamInfo {
 UENUM(BlueprintType)
 enum class EENUMCUSTOM_AREA_CODE : uint8 {
 
-	AREA_CODE_NULL = 0,
+	INVALID_OPT_BPGEN_NULL = 0,
 
 	AREA_CODE_CN = 1,
 
@@ -995,35 +1192,16 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|FENUMWRAP_AREA_CODE")
 	EENUMCUSTOM_AREA_CODE ValueWrapper = EENUMCUSTOM_AREA_CODE::AREA_CODE_GLOB;
 
-	// default 
-	FENUMWRAP_AREA_CODE() :ValueWrapper(EENUMCUSTOM_AREA_CODE::AREA_CODE_GLOB) {}
 
-	FENUMWRAP_AREA_CODE(EENUMCUSTOM_AREA_CODE Val) :ValueWrapper(Val) {}
-	void operator = (EENUMCUSTOM_AREA_CODE InValue) {
-		ValueWrapper = InValue;
-	}
+	AGORA_CREATE_UEENUM_CONVERT_STRUCT_INNER_7_ENTRIES(FENUMWRAP_AREA_CODE, agora::rtc::AREA_CODE, EENUMCUSTOM_AREA_CODE,
+		AREA_CODE_GLOB,
+		AREA_CODE_CN,
+		AREA_CODE_NA,
+		AREA_CODE_EU,
+		AREA_CODE_AS,
+		AREA_CODE_JP,
+		AREA_CODE_IN)
 
-	agora::rtc::AREA_CODE GetRawValue() const {
-		switch (ValueWrapper)
-		{
-		case EENUMCUSTOM_AREA_CODE::AREA_CODE_CN:
-			return agora::rtc::AREA_CODE::AREA_CODE_CN;
-		case EENUMCUSTOM_AREA_CODE::AREA_CODE_NA:
-			return agora::rtc::AREA_CODE::AREA_CODE_NA;
-		case EENUMCUSTOM_AREA_CODE::AREA_CODE_EU:
-			return agora::rtc::AREA_CODE::AREA_CODE_EU;
-		case EENUMCUSTOM_AREA_CODE::AREA_CODE_AS:
-			return agora::rtc::AREA_CODE::AREA_CODE_AS;
-		case EENUMCUSTOM_AREA_CODE::AREA_CODE_JP:
-			return agora::rtc::AREA_CODE::AREA_CODE_JP;
-		case EENUMCUSTOM_AREA_CODE::AREA_CODE_IN:
-			return agora::rtc::AREA_CODE::AREA_CODE_IN;
-		case EENUMCUSTOM_AREA_CODE::AREA_CODE_GLOB:
-			return agora::rtc::AREA_CODE::AREA_CODE_GLOB;
-		default:
-			return	agora::rtc::AREA_CODE::AREA_CODE_GLOB;
-		}
-	}
 };
 
 
@@ -1031,6 +1209,8 @@ USTRUCT(BlueprintType)
 struct FRtcEngineContext
 {
 	GENERATED_BODY()
+
+public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RtcEngineContext")
 	FString appId = "";
@@ -1044,6 +1224,7 @@ struct FRtcEngineContext
 	ECHANNEL_PROFILE_TYPE channelProfile = ECHANNEL_PROFILE_TYPE::CHANNEL_PROFILE_LIVE_BROADCASTING;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RtcEngineContext")
 	EAUDIO_SCENARIO_TYPE audioScenario = EAUDIO_SCENARIO_TYPE::AUDIO_SCENARIO_DEFAULT;
+
 	// If the box is unchecked, the value of the corresponding variable (named without _SetValue)  will be ignored.
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RtcEngineContext")
 	bool threadPriority_SetValue = false;
@@ -1055,6 +1236,51 @@ struct FRtcEngineContext
 	FENUMWRAP_AREA_CODE areaCode = EENUMCUSTOM_AREA_CODE::AREA_CODE_GLOB;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RtcEngineContext")
 	bool useExternalEglContext = false;
+
+	FRtcEngineContext(){}
+
+	agora::rtc::RtcEngineContext CreateAgoraData() const {
+		
+		agora::rtc::RtcEngineContext AgoraData;
+
+		char* AppIdCharPtr = new char[appId.Len() + 1];
+		FMemory::Memcpy(AppIdCharPtr, TCHAR_TO_UTF8(*appId), appId.Len());
+		AppIdCharPtr[appId.Len()] = '\0';
+
+		AgoraData.appId = AppIdCharPtr;
+		//AgoraData.eventHandler = static_cast<agora::rtc::IRtcEngineEventHandler*>(eventHandler);
+		AgoraData.context = nullptr; // not supported
+
+		char* LicenseCharPtr = new char[license.Len() + 1];
+		FMemory::Memcpy(LicenseCharPtr, TCHAR_TO_UTF8(*license), license.Len());
+		LicenseCharPtr[license.Len()] = '\0';
+		AgoraData.license = LicenseCharPtr;
+
+		AgoraData.channelProfile = (agora::CHANNEL_PROFILE_TYPE)channelProfile;
+		AgoraData.audioScenario = (agora::rtc::AUDIO_SCENARIO_TYPE)audioScenario;
+
+		if(this->threadPriority_SetValue){
+			AgoraData.threadPriority = (agora::rtc::THREAD_PRIORITY_TYPE)threadPriority;
+		}
+
+		AgoraData.logConfig = logConfig.CreateAgoraData();
+		AgoraData.areaCode = areaCode.GetRawValue();
+		AgoraData.useExternalEglContext = useExternalEglContext;
+		return AgoraData;
+	}
+
+
+	void FreeAgoraData(agora::rtc::RtcEngineContext& AgoraData) const {
+		if (AgoraData.appId) {
+			delete[] AgoraData.appId;
+			AgoraData.appId = nullptr;
+		}
+		if (AgoraData.license) {
+			delete[] AgoraData.license;
+			AgoraData.license = nullptr;
+		}
+		logConfig.FreeAgoraData(AgoraData.logConfig);
+	}
 };
 
 
@@ -1062,6 +1288,8 @@ USTRUCT(BlueprintType)
 struct FRtcEngineContextEx
 {
 	GENERATED_BODY()
+
+public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RtcEngineContext")
 	FString appId = "";
@@ -1086,6 +1314,52 @@ struct FRtcEngineContextEx
 	FENUMWRAP_AREA_CODE areaCode = EENUMCUSTOM_AREA_CODE::AREA_CODE_GLOB;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RtcEngineContext")
 	bool useExternalEglContext = false;
+
+
+	FRtcEngineContextEx() {}
+
+	agora::rtc::RtcEngineContext CreateAgoraData() const {
+
+		agora::rtc::RtcEngineContext AgoraData;
+
+		char* AppIdCharPtr = new char[appId.Len() + 1];
+		FMemory::Memcpy(AppIdCharPtr, TCHAR_TO_UTF8(*appId), appId.Len());
+		AppIdCharPtr[appId.Len()] = '\0';
+
+		AgoraData.appId = AppIdCharPtr;
+		//AgoraData.eventHandler = static_cast<agora::rtc::IRtcEngineEventHandlerEx*>(eventHandler);
+		AgoraData.context = nullptr; // not supported
+
+		char* LicenseCharPtr = new char[license.Len() + 1];
+		FMemory::Memcpy(LicenseCharPtr, TCHAR_TO_UTF8(*license), license.Len());
+		LicenseCharPtr[license.Len()] = '\0';
+		AgoraData.license = LicenseCharPtr;
+
+		AgoraData.channelProfile = (agora::CHANNEL_PROFILE_TYPE)channelProfile;
+		AgoraData.audioScenario = (agora::rtc::AUDIO_SCENARIO_TYPE)audioScenario;
+
+		if (this->threadPriority_SetValue) {
+			AgoraData.threadPriority = (agora::rtc::THREAD_PRIORITY_TYPE)threadPriority;
+		}
+
+		AgoraData.logConfig = logConfig.CreateAgoraData();
+		AgoraData.areaCode = areaCode.GetRawValue();
+		AgoraData.useExternalEglContext = useExternalEglContext;
+		return AgoraData;
+	}
+
+
+	void FreeAgoraData(agora::rtc::RtcEngineContext& AgoraData) const {
+		if (AgoraData.appId) {
+			delete[] AgoraData.appId;
+			AgoraData.appId = nullptr;
+		}
+		if (AgoraData.license) {
+			delete[] AgoraData.license;
+			AgoraData.license = nullptr;
+		}
+		logConfig.FreeAgoraData(AgoraData.logConfig);
+	}
 };
 
 
@@ -1095,6 +1369,7 @@ struct FExtensionInfo {
 
 	GENERATED_BODY();
 
+public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ExtensionInfo")
 	EMEDIA_SOURCE_TYPE mediaSourceType = EMEDIA_SOURCE_TYPE::UNKNOWN_MEDIA_SOURCE;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ExtensionInfo")
@@ -1103,6 +1378,36 @@ struct FExtensionInfo {
 	FString channelId = "";
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ExtensionInfo")
 	int64 localUid = 0;
+
+	FExtensionInfo() {}
+
+	FExtensionInfo(const agora::rtc::ExtensionInfo& AgoraData) {
+		mediaSourceType = (EMEDIA_SOURCE_TYPE)AgoraData.mediaSourceType;
+		remoteUid = AgoraData.remoteUid;
+		channelId = UTF8_TO_TCHAR(AgoraData.channelId);
+		localUid = AgoraData.localUid;
+	}
+
+	agora::rtc::ExtensionInfo CreateAgoraData() const {
+		agora::rtc::ExtensionInfo AgoraData;
+		AgoraData.mediaSourceType = (agora::media::MEDIA_SOURCE_TYPE)mediaSourceType;
+		AgoraData.remoteUid = remoteUid;
+
+		char* ChannelIdCharPtr = new char[channelId.Len() + 1];
+		FMemory::Memcpy(ChannelIdCharPtr, TCHAR_TO_UTF8(*channelId), channelId.Len());
+		ChannelIdCharPtr[channelId.Len()] = '\0';
+		
+		AgoraData.channelId = ChannelIdCharPtr;
+		AgoraData.localUid = localUid;
+		return AgoraData;
+	}
+
+	void FreeAgoraData(agora::rtc::ExtensionInfo& AgoraData) const {
+		if (AgoraData.channelId) {
+			delete[] AgoraData.channelId;
+			AgoraData.channelId = nullptr;
+		}
+	}
 };
 
 
@@ -1111,10 +1416,18 @@ struct FChannelMediaOptions
 {
 	GENERATED_BODY()
 
+public:
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ChannelMediaOptions")
 	AGORAOPTIONAL publishCameraTrack = AGORAOPTIONAL::AGORA_NULL_VALUE;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ChannelMediaOptions")
 	AGORAOPTIONAL publishSecondaryCameraTrack = AGORAOPTIONAL::AGORA_NULL_VALUE;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ChannelMediaOptions")
+	AGORAOPTIONAL publishThirdCameraTrack = AGORAOPTIONAL::AGORA_NULL_VALUE;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ChannelMediaOptions")
+	AGORAOPTIONAL publishFourthCameraTrack = AGORAOPTIONAL::AGORA_NULL_VALUE;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ChannelMediaOptions")
 	AGORAOPTIONAL publishMicrophoneTrack = AGORAOPTIONAL::AGORA_NULL_VALUE;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ChannelMediaOptions")
@@ -1125,6 +1438,13 @@ struct FChannelMediaOptions
 	AGORAOPTIONAL publishScreenTrack = AGORAOPTIONAL::AGORA_NULL_VALUE;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ChannelMediaOptions")
 	AGORAOPTIONAL publishSecondaryScreenTrack = AGORAOPTIONAL::AGORA_NULL_VALUE;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ChannelMediaOptions")
+	AGORAOPTIONAL publishThirdScreenTrack = AGORAOPTIONAL::AGORA_NULL_VALUE;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ChannelMediaOptions")
+	AGORAOPTIONAL publishFourthScreenTrack = AGORAOPTIONAL::AGORA_NULL_VALUE;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ChannelMediaOptions")
 	AGORAOPTIONAL publishCustomAudioTrack = AGORAOPTIONAL::AGORA_NULL_VALUE;
 	// If the box is unchecked, the value of the corresponding variable (named without _SetValue)  will be ignored.
@@ -1142,6 +1462,13 @@ struct FChannelMediaOptions
 	AGORAOPTIONAL publishMediaPlayerVideoTrack = AGORAOPTIONAL::AGORA_NULL_VALUE;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ChannelMediaOptions")
 	AGORAOPTIONAL publishTranscodedVideoTrack = AGORAOPTIONAL::AGORA_NULL_VALUE;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ChannelMediaOptions")
+	AGORAOPTIONAL publishMixedAudioTrack = AGORAOPTIONAL::AGORA_NULL_VALUE;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ChannelMediaOptions")
+	AGORAOPTIONAL publishLipSyncTrack = AGORAOPTIONAL::AGORA_NULL_VALUE;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ChannelMediaOptions")
 	AGORAOPTIONAL autoSubscribeAudio = AGORAOPTIONAL::AGORA_TRUE_VALUE;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ChannelMediaOptions")
@@ -1162,7 +1489,7 @@ struct FChannelMediaOptions
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ChannelMediaOptions")
 	bool audienceLatencyLevel_SetValue = false;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ChannelMediaOptions")
-	EAUDIENCE_LATENCY_LEVEL_TYPE audienceLatencyLevel = EAUDIENCE_LATENCY_LEVEL_TYPE::AUDIENCE_NULL;
+	EAUDIENCE_LATENCY_LEVEL_TYPE audienceLatencyLevel = EAUDIENCE_LATENCY_LEVEL_TYPE::AUDIENCE_LATENCY_LEVEL_LOW_LATENCY;
 	// If the box is unchecked, the value of the corresponding variable (named without _SetValue)  will be ignored.
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ChannelMediaOptions")
 	bool defaultVideoStreamType_SetValue = false;
@@ -1201,143 +1528,129 @@ struct FChannelMediaOptions
 	int64 customVideoTrackId = 0;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ChannelMediaOptions")
 	AGORAOPTIONAL isAudioFilterable = AGORAOPTIONAL::AGORA_NULL_VALUE;
+
+
+	FChannelMediaOptions(){}
+
+	FChannelMediaOptions(const agora::rtc::ChannelMediaOptions & AgoraData){
+		
+		SET_UEBP_OPTIONAL_VAL_BOOL(this->publishCameraTrack, AgoraData.publishCameraTrack)
+		SET_UEBP_OPTIONAL_VAL_BOOL(this->publishSecondaryCameraTrack, AgoraData.publishSecondaryCameraTrack)
+		SET_UEBP_OPTIONAL_VAL_BOOL(this->publishThirdCameraTrack, AgoraData.publishThirdCameraTrack)
+		SET_UEBP_OPTIONAL_VAL_BOOL(this->publishFourthCameraTrack, AgoraData.publishFourthCameraTrack)
+		SET_UEBP_OPTIONAL_VAL_BOOL(this->publishMicrophoneTrack, AgoraData.publishMicrophoneTrack)
+
+#if defined(__ANDROID__) || (defined(TARGET_OS_IPHONE) && TARGET_OS_IPHONE)
+		SET_UEBP_OPTIONAL_VAL_BOOL(this->publishScreenCaptureVideo, AgoraData.publishScreenCaptureVideo)
+		SET_UEBP_OPTIONAL_VAL_BOOL(this->publishScreenCaptureAudio, AgoraData.publishScreenCaptureAudio)
+#else
+		SET_UEBP_OPTIONAL_VAL_BOOL(this->publishScreenTrack, AgoraData.publishScreenTrack)
+		SET_UEBP_OPTIONAL_VAL_BOOL(this->publishSecondaryScreenTrack, AgoraData.publishSecondaryScreenTrack)
+		SET_UEBP_OPTIONAL_VAL_BOOL(this->publishThirdScreenTrack, AgoraData.publishThirdScreenTrack)
+		SET_UEBP_OPTIONAL_VAL_BOOL(this->publishFourthScreenTrack, AgoraData.publishFourthScreenTrack)
+
+#endif
+		SET_UEBP_OPTIONAL_VAL_BOOL(this->publishCustomAudioTrack, AgoraData.publishCustomAudioTrack)
+		SET_UEBP_OPTIONAL_VAL_DIR_ASSIGN(this->publishCustomAudioTrackId, AgoraData.publishCustomAudioTrackId)
+		SET_UEBP_OPTIONAL_VAL_BOOL(this->publishCustomVideoTrack, AgoraData.publishCustomVideoTrack)
+		SET_UEBP_OPTIONAL_VAL_BOOL(this->publishEncodedVideoTrack, AgoraData.publishEncodedVideoTrack)
+		SET_UEBP_OPTIONAL_VAL_BOOL(this->publishMediaPlayerAudioTrack, AgoraData.publishMediaPlayerAudioTrack)
+		SET_UEBP_OPTIONAL_VAL_BOOL(this->publishMediaPlayerVideoTrack, AgoraData.publishMediaPlayerVideoTrack)
+		SET_UEBP_OPTIONAL_VAL_BOOL(this->publishTranscodedVideoTrack, AgoraData.publishTranscodedVideoTrack)
+		SET_UEBP_OPTIONAL_VAL_BOOL(this->publishMixedAudioTrack, AgoraData.publishMixedAudioTrack)
+		SET_UEBP_OPTIONAL_VAL_BOOL(this->publishLipSyncTrack, AgoraData.publishLipSyncTrack)
+		SET_UEBP_OPTIONAL_VAL_BOOL(this->autoSubscribeAudio, AgoraData.autoSubscribeAudio)
+		SET_UEBP_OPTIONAL_VAL_BOOL(this->autoSubscribeVideo, AgoraData.autoSubscribeVideo)
+		SET_UEBP_OPTIONAL_VAL_BOOL(this->enableAudioRecordingOrPlayout, AgoraData.enableAudioRecordingOrPlayout)
+		SET_UEBP_OPTIONAL_VAL_DIR_ASSIGN(this->publishMediaPlayerId, AgoraData.publishMediaPlayerId)
+
+		SET_UEBP_OPTIONAL_VAL_ASSIGN_VAL(this->clientRoleType,AgoraData.clientRoleType,static_cast<ECLIENT_ROLE_TYPE>(AgoraData.clientRoleType.value()))
+			
+		SET_UEBP_OPTIONAL_VAL_ASSIGN_VAL(this->audienceLatencyLevel, AgoraData.audienceLatencyLevel, static_cast<EAUDIENCE_LATENCY_LEVEL_TYPE>(AgoraData.audienceLatencyLevel.value()))
+
+		SET_UEBP_OPTIONAL_VAL_ASSIGN_VAL(this->defaultVideoStreamType, AgoraData.defaultVideoStreamType, static_cast<EVIDEO_STREAM_TYPE>(AgoraData.defaultVideoStreamType.value()))
+
+		SET_UEBP_OPTIONAL_VAL_ASSIGN_VAL(this->channelProfile, AgoraData.channelProfile, static_cast<ECHANNEL_PROFILE_TYPE>(AgoraData.channelProfile.value()))
+
+		SET_UEBP_OPTIONAL_VAL_DIR_ASSIGN(this->audioDelayMs, AgoraData.audioDelayMs)
+
+		SET_UEBP_OPTIONAL_VAL_DIR_ASSIGN(this->mediaPlayerAudioDelayMs, AgoraData.mediaPlayerAudioDelayMs)
+		
+		SET_UEBP_OPTIONAL_VAL_FString(this->token,AgoraData.token)
+			
+		SET_UEBP_OPTIONAL_VAL_BOOL(this->enableBuiltInMediaEncryption, AgoraData.enableBuiltInMediaEncryption)
+
+		SET_UEBP_OPTIONAL_VAL_BOOL(this->publishRhythmPlayerTrack, AgoraData.publishRhythmPlayerTrack)
+
+		SET_UEBP_OPTIONAL_VAL_BOOL(this->isInteractiveAudience, AgoraData.isInteractiveAudience)
+
+		SET_UEBP_OPTIONAL_VAL_DIR_ASSIGN(this->customVideoTrackId, AgoraData.customVideoTrackId)
+
+		SET_UEBP_OPTIONAL_VAL_BOOL(this->isAudioFilterable, AgoraData.isAudioFilterable)
+	}
+
+	agora::rtc::ChannelMediaOptions CreateAgoraData() const{
+		agora::rtc::ChannelMediaOptions AgoraData;
+		SET_AGORA_OPTIONAL_VAL_BOOL(AgoraData.publishCameraTrack, this->publishCameraTrack)
+
+		SET_AGORA_OPTIONAL_VAL_BOOL(AgoraData.publishSecondaryCameraTrack, this->publishSecondaryCameraTrack)
+		SET_AGORA_OPTIONAL_VAL_BOOL(AgoraData.publishThirdCameraTrack, this->publishThirdCameraTrack)
+		SET_AGORA_OPTIONAL_VAL_BOOL(AgoraData.publishFourthCameraTrack, this->publishFourthCameraTrack)
+		SET_AGORA_OPTIONAL_VAL_BOOL(AgoraData.publishMicrophoneTrack, this->publishMicrophoneTrack)
+
+#if defined(__ANDROID__) || (defined(TARGET_OS_IPHONE) && TARGET_OS_IPHONE)
+
+		SET_AGORA_OPTIONAL_VAL_BOOL(AgoraData.publishScreenCaptureVideo, this->publishScreenCaptureVideo)
+		SET_AGORA_OPTIONAL_VAL_BOOL(AgoraData.publishScreenCaptureAudio, this->publishScreenCaptureAudio)
+#else
+		SET_AGORA_OPTIONAL_VAL_BOOL(AgoraData.publishScreenTrack, this->publishScreenTrack)
+		SET_AGORA_OPTIONAL_VAL_BOOL(AgoraData.publishSecondaryScreenTrack, this->publishSecondaryScreenTrack)
+		SET_AGORA_OPTIONAL_VAL_BOOL(AgoraData.publishThirdScreenTrack, this->publishThirdScreenTrack)
+		SET_AGORA_OPTIONAL_VAL_BOOL(AgoraData.publishFourthScreenTrack, this->publishFourthScreenTrack)
+#endif
+
+		SET_AGORA_OPTIONAL_VAL_BOOL(AgoraData.publishCustomAudioTrack, this->publishCustomAudioTrack)
+		SET_AGORA_OPTIONAL_VAL_DIR_ASSIGN(AgoraData.publishCustomAudioTrackId, this->publishCustomAudioTrackId)
+		SET_AGORA_OPTIONAL_VAL_BOOL(AgoraData.publishCustomVideoTrack, this->publishCustomVideoTrack)
+		SET_AGORA_OPTIONAL_VAL_BOOL(AgoraData.publishEncodedVideoTrack, this->publishEncodedVideoTrack)
+		SET_AGORA_OPTIONAL_VAL_BOOL(AgoraData.publishMediaPlayerAudioTrack, this->publishMediaPlayerAudioTrack)
+		SET_AGORA_OPTIONAL_VAL_BOOL(AgoraData.publishMediaPlayerVideoTrack, this->publishMediaPlayerVideoTrack)
+		SET_AGORA_OPTIONAL_VAL_BOOL(AgoraData.publishTranscodedVideoTrack, this->publishTranscodedVideoTrack)
+		SET_AGORA_OPTIONAL_VAL_BOOL(AgoraData.publishMixedAudioTrack, this->publishMixedAudioTrack)
+		SET_AGORA_OPTIONAL_VAL_BOOL(AgoraData.publishLipSyncTrack, this->publishLipSyncTrack)
+		SET_AGORA_OPTIONAL_VAL_BOOL(AgoraData.autoSubscribeAudio, this->autoSubscribeAudio)
+		SET_AGORA_OPTIONAL_VAL_BOOL(AgoraData.autoSubscribeVideo, this->autoSubscribeVideo)
+		SET_AGORA_OPTIONAL_VAL_BOOL(AgoraData.enableAudioRecordingOrPlayout, this->enableAudioRecordingOrPlayout)
+		SET_AGORA_OPTIONAL_VAL_DIR_ASSIGN(AgoraData.publishMediaPlayerId, this->publishMediaPlayerId)
+		SET_AGORA_OPTIONAL_VAL_ASSIGN_VAL(AgoraData.publishMediaPlayerId, this->publishMediaPlayerId,static_cast<agora::rtc::CLIENT_ROLE_TYPE>(this->publishMediaPlayerId))
+		SET_AGORA_OPTIONAL_VAL_ASSIGN_VAL(AgoraData.audienceLatencyLevel, this->audienceLatencyLevel, static_cast<agora::rtc::AUDIENCE_LATENCY_LEVEL_TYPE>(this->audienceLatencyLevel))
+		SET_AGORA_OPTIONAL_VAL_ASSIGN_VAL(AgoraData.defaultVideoStreamType, this->defaultVideoStreamType, static_cast<agora::rtc::VIDEO_STREAM_TYPE>(this->defaultVideoStreamType))
+		SET_AGORA_OPTIONAL_VAL_ASSIGN_VAL(AgoraData.channelProfile, this->channelProfile, static_cast<agora::CHANNEL_PROFILE_TYPE>(this->channelProfile))
+		SET_AGORA_OPTIONAL_VAL_DIR_ASSIGN(AgoraData.audioDelayMs, this->audioDelayMs)
+		SET_AGORA_OPTIONAL_VAL_DIR_ASSIGN(AgoraData.mediaPlayerAudioDelayMs, this->mediaPlayerAudioDelayMs)
+		SET_AGORA_OPTIONAL_VAL_CHARPTR______MEMOALLOC(AgoraData.token, this->token)
+		SET_AGORA_OPTIONAL_VAL_BOOL(AgoraData.enableBuiltInMediaEncryption, this->enableBuiltInMediaEncryption)
+		SET_AGORA_OPTIONAL_VAL_BOOL(AgoraData.publishRhythmPlayerTrack, this->publishRhythmPlayerTrack)
+		SET_AGORA_OPTIONAL_VAL_BOOL(AgoraData.isInteractiveAudience, this->isInteractiveAudience)
+		SET_AGORA_OPTIONAL_VAL_DIR_ASSIGN(AgoraData.customVideoTrackId, this->customVideoTrackId)
+		SET_AGORA_OPTIONAL_VAL_BOOL(AgoraData.isAudioFilterable, this->isAudioFilterable)
+
+		return AgoraData;
+	}
+
+	void FreeAgoraData(agora::rtc::ChannelMediaOptions& AgoraData) const {
+		SET_AGORA_OPTIONAL_VAL_CHARPTR______MEMOFREE(AgoraData.token)
+	}
 };
 
-// Set ChannelMediaOptions Using FAgora_ChannelMediaOptions
-#define SET_AGORA_DATA_CHANNELMEDIAOPTIONS_MOBILE(Agora_ChannelMediaOptions,UE_FAgora_ChannelMediaOptions)\
-{\
-		if (UE_FAgora_ChannelMediaOptions.publishScreenCaptureVideo != AGORAOPTIONAL::AGORA_NULL_VALUE) \
-		{ \
-			Agora_ChannelMediaOptions.publishScreenCaptureVideo = UE_FAgora_ChannelMediaOptions.publishScreenCaptureVideo == AGORAOPTIONAL::AGORA_TRUE_VALUE; \
-		} \
-		if (UE_FAgora_ChannelMediaOptions.publishScreenCaptureAudio != AGORAOPTIONAL::AGORA_NULL_VALUE) \
-		{ \
-			Agora_ChannelMediaOptions.publishScreenCaptureAudio = UE_FAgora_ChannelMediaOptions.publishScreenCaptureAudio == AGORAOPTIONAL::AGORA_TRUE_VALUE; \
-		} \
-		SET_AGORA_DATA_CHANNELMEDIAOPTIONS_INNER_COMMON(Agora_ChannelMediaOptions,UE_FAgora_ChannelMediaOptions); \
-}
+UENUM(BlueprintType)
+enum EFeatureType {
 
-#define SET_AGORA_DATA_CHANNELMEDIAOPTIONS_NONMOBILE_PLATFORM(Agora_ChannelMediaOptions,UE_FAgora_ChannelMediaOptions) \
-{\
-		if (UE_FAgora_ChannelMediaOptions.publishScreenTrack != AGORAOPTIONAL::AGORA_NULL_VALUE) \
-		{ \
-			Agora_ChannelMediaOptions.publishScreenTrack = UE_FAgora_ChannelMediaOptions.publishScreenTrack == AGORAOPTIONAL::AGORA_TRUE_VALUE; \
-		} \
-		if (UE_FAgora_ChannelMediaOptions.publishSecondaryScreenTrack != AGORAOPTIONAL::AGORA_NULL_VALUE) \
-		{ \
-			Agora_ChannelMediaOptions.publishSecondaryScreenTrack = UE_FAgora_ChannelMediaOptions.publishSecondaryScreenTrack == AGORAOPTIONAL::AGORA_TRUE_VALUE; \
-		} \
-		SET_AGORA_DATA_CHANNELMEDIAOPTIONS_INNER_COMMON(Agora_ChannelMediaOptions,UE_FAgora_ChannelMediaOptions); \
-}
+	INVALID_OPT_BPGEN_NULL UMETA(Hidden, DisplayName = "AGORA NULL VALUE"),
+	VIDEO_VIRTUAL_BACKGROUND = 1,
+	VIDEO_BEAUTY_EFFECT = 2,
 
-
-#define SET_AGORA_DATA_CHANNELMEDIAOPTIONS_INNER_COMMON(Agora_ChannelMediaOptions,UE_FAgora_ChannelMediaOptions)\
-{\
-		if (UE_FAgora_ChannelMediaOptions.publishCameraTrack != AGORAOPTIONAL::AGORA_NULL_VALUE) \
-		{ \
-			Agora_ChannelMediaOptions.publishCameraTrack = UE_FAgora_ChannelMediaOptions.publishCameraTrack == AGORAOPTIONAL::AGORA_TRUE_VALUE; \
-		} \
-		if (UE_FAgora_ChannelMediaOptions.publishSecondaryCameraTrack != AGORAOPTIONAL::AGORA_NULL_VALUE)\
-		{ \
-			Agora_ChannelMediaOptions.publishSecondaryCameraTrack = UE_FAgora_ChannelMediaOptions.publishSecondaryCameraTrack == AGORAOPTIONAL::AGORA_TRUE_VALUE; \
-		} \
-		if (UE_FAgora_ChannelMediaOptions.publishMicrophoneTrack != AGORAOPTIONAL::AGORA_NULL_VALUE) \
-		{ \
-			Agora_ChannelMediaOptions.publishMicrophoneTrack = UE_FAgora_ChannelMediaOptions.publishMicrophoneTrack == AGORAOPTIONAL::AGORA_TRUE_VALUE; \
-		} \
-		if (UE_FAgora_ChannelMediaOptions.publishCustomAudioTrack != AGORAOPTIONAL::AGORA_NULL_VALUE) \
-		{ \
-			Agora_ChannelMediaOptions.publishCustomAudioTrack = UE_FAgora_ChannelMediaOptions.publishCustomAudioTrack == AGORAOPTIONAL::AGORA_TRUE_VALUE; \
-		} \
-		if (UE_FAgora_ChannelMediaOptions.publishCustomVideoTrack != AGORAOPTIONAL::AGORA_NULL_VALUE) \
-		{ \
-			Agora_ChannelMediaOptions.publishCustomVideoTrack = UE_FAgora_ChannelMediaOptions.publishCustomVideoTrack == AGORAOPTIONAL::AGORA_TRUE_VALUE; \
-		} \
-		if (UE_FAgora_ChannelMediaOptions.publishEncodedVideoTrack != AGORAOPTIONAL::AGORA_NULL_VALUE) \
-		{ \
-			Agora_ChannelMediaOptions.publishEncodedVideoTrack = UE_FAgora_ChannelMediaOptions.publishEncodedVideoTrack == AGORAOPTIONAL::AGORA_TRUE_VALUE; \
-		} \
-		if (UE_FAgora_ChannelMediaOptions.publishMediaPlayerAudioTrack != AGORAOPTIONAL::AGORA_NULL_VALUE) \
-		{ \
-			Agora_ChannelMediaOptions.publishMediaPlayerAudioTrack = UE_FAgora_ChannelMediaOptions.publishMediaPlayerAudioTrack == AGORAOPTIONAL::AGORA_TRUE_VALUE; \
-		} \
-		if (UE_FAgora_ChannelMediaOptions.publishMediaPlayerVideoTrack != AGORAOPTIONAL::AGORA_NULL_VALUE) \
-		{ \
-			Agora_ChannelMediaOptions.publishMediaPlayerVideoTrack = UE_FAgora_ChannelMediaOptions.publishMediaPlayerVideoTrack == AGORAOPTIONAL::AGORA_TRUE_VALUE; \
-		} \
-		if (UE_FAgora_ChannelMediaOptions.publishTranscodedVideoTrack != AGORAOPTIONAL::AGORA_NULL_VALUE) \
-		{ \
-			Agora_ChannelMediaOptions.publishTranscodedVideoTrack = UE_FAgora_ChannelMediaOptions.publishTranscodedVideoTrack == AGORAOPTIONAL::AGORA_TRUE_VALUE; \
-		} \
-		if (UE_FAgora_ChannelMediaOptions.autoSubscribeAudio != AGORAOPTIONAL::AGORA_NULL_VALUE) \
-		{ \
-			Agora_ChannelMediaOptions.autoSubscribeAudio = UE_FAgora_ChannelMediaOptions.autoSubscribeAudio == AGORAOPTIONAL::AGORA_TRUE_VALUE; \
-		} \
-		if (UE_FAgora_ChannelMediaOptions.autoSubscribeVideo != AGORAOPTIONAL::AGORA_NULL_VALUE) \
-		{ \
-			Agora_ChannelMediaOptions.autoSubscribeVideo = UE_FAgora_ChannelMediaOptions.autoSubscribeVideo == AGORAOPTIONAL::AGORA_TRUE_VALUE; \
-		} \
-		if (UE_FAgora_ChannelMediaOptions.enableAudioRecordingOrPlayout != AGORAOPTIONAL::AGORA_NULL_VALUE) \
-		{ \
-			Agora_ChannelMediaOptions.enableAudioRecordingOrPlayout = UE_FAgora_ChannelMediaOptions.enableAudioRecordingOrPlayout == AGORAOPTIONAL::AGORA_TRUE_VALUE; \
-		} \
-		if (UE_FAgora_ChannelMediaOptions.publishMediaPlayerId_SetValue) \
-		{ \
-			Agora_ChannelMediaOptions.publishMediaPlayerId = UE_FAgora_ChannelMediaOptions.publishMediaPlayerId; \
-		} \
-		if (UE_FAgora_ChannelMediaOptions.clientRoleType_SetValue) \
-		{ \
-			Agora_ChannelMediaOptions.clientRoleType = (agora::rtc::CLIENT_ROLE_TYPE)UE_FAgora_ChannelMediaOptions.clientRoleType; \
-		} \
-		if (UE_FAgora_ChannelMediaOptions.audienceLatencyLevel_SetValue) \
-		{ \
-			Agora_ChannelMediaOptions.audienceLatencyLevel = (agora::rtc::AUDIENCE_LATENCY_LEVEL_TYPE)UE_FAgora_ChannelMediaOptions.audienceLatencyLevel; \
-		} \
-		if (UE_FAgora_ChannelMediaOptions.defaultVideoStreamType_SetValue) \
-		{ \
-			Agora_ChannelMediaOptions.defaultVideoStreamType = (agora::rtc::VIDEO_STREAM_TYPE)UE_FAgora_ChannelMediaOptions.defaultVideoStreamType; \
-		} \
-		if (UE_FAgora_ChannelMediaOptions.channelProfile_SetValue) \
-		{ \
-			Agora_ChannelMediaOptions.channelProfile = (agora::CHANNEL_PROFILE_TYPE)UE_FAgora_ChannelMediaOptions.channelProfile; \
-		} \
-		if (UE_FAgora_ChannelMediaOptions.audioDelayMs_SetValue) \
-		{ \
-			Agora_ChannelMediaOptions.audioDelayMs = UE_FAgora_ChannelMediaOptions.audioDelayMs; \
-		} \
-		if (UE_FAgora_ChannelMediaOptions.mediaPlayerAudioDelayMs_SetValue) \
-		{ \
-			Agora_ChannelMediaOptions.mediaPlayerAudioDelayMs = UE_FAgora_ChannelMediaOptions.mediaPlayerAudioDelayMs; \
-		} \
-		if (UE_FAgora_ChannelMediaOptions.token_SetValue) \
-		{ \
-			std::string Token = TCHAR_TO_UTF8(*UE_FAgora_ChannelMediaOptions.token); \
- \
-			Agora_ChannelMediaOptions.token = Token.c_str(); \
-		} \
-		if (UE_FAgora_ChannelMediaOptions.enableBuiltInMediaEncryption != AGORAOPTIONAL::AGORA_NULL_VALUE) \
-		{ \
-			Agora_ChannelMediaOptions.enableBuiltInMediaEncryption = UE_FAgora_ChannelMediaOptions.enableBuiltInMediaEncryption == AGORAOPTIONAL::AGORA_TRUE_VALUE; \
-		} \
-		if (UE_FAgora_ChannelMediaOptions.publishRhythmPlayerTrack != AGORAOPTIONAL::AGORA_NULL_VALUE) \
-		{ \
-			Agora_ChannelMediaOptions.publishRhythmPlayerTrack = UE_FAgora_ChannelMediaOptions.publishRhythmPlayerTrack == AGORAOPTIONAL::AGORA_TRUE_VALUE; \
-		} \
-		if (UE_FAgora_ChannelMediaOptions.isInteractiveAudience != AGORAOPTIONAL::AGORA_NULL_VALUE) \
-		{ \
-			Agora_ChannelMediaOptions.isInteractiveAudience = UE_FAgora_ChannelMediaOptions.isInteractiveAudience == AGORAOPTIONAL::AGORA_TRUE_VALUE; \
-		} \
-		if (UE_FAgora_ChannelMediaOptions.customVideoTrackId_SetValue) \
-		{ \
-			Agora_ChannelMediaOptions.customVideoTrackId = UE_FAgora_ChannelMediaOptions.customVideoTrackId; \
-		} \
-		if (UE_FAgora_ChannelMediaOptions.isAudioFilterable != AGORAOPTIONAL::AGORA_NULL_VALUE) \
-		{ \
-			Agora_ChannelMediaOptions.isAudioFilterable = options.isAudioFilterable == AGORAOPTIONAL::AGORA_TRUE_VALUE; \
-		} \
-}
-
-
+};
 
 
 USTRUCT(BlueprintType)
@@ -1345,30 +1658,37 @@ struct FLeaveChannelOptions
 {
 	GENERATED_BODY()
 
+public:
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LeaveChannelOptions")
-	AGORAOPTIONAL stopAudioMixing = AGORAOPTIONAL::AGORA_NULL_VALUE;
+	bool stopAudioMixing = true;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LeaveChannelOptions")
-	AGORAOPTIONAL stopAllEffect = AGORAOPTIONAL::AGORA_NULL_VALUE;
+	bool stopAllEffect = true;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LeaveChannelOptions")
-	AGORAOPTIONAL stopMicrophoneRecording = AGORAOPTIONAL::AGORA_NULL_VALUE;
+	bool stopMicrophoneRecording = true;
+
+	
+	FLeaveChannelOptions() {}
+
+	FLeaveChannelOptions(const agora::rtc::LeaveChannelOptions& AgoraData) {
+		this->stopAudioMixing = AgoraData.stopAudioMixing;
+		this->stopAllEffect = AgoraData.stopAllEffect;
+		this->stopMicrophoneRecording = AgoraData.stopMicrophoneRecording;
+	}
+
+	agora::rtc::LeaveChannelOptions CreateAgoraData() const {
+		agora::rtc::LeaveChannelOptions AgoraData;
+		AgoraData.stopAudioMixing = this->stopAudioMixing;
+		AgoraData.stopAllEffect = this->stopAllEffect;
+		AgoraData.stopMicrophoneRecording = this->stopMicrophoneRecording;
+		return AgoraData;
+	}
+
+	void FreeAgoraData(agora::rtc::LeaveChannelOptions& AgoraData) const {
+
+	}
+
 };
-
-#define SET_AGORA_DATA_LEAVECHANNELOPTIONS(Agora_LeaveChannelOptions,UE_FAgora_LeaveChannelOptions)\
-{\
-	if (UE_FAgora_LeaveChannelOptions.stopAudioMixing != AGORAOPTIONAL::AGORA_NULL_VALUE)          \
-	{   \
-		Agora_LeaveChannelOptions.stopAudioMixing = UE_FAgora_LeaveChannelOptions.stopAudioMixing == AGORAOPTIONAL::AGORA_TRUE_VALUE;        \
-	}   \
-	if (UE_FAgora_LeaveChannelOptions.stopAllEffect != AGORAOPTIONAL::AGORA_NULL_VALUE)        \
-	{   \
-		Agora_LeaveChannelOptions.stopAllEffect = UE_FAgora_LeaveChannelOptions.stopAllEffect == AGORAOPTIONAL::AGORA_TRUE_VALUE;        \
-	}   \
-	if (UE_FAgora_LeaveChannelOptions.stopMicrophoneRecording != AGORAOPTIONAL::AGORA_NULL_VALUE)             \
-	{   \
-		Agora_LeaveChannelOptions.stopMicrophoneRecording = UE_FAgora_LeaveChannelOptions.stopMicrophoneRecording == AGORAOPTIONAL::AGORA_TRUE_VALUE;            \
-	}  \
-}
-
 
 
 USTRUCT(BlueprintType)
@@ -1376,14 +1696,36 @@ struct FClientRoleOptions
 {
 	GENERATED_BODY()
 
+public: 
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ClientRoleOptions")
 	EAUDIENCE_LATENCY_LEVEL_TYPE audienceLatencyLevel = EAUDIENCE_LATENCY_LEVEL_TYPE::AUDIENCE_LATENCY_LEVEL_ULTRA_LOW_LATENCY;
+
+
+	FClientRoleOptions() {}
+	
+	FClientRoleOptions(const agora::rtc::ClientRoleOptions& AgoraData) {
+		audienceLatencyLevel = static_cast<EAUDIENCE_LATENCY_LEVEL_TYPE>(AgoraData.audienceLatencyLevel);
+	}
+
+	agora::rtc::ClientRoleOptions CreateAgoraData() const {
+		agora::rtc::ClientRoleOptions AgoraData;
+		AgoraData.audienceLatencyLevel = static_cast<agora::rtc::AUDIENCE_LATENCY_LEVEL_TYPE>(audienceLatencyLevel);
+		return AgoraData;
+	}
+
+	void FreeAgoraData(agora::rtc::ClientRoleOptions& AgoraData) const {
+
+	}
+
 };
 
 USTRUCT(BlueprintType)
 struct FEchoTestConfiguration
 {
 	GENERATED_BODY()
+
+public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|EchoTestConfiguration")
 	UImage* view = nullptr;
@@ -1397,12 +1739,43 @@ struct FEchoTestConfiguration
 	FString channelId = "";
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|EchoTestConfiguration")
 	int intervalInSeconds = 2;
+
+	
+	FEchoTestConfiguration() {}
+
+	FEchoTestConfiguration(const agora::rtc::EchoTestConfiguration& AgoraData) {
+		view = nullptr; // [not support]
+		enableAudio = AgoraData.enableAudio;
+		enableVideo = AgoraData.enableVideo;
+		token = AgoraData.token;
+		channelId = AgoraData.channelId;
+		intervalInSeconds = AgoraData.intervalInSeconds;
+	}
+
+	agora::rtc::EchoTestConfiguration CreateAgoraData() const{
+		agora::rtc::EchoTestConfiguration AgoraData;
+		//AgoraData.view = view;
+		AgoraData.enableAudio = enableAudio;
+		AgoraData.enableVideo = enableVideo;
+
+		SET_UABT_FSTRING_TO_CONST_CHAR___MEMALLOC(AgoraData.token,this->token)
+		SET_UABT_FSTRING_TO_CONST_CHAR___MEMALLOC(AgoraData.channelId, this->channelId)
+
+		AgoraData.intervalInSeconds = intervalInSeconds;
+		return AgoraData;
+	}
+
+	void FreeAgoraData(agora::rtc::EchoTestConfiguration& AgoraData) const {
+		SET_UABT_FSTRING_TO_CONST_CHAR___MEMFREE(AgoraData.token)
+		SET_UABT_FSTRING_TO_CONST_CHAR___MEMFREE(AgoraData.channelId)
+	}
+
 };
 
 
 UENUM(BlueprintType)
 enum class EVIDEO_TRANSCODER_ERROR : uint8 {
-	VT_ERR_OK = 0,
+	INVALID_OPT_BPGEN_NULL UMETA(Hidden, DisplayName = "AGORA NULL VALUE"),
 	VT_ERR_VIDEO_SOURCE_NOT_READY = 1,
 	VT_ERR_INVALID_VIDEO_SOURCE_TYPE = 2,
 	VT_ERR_INVALID_IMAGE_PATH = 3,
@@ -1417,6 +1790,8 @@ struct FLastmileProbeConfig
 {
 	GENERATED_BODY()
 
+public:
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LastmileProbeConfig")
 	bool probeUplink = false;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LastmileProbeConfig")
@@ -1425,6 +1800,27 @@ struct FLastmileProbeConfig
 	int expectedUplinkBitrate = 0;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LastmileProbeConfig")
 	int expectedDownlinkBitrate = 0;
+
+	FLastmileProbeConfig(){}
+	FLastmileProbeConfig(const agora::rtc::LastmileProbeConfig & AgoraData){
+		probeUplink = AgoraData.probeUplink;
+		probeDownlink = AgoraData.probeDownlink;
+		expectedUplinkBitrate = AgoraData.expectedUplinkBitrate;
+		expectedDownlinkBitrate = AgoraData.expectedDownlinkBitrate;
+	}
+
+	agora::rtc::LastmileProbeConfig CreateAgoraData() const{
+		agora::rtc::LastmileProbeConfig AgoraData;
+		AgoraData.probeUplink = probeUplink;
+		AgoraData.probeDownlink = probeDownlink;
+		AgoraData.expectedUplinkBitrate = expectedUplinkBitrate;
+		AgoraData.expectedDownlinkBitrate = expectedDownlinkBitrate;
+		return AgoraData;
+	}
+
+	void FreeAgoraData(agora::rtc::LastmileProbeConfig& AgoraData) const {
+
+	}
 };
 
 USTRUCT(BlueprintType)
@@ -1432,20 +1828,104 @@ struct FVideoDimensions {
 
 	GENERATED_BODY()
 
+public:
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LastmileProbeConfig")
 	int width = 640;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LastmileProbeConfig")
 	int height = 480;
+
+	FVideoDimensions(){}
+	FVideoDimensions(const agora::rtc::VideoDimensions & AgoraData){
+		width = AgoraData.width;
+		height = AgoraData.height;
+	}
+
+	agora::rtc::VideoDimensions CreateAgoraData() const{
+		agora::rtc::VideoDimensions AgoraData;
+		AgoraData.width = width;
+		AgoraData.height = height;
+		return AgoraData;
+	}
+
+	void FreeAgoraData(agora::rtc::VideoDimensions& AgoraData) const {
+
+	}
 };
 
 USTRUCT(BlueprintType)
 struct FCodecCapInfo {
 
 	GENERATED_BODY()
+
+public:
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|CodecCapInfo")
-	EVIDEO_CODEC_TYPE codecType = EVIDEO_CODEC_TYPE::VIDEO_CODEC_GENERIC_H264;
+	EVIDEO_CODEC_TYPE codecType = EVIDEO_CODEC_TYPE::VIDEO_CODEC_NONE;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|CodecCapInfo")
 	int codecCapMask = 0;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|CodecCapInfo")
+	FCodecCapLevels codecLevels;
+
+	FCodecCapInfo(){}
+	FCodecCapInfo(const agora::rtc::CodecCapInfo & AgoraData){
+		codecType = static_cast<EVIDEO_CODEC_TYPE>(AgoraData.codecType);
+		codecCapMask = AgoraData.codecCapMask;
+		codecLevels = AgoraData.codecLevels;
+	}
+
+	agora::rtc::CodecCapInfo CreateAgoraData() const {
+		agora::rtc::CodecCapInfo AgoraData;
+		AgoraData.codecType = static_cast<agora::rtc::VIDEO_CODEC_TYPE>(codecType);
+		AgoraData.codecCapMask = codecCapMask;
+		AgoraData.codecLevels = codecLevels.CreateAgoraData();
+		return AgoraData;
+	}
+
+	void FreeAgoraData(agora::rtc::CodecCapInfo& AgoraData) const {
+		codecLevels.FreeAgoraData(AgoraData.codecLevels);
+	}
+};
+
+UENUM(BlueprintType)
+enum class ECAMERA_FOCAL_LENGTH_TYPE :uint8 {
+	CAMERA_FOCAL_LENGTH_DEFAULT = 0,
+	CAMERA_FOCAL_LENGTH_WIDE_ANGLE = 1,
+	CAMERA_FOCAL_LENGTH_URLTRA_WIDE = 2,
+	CAMERA_FOCAL_LENGTH_TELEPHOTO = 3,
+};
+
+
+USTRUCT(BlueprintType)
+struct FFocalLengthInfo {
+
+	GENERATED_BODY()
+
+public:
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|FFocalLengthInfo")
+	int cameraDirection = 0;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|FFocalLengthInfo")
+	ECAMERA_FOCAL_LENGTH_TYPE focalLengthType;
+
+	FFocalLengthInfo(){}
+	FFocalLengthInfo(const agora::rtc::FocalLengthInfo & AgoraData){
+		cameraDirection = AgoraData.cameraDirection;
+		focalLengthType = static_cast<ECAMERA_FOCAL_LENGTH_TYPE>(AgoraData.focalLengthType);
+	}
+
+	agora::rtc::FocalLengthInfo CreateAgoraData() const {
+		agora::rtc::FocalLengthInfo AgoraData;
+		AgoraData.cameraDirection = cameraDirection;
+		AgoraData.focalLengthType = static_cast<agora::rtc::CAMERA_FOCAL_LENGTH_TYPE>(focalLengthType);
+		return AgoraData;
+	}
+
+	void FreeAgoraData(agora::rtc::FocalLengthInfo& AgoraData) const {
+
+	}
+
 };
 
 USTRUCT(BlueprintType)
@@ -1453,8 +1933,10 @@ struct FVideoEncoderConfiguration
 {
 	GENERATED_BODY()
 
+public:
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|VideoEncoderConfiguration")
-	EVIDEO_CODEC_TYPE codecType = EVIDEO_CODEC_TYPE::VIDEO_CODEC_GENERIC_H264;
+	EVIDEO_CODEC_TYPE codecType = EVIDEO_CODEC_TYPE::VIDEO_CODEC_NONE;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|VideoEncoderConfiguration")
 	FVideoDimensions dimensions = FVideoDimensions();
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|VideoEncoderConfiguration")
@@ -1470,9 +1952,39 @@ struct FVideoEncoderConfiguration
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|VideoEncoderConfiguration")
 	EVIDEO_MIRROR_MODE_TYPE mirrorMode = EVIDEO_MIRROR_MODE_TYPE::VIDEO_MIRROR_MODE_DISABLED;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|VideoEncoderConfiguration")
-	ECOMPRESSION_PREFERENCE compressionPreference = ECOMPRESSION_PREFERENCE::PREFER_LOW_LATENCY;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|VideoEncoderConfiguration")
 	FAdvanceOptions advanceOptions = FAdvanceOptions();
+
+	FVideoEncoderConfiguration(){}
+	FVideoEncoderConfiguration(const agora::rtc::VideoEncoderConfiguration & AgoraData){
+		codecType = static_cast<EVIDEO_CODEC_TYPE>(AgoraData.codecType);
+		dimensions = FVideoDimensions(AgoraData.dimensions);
+		frameRate = AgoraData.frameRate;
+		bitrate = AgoraData.bitrate;
+		minBitrate = AgoraData.minBitrate;
+		orientationMode = static_cast<EORIENTATION_MODE>(AgoraData.orientationMode);
+		degradationPreference = static_cast<EDEGRADATION_PREFERENCE>(AgoraData.degradationPreference);
+		mirrorMode = static_cast<EVIDEO_MIRROR_MODE_TYPE>(AgoraData.mirrorMode);
+		advanceOptions = FAdvanceOptions(AgoraData.advanceOptions);
+	}
+
+	agora::rtc::VideoEncoderConfiguration CreateAgoraData() const {
+		agora::rtc::VideoEncoderConfiguration AgoraData;
+		AgoraData.codecType = static_cast<agora::rtc::VIDEO_CODEC_TYPE>(codecType);
+		AgoraData.dimensions = dimensions.CreateAgoraData();
+		AgoraData.frameRate = frameRate;
+		AgoraData.bitrate = bitrate;
+		AgoraData.minBitrate = minBitrate;
+		AgoraData.orientationMode = static_cast<agora::rtc::ORIENTATION_MODE>(orientationMode);
+		AgoraData.degradationPreference = static_cast<agora::rtc::DEGRADATION_PREFERENCE>(degradationPreference);
+		AgoraData.mirrorMode = static_cast<agora::rtc::VIDEO_MIRROR_MODE_TYPE>(mirrorMode);
+		AgoraData.advanceOptions = advanceOptions.CreateAgoraData();
+		return AgoraData;
+	}
+
+	void FreeAgoraData(agora::rtc::VideoEncoderConfiguration& AgoraData) const {
+		dimensions.FreeAgoraData(AgoraData.dimensions);
+		advanceOptions.FreeAgoraData(AgoraData.advanceOptions);
+	}
 };
 
 UENUM(BlueprintType)
@@ -1491,6 +2003,8 @@ struct FBeautyOptions
 {
 	GENERATED_BODY()
 
+public:
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|BeautyOptions")
 	ELIGHTENING_CONTRAST_LEVEL lighteningContrastLevel = ELIGHTENING_CONTRAST_LEVEL::LIGHTENING_CONTRAST_NORMAL;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|BeautyOptions")
@@ -1501,16 +2015,58 @@ struct FBeautyOptions
 	float rednessLevel = 0;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|BeautyOptions")
 	float sharpnessLevel = 0;
+
+	FBeautyOptions(){}
+	FBeautyOptions(const agora::rtc::BeautyOptions & AgoraData){
+		lighteningContrastLevel = static_cast<ELIGHTENING_CONTRAST_LEVEL>(AgoraData.lighteningContrastLevel);
+		lighteningLevel = AgoraData.lighteningLevel;
+		smoothnessLevel = AgoraData.smoothnessLevel;
+		rednessLevel = AgoraData.rednessLevel;
+		sharpnessLevel = AgoraData.sharpnessLevel;
+	}
+
+	agora::rtc::BeautyOptions CreateAgoraData() const {
+		agora::rtc::BeautyOptions AgoraData;
+		AgoraData.lighteningContrastLevel = static_cast<agora::rtc::BeautyOptions::LIGHTENING_CONTRAST_LEVEL>(lighteningContrastLevel);
+		AgoraData.lighteningLevel = lighteningLevel;
+		AgoraData.smoothnessLevel = smoothnessLevel;
+		AgoraData.rednessLevel = rednessLevel;
+		AgoraData.sharpnessLevel = sharpnessLevel;
+		return AgoraData;
+	}
+
+	void FreeAgoraData(agora::rtc::BeautyOptions& AgoraData) const {
+
+	}
 };
 
 USTRUCT(BlueprintType)
 struct FLowlightEnhanceOptions
 {
 	GENERATED_BODY()
+
+public:
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LowlightEnhanceOptions")
 	ELOW_LIGHT_ENHANCE_MODE mode = ELOW_LIGHT_ENHANCE_MODE::LOW_LIGHT_ENHANCE_AUTO;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LowlightEnhanceOptions")
 	ELOW_LIGHT_ENHANCE_LEVEL level = ELOW_LIGHT_ENHANCE_LEVEL::LOW_LIGHT_ENHANCE_LEVEL_HIGH_QUALITY;
+
+	FLowlightEnhanceOptions(){}
+	FLowlightEnhanceOptions(const agora::rtc::LowlightEnhanceOptions & AgoraData){
+		mode = static_cast<ELOW_LIGHT_ENHANCE_MODE>(AgoraData.mode);
+		level = static_cast<ELOW_LIGHT_ENHANCE_LEVEL>(AgoraData.level);
+	}
+	agora::rtc::LowlightEnhanceOptions CreateAgoraData() const {
+		agora::rtc::LowlightEnhanceOptions AgoraData;
+		AgoraData.mode = static_cast<agora::rtc::LowlightEnhanceOptions::LOW_LIGHT_ENHANCE_MODE>(mode);
+		AgoraData.level = static_cast<agora::rtc::LowlightEnhanceOptions::LOW_LIGHT_ENHANCE_LEVEL>(level);
+		return AgoraData;
+	}
+
+	void FreeAgoraData(agora::rtc::LowlightEnhanceOptions& AgoraData) const {
+
+	}
 };
 UENUM(BlueprintType)
 enum class EVIDEO_DENOISER_MODE : uint8 {
@@ -1536,10 +2092,29 @@ struct FVideoDenoiserOptions
 {
 	GENERATED_BODY()
 
+public:
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|VideoDenoiserOptions")
 	EVIDEO_DENOISER_MODE mode = EVIDEO_DENOISER_MODE::VIDEO_DENOISER_AUTO;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|VideoDenoiserOptions")
 	EVIDEO_DENOISER_LEVEL level = EVIDEO_DENOISER_LEVEL::VIDEO_DENOISER_LEVEL_HIGH_QUALITY;
+
+	FVideoDenoiserOptions(){}
+	FVideoDenoiserOptions(const agora::rtc::VideoDenoiserOptions & AgoraData){
+		mode = static_cast<EVIDEO_DENOISER_MODE>(AgoraData.mode);
+		level = static_cast<EVIDEO_DENOISER_LEVEL>(AgoraData.level);
+	}
+
+	agora::rtc::VideoDenoiserOptions CreateAgoraData() const {
+		agora::rtc::VideoDenoiserOptions AgoraData;
+		AgoraData.mode = static_cast<agora::rtc::VideoDenoiserOptions::VIDEO_DENOISER_MODE>(mode);
+		AgoraData.level = static_cast<agora::rtc::VideoDenoiserOptions::VIDEO_DENOISER_LEVEL>(level);
+		return AgoraData;
+	}
+
+	void FreeAgoraData(agora::rtc::VideoDenoiserOptions& AgoraData) const {
+
+	}
 };
 
 
@@ -1548,10 +2123,30 @@ struct FColorEnhanceOptions
 {
 	GENERATED_BODY()
 
+public:
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ColorEnhanceOptions")
 	float strengthLevel = 0;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ColorEnhanceOptions")
 	float skinProtectLevel = 0;
+
+	FColorEnhanceOptions(){}
+	FColorEnhanceOptions(const agora::rtc::ColorEnhanceOptions & AgoraData){
+		strengthLevel = AgoraData.strengthLevel;
+		skinProtectLevel = AgoraData.skinProtectLevel;
+	}
+
+	agora::rtc::ColorEnhanceOptions CreateAgoraData() const {
+		agora::rtc::ColorEnhanceOptions AgoraData;
+		AgoraData.strengthLevel = strengthLevel;
+		AgoraData.skinProtectLevel = skinProtectLevel;
+		return AgoraData;
+	}
+
+	void FreeAgoraData(agora::rtc::ColorEnhanceOptions& AgoraData) const {
+
+	}
+
 };
 
 
@@ -1587,6 +2182,8 @@ struct FVirtualBackgroundSource
 {
 	GENERATED_BODY()
 
+public:
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|VirtualBackgroundSource")
 	EBACKGROUND_SOURCE_TYPE background_source_type = EBACKGROUND_SOURCE_TYPE::BACKGROUND_COLOR;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|VirtualBackgroundSource")
@@ -1595,10 +2192,30 @@ struct FVirtualBackgroundSource
 	FString source = "";
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|VirtualBackgroundSource")
 	EBACKGROUND_BLUR_DEGREE blur_degree = EBACKGROUND_BLUR_DEGREE::BLUR_DEGREE_HIGH;
+
+	FVirtualBackgroundSource(){}
+	FVirtualBackgroundSource(const agora::rtc::VirtualBackgroundSource & AgoraData){
+		background_source_type = static_cast<EBACKGROUND_SOURCE_TYPE>(AgoraData.background_source_type);
+		color = AgoraData.color;
+		source = AgoraData.source;
+		blur_degree = static_cast<EBACKGROUND_BLUR_DEGREE>(AgoraData.blur_degree);
+	}
+
+	agora::rtc::VirtualBackgroundSource CreateAgoraData() const {
+		agora::rtc::VirtualBackgroundSource AgoraData;
+		AgoraData.background_source_type = static_cast<agora::rtc::VirtualBackgroundSource::BACKGROUND_SOURCE_TYPE>(background_source_type);
+		AgoraData.color = color;
+		SET_UABT_FSTRING_TO_CONST_CHAR___MEMALLOC(AgoraData.source, this->source)
+		AgoraData.blur_degree = static_cast<agora::rtc::VirtualBackgroundSource::BACKGROUND_BLUR_DEGREE>(blur_degree);
+		return AgoraData;
+	}
+
+	void FreeAgoraData(agora::rtc::VirtualBackgroundSource& AgoraData) const {
+		SET_UABT_FSTRING_TO_CONST_CHAR___MEMFREE(AgoraData.source)
+	}
 };
 UENUM(BlueprintType)
 enum class ESEG_MODEL_TYPE : uint8 {
-
 	SEG_MODEL_NULL,
 	SEG_MODEL_AI = 1,
 	SEG_MODEL_GREEN = 2
@@ -1609,10 +2226,29 @@ struct FSegmentationProperty
 {
 	GENERATED_BODY()
 
+public:
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|SegmentationProperty")
 	ESEG_MODEL_TYPE modelType = ESEG_MODEL_TYPE::SEG_MODEL_AI;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|SegmentationProperty")
 	float greenCapacity = 0.5;
+
+	FSegmentationProperty(){}
+	FSegmentationProperty(const agora::rtc::SegmentationProperty & AgoraData){
+		modelType = static_cast<ESEG_MODEL_TYPE>(AgoraData.modelType);
+		greenCapacity = AgoraData.greenCapacity;
+	}
+
+	agora::rtc::SegmentationProperty CreateAgoraData() const {
+		agora::rtc::SegmentationProperty AgoraData;
+		AgoraData.modelType = static_cast<agora::rtc::SegmentationProperty::SEG_MODEL_TYPE>(modelType);
+		AgoraData.greenCapacity = greenCapacity;
+		return AgoraData;
+	}
+
+	void FreeAgoraData(agora::rtc::SegmentationProperty& AgoraData) const {
+
+	}
 };
 
 UENUM(BlueprintType)
@@ -1624,6 +2260,7 @@ enum class EVIDEO_VIEW_SETUP_MODE : uint8 {
 
 	VIDEO_VIEW_SETUP_REMOVE = 2,
 };
+
 UENUM(BlueprintType)
 enum class ETCcMode :uint8 {
 
@@ -1637,19 +2274,41 @@ struct FSenderOptions
 {
 	GENERATED_BODY()
 
+public:
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|SenderOptions")
 	ETCcMode ccMode = ETCcMode::CC_ENABLED;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|SenderOptions")
-	EVIDEO_CODEC_TYPE codecType = EVIDEO_CODEC_TYPE::VIDEO_CODEC_GENERIC_H264;
+	EVIDEO_CODEC_TYPE codecType = EVIDEO_CODEC_TYPE::VIDEO_CODEC_H265;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|SenderOptions")
 	int targetBitrate = 6500;
-};
 
+	FSenderOptions(){}
+	FSenderOptions(const agora::rtc::SenderOptions & AgoraData){
+		ccMode = static_cast<ETCcMode>(AgoraData.ccMode);
+		codecType = static_cast<EVIDEO_CODEC_TYPE>(AgoraData.codecType);
+		targetBitrate = AgoraData.targetBitrate;
+	}
+	
+	agora::rtc::SenderOptions CreateAgoraData() const {
+		agora::rtc::SenderOptions AgoraData;
+		AgoraData.ccMode = static_cast<agora::rtc::TCcMode>(ccMode);
+		AgoraData.codecType = static_cast<agora::rtc::VIDEO_CODEC_TYPE>(codecType);
+		AgoraData.targetBitrate = targetBitrate;
+		return AgoraData;
+	}
+	void FreeAgoraData(agora::rtc::SenderOptions& AgoraData) const {
+
+	}
+
+};
 
 USTRUCT(BlueprintType)
 struct FRectangle
 {
 	GENERATED_BODY()
+
+public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|Rectangle")
 	int x = 0;
@@ -1659,39 +2318,123 @@ struct FRectangle
 	int width = 0;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|Rectangle")
 	int height = 0;
+
+	FRectangle(){}
+	FRectangle(const agora::rtc::Rectangle & AgoraData){
+		x = AgoraData.x;
+		y = AgoraData.y;
+		width = AgoraData.width;
+		height = AgoraData.height;
+	}
+
+	agora::rtc::Rectangle CreateAgoraData() const {
+		agora::rtc::Rectangle AgoraData;
+		AgoraData.x = x;
+		AgoraData.y = y;
+		AgoraData.width = width;
+		AgoraData.height = height;
+		return AgoraData;
+	}
+
+	void FreeAgoraData(agora::rtc::Rectangle& AgoraData) const {
+
+	}
 };
+
+UENUM(BlueprintType)
+enum class EVIDEO_MODULE_POSITION :uint8 {
+	INVALID_OPT_BPGEN_NULL UMETA(Hidden, DisplayName = "AGORA NULL VALUE"),
+	POSITION_POST_CAPTURER = 1 << 0,
+	POSITION_PRE_RENDERER = 1 << 1,
+	POSITION_PRE_ENCODER = 1 << 2,
+	POSITION_POST_CAPTURER_ORIGIN = 1 << 3,
+};
+
 
 USTRUCT(BlueprintType)
 struct FVideoCanvas
 {
 	GENERATED_BODY()
 
+public:
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|VideoCanvas")
+	int64 uid = 0;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|VideoCanvas")
+	int64 subviewUid = 0;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|VideoCanvas")
 	UImage* view = nullptr;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|VideoCanvas")
+	int64 backgroundColor = 0;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|VideoCanvas")
 	ERENDER_MODE_TYPE renderMode = ERENDER_MODE_TYPE::RENDER_MODE_HIDDEN;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|VideoCanvas")
 	EVIDEO_MIRROR_MODE_TYPE mirrorMode = EVIDEO_MIRROR_MODE_TYPE::VIDEO_MIRROR_MODE_AUTO;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|VideoCanvas")
-	int64 uid = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|VideoCanvas")
-	bool isScreenView = false;
-	//UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|VideoCanvas")
-	//void priv;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|VideoCanvas")
-	int64 priv_size = 0;
+	EVIDEO_VIEW_SETUP_MODE setupMode = EVIDEO_VIEW_SETUP_MODE::VIDEO_VIEW_SETUP_REPLACE;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|VideoCanvas")
 	EVIDEO_SOURCE_TYPE sourceType = EVIDEO_SOURCE_TYPE::VIDEO_SOURCE_CAMERA_PRIMARY;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|VideoCanvas")
-	FRectangle cropArea = FRectangle();
+	int mediaPlayerId = 0;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|VideoCanvas")
-	EVIDEO_VIEW_SETUP_MODE setupMode = EVIDEO_VIEW_SETUP_MODE::VIDEO_VIEW_SETUP_REPLACE;
+	FRectangle cropArea;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|VideoCanvas")
+	bool enableAlphaMask = false;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|VideoCanvas")
+	EVIDEO_MODULE_POSITION position = EVIDEO_MODULE_POSITION::POSITION_POST_CAPTURER;
+
+
+	FVideoCanvas(){}
+	FVideoCanvas(const agora::rtc::VideoCanvas & AgoraData){
+		view = nullptr; // [not support]
+		uid = AgoraData.uid;
+		subviewUid = AgoraData.subviewUid;
+		backgroundColor = AgoraData.backgroundColor;
+		renderMode = static_cast<ERENDER_MODE_TYPE>(AgoraData.renderMode);
+		mirrorMode = static_cast<EVIDEO_MIRROR_MODE_TYPE>(AgoraData.mirrorMode);
+		setupMode = static_cast<EVIDEO_VIEW_SETUP_MODE>(AgoraData.setupMode);
+		sourceType = static_cast<EVIDEO_SOURCE_TYPE>(AgoraData.sourceType);
+		mediaPlayerId = AgoraData.mediaPlayerId;
+		cropArea = FRectangle(AgoraData.cropArea);
+		enableAlphaMask = AgoraData.enableAlphaMask;
+		position = static_cast<EVIDEO_MODULE_POSITION>(AgoraData.position);
+	}
+
+	agora::rtc::VideoCanvas CreateAgoraData() const {
+		agora::rtc::VideoCanvas AgoraData;
+		AgoraData.view = (agora::view_t) view;
+		AgoraData.uid = uid;
+		AgoraData.subviewUid = subviewUid;
+		AgoraData.backgroundColor = backgroundColor;
+		AgoraData.renderMode = static_cast<agora::media::base::RENDER_MODE_TYPE>(renderMode);
+		AgoraData.mirrorMode = static_cast<agora::rtc::VIDEO_MIRROR_MODE_TYPE>(mirrorMode);
+		AgoraData.setupMode = static_cast<agora::rtc::VIDEO_VIEW_SETUP_MODE>(setupMode);
+		AgoraData.sourceType = static_cast<agora::rtc::VIDEO_SOURCE_TYPE>(sourceType);
+		AgoraData.mediaPlayerId = AgoraData.mediaPlayerId;
+		AgoraData.cropArea = cropArea.CreateAgoraData();
+		AgoraData.enableAlphaMask = enableAlphaMask;
+		AgoraData.position = static_cast<agora::media::base::VIDEO_MODULE_POSITION>(position);
+
+		return AgoraData;
+	}
+
+	void FreeAgoraData(agora::rtc::VideoCanvas& AgoraData) const {
+		cropArea.FreeAgoraData(AgoraData.cropArea);
+	}
 };
 
 USTRUCT(BlueprintType)
 struct FVideoSubscriptionOptions
 {
 	GENERATED_BODY()
+
+public:
+
 	// If the box is unchecked, the value of the corresponding variable (named without _SetValue)  will be ignored.
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ChannelMediaOptions")
 	bool type_SetValue = false;
@@ -1699,20 +2442,26 @@ struct FVideoSubscriptionOptions
 	EVIDEO_STREAM_TYPE type = EVIDEO_STREAM_TYPE::VIDEO_STREAM_HIGH;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|VideoSubscriptionOptions")
 	AGORAOPTIONAL encodedFrameOnly = AGORAOPTIONAL::AGORA_NULL_VALUE;
+
+	FVideoSubscriptionOptions(){}
+	FVideoSubscriptionOptions(const agora::rtc::VideoSubscriptionOptions & AgoraData){
+		SET_UEBP_OPTIONAL_VAL_ASSIGN_VAL(this->type,AgoraData.type,static_cast<EVIDEO_STREAM_TYPE>(AgoraData.type.value()))
+		SET_UEBP_OPTIONAL_VAL_BOOL(this->encodedFrameOnly,AgoraData.encodedFrameOnly)
+	}
+
+	agora::rtc::VideoSubscriptionOptions CreateAgoraData() const {
+		agora::rtc::VideoSubscriptionOptions AgoraData;
+		SET_AGORA_OPTIONAL_VAL_ASSIGN_VAL(AgoraData.type,this->type,static_cast<agora::rtc::VIDEO_STREAM_TYPE>(this->type))
+
+		SET_AGORA_OPTIONAL_VAL_BOOL(AgoraData.encodedFrameOnly,this->encodedFrameOnly)
+		return AgoraData;
+	}
+
+	void FreeAgoraData(agora::rtc::VideoSubscriptionOptions& AgoraData) const {
+
+	}
 };
 
-#define SET_AGORA_DATA_VIDEOSUBSCRIPTIONOPTIONS(Agora_VideoSubscriptionOptions,UE_FVideoSubscriptionOptions)    \
-{ \
-	if (UE_FVideoSubscriptionOptions.type_SetValue)    \
-	{    \
-		Agora_VideoSubscriptionOptions.type = (agora::rtc::VIDEO_STREAM_TYPE)UE_FVideoSubscriptionOptions.type;    \
-	}    \
-	\
-	if (UE_FVideoSubscriptionOptions.encodedFrameOnly != AGORAOPTIONAL::AGORA_NULL_VALUE)    \
-	{    \
-		Agora_VideoSubscriptionOptions.encodedFrameOnly = UE_FVideoSubscriptionOptions.encodedFrameOnly == AGORAOPTIONAL::AGORA_TRUE_VALUE;    \
-	}    \
-}
 
 UENUM(BlueprintType)
 enum class EAUDIO_FILE_RECORDING_TYPE :uint8 {
@@ -1732,6 +2481,8 @@ struct FAudioRecordingConfiguration
 {
 	GENERATED_BODY()
 
+public:
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|AudioRecordingConfiguration")
 	FString filePath = "";
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|AudioRecordingConfiguration")
@@ -1744,12 +2495,37 @@ struct FAudioRecordingConfiguration
 	EAUDIO_RECORDING_QUALITY_TYPE quality = EAUDIO_RECORDING_QUALITY_TYPE::AUDIO_RECORDING_QUALITY_LOW;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|AudioRecordingConfiguration")
 	int recordingChannel = 0;
+
+	FAudioRecordingConfiguration(){}
+	FAudioRecordingConfiguration(const agora::rtc::AudioRecordingConfiguration & AgoraData){
+		filePath = UTF8_TO_TCHAR(AgoraData.filePath);
+		encode = AgoraData.encode;
+		sampleRate = AgoraData.sampleRate;
+		fileRecordingType = static_cast<EAUDIO_FILE_RECORDING_TYPE>(AgoraData.fileRecordingType);
+		quality = static_cast<EAUDIO_RECORDING_QUALITY_TYPE>(AgoraData.quality);
+		recordingChannel = AgoraData.recordingChannel;
+	}
+
+	agora::rtc::AudioRecordingConfiguration CreateAgoraData() const {
+		agora::rtc::AudioRecordingConfiguration AgoraData;
+		SET_UABT_FSTRING_TO_CONST_CHAR___MEMALLOC(AgoraData.filePath, this->filePath)
+		AgoraData.encode = encode;
+		AgoraData.sampleRate = sampleRate;
+		AgoraData.fileRecordingType = static_cast<agora::rtc::AUDIO_FILE_RECORDING_TYPE>(fileRecordingType);
+		AgoraData.quality = static_cast<agora::rtc::AUDIO_RECORDING_QUALITY_TYPE>(quality);
+		AgoraData.recordingChannel = recordingChannel;
+		return AgoraData;
+	}
+
+	void FreeAgoraData(agora::rtc::AudioRecordingConfiguration& AgoraData) const {
+		SET_UABT_FSTRING_TO_CONST_CHAR___MEMFREE(AgoraData.filePath)
+	}
 };
 
 UENUM(BlueprintType)
 enum class EAUDIO_ENCODED_FRAME_OBSERVER_POSITION :uint8 {
 
-	AUDIO_ENCODED_FRAME_NULL = 0,
+	INVALID_OPT_BPGEN_NULL UMETA(Hidden, DisplayName = "AGORA NULL VALUE"),
 
 	AUDIO_ENCODED_FRAME_OBSERVER_POSITION_RECORD = 1,
 
@@ -1777,7 +2553,7 @@ enum class EAUDIO_ENCODED_FRAME_OBSERVER_POSITION :uint8 {
 UENUM(BlueprintType)
 enum class EENUMCUSTOM_AUDIO_ENCODING_TYPE : uint8 {
 
-	AUDIO_ENCODING_TYPE_NULL = 0,
+	INVALID_OPT_BPGEN_NULL UMETA(Hidden, DisplayName = "AGORA NULL VALUE"),
 	AUDIO_ENCODING_TYPE_AAC_16000_LOW = 1,
 	AUDIO_ENCODING_TYPE_AAC_16000_MEDIUM = 2,
 	AUDIO_ENCODING_TYPE_AAC_32000_LOW = 3,
@@ -1801,43 +2577,18 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|FENUMWRAP_AUDIO_ENCODING_TYPE")
 	EENUMCUSTOM_AUDIO_ENCODING_TYPE ValueWrapper = EENUMCUSTOM_AUDIO_ENCODING_TYPE::AUDIO_ENCODING_TYPE_AAC_48000_MEDIUM;
 
-	// default
-	FENUMWRAP_AUDIO_ENCODING_TYPE() :ValueWrapper(EENUMCUSTOM_AUDIO_ENCODING_TYPE::AUDIO_ENCODING_TYPE_AAC_48000_MEDIUM) {}
-
-	FENUMWRAP_AUDIO_ENCODING_TYPE(EENUMCUSTOM_AUDIO_ENCODING_TYPE Val) :ValueWrapper(Val) {}
-	void operator = (EENUMCUSTOM_AUDIO_ENCODING_TYPE InValue) {
-		ValueWrapper = InValue;
-	}
-
-	agora::rtc::AUDIO_ENCODING_TYPE GetRawValue() const {
-		switch (ValueWrapper)
-		{
-		case EENUMCUSTOM_AUDIO_ENCODING_TYPE::AUDIO_ENCODING_TYPE_AAC_16000_LOW:
-			return agora::rtc::AUDIO_ENCODING_TYPE::AUDIO_ENCODING_TYPE_AAC_16000_LOW;
-		case EENUMCUSTOM_AUDIO_ENCODING_TYPE::AUDIO_ENCODING_TYPE_AAC_16000_MEDIUM:
-			return agora::rtc::AUDIO_ENCODING_TYPE::AUDIO_ENCODING_TYPE_AAC_16000_MEDIUM;
-		case EENUMCUSTOM_AUDIO_ENCODING_TYPE::AUDIO_ENCODING_TYPE_AAC_32000_LOW:
-			return agora::rtc::AUDIO_ENCODING_TYPE::AUDIO_ENCODING_TYPE_AAC_32000_LOW;
-		case EENUMCUSTOM_AUDIO_ENCODING_TYPE::AUDIO_ENCODING_TYPE_AAC_32000_MEDIUM:
-			return agora::rtc::AUDIO_ENCODING_TYPE::AUDIO_ENCODING_TYPE_AAC_32000_MEDIUM;
-		case EENUMCUSTOM_AUDIO_ENCODING_TYPE::AUDIO_ENCODING_TYPE_AAC_32000_HIGH:
-			return agora::rtc::AUDIO_ENCODING_TYPE::AUDIO_ENCODING_TYPE_AAC_32000_HIGH;
-		case EENUMCUSTOM_AUDIO_ENCODING_TYPE::AUDIO_ENCODING_TYPE_AAC_48000_MEDIUM:
-			return agora::rtc::AUDIO_ENCODING_TYPE::AUDIO_ENCODING_TYPE_AAC_48000_MEDIUM;
-		case EENUMCUSTOM_AUDIO_ENCODING_TYPE::AUDIO_ENCODING_TYPE_AAC_48000_HIGH:
-			return agora::rtc::AUDIO_ENCODING_TYPE::AUDIO_ENCODING_TYPE_AAC_48000_HIGH;
-		case EENUMCUSTOM_AUDIO_ENCODING_TYPE::AUDIO_ENCODING_TYPE_OPUS_16000_LOW:
-			return agora::rtc::AUDIO_ENCODING_TYPE::AUDIO_ENCODING_TYPE_OPUS_16000_LOW;
-		case EENUMCUSTOM_AUDIO_ENCODING_TYPE::AUDIO_ENCODING_TYPE_OPUS_16000_MEDIUM:
-			return agora::rtc::AUDIO_ENCODING_TYPE::AUDIO_ENCODING_TYPE_OPUS_16000_MEDIUM;
-		case EENUMCUSTOM_AUDIO_ENCODING_TYPE::AUDIO_ENCODING_TYPE_OPUS_48000_MEDIUM:
-			return agora::rtc::AUDIO_ENCODING_TYPE::AUDIO_ENCODING_TYPE_OPUS_48000_MEDIUM;
-		case EENUMCUSTOM_AUDIO_ENCODING_TYPE::AUDIO_ENCODING_TYPE_OPUS_48000_HIGH:
-			return agora::rtc::AUDIO_ENCODING_TYPE::AUDIO_ENCODING_TYPE_OPUS_48000_HIGH;
-		default:
-			return agora::rtc::AUDIO_ENCODING_TYPE::AUDIO_ENCODING_TYPE_OPUS_48000_MEDIUM;
-		}
-	}
+	AGORA_CREATE_UEENUM_CONVERT_STRUCT_INNER_11_ENTRIES(FENUMWRAP_AUDIO_ENCODING_TYPE,agora::rtc::AUDIO_ENCODING_TYPE, EENUMCUSTOM_AUDIO_ENCODING_TYPE,	 
+		AUDIO_ENCODING_TYPE_AAC_16000_LOW,
+		AUDIO_ENCODING_TYPE_AAC_16000_MEDIUM,
+		AUDIO_ENCODING_TYPE_AAC_32000_LOW,
+		AUDIO_ENCODING_TYPE_AAC_32000_MEDIUM,
+		AUDIO_ENCODING_TYPE_AAC_32000_HIGH,
+		AUDIO_ENCODING_TYPE_AAC_48000_MEDIUM,
+		AUDIO_ENCODING_TYPE_AAC_48000_HIGH,
+		AUDIO_ENCODING_TYPE_OPUS_16000_LOW,
+		AUDIO_ENCODING_TYPE_OPUS_16000_MEDIUM,
+		AUDIO_ENCODING_TYPE_OPUS_48000_MEDIUM,
+		AUDIO_ENCODING_TYPE_OPUS_48000_HIGH)
 };
 
 USTRUCT(BlueprintType)
@@ -1845,16 +2596,38 @@ struct FAudioEncodedFrameObserverConfig
 {
 	GENERATED_BODY()
 
+public:
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|AudioEncodedFrameObserverConfig")
 	EAUDIO_ENCODED_FRAME_OBSERVER_POSITION postionType = EAUDIO_ENCODED_FRAME_OBSERVER_POSITION::AUDIO_ENCODED_FRAME_OBSERVER_POSITION_PLAYBACK;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|AudioEncodedFrameObserverConfig")
 	FENUMWRAP_AUDIO_ENCODING_TYPE encodingType = EENUMCUSTOM_AUDIO_ENCODING_TYPE::AUDIO_ENCODING_TYPE_OPUS_48000_MEDIUM;
+
+	FAudioEncodedFrameObserverConfig(){}
+	FAudioEncodedFrameObserverConfig(const agora::rtc::AudioEncodedFrameObserverConfig & AgoraData){
+		postionType = static_cast<EAUDIO_ENCODED_FRAME_OBSERVER_POSITION>(AgoraData.postionType);
+		encodingType = FENUMWRAP_AUDIO_ENCODING_TYPE(AgoraData.encodingType);
+	}
+
+	agora::rtc::AudioEncodedFrameObserverConfig CreateAgoraData() const {
+		agora::rtc::AudioEncodedFrameObserverConfig AgoraData;
+		AgoraData.postionType = static_cast<agora::rtc::AUDIO_ENCODED_FRAME_OBSERVER_POSITION>(postionType);
+		AgoraData.encodingType = encodingType.GetRawValue();
+		return AgoraData;
+	}
+
+	void FreeAgoraData(agora::rtc::AudioEncodedFrameObserverConfig& AgoraData) const {
+
+	}
 };
+
 
 USTRUCT(BlueprintType)
 struct FSpatialAudioParams
 {
 	GENERATED_BODY()
+
+public:
 
 	// If the box is unchecked, the value of the corresponding variable (named without _SetValue)  will be ignored.
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|SpatialAudioParams")
@@ -1878,14 +2651,10 @@ struct FSpatialAudioParams
 	int speaker_orientation = 0;
 	// If the box is unchecked, the value of the corresponding variable (named without _SetValue)  will be ignored.
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|SpatialAudioParams")
-	bool enable_blur_SetValue = false;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|SpatialAudioParams")
-	bool enable_blur = false;
+	AGORAOPTIONAL enable_blur = AGORAOPTIONAL::AGORA_NULL_VALUE;
 	// If the box is unchecked, the value of the corresponding variable (named without _SetValue)  will be ignored.
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|SpatialAudioParams")
-	bool enable_air_absorb_SetValue = false;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|SpatialAudioParams")
-	bool enable_air_absorb = false;
+	AGORAOPTIONAL enable_air_absorb = AGORAOPTIONAL::AGORA_NULL_VALUE;
 	// If the box is unchecked, the value of the corresponding variable (named without _SetValue)  will be ignored.
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|SpatialAudioParams")
 	bool speaker_attenuation_SetValue = false;
@@ -1893,53 +2662,38 @@ struct FSpatialAudioParams
 	float speaker_attenuation = 0;
 	// If the box is unchecked, the value of the corresponding variable (named without _SetValue)  will be ignored.
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|SpatialAudioParams")
-	bool enable_doppler_SetValue = false;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|SpatialAudioParams")
-	bool enable_doppler = false;
+	AGORAOPTIONAL enable_doppler = AGORAOPTIONAL::AGORA_NULL_VALUE;
+
+	FSpatialAudioParams(){}
+	FSpatialAudioParams(const agora::SpatialAudioParams & AgoraData){
+		SET_UEBP_OPTIONAL_VAL_DIR_ASSIGN(this->speaker_azimuth,AgoraData.speaker_azimuth)
+		SET_UEBP_OPTIONAL_VAL_DIR_ASSIGN(this->speaker_elevation,AgoraData.speaker_elevation)
+		SET_UEBP_OPTIONAL_VAL_DIR_ASSIGN(this->speaker_distance,AgoraData.speaker_distance)
+		SET_UEBP_OPTIONAL_VAL_DIR_ASSIGN(this->speaker_orientation,AgoraData.speaker_orientation)
+		SET_UEBP_OPTIONAL_VAL_BOOL(this->enable_blur,AgoraData.enable_blur)
+		SET_UEBP_OPTIONAL_VAL_BOOL(this->enable_air_absorb,AgoraData.enable_air_absorb)
+		SET_UEBP_OPTIONAL_VAL_DIR_ASSIGN(this->speaker_attenuation,AgoraData.speaker_attenuation)
+		SET_UEBP_OPTIONAL_VAL_BOOL(this->enable_doppler,AgoraData.enable_doppler)
+	}
+
+	agora::SpatialAudioParams CreateAgoraData() const {
+		agora::SpatialAudioParams AgoraData;
+		SET_AGORA_OPTIONAL_VAL_DIR_ASSIGN(AgoraData.speaker_azimuth,this->speaker_azimuth)
+		SET_AGORA_OPTIONAL_VAL_DIR_ASSIGN(AgoraData.speaker_elevation,this->speaker_elevation)
+		SET_AGORA_OPTIONAL_VAL_DIR_ASSIGN(AgoraData.speaker_distance,this->speaker_distance)
+		SET_AGORA_OPTIONAL_VAL_DIR_ASSIGN(AgoraData.speaker_orientation,this->speaker_orientation)
+		SET_AGORA_OPTIONAL_VAL_BOOL(AgoraData.enable_blur,this->enable_blur)
+		SET_AGORA_OPTIONAL_VAL_BOOL(AgoraData.enable_air_absorb,this->enable_air_absorb)
+		SET_AGORA_OPTIONAL_VAL_DIR_ASSIGN(AgoraData.speaker_attenuation,this->speaker_attenuation)
+		SET_AGORA_OPTIONAL_VAL_BOOL(AgoraData.enable_doppler,this->enable_doppler)
+		return AgoraData;
+	}
+
+	void FreeAgoraData(agora::SpatialAudioParams& AgoraData) const {
+
+	}
 };
 
-#define SET_AGORA_DATA_SPATIALAUDIOPARAMS(Agora_SpatialAudioParams,UE_FSpatialAudioParams)        \
-{\
-	if (UE_FSpatialAudioParams.speaker_azimuth_SetValue)  \
-	{     \
-	    Agora_SpatialAudioParams.speaker_azimuth = UE_FSpatialAudioParams.speaker_azimuth;    \
-	}    \
-	\
-	if (UE_FSpatialAudioParams.speaker_elevation_SetValue) \
-	{     \
-	    Agora_SpatialAudioParams.speaker_elevation = UE_FSpatialAudioParams.speaker_elevation;    \
-	}    \
-	\
-	if (UE_FSpatialAudioParams.speaker_distance_SetValue) \
-	{     \
-	    Agora_SpatialAudioParams.speaker_distance = UE_FSpatialAudioParams.speaker_distance;    \
-	}    \
-	\
-	if (UE_FSpatialAudioParams.speaker_orientation_SetValue)  \
-	{     \
-	    Agora_SpatialAudioParams.speaker_orientation = UE_FSpatialAudioParams.speaker_orientation;    \
-	}    \
-	\
-	if (UE_FSpatialAudioParams.enable_blur_SetValue)  \
-	{     \
-	    Agora_SpatialAudioParams.enable_blur = UE_FSpatialAudioParams.enable_blur;    \
-	}    \
-	\
-	if (UE_FSpatialAudioParams.enable_air_absorb_SetValue) \
-	{     \
-	    Agora_SpatialAudioParams.enable_air_absorb = UE_FSpatialAudioParams.enable_air_absorb;    \
-	}    \
-	\
-	if (UE_FSpatialAudioParams.speaker_attenuation_SetValue)  \
-	{     \
-	    Agora_SpatialAudioParams.speaker_attenuation = UE_FSpatialAudioParams.speaker_attenuation;    \
-	}    \
-	\
-	if (UE_FSpatialAudioParams.enable_doppler_SetValue)   \
-	{     \
-	    Agora_SpatialAudioParams.enable_doppler = UE_FSpatialAudioParams.enable_doppler;    \
-	}	\
-}
 
 
 USTRUCT(BlueprintType)
@@ -1947,20 +2701,60 @@ struct FSimulcastStreamConfig
 {
 	GENERATED_BODY()
 
+public:
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|SimulcastStreamConfig")
 	FVideoDimensions dimensions = FVideoDimensions();
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|SimulcastStreamConfig")
-	int bitrate = 0;
+	int kBitrate = 0;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|SimulcastStreamConfig")
 	int framerate = 0;
+
+	FSimulcastStreamConfig(){}
+	FSimulcastStreamConfig(const agora::rtc::SimulcastStreamConfig & AgoraData){
+		dimensions = FVideoDimensions(AgoraData.dimensions);
+		kBitrate = AgoraData.kBitrate;
+		framerate = AgoraData.framerate;
+	}
+
+	agora::rtc::SimulcastStreamConfig CreateAgoraData() const {
+		agora::rtc::SimulcastStreamConfig AgoraData;
+		AgoraData.dimensions = dimensions.CreateAgoraData();
+		AgoraData.kBitrate = kBitrate;
+		AgoraData.framerate = framerate;
+		return AgoraData;
+	}
+
+	void FreeAgoraData(agora::rtc::SimulcastStreamConfig& AgoraData) const {
+		dimensions.FreeAgoraData(AgoraData.dimensions);
+	}
 };
+
+
 USTRUCT(BlueprintType)
 struct FAudioTrackConfig
 {
 	GENERATED_BODY()
 
+public:
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|AudioTrackConfig")
 	bool enableLocalPlayback = true;
+
+	FAudioTrackConfig(){}
+	FAudioTrackConfig(const agora::rtc::AudioTrackConfig & AgoraData){
+		enableLocalPlayback = AgoraData.enableLocalPlayback;
+	}
+
+	agora::rtc::AudioTrackConfig CreateAgoraData() const {
+		agora::rtc::AudioTrackConfig AgoraData;
+		AgoraData.enableLocalPlayback = enableLocalPlayback;
+		return AgoraData;
+	}
+
+	void FreeAgoraData(agora::rtc::AudioTrackConfig& AgoraData) const {
+
+	}
 };
 
 UENUM(BlueprintType)
@@ -1975,32 +2769,105 @@ USTRUCT(BlueprintType)
 struct FVideoFormat {
 
 	GENERATED_BODY()
+
+public:
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|VideoFormat")
 	int width = 640;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|VideoFormat")
 	int height = 360;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|VideoFormat")
 	int fps = 15;
+
+	FVideoFormat(){}
+	FVideoFormat(const agora::rtc::VideoFormat & AgoraData){
+		width = AgoraData.width;
+		height = AgoraData.height;
+		fps = AgoraData.fps;
+	}
+
+	agora::rtc::VideoFormat CreateAgoraData() const {
+		agora::rtc::VideoFormat AgoraData;
+		AgoraData.width = width;
+		AgoraData.height = height;
+		AgoraData.fps = fps;
+		return AgoraData;
+	}
+
+	void FreeAgoraData(agora::rtc::VideoFormat& AgoraData) const {
+
+	}
 };
 
 USTRUCT(BlueprintType)
 struct FCameraCapturerConfiguration
 {
 	GENERATED_BODY()
+
+public:
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|CameraCapturerConfiguration")
 	ECAMERA_DIRECTION cameraDirection = ECAMERA_DIRECTION::CAMERA_FRONT;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|CameraCapturerConfiguration")
+	ECAMERA_FOCAL_LENGTH_TYPE cameraFocalLengthType = ECAMERA_FOCAL_LENGTH_TYPE::CAMERA_FOCAL_LENGTH_DEFAULT;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|CameraCapturerConfiguration")
 	FString deviceId = "";
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|CameraCapturerConfiguration")
+	FString cameraId = "";
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|CameraCapturerConfiguration")
 	FVideoFormat format = FVideoFormat();
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|CameraCapturerConfiguration")
 	bool followEncodeDimensionRatio = true;
+
+	FCameraCapturerConfiguration(){}
+	FCameraCapturerConfiguration(const agora::rtc::CameraCapturerConfiguration & AgoraData){
+#if defined(__ANDROID__) || (defined(__APPLE__) && TARGET_OS_IOS)
+		cameraDirection = static_cast<ECAMERA_DIRECTION>(AgoraData.cameraDirection);
+		cameraFocalLengthType = static_cast<ECAMERA_FOCAL_LENGTH_TYPE>(AgoraData.cameraFocalLengthType);
+#else
+		deviceId = UTF8_TO_TCHAR(AgoraData.deviceId);
+#endif
+
+#if defined(__ANDROID__)
+		cameraId = UTF8_TO_TCHAR(AgoraData.cameraId);
+#endif
+
+		format = FVideoFormat(AgoraData.format);
+		followEncodeDimensionRatio = AgoraData.followEncodeDimensionRatio;
+	}
+
+	agora::rtc::CameraCapturerConfiguration CreateAgoraData() const {
+		agora::rtc::CameraCapturerConfiguration AgoraData;
+#if defined(__ANDROID__) || (defined(__APPLE__) && TARGET_OS_IOS)
+		AgoraData.cameraDirection = static_cast<agora::rtc::CAMERA_DIRECTION>(cameraDirection);
+		AgoraData.cameraFocalLengthType = static_cast<agora::rtc::CAMERA_FOCAL_LENGTH_TYPE>(cameraFocalLengthType);
+#else
+	
+#if defined(__ANDROID__)
+		SET_UABT_FSTRING_TO_CHAR_ARRAY(AgoraData.cameraId,this->cameraId, agora::rtc::MAX_DEVICE_ID_LENGTH)
+#endif
+		SET_UABT_FSTRING_TO_CHAR_ARRAY(AgoraData.deviceId,this->deviceId, agora::rtc::MAX_DEVICE_ID_LENGTH)
+
+#endif
+		AgoraData.format = format.CreateAgoraData();
+		AgoraData.followEncodeDimensionRatio = followEncodeDimensionRatio;
+		return AgoraData;
+	}
+
+	void FreeAgoraData(agora::rtc::CameraCapturerConfiguration& AgoraData) const {
+		format.FreeAgoraData(AgoraData.format);
+	}
 };
 
 USTRUCT(BlueprintType)
 struct FScreenCaptureParameters
 {
 	GENERATED_BODY()
+
+public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ScreenCaptureParameters")
 	FVideoDimensions dimensions = FVideoDimensions();
@@ -2022,6 +2889,39 @@ struct FScreenCaptureParameters
 	int highLightColor = 0;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ScreenCaptureParameters")
 	bool enableHighLight = false;
+
+	FScreenCaptureParameters(){}
+	FScreenCaptureParameters(const agora::rtc::ScreenCaptureParameters & AgoraData){
+		dimensions = FVideoDimensions(AgoraData.dimensions);
+		frameRate = AgoraData.frameRate;
+		bitrate = AgoraData.bitrate;
+		captureMouseCursor = AgoraData.captureMouseCursor;
+		windowFocus = AgoraData.windowFocus;
+		//excludeWindowList = AgoraData.excludeWindowList;
+		//excludeWindowCount = AgoraData.excludeWindowCount;
+		highLightWidth = AgoraData.highLightWidth;
+		highLightColor = AgoraData.highLightColor;
+		enableHighLight = AgoraData.enableHighLight;
+	}
+
+	agora::rtc::ScreenCaptureParameters CreateAgoraData() const {
+		agora::rtc::ScreenCaptureParameters AgoraData;
+		AgoraData.dimensions = dimensions.CreateAgoraData();
+		AgoraData.frameRate = frameRate;
+		AgoraData.bitrate = bitrate;
+		AgoraData.captureMouseCursor = captureMouseCursor;
+		AgoraData.windowFocus = windowFocus;
+		//AgoraData.excludeWindowList = excludeWindowList;
+		//AgoraData.excludeWindowCount = excludeWindowCount;
+		AgoraData.highLightWidth = highLightWidth;
+		AgoraData.highLightColor = highLightColor;
+		AgoraData.enableHighLight = enableHighLight;
+		return AgoraData;
+	}
+
+	void FreeAgoraData(agora::rtc::ScreenCaptureParameters& AgoraData) const {
+		dimensions.FreeAgoraData(AgoraData.dimensions);
+	}
 };
 
 
@@ -2030,14 +2930,34 @@ struct FDeviceInfo
 {
 	GENERATED_BODY()
 
+public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|DeviceInfo")
 	bool isLowLatencyAudioSupported = false;
+
+	FDeviceInfo(){}
+	FDeviceInfo(const agora::rtc::DeviceInfo & AgoraData){
+		isLowLatencyAudioSupported = AgoraData.isLowLatencyAudioSupported;
+	}
+
+	agora::rtc::DeviceInfo CreateAgoraData() const {
+		agora::rtc::DeviceInfo AgoraData;
+		AgoraData.isLowLatencyAudioSupported = isLowLatencyAudioSupported;
+		return AgoraData;
+	}
+
+	void FreeAgoraData(agora::rtc::DeviceInfo& AgoraData) const {
+
+	}
 };
+
+
 
 USTRUCT(BlueprintType)
 struct FScreenAudioParameters {
 
 	GENERATED_BODY()
+
+public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ScreenAudioParameters")
 	int sampleRate = 16000;
@@ -2048,6 +2968,26 @@ struct FScreenAudioParameters {
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ScreenAudioParameters")
 	int captureSignalVolume = 100;
 
+#if defined(__ANDROID__) || (defined(__APPLE__) && TARGET_OS_IOS)
+	FScreenAudioParameters(){}
+	FScreenAudioParameters(const agora::rtc::ScreenAudioParameters & AgoraData){
+		sampleRate = AgoraData.sampleRate;
+		channels = AgoraData.channels;
+		captureSignalVolume = AgoraData.captureSignalVolume;
+	}
+
+	agora::rtc::ScreenAudioParameters CreateAgoraData() const {
+		agora::rtc::ScreenAudioParameters AgoraData;
+		AgoraData.sampleRate = sampleRate;
+		AgoraData.channels = channels;
+		AgoraData.captureSignalVolume = captureSignalVolume;
+		return AgoraData;
+	}
+
+	void FreeAgoraData(agora::rtc::ScreenAudioParameters& AgoraData) const {
+
+	}
+#endif
 };
 
 
@@ -2055,6 +2995,8 @@ USTRUCT(BlueprintType)
 struct FScreenVideoParameters {
 
 	GENERATED_BODY()
+
+public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ScreenVideoParameters")
 	FVideoDimensions dimensions = FVideoDimensions();
@@ -2068,12 +3010,36 @@ struct FScreenVideoParameters {
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ScreenVideoParameters")
 	EVIDEO_CONTENT_HINT contentHint = EVIDEO_CONTENT_HINT::CONTENT_HINT_MOTION;
 
+#if defined(__ANDROID__) || (defined(__APPLE__) && TARGET_OS_IOS)
+	FScreenVideoParameters(){}
+	FScreenVideoParameters(const agora::rtc::ScreenVideoParameters & AgoraData){
+		dimensions = FVideoDimensions(AgoraData.dimensions);
+		frameRate = AgoraData.frameRate;
+		bitrate = AgoraData.bitrate;
+		contentHint = static_cast<EVIDEO_CONTENT_HINT>(AgoraData.contentHint);
+	}
+
+	agora::rtc::ScreenVideoParameters CreateAgoraData() const {
+		agora::rtc::ScreenVideoParameters AgoraData;
+		AgoraData.dimensions = dimensions.CreateAgoraData();
+		AgoraData.frameRate = frameRate;
+		AgoraData.bitrate = bitrate;
+		AgoraData.contentHint = static_cast<agora::rtc::VIDEO_CONTENT_HINT>(contentHint);
+		return AgoraData;
+	}
+
+	void FreeAgoraData(agora::rtc::ScreenVideoParameters& AgoraData) const {
+		dimensions.FreeAgoraData(AgoraData.dimensions);
+	}
+#endif
 };
 
 USTRUCT(BlueprintType)
 struct FScreenCaptureParameters2
 {
 	GENERATED_BODY()
+
+public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ScreenCaptureParameters2")
 	bool captureAudio = false;
@@ -2084,12 +3050,37 @@ struct FScreenCaptureParameters2
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ScreenCaptureParameters2")
 	FScreenVideoParameters videoParams = FScreenVideoParameters();
 
+#if defined(__ANDROID__) || (defined(__APPLE__) && TARGET_OS_IOS)
+	FScreenCaptureParameters2(){}
+	FScreenCaptureParameters2(const agora::rtc::ScreenCaptureParameters2 & AgoraData){
+		captureAudio = AgoraData.captureAudio;
+		audioParams = FScreenAudioParameters(AgoraData.audioParams);
+		captureVideo = AgoraData.captureVideo;
+		videoParams = FScreenVideoParameters(AgoraData.videoParams);
+	}
+
+	agora::rtc::ScreenCaptureParameters2 CreateAgoraData() const {
+		agora::rtc::ScreenCaptureParameters2 AgoraData;
+		AgoraData.captureAudio = captureAudio;
+		AgoraData.audioParams = audioParams.CreateAgoraData();
+		AgoraData.captureVideo = captureVideo;
+		AgoraData.videoParams = videoParams.CreateAgoraData();
+		return AgoraData;
+	}
+
+	void FreeAgoraData(agora::rtc::ScreenCaptureParameters2& AgoraData) const {
+		audioParams.FreeAgoraData(AgoraData.audioParams);
+		videoParams.FreeAgoraData(AgoraData.videoParams);
+	}
+#endif
 };
 
 USTRUCT(BlueprintType)
 struct FTranscodingUser {
 
 	GENERATED_BODY()
+
+public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|TranscodingUser")
 	int64 uid = 0;
@@ -2108,6 +3099,35 @@ struct FTranscodingUser {
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|TranscodingUser")
 	int audioChannel = 0;
 
+	FTranscodingUser(){}
+	FTranscodingUser(const agora::rtc::TranscodingUser & AgoraData){
+		uid = AgoraData.uid;
+		x = AgoraData.x;
+		y = AgoraData.y;
+		width = AgoraData.width;
+		height = AgoraData.height;
+		zOrder = AgoraData.zOrder;
+		alpha = AgoraData.alpha;
+		audioChannel = AgoraData.audioChannel;
+	}
+
+	agora::rtc::TranscodingUser CreateAgoraData() const {
+		agora::rtc::TranscodingUser AgoraData;
+		AgoraData.uid = uid;
+		AgoraData.x = x;
+		AgoraData.y = y;
+		AgoraData.width = width;
+		AgoraData.height = height;
+		AgoraData.zOrder = zOrder;
+		AgoraData.alpha = alpha;
+		AgoraData.audioChannel = audioChannel;
+		return AgoraData;
+	}
+
+	void FreeAgoraData(agora::rtc::TranscodingUser& AgoraData) const {
+
+	}
+
 };
 
 USTRUCT(BlueprintType)
@@ -2115,16 +3135,35 @@ struct FLiveStreamAdvancedFeature {
 
 	GENERATED_BODY()
 
+public:
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LiveStreamAdvancedFeature")
 	FString featureName = "";
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LiveStreamAdvancedFeature")
 	bool opened = false;
+
+	FLiveStreamAdvancedFeature(){}
+	FLiveStreamAdvancedFeature(const agora::rtc::LiveStreamAdvancedFeature & AgoraData){
+		featureName = UTF8_TO_TCHAR(AgoraData.featureName);
+		opened = AgoraData.opened;
+	}
+
+	agora::rtc::LiveStreamAdvancedFeature CreateAgoraData() const {
+		agora::rtc::LiveStreamAdvancedFeature AgoraData;
+		SET_UABT_FSTRING_TO_CONST_CHAR___MEMALLOC(AgoraData.featureName, this->featureName)
+		AgoraData.opened = opened;
+		return AgoraData;
+	}
+
+	void FreeAgoraData(agora::rtc::LiveStreamAdvancedFeature& AgoraData) const {
+		SET_UABT_FSTRING_TO_CONST_CHAR___MEMFREE(AgoraData.featureName)
+	}
 };
 
 UENUM(BlueprintType)
 enum class EVIDEO_CODEC_PROFILE_TYPE : uint8 {
 
-	VIDEO_CODEC_PROFILE_NULL = 0,
+	INVALID_OPT_BPGEN_NULL UMETA(Hidden, DisplayName = "AGORA NULL VALUE"),
 
 	VIDEO_CODEC_PROFILE_BASELINE = 66,
 
@@ -2136,7 +3175,7 @@ enum class EVIDEO_CODEC_PROFILE_TYPE : uint8 {
 UENUM(BlueprintType)
 enum class EVIDEO_CODEC_TYPE_FOR_STREAM : uint8 {
 
-	VIDEO_CODEC_NULL = 0,
+	INVALID_OPT_BPGEN_NULL UMETA(Hidden, DisplayName = "AGORA NULL VALUE"),
 
 	VIDEO_CODEC_H264_FOR_STREAM = 1,
 
@@ -2159,6 +3198,8 @@ USTRUCT(BlueprintType)
 struct FLiveTranscoding
 {
 	GENERATED_BODY()
+
+public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LiveTranscoding")
 	int width = 360;
@@ -2206,6 +3247,95 @@ struct FLiveTranscoding
 	TArray<FLiveStreamAdvancedFeature> advancedFeatures;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LiveTranscoding")
 	int advancedFeatureCount = 0;
+
+	FLiveTranscoding(){}
+	FLiveTranscoding(const agora::rtc::LiveTranscoding & AgoraData){
+		width = AgoraData.width;
+		height = AgoraData.height;
+		videoBitrate = AgoraData.videoBitrate;
+		videoFramerate = AgoraData.videoFramerate;
+		lowLatency = AgoraData.lowLatency;
+		videoGop = AgoraData.videoGop;
+		videoCodecProfile = static_cast<EVIDEO_CODEC_PROFILE_TYPE>(AgoraData.videoCodecProfile);
+		backgroundColor = AgoraData.backgroundColor;
+		videoCodecType = static_cast<EVIDEO_CODEC_TYPE_FOR_STREAM>(AgoraData.videoCodecType);
+		userCount = AgoraData.userCount;
+		for(int i = 0; i< userCount; i++){
+			transcodingUsers.Add(FTranscodingUser((AgoraData.transcodingUsers[i])));
+		}
+	
+		transcodingExtraInfo = UTF8_TO_TCHAR(AgoraData.transcodingExtraInfo);
+		metadata = UTF8_TO_TCHAR(AgoraData.metadata);
+
+		for(unsigned int i =0; i< AgoraData.watermarkCount;i++)
+		{
+			watermark.Add(FRtcImage(AgoraData.watermark[i]));
+		}
+		watermarkCount = AgoraData.watermarkCount;
+
+		for(unsigned int i =0; i< AgoraData.backgroundImageCount;i++){
+			backgroundImage.Add(FRtcImage(AgoraData.watermark[i]));
+		}
+		backgroundImageCount = AgoraData.backgroundImageCount;
+		audioSampleRate = static_cast<EAUDIO_SAMPLE_RATE_TYPE>(AgoraData.audioSampleRate);
+		audioBitrate = AgoraData.audioBitrate;
+		audioChannels = AgoraData.audioChannels;
+		audioCodecProfile = static_cast<EAUDIO_CODEC_PROFILE_TYPE>(AgoraData.audioCodecProfile);
+
+		for(unsigned int i = 0; i< AgoraData.advancedFeatureCount; i++){
+			advancedFeatures.Add(FLiveStreamAdvancedFeature(AgoraData.advancedFeatures[i]));
+		}
+		advancedFeatureCount = AgoraData.advancedFeatureCount;
+	}
+
+	agora::rtc::LiveTranscoding CreateAgoraData() const {
+		agora::rtc::LiveTranscoding AgoraData;
+		AgoraData.width = width;
+		AgoraData.height = height;
+		AgoraData.videoBitrate = videoBitrate;
+		AgoraData.videoFramerate = videoFramerate;
+		AgoraData.lowLatency = lowLatency;
+		AgoraData.videoGop = videoGop;
+		AgoraData.videoCodecProfile = static_cast<agora::rtc::VIDEO_CODEC_PROFILE_TYPE>(videoCodecProfile);
+		AgoraData.backgroundColor = static_cast<unsigned int>(backgroundColor);
+		AgoraData.videoCodecType = static_cast<agora::rtc::VIDEO_CODEC_TYPE_FOR_STREAM>(videoCodecType);
+		
+		AgoraData.userCount = userCount;
+		SET_UABT_TARRARY_CUSTOMDATA_TO_AGORA_ARRAY___MEMALLOC(AgoraData.transcodingUsers, agora::rtc::TranscodingUser, userCount, this->transcodingUsers)
+
+		SET_UABT_FSTRING_TO_CONST_CHAR___MEMALLOC(AgoraData.transcodingExtraInfo,this->transcodingExtraInfo)
+		SET_UABT_FSTRING_TO_CONST_CHAR___MEMALLOC(AgoraData.metadata,this->metadata)
+
+		AgoraData.watermarkCount = watermarkCount;
+		SET_UABT_TARRARY_CUSTOMDATA_TO_AGORA_ARRAY___MEMALLOC(AgoraData.watermark, agora::rtc::RtcImage, watermarkCount, this->watermark)
+		
+		AgoraData.backgroundImageCount = backgroundImageCount;
+		SET_UABT_TARRARY_CUSTOMDATA_TO_AGORA_ARRAY___MEMALLOC(AgoraData.backgroundImage, agora::rtc::RtcImage, backgroundImageCount, this->backgroundImage)
+
+		AgoraData.audioSampleRate = static_cast<agora::rtc::AUDIO_SAMPLE_RATE_TYPE>(audioSampleRate);
+		AgoraData.audioBitrate = audioBitrate;
+		AgoraData.audioChannels = audioChannels;
+
+		AgoraData.advancedFeatureCount = advancedFeatureCount;
+		SET_UABT_TARRARY_CUSTOMDATA_TO_AGORA_ARRAY___MEMALLOC(AgoraData.advancedFeatures,agora::rtc::LiveStreamAdvancedFeature, advancedFeatureCount,this->advancedFeatures)
+
+		return AgoraData;
+	}
+
+	void FreeAgoraData(agora::rtc::LiveTranscoding & AgoraData) const{
+
+		SET_UABT_TARRARY_CUSTOMDATA_TO_AGORA_ARRAY___MEMFREE(AgoraData.transcodingUsers,userCount, FTranscodingUser)
+		
+		SET_UABT_FSTRING_TO_CONST_CHAR___MEMFREE(AgoraData.transcodingExtraInfo)
+
+		SET_UABT_TARRARY_CUSTOMDATA_TO_AGORA_ARRAY___MEMFREE(AgoraData.watermark, watermarkCount, FRtcImage)
+
+		SET_UABT_TARRARY_CUSTOMDATA_TO_AGORA_ARRAY___MEMFREE(AgoraData.backgroundImage, backgroundImageCount, FRtcImage)
+
+		SET_UABT_TARRARY_CUSTOMDATA_TO_AGORA_ARRAY___MEMFREE(AgoraData.advancedFeatures, advancedFeatureCount, FLiveStreamAdvancedFeature)
+	
+	}
+		
 };
 
 USTRUCT(BlueprintType)
@@ -2213,12 +3343,16 @@ struct FTranscodingVideoStream {
 
 	GENERATED_BODY()
 
+public:
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|TranscodingVideoStream")
-	EMEDIA_SOURCE_TYPE sourceType = EMEDIA_SOURCE_TYPE::PRIMARY_CAMERA_SOURCE;
+	EVIDEO_SOURCE_TYPE sourceType = EVIDEO_SOURCE_TYPE::VIDEO_SOURCE_CAMERA_PRIMARY;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|TranscodingVideoStream")
 	int64 remoteUserUid = 0;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|TranscodingVideoStream")
 	FString imageUrl = "";
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|TranscodingVideoStream")
+	int mediaPlayerId = 0;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|TranscodingVideoStream")
 	int x = 0;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|TranscodingVideoStream")
@@ -2233,6 +3367,42 @@ struct FTranscodingVideoStream {
 	float alpha = 0;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|TranscodingVideoStream")
 	bool mirror = false;
+
+	FTranscodingVideoStream(){}
+	FTranscodingVideoStream(const agora::rtc::TranscodingVideoStream & AgoraData){
+		sourceType = static_cast<EVIDEO_SOURCE_TYPE>(AgoraData.sourceType);
+		remoteUserUid = AgoraData.remoteUserUid;
+		imageUrl = UTF8_TO_TCHAR(AgoraData.imageUrl);
+		mediaPlayerId = AgoraData.mediaPlayerId;
+		x = AgoraData.x;
+		y = AgoraData.y;
+		width = AgoraData.width;
+		height = AgoraData.height;
+		zOrder = AgoraData.zOrder;
+		alpha = AgoraData.alpha;
+		mirror = AgoraData.mirror;
+	}
+
+	agora::rtc::TranscodingVideoStream CreateAgoraData() const{
+		
+		agora::rtc::TranscodingVideoStream AgoraData;
+		AgoraData.sourceType = static_cast<agora::rtc::VIDEO_SOURCE_TYPE>(sourceType);
+		AgoraData.remoteUserUid = remoteUserUid;
+		SET_UABT_FSTRING_TO_CONST_CHAR___MEMALLOC(AgoraData.imageUrl,this->imageUrl)
+		AgoraData.mediaPlayerId = mediaPlayerId;
+		AgoraData.x = x;
+		AgoraData.y = y;
+		AgoraData.width = width;
+		AgoraData.height = height;
+		AgoraData.zOrder = zOrder;
+		AgoraData.alpha = alpha;
+		AgoraData.mirror = mirror;
+		return AgoraData;
+	}
+
+	void FreeAgoraData(agora::rtc::TranscodingVideoStream & AgoraData) const{
+		SET_UABT_FSTRING_TO_CONST_CHAR___MEMFREE(AgoraData.imageUrl)
+	}
 };
 
 USTRUCT(BlueprintType)
@@ -2240,14 +3410,40 @@ struct FLocalTranscoderConfiguration
 {
 	GENERATED_BODY()
 
+public:
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LocalTranscoderConfiguration")
-	int streamCount = 0;
+	int64 streamCount = 0;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LocalTranscoderConfiguration")
-	TArray<FTranscodingVideoStream> VideoInputStreams;
+	TArray<FTranscodingVideoStream> videoInputStreams;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LocalTranscoderConfiguration")
 	FVideoEncoderConfiguration videoOutputConfiguration = FVideoEncoderConfiguration();
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LocalTranscoderConfiguration")
 	bool syncWithPrimaryCamera = true;
+
+	FLocalTranscoderConfiguration(){}
+	FLocalTranscoderConfiguration(const agora::rtc::LocalTranscoderConfiguration & AgoraData){
+		streamCount = AgoraData.streamCount;
+		for(int i = 0; i< streamCount; i++){
+			videoInputStreams.Add(FTranscodingVideoStream(AgoraData.videoInputStreams[i]));
+		}
+		videoOutputConfiguration = FVideoEncoderConfiguration(AgoraData.videoOutputConfiguration);
+		syncWithPrimaryCamera = AgoraData.syncWithPrimaryCamera;
+	}
+
+	agora::rtc::LocalTranscoderConfiguration CreateAgoraData() const {
+		agora::rtc::LocalTranscoderConfiguration AgoraData;
+		AgoraData.streamCount = streamCount;
+		SET_UABT_TARRARY_CUSTOMDATA_TO_AGORA_ARRAY___MEMALLOC(AgoraData.videoInputStreams, agora::rtc::TranscodingVideoStream, streamCount, this->videoInputStreams)
+		AgoraData.videoOutputConfiguration = videoOutputConfiguration.CreateAgoraData();
+		AgoraData.syncWithPrimaryCamera = syncWithPrimaryCamera;
+		return AgoraData;
+	}
+
+	void FreeAgoraData(agora::rtc::LocalTranscoderConfiguration & AgoraData) const {
+		SET_UABT_TARRARY_CUSTOMDATA_TO_AGORA_ARRAY___MEMFREE(AgoraData.videoInputStreams, streamCount, FTranscodingVideoStream)
+		videoOutputConfiguration.FreeAgoraData(AgoraData.videoOutputConfiguration);
+	}
 };
 
 
@@ -2255,6 +3451,8 @@ USTRUCT(BlueprintType)
 struct FScreenCaptureConfiguration
 {
 	GENERATED_BODY()
+
+public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ScreenCaptureConfiguration")
 	bool isCaptureWindow = false;
@@ -2268,12 +3466,39 @@ struct FScreenCaptureConfiguration
 	FScreenCaptureParameters params = FScreenCaptureParameters();
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ScreenCaptureConfiguration")
 	FRectangle regionRect = FRectangle();
+
+	FScreenCaptureConfiguration(){}
+	FScreenCaptureConfiguration(const agora::rtc::ScreenCaptureConfiguration & AgoraData){
+		isCaptureWindow = AgoraData.isCaptureWindow;
+		displayId = AgoraData.displayId;
+		screenRect = FRectangle(AgoraData.screenRect);
+		//windowId = AgoraData.windowId;
+		params = FScreenCaptureParameters(AgoraData.params);
+		regionRect = FRectangle(AgoraData.regionRect);
+	}
+
+	agora::rtc::ScreenCaptureConfiguration CreateAgoraData() const {
+		agora::rtc::ScreenCaptureConfiguration AgoraData;
+		AgoraData.isCaptureWindow = isCaptureWindow;
+		AgoraData.displayId = displayId;
+		AgoraData.screenRect = screenRect.CreateAgoraData();
+		//AgoraData.windowId = windowId;
+		AgoraData.params = params.CreateAgoraData();
+		AgoraData.regionRect = regionRect.CreateAgoraData();
+		return AgoraData;
+	}
+
+	void FreeAgoraData(agora::rtc::ScreenCaptureConfiguration & AgoraData) const {
+		screenRect.FreeAgoraData(AgoraData.screenRect);
+		params.FreeAgoraData(AgoraData.params);
+		regionRect.FreeAgoraData(AgoraData.regionRect);
+	}
 };
 
 UENUM(BlueprintType)
 enum class ENCRYPTION_MODE :uint8 {
 
-	AES_NULL = 0,
+	INVALID_OPT_BPGEN_NULL UMETA(Hidden, DisplayName = "AGORA NULL VALUE"),
 
 	AES_128_XTS = 1,
 
@@ -2299,12 +3524,44 @@ struct FEncryptionConfig
 {
 	GENERATED_BODY()
 
+public:
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|EncryptionConfig")
 	ENCRYPTION_MODE encryptionMode = ENCRYPTION_MODE::AES_128_GCM;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|EncryptionConfig")
 	FString encryptionKey = "";
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|EncryptionConfig")
-	FString encryptionKdfSalt = "";
+	TArray<uint8> encryptionKdfSalt;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|EncryptionConfig")
+	bool datastreamEncryptionEnabled = false;
+
+	FEncryptionConfig(){}
+	FEncryptionConfig(const agora::rtc::EncryptionConfig & AgoraData){
+		encryptionMode = static_cast<ENCRYPTION_MODE>(AgoraData.encryptionMode);
+		encryptionKey = UTF8_TO_TCHAR(AgoraData.encryptionKey);
+		int AgoraCount = 32;
+		for(int i =0;i< AgoraCount; i++){
+		
+			encryptionKdfSalt[i] = AgoraData.encryptionKdfSalt[i];
+		}
+		datastreamEncryptionEnabled = AgoraData.datastreamEncryptionEnabled;
+	}
+
+	agora::rtc::EncryptionConfig CreateAgoraData() const {
+		agora::rtc::EncryptionConfig AgoraData;
+		AgoraData.encryptionMode = static_cast<agora::rtc::ENCRYPTION_MODE>(encryptionMode);
+		SET_UABT_FSTRING_TO_CONST_CHAR___MEMALLOC(AgoraData.encryptionKey,this->encryptionKey)
+		int AgoraCount = 32;
+		for (int i = 0; i < AgoraCount; i++) {
+			AgoraData.encryptionKdfSalt[i] = encryptionKdfSalt[i];
+		}
+		AgoraData.datastreamEncryptionEnabled = datastreamEncryptionEnabled;
+		return AgoraData;
+	}
+
+	void FreeAgoraData(agora::rtc::EncryptionConfig & AgoraData) const {
+		SET_UABT_FSTRING_TO_CONST_CHAR___MEMFREE(AgoraData.encryptionKey)
+	}
 };
 
 USTRUCT(BlueprintType)
@@ -2312,10 +3569,30 @@ struct FDataStreamConfig
 {
 	GENERATED_BODY()
 
+public:
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|DataStreamConfig")
 	bool syncWithAudio = false;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|DataStreamConfig")
 	bool ordered = false;
+
+	FDataStreamConfig(){}
+	FDataStreamConfig(const agora::rtc::DataStreamConfig & AgoraData){
+		syncWithAudio = AgoraData.syncWithAudio;
+		ordered = AgoraData.ordered;
+	}
+
+	agora::rtc::DataStreamConfig CreateAgoraData() const {
+		agora::rtc::DataStreamConfig AgoraData;
+		AgoraData.syncWithAudio = syncWithAudio;
+		AgoraData.ordered = ordered;
+		return AgoraData;
+	}
+
+	void FreeAgoraData(agora::rtc::DataStreamConfig & AgoraData) const {
+
+	}
+
 };
 
 
@@ -2325,6 +3602,8 @@ struct FWatermarkRatio {
 
 	GENERATED_BODY()
 
+public:
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|WatermarkRatio")
 	float xRatio = 0;
 
@@ -2333,6 +3612,25 @@ struct FWatermarkRatio {
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|WatermarkRatio")
 	float widthRatio = 0;
+
+	FWatermarkRatio(){}
+	FWatermarkRatio(const agora::rtc::WatermarkRatio & AgoraData){
+		xRatio = AgoraData.xRatio;
+		yRatio = AgoraData.yRatio;
+		widthRatio = AgoraData.widthRatio;
+	}
+
+	agora::rtc::WatermarkRatio CreateAgoraData() const {
+		agora::rtc::WatermarkRatio AgoraData;
+		AgoraData.xRatio = xRatio;
+		AgoraData.yRatio = yRatio;
+		AgoraData.widthRatio = widthRatio;
+		return AgoraData;
+	}
+
+	void FreeAgoraData(agora::rtc::WatermarkRatio & AgoraData) const {
+
+	}
 };
 
 UENUM(BlueprintType)
@@ -2349,6 +3647,8 @@ struct FWatermarkOptions
 {
 	GENERATED_BODY()
 
+public:
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|WatermarkOptions")
 	bool visibleInPreview = false;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|WatermarkOptions")
@@ -2359,6 +3659,31 @@ struct FWatermarkOptions
 	FWatermarkRatio watermarkRatio = FWatermarkRatio();
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|WatermarkOptions")
 	EWATERMARK_FIT_MODE mode = EWATERMARK_FIT_MODE::FIT_MODE_COVER_POSITION;
+
+	FWatermarkOptions(){}
+	FWatermarkOptions(const agora::rtc::WatermarkOptions & AgoraData){
+		visibleInPreview = AgoraData.visibleInPreview;
+		positionInLandscapeMode = FRectangle(AgoraData.positionInLandscapeMode);
+		positionInPortraitMode = FRectangle(AgoraData.positionInPortraitMode);
+		watermarkRatio = FWatermarkRatio(AgoraData.watermarkRatio);
+		mode = static_cast<EWATERMARK_FIT_MODE>(AgoraData.mode);
+	}
+
+	agora::rtc::WatermarkOptions CreateAgoraData() const {
+		agora::rtc::WatermarkOptions AgoraData;
+		AgoraData.visibleInPreview = visibleInPreview;
+		AgoraData.positionInLandscapeMode = positionInLandscapeMode.CreateAgoraData();
+		AgoraData.positionInPortraitMode = positionInPortraitMode.CreateAgoraData();
+		AgoraData.watermarkRatio = watermarkRatio.CreateAgoraData();
+		AgoraData.mode = static_cast<agora::rtc::WATERMARK_FIT_MODE>(mode);
+		return AgoraData;
+	}
+	void FreeAgoraData(agora::rtc::WatermarkOptions & AgoraData) const {
+		positionInLandscapeMode.FreeAgoraData(AgoraData.positionInLandscapeMode);
+		positionInPortraitMode.FreeAgoraData(AgoraData.positionInPortraitMode);
+		watermarkRatio.FreeAgoraData(AgoraData.watermarkRatio);
+	}
+	
 };
 
 
@@ -2368,6 +3693,8 @@ USTRUCT(BlueprintType)
 struct FInjectStreamConfig
 {
 	GENERATED_BODY()
+
+public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|InjectStreamConfig")
 	int width = 0;
@@ -2385,6 +3712,35 @@ struct FInjectStreamConfig
 	int audioBitrate = 0;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|InjectStreamConfig")
 	int audioChannels = 0;
+
+	FInjectStreamConfig(){}
+	FInjectStreamConfig(const agora::rtc::InjectStreamConfig & AgoraData){
+		width = AgoraData.width;
+		height = AgoraData.height;
+		videoGop = AgoraData.videoGop;
+		videoFramerate = AgoraData.videoFramerate;
+		videoBitrate = AgoraData.videoBitrate;
+		audioSampleRate = static_cast<EAUDIO_SAMPLE_RATE_TYPE>(AgoraData.audioSampleRate);
+		audioBitrate = AgoraData.audioBitrate;
+		audioChannels = AgoraData.audioChannels;
+	}
+
+	agora::rtc::InjectStreamConfig CreateAgoraData() const {
+		agora::rtc::InjectStreamConfig AgoraData;
+		AgoraData.width = width;
+		AgoraData.height = height;
+		AgoraData.videoGop = videoGop;
+		AgoraData.videoFramerate = videoFramerate;
+		AgoraData.videoBitrate = videoBitrate;
+		AgoraData.audioSampleRate = static_cast<agora::rtc::AUDIO_SAMPLE_RATE_TYPE>(audioSampleRate);
+		AgoraData.audioBitrate = audioBitrate;
+		AgoraData.audioChannels = audioChannels;
+		return AgoraData;
+	}
+
+	void FreeAgoraData(agora::rtc::InjectStreamConfig & AgoraData) const {
+
+	}
 };
 
 USTRUCT(BlueprintType)
@@ -2392,16 +3748,69 @@ struct FUserInfo
 {
 	GENERATED_BODY()
 
+public:
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|UserInfo")
 	int64 uid = 0;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|UserInfo")
 	FString userAccount = "";
+
+	FUserInfo(){}
+	FUserInfo(const agora::rtc::UserInfo & AgoraData){
+		uid = AgoraData.uid;
+		userAccount = UTF8_TO_TCHAR(AgoraData.userAccount);
+	}
+
+	agora::rtc::UserInfo CreateAgoraData() const {
+		agora::rtc::UserInfo AgoraData;
+		AgoraData.uid = uid;
+		SET_UABT_FSTRING_TO_CHAR_ARRAY(AgoraData.userAccount,this->userAccount,agora::rtc::MAX_USER_ACCOUNT_LENGTH)
+		return AgoraData;
+	}
+
+	void FreeAgoraData(agora::rtc::UserInfo & AgoraData) const {
+
+	}
 };
+
+
+UENUM(BlueprintType)
+enum class EENUMCUSTOM_EAR_MONITORING_FILTER_TYPE : uint8 {
+	INVALID_OPT_BPGEN_NULL UMETA(Hidden, DisplayName = "AGORA NULL VALUE"),
+	EAR_MONITORING_FILTER_NONE,
+	EAR_MONITORING_FILTER_BUILT_IN_AUDIO_FILTERS,
+	EAR_MONITORING_FILTER_NOISE_SUPPRESSION,
+	EAR_MONITORING_FILTER_REUSE_POST_PROCESSING_FILTER,
+};
+
+
+USTRUCT(BlueprintType)
+struct FENUMWRAP_EAR_MONITORING_FILTER_TYPE
+{
+	GENERATED_BODY()
+
+public:
+		// require to call [GetRawValue] method to get the raw value 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|FENUMWRAP_EAR_MONITORING_FILTER_TYPE")
+	EENUMCUSTOM_EAR_MONITORING_FILTER_TYPE ValueWrapper = EENUMCUSTOM_EAR_MONITORING_FILTER_TYPE::EAR_MONITORING_FILTER_NONE;
+
+	AGORA_CREATE_UEENUM_CONVERT_STRUCT_INNER_4_ENTRIES(FENUMWRAP_EAR_MONITORING_FILTER_TYPE, agora::rtc::EAR_MONITORING_FILTER_TYPE, EENUMCUSTOM_EAR_MONITORING_FILTER_TYPE,
+		EAR_MONITORING_FILTER_NONE,
+		EAR_MONITORING_FILTER_BUILT_IN_AUDIO_FILTERS,
+		EAR_MONITORING_FILTER_NOISE_SUPPRESSION,
+		EAR_MONITORING_FILTER_REUSE_POST_PROCESSING_FILTER )
+};
+
 
 USTRUCT(BlueprintType)
 struct FChannelMediaInfo {
 
 	GENERATED_BODY()
+
+public:
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|UserInfo")
+	int64 uid = 0;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|UserInfo")
 	FString channelName = "";
@@ -2409,15 +3818,33 @@ struct FChannelMediaInfo {
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|UserInfo")
 	FString token = "";
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|UserInfo")
-	int64 uid = 0;
+	FChannelMediaInfo(){}
+	FChannelMediaInfo(const agora::rtc::ChannelMediaInfo & AgoraData){
+		channelName = UTF8_TO_TCHAR(AgoraData.channelName);
+		token = UTF8_TO_TCHAR(AgoraData.token);
+		uid = AgoraData.uid;
+	}
 
+	agora::rtc::ChannelMediaInfo CreateAgoraData() const {
+		agora::rtc::ChannelMediaInfo AgoraData;
+		SET_UABT_FSTRING_TO_CONST_CHAR___MEMALLOC(AgoraData.channelName,this->channelName)
+		SET_UABT_FSTRING_TO_CONST_CHAR___MEMALLOC(AgoraData.token,this->token)
+		AgoraData.uid = uid;
+		return AgoraData;
+	}
+
+	void FreeAgoraData(agora::rtc::ChannelMediaInfo & AgoraData) const {
+		SET_UABT_FSTRING_TO_CONST_CHAR___MEMFREE(AgoraData.channelName)
+		SET_UABT_FSTRING_TO_CONST_CHAR___MEMFREE(AgoraData.token)
+	}
 };
 
 USTRUCT(BlueprintType)
 struct FChannelMediaRelayConfiguration
 {
 	GENERATED_BODY()
+
+public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ChannelMediaRelayConfiguration")
 	FChannelMediaInfo srcInfo = FChannelMediaInfo();
@@ -2427,12 +3854,40 @@ struct FChannelMediaRelayConfiguration
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ChannelMediaRelayConfiguration")
 	int destCount = 0;
+
+	FChannelMediaRelayConfiguration(){}
+	FChannelMediaRelayConfiguration(const agora::rtc::ChannelMediaRelayConfiguration & AgoraData){
+		srcInfo = FChannelMediaInfo(*(AgoraData.srcInfo));
+		destCount = AgoraData.destCount;
+		for(int i = 0; i< destCount; i++){
+			destInfos.Add(FChannelMediaInfo(AgoraData.destInfos[i]));
+		}
+	}
+
+	agora::rtc::ChannelMediaRelayConfiguration CreateAgoraData() const {
+		agora::rtc::ChannelMediaRelayConfiguration AgoraData;
+		
+		SET_UABT_UECUSTOMDATA_TO_AGORA_PTR_1_ENTRY___MEMALLOC(AgoraData.srcInfo,agora::rtc::ChannelMediaInfo, this->srcInfo)
+
+		AgoraData.destCount = destCount;
+		SET_UABT_TARRARY_CUSTOMDATA_TO_AGORA_ARRAY___MEMALLOC(AgoraData.destInfos, agora::rtc::ChannelMediaInfo, destCount, this->destInfos)
+
+		return AgoraData;
+	}
+
+	void FreeAgoraData(agora::rtc::ChannelMediaRelayConfiguration & AgoraData) const {
+		SET_UABT_UECUSTOMDATA_TO_AGORA_PTR_1_ENTRY___MEMFREE(AgoraData.srcInfo, FChannelMediaInfo)
+		SET_UABT_TARRARY_CUSTOMDATA_TO_AGORA_ARRAY___MEMFREE(AgoraData.destInfos, destCount, FChannelMediaInfo)
+	}
 };
 
 USTRUCT(BlueprintType)
 struct FDirectCdnStreamingMediaOptions
 {
 	GENERATED_BODY()
+
+
+public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|DirectCdnStreamingMediaOptions")
 	AGORAOPTIONAL publishCameraTrack = AGORAOPTIONAL::AGORA_NULL_VALUE;
@@ -2454,39 +3909,38 @@ struct FDirectCdnStreamingMediaOptions
 	bool customVideoTrackId_SetValue = false;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|DirectCdnStreamingMediaOptions")
 	int64 customVideoTrackId = 0;
+
+
+	FDirectCdnStreamingMediaOptions(){}
+	FDirectCdnStreamingMediaOptions(const agora::rtc::DirectCdnStreamingMediaOptions & AgoraData){
+		SET_UEBP_OPTIONAL_VAL_BOOL(this->publishCameraTrack, AgoraData.publishCameraTrack)
+		SET_UEBP_OPTIONAL_VAL_BOOL(this->publishMicrophoneTrack, AgoraData.publishMicrophoneTrack)
+		SET_UEBP_OPTIONAL_VAL_BOOL(this->publishCustomAudioTrack, AgoraData.publishCustomAudioTrack)
+		SET_UEBP_OPTIONAL_VAL_BOOL(this->publishCustomVideoTrack, AgoraData.publishCustomVideoTrack)
+		SET_UEBP_OPTIONAL_VAL_BOOL(this->publishMediaPlayerAudioTrack, AgoraData.publishMediaPlayerAudioTrack)
+		SET_UEBP_OPTIONAL_VAL_DIR_ASSIGN(this->publishMediaPlayerId, AgoraData.publishMediaPlayerId)
+		SET_UEBP_OPTIONAL_VAL_DIR_ASSIGN(this->customVideoTrackId, AgoraData.customVideoTrackId)
+	}
+
+	agora::rtc::DirectCdnStreamingMediaOptions CreateAgoraData() const {
+		agora::rtc::DirectCdnStreamingMediaOptions AgoraData;
+		
+		SET_AGORA_OPTIONAL_VAL_BOOL(AgoraData.publishCameraTrack, this->publishCameraTrack)
+		SET_AGORA_OPTIONAL_VAL_BOOL(AgoraData.publishMicrophoneTrack, this->publishMicrophoneTrack)
+		SET_AGORA_OPTIONAL_VAL_BOOL(AgoraData.publishCustomAudioTrack, this->publishCustomAudioTrack)
+		SET_AGORA_OPTIONAL_VAL_BOOL(AgoraData.publishCustomVideoTrack, this->publishCustomVideoTrack)
+		SET_AGORA_OPTIONAL_VAL_BOOL(AgoraData.publishMediaPlayerAudioTrack, this->publishMediaPlayerAudioTrack)
+		SET_AGORA_OPTIONAL_VAL_DIR_ASSIGN(AgoraData.publishMediaPlayerId, this->publishMediaPlayerId)
+		SET_AGORA_OPTIONAL_VAL_DIR_ASSIGN(AgoraData.customVideoTrackId, this->customVideoTrackId)
+
+		return AgoraData;
+	}
+
+	void FreeAgoraData(agora::rtc::DirectCdnStreamingMediaOptions & AgoraData) const {
+
+	}
 };
 
-#define SET_AGORA_DATA_DIRECTCDNSTREAMINGMEDIAOPTIONS(Agora_DirectCdnStreamingMediaOptions,UE_FDirectCdnStreamingMediaOptions)\
-{\
-	if (UE_FDirectCdnStreamingMediaOptions.publishCameraTrack != AGORAOPTIONAL::AGORA_NULL_VALUE)         \
-	{         \
-		Agora_DirectCdnStreamingMediaOptions.publishCameraTrack = UE_FDirectCdnStreamingMediaOptions.publishCameraTrack == AGORAOPTIONAL::AGORA_TRUE_VALUE;         \
-	}         \
-	if (UE_FDirectCdnStreamingMediaOptions.publishMicrophoneTrack != AGORAOPTIONAL::AGORA_NULL_VALUE)         \
-	{         \
-		Agora_DirectCdnStreamingMediaOptions.publishMicrophoneTrack = UE_FDirectCdnStreamingMediaOptions.publishMicrophoneTrack == AGORAOPTIONAL::AGORA_TRUE_VALUE;         \
-	}         \
-	if (UE_FDirectCdnStreamingMediaOptions.publishCustomAudioTrack != AGORAOPTIONAL::AGORA_NULL_VALUE)         \
-	{         \
-		Agora_DirectCdnStreamingMediaOptions.publishCustomAudioTrack = UE_FDirectCdnStreamingMediaOptions.publishCustomAudioTrack == AGORAOPTIONAL::AGORA_TRUE_VALUE;         \
-	}         \
-	if (UE_FDirectCdnStreamingMediaOptions.publishCustomVideoTrack != AGORAOPTIONAL::AGORA_NULL_VALUE)         \
-	{         \
-		Agora_DirectCdnStreamingMediaOptions.publishCustomVideoTrack = UE_FDirectCdnStreamingMediaOptions.publishCustomVideoTrack == AGORAOPTIONAL::AGORA_TRUE_VALUE;         \
-	}         \
-	if (UE_FDirectCdnStreamingMediaOptions.publishMediaPlayerAudioTrack != AGORAOPTIONAL::AGORA_NULL_VALUE)         \
-	{         \
-		Agora_DirectCdnStreamingMediaOptions.publishMediaPlayerAudioTrack = UE_FDirectCdnStreamingMediaOptions.publishMediaPlayerAudioTrack == AGORAOPTIONAL::AGORA_TRUE_VALUE;         \
-	}         \
-	if (UE_FDirectCdnStreamingMediaOptions.publishMediaPlayerId_SetValue)         \
-	{         \
-		Agora_DirectCdnStreamingMediaOptions.publishMediaPlayerId = UE_FDirectCdnStreamingMediaOptions.publishMediaPlayerId;         \
-	}         \
-	if (UE_FDirectCdnStreamingMediaOptions.customVideoTrackId_SetValue)         \
-	{         \
-		Agora_DirectCdnStreamingMediaOptions.customVideoTrackId = UE_FDirectCdnStreamingMediaOptions.customVideoTrackId;         \
-	}         \
-}
 
 
 USTRUCT(BlueprintType)
@@ -2494,10 +3948,30 @@ struct FAgoraRhythmPlayerConfig
 {
 	GENERATED_BODY()
 
+public:
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|AgoraRhythmPlayerConfig")
 	int beatsPerMeasure = 4;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|AgoraRhythmPlayerConfig")
 	int beatsPerMinute = 60;
+
+	FAgoraRhythmPlayerConfig(){}
+	FAgoraRhythmPlayerConfig(const agora::rtc::AgoraRhythmPlayerConfig & AgoraData){
+		beatsPerMeasure = AgoraData.beatsPerMeasure;
+		beatsPerMinute = AgoraData.beatsPerMinute;
+	}
+
+	agora::rtc::AgoraRhythmPlayerConfig CreateAgoraData() const {
+		agora::rtc::AgoraRhythmPlayerConfig AgoraData;
+		AgoraData.beatsPerMeasure = beatsPerMeasure;
+		AgoraData.beatsPerMinute = beatsPerMinute;
+		return AgoraData;
+	}
+
+	void FreeAgoraData(agora::rtc::AgoraRhythmPlayerConfig & AgoraData) const {
+
+	}
+
 };
 
 UENUM(BlueprintType)
@@ -2505,9 +3979,13 @@ enum class ECONTENT_INSPECT_TYPE : uint8 {
 
 	CONTENT_INSPECT_INVALID = 0,
 
+	// deprecated
 	CONTENT_INSPECT_MODERATION = 1,
 
-	CONTENT_INSPECT_SUPERVISION = 2
+	CONTENT_INSPECT_SUPERVISION = 2,
+	
+	CONTENT_INSPECT_IMAGE_MODERATION = 3
+
 };
 
 USTRUCT(BlueprintType)
@@ -2515,11 +3993,29 @@ struct FContentInspectModule {
 
 	GENERATED_BODY()
 
+public:
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ContentInspectModule")
 	ECONTENT_INSPECT_TYPE type = ECONTENT_INSPECT_TYPE::CONTENT_INSPECT_INVALID;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ContentInspectModule")
 	int64 interval = 0;
+
+	FContentInspectModule(){}
+	FContentInspectModule(const agora::media::ContentInspectModule & AgoraData){
+		type = static_cast<ECONTENT_INSPECT_TYPE>(AgoraData.type);
+		interval = AgoraData.interval;
+	}
+
+	agora::media::ContentInspectModule CreateAgoraData() const {
+		agora::media::ContentInspectModule AgoraData;
+		AgoraData.type = static_cast<agora::media::CONTENT_INSPECT_TYPE>(type);
+		AgoraData.interval = interval;
+		return AgoraData;
+	}
+	void FreeAgoraData(agora::media::ContentInspectModule & AgoraData) const {
+
+	}
 };
 
 USTRUCT(BlueprintType)
@@ -2527,69 +4023,189 @@ struct FContentInspectConfig
 {
 	GENERATED_BODY()
 
+public:
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ContentInspectConfig")
 	FString extraInfo = "";
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ContentInspectConfig")
+	FString serverConfig;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ContentInspectConfig")
 	TArray<FContentInspectModule> modules;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ContentInspectConfig")
 	int moduleCount = 0;
+
+	FContentInspectConfig(){}
+	FContentInspectConfig(const agora::media::ContentInspectConfig & AgoraData){
+		extraInfo = UTF8_TO_TCHAR(AgoraData.extraInfo);
+		serverConfig = UTF8_TO_TCHAR(AgoraData.serverConfig);
+		moduleCount = AgoraData.moduleCount;
+		for(int i = 0; i< moduleCount; i++){
+			modules.Add(FContentInspectModule(AgoraData.modules[i]));
+		}
+	}
+
+	agora::media::ContentInspectConfig CreateAgoraData() const {
+		agora::media::ContentInspectConfig AgoraData;
+		SET_UABT_FSTRING_TO_CONST_CHAR___MEMALLOC(AgoraData.extraInfo,this->extraInfo)
+		SET_UABT_FSTRING_TO_CONST_CHAR___MEMALLOC(AgoraData.serverConfig, this->serverConfig)
+		AgoraData.moduleCount = moduleCount;
+		for(int i = 0;i < moduleCount; i++){
+			AgoraData.modules[i] = modules[i].CreateAgoraData();
+		}
+		return AgoraData;
+	}
+
+	void FreeAgoraData(agora::media::ContentInspectConfig & AgoraData) const {
+		SET_UABT_FSTRING_TO_CONST_CHAR___MEMFREE(AgoraData.extraInfo)
+		SET_UABT_FSTRING_TO_CONST_CHAR___MEMFREE(AgoraData.serverConfig)
+		for (int i = 0; i < moduleCount; i++) {
+			FContentInspectModule ReleaseOperator;
+			ReleaseOperator.FreeAgoraData(AgoraData.modules[i]);
+		}
+	}
+
 };
 
 UENUM(BlueprintType)
-enum class ELOCAL_PROXY_MODE :uint8 {
-
+enum class ELOCAL_PROXY_MODE :uint8{
 	ConnectivityFirst = 0,
-
 	LocalOnly = 1,
 };
+
 
 USTRUCT(BlueprintType)
 struct FLocalAccessPointConfiguration
 {
 	GENERATED_BODY()
 
+public:
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LocalAccessPointConfiguration")
-	FString ipList = "";
+	TArray<FString> ipList;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LocalAccessPointConfiguration")
 	int ipListSize = 0;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LocalAccessPointConfiguration")
-	FString domainList = "";
+	TArray<FString> domainList;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LocalAccessPointConfiguration")
 	int domainListSize = 0;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LocalAccessPointConfiguration")
 	FString verifyDomainName = "";
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LocalAccessPointConfiguration")
 	ELOCAL_PROXY_MODE mode = ELOCAL_PROXY_MODE::ConnectivityFirst;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LocalAccessPointConfiguration")
+	FAdvancedConfigInfo advancedConfig;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LocalAccessPointConfiguration")
+	bool disableAut;
+
+	FLocalAccessPointConfiguration(){}
+	FLocalAccessPointConfiguration(const agora::rtc::LocalAccessPointConfiguration & AgoraData){
+		
+		for(int i = 0; i< AgoraData.ipListSize; i++){
+			ipList.Add(UTF8_TO_TCHAR(AgoraData.ipList[i]));
+		}
+
+		ipListSize = AgoraData.ipListSize;
+
+		for (int i = 0; i < AgoraData.domainListSize; i++) {
+			domainList.Add(UTF8_TO_TCHAR(AgoraData.domainList[i]));
+		}
+
+		domainListSize = AgoraData.domainListSize;
+
+		verifyDomainName = UTF8_TO_TCHAR(AgoraData.verifyDomainName);
+
+		mode = static_cast<ELOCAL_PROXY_MODE>(AgoraData.mode);
+
+		advancedConfig = FAdvancedConfigInfo(AgoraData.advancedConfig);
+
+		disableAut = AgoraData.disableAut;
+	}
+
+	agora::rtc::LocalAccessPointConfiguration CreateAgoraData() const {
+		
+		agora::rtc::LocalAccessPointConfiguration AgoraData;
+		SET_UABT_TARRARY_FSTRING_TO_CONST_AGORA_ARRAY___MEMALLOC(AgoraData.ipList, ipListSize, this->ipList)
+		AgoraData.ipListSize = ipListSize;
+		SET_UABT_TARRARY_FSTRING_TO_CONST_AGORA_ARRAY___MEMALLOC(AgoraData.domainList, domainListSize, this->domainList)
+			AgoraData.domainListSize = domainListSize;
+		SET_UABT_FSTRING_TO_CONST_CHAR___MEMALLOC(AgoraData.verifyDomainName, this->verifyDomainName)
+			AgoraData.mode = static_cast<agora::rtc::LOCAL_PROXY_MODE>(mode);
+		AgoraData.advancedConfig = advancedConfig.CreateAgoraData();
+		AgoraData.disableAut = disableAut;
+		return AgoraData;
+	}
+
+	void FreeAgoraData(agora::rtc::LocalAccessPointConfiguration & AgoraData) const {
+		SET_UABT_TARRARY_FSTRING_TO_AGORA_ARRAY___MEMFREE(AgoraData.ipList, ipListSize)
+		SET_UABT_TARRARY_FSTRING_TO_AGORA_ARRAY___MEMFREE(AgoraData.domainList, domainListSize)
+		SET_UABT_FSTRING_TO_CONST_CHAR___MEMFREE(AgoraData.verifyDomainName)
+		advancedConfig.FreeAgoraData(AgoraData.advancedConfig);
+	}
 };
 
 USTRUCT(BlueprintType)
 struct FAdvancedAudioOptions
 {
 	GENERATED_BODY()
+
+public:
+
 	// If the box is unchecked, the value of the corresponding variable (named without _SetValue)  will be ignored.
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|AdvancedAudioOptions")
 	bool audioProcessingChannels_SetValue = false;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|AdvancedAudioOptions")
 	int audioProcessingChannels = 0;
+
+	FAdvancedAudioOptions(){}
+	FAdvancedAudioOptions(const agora::rtc::AdvancedAudioOptions & AgoraData){
+		SET_UEBP_OPTIONAL_VAL_DIR_ASSIGN(this->audioProcessingChannels, AgoraData.audioProcessingChannels)
+	}
+
+	agora::rtc::AdvancedAudioOptions CreateAgoraData() const {
+		agora::rtc::AdvancedAudioOptions AgoraData;
+		SET_AGORA_OPTIONAL_VAL_DIR_ASSIGN(AgoraData.audioProcessingChannels, this->audioProcessingChannels)
+		return AgoraData;
+	}
+
+	void FreeAgoraData(agora::rtc::AdvancedAudioOptions & AgoraData) const {
+
+	}
 };
 
-#define SET_AGORA_DATA_ADVANCEDAUDIOOPTIONS(Agora_AdvancedAudioOptions,UE_FAdvancedAudioOptions)\
-{\
-	if (UE_FAdvancedAudioOptions.audioProcessingChannels_SetValue) \
-	{ \
-		Agora_AdvancedAudioOptions.audioProcessingChannels = UE_FAdvancedAudioOptions.audioProcessingChannels; \
-	} \
-}
+
 
 USTRUCT(BlueprintType)
 struct FImageTrackOptions
 {
 	GENERATED_BODY()
 
+public:
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ImageTrackOptions")
 	FString imageUrl = "";
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ImageTrackOptions")
 	int fps = 1;
+
+	FImageTrackOptions(){}
+	FImageTrackOptions(const agora::rtc::ImageTrackOptions & AgoraData){
+		imageUrl = UTF8_TO_TCHAR(AgoraData.imageUrl);
+		fps = AgoraData.fps;
+	}
+
+	agora::rtc::ImageTrackOptions CreateAgoraData() const {
+		agora::rtc::ImageTrackOptions AgoraData;
+		SET_UABT_FSTRING_TO_CONST_CHAR___MEMALLOC(AgoraData.imageUrl,this->imageUrl)
+		AgoraData.fps = fps;
+		return AgoraData;
+	}
+
+	void FreeAgoraData(agora::rtc::ImageTrackOptions & AgoraData) const {
+		SET_UABT_FSTRING_TO_CONST_CHAR___MEMFREE(AgoraData.imageUrl)
+	}
+
 };
 
 USTRUCT(BlueprintType)
@@ -2597,10 +4213,30 @@ struct FRtcConnection
 {
 	GENERATED_BODY()
 
+public:
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RtcConnection")
 	FString channelId = "";
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RtcConnection")
 	int64 localUid = 0;
+
+	FRtcConnection(){}
+	FRtcConnection(const agora::rtc::RtcConnection & AgoraData){
+		channelId = UTF8_TO_TCHAR(AgoraData.channelId);
+		localUid = AgoraData.localUid;
+	}
+
+	agora::rtc::RtcConnection CreateAgoraData() const {
+		agora::rtc::RtcConnection AgoraData;
+		SET_UABT_FSTRING_TO_CONST_CHAR___MEMALLOC(AgoraData.channelId,this->channelId)
+		AgoraData.localUid = localUid;
+		return AgoraData;
+	}
+
+	void FreeAgoraData(agora::rtc::RtcConnection & AgoraData) const {
+		SET_UABT_FSTRING_TO_CONST_CHAR___MEMFREE(AgoraData.channelId)
+	}
+	
 };
 
 UENUM(BlueprintType)
@@ -2620,6 +4256,8 @@ struct FLastmileProbeOneWayResult {
 
 	GENERATED_BODY()
 
+public:
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LastmileProbeOneWayResult")
 	int64 packetLossRate = 0;
 
@@ -2628,6 +4266,26 @@ struct FLastmileProbeOneWayResult {
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LastmileProbeOneWayResult")
 	int64 availableBandwidth = 0;
+
+	FLastmileProbeOneWayResult(){}
+	FLastmileProbeOneWayResult(const agora::rtc::LastmileProbeOneWayResult & AgoraData){
+		packetLossRate = AgoraData.packetLossRate;
+		jitter = AgoraData.jitter;
+		availableBandwidth = AgoraData.availableBandwidth;
+	}
+
+	agora::rtc::LastmileProbeOneWayResult CreateAgoraData() const {
+		agora::rtc::LastmileProbeOneWayResult AgoraData;
+		AgoraData.packetLossRate = packetLossRate;
+		AgoraData.jitter = jitter;
+		AgoraData.availableBandwidth = availableBandwidth;
+		return AgoraData;
+	}
+
+	void FreeAgoraData(agora::rtc::LastmileProbeOneWayResult & AgoraData) const {
+
+	}
+
 };
 
 
@@ -2635,6 +4293,8 @@ USTRUCT(BlueprintType)
 struct FLastmileProbeResult {
 
 	GENERATED_BODY()
+
+public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LastmileProbeResult")
 	ELASTMILE_PROBE_RESULT_STATE state = ELASTMILE_PROBE_RESULT_STATE::LASTMILE_PROBE_RESULT_UNAVAILABLE;
@@ -2647,12 +4307,36 @@ struct FLastmileProbeResult {
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LastmileProbeResult")
 	int64 rtt = 0;
+
+	FLastmileProbeResult(){}
+	FLastmileProbeResult(const agora::rtc::LastmileProbeResult & AgoraData){
+		state = static_cast<ELASTMILE_PROBE_RESULT_STATE>(AgoraData.state);
+		uplinkReport = FLastmileProbeOneWayResult(AgoraData.uplinkReport);
+		downlinkReport = FLastmileProbeOneWayResult(AgoraData.downlinkReport);
+		rtt = AgoraData.rtt;
+	}
+
+	agora::rtc::LastmileProbeResult CreateAgoraData() const {
+		agora::rtc::LastmileProbeResult AgoraData;
+		AgoraData.state = static_cast<agora::rtc::LASTMILE_PROBE_RESULT_STATE>(state);
+		AgoraData.uplinkReport = uplinkReport.CreateAgoraData();
+		AgoraData.downlinkReport = downlinkReport.CreateAgoraData();
+		AgoraData.rtt = rtt;
+		return AgoraData;
+	}
+
+	void FreeAgoraData(agora::rtc::LastmileProbeResult & AgoraData) const {
+		uplinkReport.FreeAgoraData(AgoraData.uplinkReport);
+		downlinkReport.FreeAgoraData(AgoraData.downlinkReport);
+	}
 };
 
 USTRUCT(BlueprintType)
 struct FAudioVolumeInfo {
 
 	GENERATED_BODY()
+
+public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|AudioVolumeInfo")
 	int64 uid = 0;
@@ -2663,6 +4347,28 @@ struct FAudioVolumeInfo {
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|AudioVolumeInfo")
 	float voicePitch = 0;
 
+	FAudioVolumeInfo(){}
+	FAudioVolumeInfo(const agora::rtc::AudioVolumeInfo & AgoraData){
+		uid = AgoraData.uid;
+		volume = AgoraData.volume;
+		vad = AgoraData.vad;
+		voicePitch = AgoraData.voicePitch;
+	}
+
+	agora::rtc::AudioVolumeInfo CreateAgoraData() const {
+		agora::rtc::AudioVolumeInfo AgoraData;
+		AgoraData.uid = uid;
+		AgoraData.volume = volume;
+		AgoraData.vad = vad;
+		AgoraData.voicePitch = voicePitch;
+		return AgoraData;
+	}
+
+	void FreeAgoraData(agora::rtc::AudioVolumeInfo & AgoraData) const {
+
+	}
+
+
 };
 
 
@@ -2671,6 +4377,7 @@ struct FRtcStats
 {
 	GENERATED_BODY()
 
+public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RtcStats")
 	int64 duration = 0;
@@ -2703,9 +4410,19 @@ struct FRtcStats
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RtcStats")
 	int64 userCount = 0;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RtcStats")
-	float cpuAppUsage = 0;
+	FString cpuAppUsage = "0";
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RtcStats")
-	float cpuTotalUsage = 0;
+	FString cpuTotalUsage = "0";
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RtcStats")
+	int32 gatewayRtt = 0;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RtcStats")
+	FString memoryAppUsageRatio = "0";
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RtcStats")
+	FString memoryTotalUsageRatio = "0";
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RtcStats")
+	int32 memoryAppUsageInKbytes = 0;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RtcStats")
 	int32 connectTimeMs = 0;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RtcStats")
@@ -2730,14 +4447,97 @@ struct FRtcStats
 	int32 txPacketLossRate = 0;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RtcStats")
 	int32 rxPacketLossRate = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RtcStats")
-	int gatewayRtt = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RtcStats")
-	float memoryAppUsageRatio = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RtcStats")
-	float memoryTotalUsageRatio = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RtcStats")
-	int memoryAppUsageInKbytes = 0;
+
+
+
+	FRtcStats(){}
+	FRtcStats(const agora::rtc::RtcStats & AgoraData){
+		duration = AgoraData.duration;
+		txBytes = AgoraData.txBytes;
+		rxBytes = AgoraData.rxBytes;
+		txAudioBytes = AgoraData.txAudioBytes;
+		txVideoBytes = AgoraData.txVideoBytes;
+		rxAudioBytes = AgoraData.rxAudioBytes;
+		rxVideoBytes = AgoraData.rxVideoBytes;
+		txKBitRate = AgoraData.txKBitRate;
+		rxKBitRate = AgoraData.rxKBitRate;
+		rxAudioKBitRate = AgoraData.rxAudioKBitRate;
+		txAudioKBitRate = AgoraData.txAudioKBitRate;
+		rxVideoKBitRate = AgoraData.rxVideoKBitRate;
+		txVideoKBitRate = AgoraData.txVideoKBitRate;
+		lastmileDelay = AgoraData.lastmileDelay;
+		userCount = AgoraData.userCount;
+
+		SET_UABT_DOUBLE_TO_FSTRING(this->cpuAppUsage, AgoraData.cpuAppUsage);
+		SET_UABT_DOUBLE_TO_FSTRING(this->cpuTotalUsage, AgoraData.cpuTotalUsage);
+
+		gatewayRtt = AgoraData.gatewayRtt;
+		
+		SET_UABT_DOUBLE_TO_FSTRING(this->memoryAppUsageRatio, AgoraData.memoryAppUsageRatio);
+		SET_UABT_DOUBLE_TO_FSTRING(this->memoryTotalUsageRatio, AgoraData.memoryTotalUsageRatio);
+		
+		memoryAppUsageInKbytes = AgoraData.memoryAppUsageInKbytes;
+		connectTimeMs = AgoraData.connectTimeMs;
+		firstAudioPacketDuration = AgoraData.firstAudioPacketDuration;
+		firstVideoPacketDuration = AgoraData.firstVideoPacketDuration;
+		firstVideoKeyFramePacketDuration = AgoraData.firstVideoKeyFramePacketDuration;
+		packetsBeforeFirstKeyFramePacket = AgoraData.packetsBeforeFirstKeyFramePacket;
+		firstAudioPacketDurationAfterUnmute = AgoraData.firstAudioPacketDurationAfterUnmute;
+		firstVideoPacketDurationAfterUnmute = AgoraData.firstVideoPacketDurationAfterUnmute;
+		firstVideoKeyFramePacketDurationAfterUnmute = AgoraData.firstVideoKeyFramePacketDurationAfterUnmute;
+		firstVideoKeyFrameDecodedDurationAfterUnmute = AgoraData.firstVideoKeyFrameDecodedDurationAfterUnmute;
+		firstVideoKeyFrameRenderedDurationAfterUnmute = AgoraData.firstVideoKeyFrameRenderedDurationAfterUnmute;
+		txPacketLossRate = AgoraData.txPacketLossRate;
+		rxPacketLossRate = AgoraData.rxPacketLossRate;
+	}
+
+
+	agora::rtc::RtcStats CreateAgoraData(){
+	
+		agora::rtc::RtcStats AgoraData;
+		AgoraData.duration = duration;
+		AgoraData.txBytes = txBytes;
+		AgoraData.rxBytes = rxBytes;
+		AgoraData.txAudioBytes = txAudioBytes;
+		AgoraData.txVideoBytes = txVideoBytes;
+		AgoraData.rxAudioBytes = rxAudioBytes;
+		AgoraData.rxVideoBytes = rxVideoBytes;
+		AgoraData.txKBitRate = txKBitRate;
+		AgoraData.rxKBitRate = rxKBitRate;
+		AgoraData.rxAudioKBitRate = rxAudioKBitRate;
+		AgoraData.txAudioKBitRate = txAudioKBitRate;
+		AgoraData.rxVideoKBitRate = rxVideoKBitRate;
+		AgoraData.txVideoKBitRate = txVideoKBitRate;
+		AgoraData.lastmileDelay = lastmileDelay;
+		AgoraData.userCount = userCount;
+
+		SET_UABT_FSTRING_TO_DOUBLE(AgoraData.cpuAppUsage, this->cpuAppUsage);
+		SET_UABT_FSTRING_TO_DOUBLE(AgoraData.cpuTotalUsage, this->cpuTotalUsage);
+
+		AgoraData.gatewayRtt = gatewayRtt;
+
+		SET_UABT_FSTRING_TO_DOUBLE(AgoraData.memoryAppUsageRatio, this->memoryAppUsageRatio);
+		SET_UABT_FSTRING_TO_DOUBLE(AgoraData.memoryTotalUsageRatio, this->memoryTotalUsageRatio);
+
+		AgoraData.memoryAppUsageInKbytes = memoryAppUsageInKbytes;
+		AgoraData.connectTimeMs = connectTimeMs;
+		AgoraData.firstAudioPacketDuration = firstAudioPacketDuration;
+		AgoraData.firstVideoPacketDuration = firstVideoPacketDuration;
+		AgoraData.firstVideoKeyFramePacketDuration = firstVideoKeyFramePacketDuration;
+		AgoraData.packetsBeforeFirstKeyFramePacket = packetsBeforeFirstKeyFramePacket;
+		AgoraData.firstAudioPacketDurationAfterUnmute = firstAudioPacketDurationAfterUnmute;
+		AgoraData.firstVideoPacketDurationAfterUnmute = firstVideoPacketDurationAfterUnmute;
+		AgoraData.firstVideoKeyFramePacketDurationAfterUnmute = firstVideoKeyFramePacketDurationAfterUnmute;
+		AgoraData.firstVideoKeyFrameDecodedDurationAfterUnmute = firstVideoKeyFrameDecodedDurationAfterUnmute;
+		AgoraData.firstVideoKeyFrameRenderedDurationAfterUnmute = firstVideoKeyFrameRenderedDurationAfterUnmute;
+		AgoraData.txPacketLossRate = txPacketLossRate;
+		AgoraData.rxPacketLossRate = rxPacketLossRate;
+
+		return AgoraData;
+	}
+
+	void FreeAgoraData(agora::rtc::RtcStats & AgoraData) const {
+	}
 };
 
 USTRUCT(BlueprintType)
@@ -2745,8 +4545,24 @@ struct FUplinkNetworkInfo {
 
 	GENERATED_BODY()
 
+public:
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|UplinkNetworkInfo")
 	int video_encoder_target_bitrate_bps = 0;
+
+	FUplinkNetworkInfo(){}
+	FUplinkNetworkInfo(const agora::rtc::UplinkNetworkInfo & AgoraData){
+		video_encoder_target_bitrate_bps = AgoraData.video_encoder_target_bitrate_bps;
+	}
+
+	agora::rtc::UplinkNetworkInfo CreateAgoraData() const {
+		agora::rtc::UplinkNetworkInfo AgoraData;
+		AgoraData.video_encoder_target_bitrate_bps = video_encoder_target_bitrate_bps;
+		return AgoraData;
+	}
+	void FreeAgoraData(agora::rtc::UplinkNetworkInfo & AgoraData) const {
+
+	}
 };
 
 UENUM(BlueprintType)
@@ -2768,19 +4584,44 @@ struct FPeerDownlinkInfo {
 
 	GENERATED_BODY()
 
+public:
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|PeerDownlinkInfo")
-	FString uid = "";
+	FString userId = "";
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|PeerDownlinkInfo")
 	EVIDEO_STREAM_TYPE stream_type = EVIDEO_STREAM_TYPE::VIDEO_STREAM_HIGH;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|PeerDownlinkInfo")
 	EREMOTE_VIDEO_DOWNSCALE_LEVEL current_downscale_level = EREMOTE_VIDEO_DOWNSCALE_LEVEL::REMOTE_VIDEO_DOWNSCALE_LEVEL_NONE;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|PeerDownlinkInfo")
 	int expected_bitrate_bps = 0;
+
+	FPeerDownlinkInfo(){}
+	FPeerDownlinkInfo(const agora::rtc::DownlinkNetworkInfo::PeerDownlinkInfo & AgoraData){
+		userId = UTF8_TO_TCHAR(AgoraData.userId);
+		stream_type = static_cast<EVIDEO_STREAM_TYPE>(AgoraData.stream_type);
+		current_downscale_level = static_cast<EREMOTE_VIDEO_DOWNSCALE_LEVEL>(AgoraData.current_downscale_level);
+		expected_bitrate_bps = AgoraData.expected_bitrate_bps;
+	}
+
+	agora::rtc::DownlinkNetworkInfo::PeerDownlinkInfo CreateAgoraData() const {
+		agora::rtc::DownlinkNetworkInfo::PeerDownlinkInfo AgoraData;
+		SET_UABT_FSTRING_TO_CONST_CHAR___MEMALLOC(AgoraData.userId,this->userId)
+		AgoraData.stream_type = static_cast<agora::rtc::VIDEO_STREAM_TYPE>(stream_type);
+		AgoraData.current_downscale_level = static_cast<agora::rtc::REMOTE_VIDEO_DOWNSCALE_LEVEL>(current_downscale_level);
+		AgoraData.expected_bitrate_bps = expected_bitrate_bps;
+		return AgoraData;
+	}
+
+	void FreeAgoraData(agora::rtc::DownlinkNetworkInfo::PeerDownlinkInfo & AgoraData) const {
+		SET_UABT_FSTRING_TO_CONST_CHAR___MEMFREE(AgoraData.userId)
+	}
 };
 USTRUCT(BlueprintType)
 struct FDownlinkNetworkInfo {
 
 	GENERATED_BODY()
+
+public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|DownlinkNetworkInfo")
 	int lastmile_buffer_delay_time_ms = -1;
@@ -2792,10 +4633,35 @@ struct FDownlinkNetworkInfo {
 	int total_downscale_level_count = -1;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|DownlinkNetworkInfo")
-	FPeerDownlinkInfo peer_downlink_info = FPeerDownlinkInfo();
+	TArray<FPeerDownlinkInfo> peer_downlink_info;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|DownlinkNetworkInfo")
 	int total_received_video_count = -1;
+
+	FDownlinkNetworkInfo(){}
+	FDownlinkNetworkInfo(const agora::rtc::DownlinkNetworkInfo & AgoraData){
+		lastmile_buffer_delay_time_ms = AgoraData.lastmile_buffer_delay_time_ms;
+		bandwidth_estimation_bps = AgoraData.bandwidth_estimation_bps;
+		total_downscale_level_count = AgoraData.total_downscale_level_count;
+		for (int i = 0; i < total_received_video_count; ++i) {
+			peer_downlink_info.Add(FPeerDownlinkInfo(AgoraData.peer_downlink_info[i]));
+		}
+		total_received_video_count = AgoraData.total_received_video_count;
+	}
+
+	agora::rtc::DownlinkNetworkInfo CreateAgoraData() const {
+		agora::rtc::DownlinkNetworkInfo AgoraData;
+		AgoraData.lastmile_buffer_delay_time_ms = lastmile_buffer_delay_time_ms;
+		AgoraData.bandwidth_estimation_bps = bandwidth_estimation_bps;
+		AgoraData.total_downscale_level_count = total_downscale_level_count;
+		AgoraData.total_received_video_count = total_received_video_count;
+		SET_UABT_TARRARY_CUSTOMDATA_TO_AGORA_ARRAY___MEMALLOC(AgoraData.peer_downlink_info, agora::rtc::DownlinkNetworkInfo::PeerDownlinkInfo, total_received_video_count, this->peer_downlink_info)
+		return AgoraData;
+	}
+
+	void FreeAgoraData(agora::rtc::DownlinkNetworkInfo & AgoraData) const {
+		SET_UABT_TARRARY_CUSTOMDATA_TO_AGORA_ARRAY___MEMFREE(AgoraData.peer_downlink_info, total_received_video_count, FPeerDownlinkInfo)
+	}
 };
 
 UENUM(BlueprintType)
@@ -2811,26 +4677,43 @@ enum class ELOCAL_VIDEO_STREAM_STATE : uint8 {
 };
 
 UENUM(BlueprintType)
-enum class ELOCAL_VIDEO_STREAM_ERROR : uint8 {
-	LOCAL_VIDEO_STREAM_ERROR_OK = 0,
-	LOCAL_VIDEO_STREAM_ERROR_FAILURE = 1,
-	LOCAL_VIDEO_STREAM_ERROR_DEVICE_NO_PERMISSION = 2,
-	LOCAL_VIDEO_STREAM_ERROR_DEVICE_BUSY = 3,
-	LOCAL_VIDEO_STREAM_ERROR_CAPTURE_FAILURE = 4,
-	LOCAL_VIDEO_STREAM_ERROR_ENCODE_FAILURE = 5,
-	LOCAL_VIDEO_STREAM_ERROR_CAPTURE_INBACKGROUND = 6,
-	LOCAL_VIDEO_STREAM_ERROR_CAPTURE_MULTIPLE_FOREGROUND_APPS = 7,
-	LOCAL_VIDEO_STREAM_ERROR_DEVICE_NOT_FOUND = 8,
-	LOCAL_VIDEO_STREAM_ERROR_DEVICE_DISCONNECTED = 9,
-	LOCAL_VIDEO_STREAM_ERROR_DEVICE_INVALID_ID = 10,
-	LOCAL_VIDEO_STREAM_ERROR_DEVICE_SYSTEM_PRESSURE = 101,
-	LOCAL_VIDEO_STREAM_ERROR_SCREEN_CAPTURE_WINDOW_MINIMIZED = 11,
-	LOCAL_VIDEO_STREAM_ERROR_SCREEN_CAPTURE_WINDOW_CLOSED = 12,
-	LOCAL_VIDEO_STREAM_ERROR_SCREEN_CAPTURE_WINDOW_OCCLUDED = 13,
-	LOCAL_VIDEO_STREAM_ERROR_SCREEN_CAPTURE_WINDOW_NOT_SUPPORTED = 20,
-	LOCAL_VIDEO_STREAM_ERROR_SCREEN_CAPTURE_FAILURE = 21,
-	LOCAL_VIDEO_STREAM_ERROR_SCREEN_CAPTURE_NO_PERMISSION = 22,
+enum class ELOCAL_VIDEO_STREAM_REASON : uint8 {
+	LOCAL_VIDEO_STREAM_REASON_OK = 0,
+	LOCAL_VIDEO_STREAM_REASON_FAILURE = 1,
+	LOCAL_VIDEO_STREAM_REASON_DEVICE_NO_PERMISSION = 2,
+	LOCAL_VIDEO_STREAM_REASON_DEVICE_BUSY = 3,
+	LOCAL_VIDEO_STREAM_REASON_CAPTURE_FAILURE = 4,
+	LOCAL_VIDEO_STREAM_REASON_CODEC_NOT_SUPPORT = 5,
+	LOCAL_VIDEO_STREAM_REASON_CAPTURE_INBACKGROUND = 6,
+	LOCAL_VIDEO_STREAM_REASON_CAPTURE_MULTIPLE_FOREGROUND_APPS = 7,
+	LOCAL_VIDEO_STREAM_REASON_DEVICE_NOT_FOUND = 8,
+	LOCAL_VIDEO_STREAM_REASON_DEVICE_DISCONNECTED = 9,
+	LOCAL_VIDEO_STREAM_REASON_DEVICE_INVALID_ID = 10,
+	LOCAL_VIDEO_STREAM_REASON_DEVICE_INTERRUPT = 14,
+	LOCAL_VIDEO_STREAM_REASON_DEVICE_FATAL_ERROR = 15,
+	LOCAL_VIDEO_STREAM_REASON_DEVICE_SYSTEM_PRESSURE = 101,
+	LOCAL_VIDEO_STREAM_REASON_SCREEN_CAPTURE_WINDOW_MINIMIZED = 11,
+	LOCAL_VIDEO_STREAM_REASON_SCREEN_CAPTURE_WINDOW_CLOSED = 12,
+	LOCAL_VIDEO_STREAM_REASON_SCREEN_CAPTURE_WINDOW_OCCLUDED = 13,
+	LOCAL_VIDEO_STREAM_REASON_SCREEN_CAPTURE_WINDOW_NOT_SUPPORTED = 20,
+	LOCAL_VIDEO_STREAM_REASON_SCREEN_CAPTURE_FAILURE = 21,
+	LOCAL_VIDEO_STREAM_REASON_SCREEN_CAPTURE_NO_PERMISSION = 22,
+	LOCAL_VIDEO_STREAM_REASON_SCREEN_CAPTURE_AUTO_FALLBACK = 24,
+	LOCAL_VIDEO_STREAM_REASON_SCREEN_CAPTURE_WINDOW_HIDDEN = 25,
+	LOCAL_VIDEO_STREAM_REASON_SCREEN_CAPTURE_WINDOW_RECOVER_FROM_HIDDEN = 26,
+	LOCAL_VIDEO_STREAM_REASON_SCREEN_CAPTURE_WINDOW_RECOVER_FROM_MINIMIZED = 27,
+	LOCAL_VIDEO_STREAM_REASON_SCREEN_CAPTURE_PAUSED = 28,
+	LOCAL_VIDEO_STREAM_REASON_SCREEN_CAPTURE_RESUMED = 29
 };
+
+UENUM(BlueprintType)
+enum class SCREEN_CAPTURE_FRAMERATE_CAPABILITY :uint8{
+	SCREEN_CAPTURE_FRAMERATE_CAPABILITY_15_FPS,
+	SCREEN_CAPTURE_FRAMERATE_CAPABILITY_30_FPS,
+	SCREEN_CAPTURE_FRAMERATE_CAPABILITY_60_FPS,
+};
+
+
 UENUM(BlueprintType)
 enum class EREMOTE_VIDEO_STATE : uint8 {
 
@@ -2891,6 +4774,9 @@ USTRUCT(BlueprintType)
 struct FLocalAudioStats
 {
 	GENERATED_BODY()
+
+public:
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LocalAudioStats")
 	int numChannels = 0;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LocalAudioStats")
@@ -2900,15 +4786,57 @@ struct FLocalAudioStats
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LocalAudioStats")
 	int internalCodec = 0;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LocalAudioStats")
-	int64 txPacketLossRate = 0;
+	int txPacketLossRate = 0; // unsigned short 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LocalAudioStats")
 	int audioDeviceDelay = 0;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LocalAudioStats")
+	int audioPlayoutDelay;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LocalAudioStats")
+	int earMonitorDelay;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LocalAudioStats")
+	int aecEstimatedDelay;
+
+	FLocalAudioStats(){}
+	FLocalAudioStats(const agora::rtc::LocalAudioStats & AgoraData){
+		numChannels = AgoraData.numChannels;
+		sentSampleRate = AgoraData.sentSampleRate;
+		sentBitrate = AgoraData.sentBitrate;
+		internalCodec = AgoraData.internalCodec;
+		txPacketLossRate = AgoraData.txPacketLossRate;
+		audioDeviceDelay = AgoraData.audioDeviceDelay;
+		audioPlayoutDelay = AgoraData.audioPlayoutDelay;
+		earMonitorDelay = AgoraData.earMonitorDelay;
+		aecEstimatedDelay = AgoraData.aecEstimatedDelay;
+	}
+
+	agora::rtc::LocalAudioStats CreateAgoraData() const {
+		agora::rtc::LocalAudioStats AgoraData;
+		AgoraData.numChannels = numChannels;
+		AgoraData.sentSampleRate = sentSampleRate;
+		AgoraData.sentBitrate = sentBitrate;
+		AgoraData.internalCodec = internalCodec;
+		AgoraData.txPacketLossRate = txPacketLossRate;
+		AgoraData.audioDeviceDelay = audioDeviceDelay;
+		AgoraData.audioPlayoutDelay = audioPlayoutDelay;
+		AgoraData.earMonitorDelay = earMonitorDelay;
+		AgoraData.aecEstimatedDelay = aecEstimatedDelay;
+		return AgoraData;
+	}
+
+	void FreeAgoraData(agora::rtc::LocalAudioStats & AgoraData) const {
+
+	}
 };
 
 USTRUCT(BlueprintType)
 struct FRemoteAudioStats
 {
 	GENERATED_BODY()
+
+public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RemoteAudioStats")
 	int64 uid = 0;
@@ -2932,6 +4860,12 @@ struct FRemoteAudioStats
 	int frozenRate = 0;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RemoteAudioStats")
 	int mosValue = 0;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RemoteAudioStats")
+	int64 frozenRateByCustomPlcCount = 0;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RemoteAudioStats")
+	int64 plcCount = 0;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RemoteAudioStats")
 	int totalActiveTime = 0;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RemoteAudioStats")
@@ -2940,6 +4874,62 @@ struct FRemoteAudioStats
 	int qoeQuality = 0;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RemoteAudioStats")
 	int qualityChangedReason = 0;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RemoteAudioStats")
+	int64 rxAudioBytes = 0;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RemoteAudioStats")
+	int e2eDelay = 0;
+
+	FRemoteAudioStats(){}
+	FRemoteAudioStats(const agora::rtc::RemoteAudioStats & AgoraData){
+		uid = AgoraData.uid;
+		quality = AgoraData.quality;
+		networkTransportDelay = AgoraData.networkTransportDelay;
+		jitterBufferDelay = AgoraData.jitterBufferDelay;
+		audioLossRate = AgoraData.audioLossRate;
+		numChannels = AgoraData.numChannels;
+		receivedSampleRate = AgoraData.receivedSampleRate;
+		receivedBitrate = AgoraData.receivedBitrate;
+		totalFrozenTime = AgoraData.totalFrozenTime;
+		frozenRate = AgoraData.frozenRate;
+		mosValue = AgoraData.mosValue;
+		frozenRateByCustomPlcCount = AgoraData.frozenRateByCustomPlcCount;
+		plcCount = AgoraData.plcCount;
+		totalActiveTime = AgoraData.totalActiveTime;
+		publishDuration = AgoraData.publishDuration;
+		qoeQuality = AgoraData.qoeQuality;
+		qualityChangedReason = AgoraData.qualityChangedReason;
+		rxAudioBytes = AgoraData.rxAudioBytes;
+		e2eDelay = AgoraData.e2eDelay;
+	}
+
+	agora::rtc::RemoteAudioStats CreateAgoraData() const {
+		agora::rtc::RemoteAudioStats AgoraData;
+		AgoraData.uid = uid;
+		AgoraData.quality = quality;
+		AgoraData.networkTransportDelay = networkTransportDelay;
+		AgoraData.jitterBufferDelay = jitterBufferDelay;
+		AgoraData.audioLossRate = audioLossRate;
+		AgoraData.numChannels = numChannels;
+		AgoraData.receivedSampleRate = receivedSampleRate;
+		AgoraData.receivedBitrate = receivedBitrate;
+		AgoraData.totalFrozenTime = totalFrozenTime;
+		AgoraData.frozenRate = frozenRate;
+		AgoraData.mosValue = mosValue;
+		AgoraData.frozenRateByCustomPlcCount = frozenRateByCustomPlcCount;
+		AgoraData.plcCount = plcCount;
+		AgoraData.totalActiveTime = totalActiveTime;
+		AgoraData.publishDuration = publishDuration;
+		AgoraData.qoeQuality = qoeQuality;
+		AgoraData.qualityChangedReason = qualityChangedReason;
+		AgoraData.rxAudioBytes = rxAudioBytes;
+		AgoraData.e2eDelay = e2eDelay;
+		return AgoraData;
+	}
+
+	void FreeAgoraData(agora::rtc::RemoteAudioStats & AgoraData) const {
+
+	}
+
 };
 
 UENUM(BlueprintType)
@@ -2958,17 +4948,6 @@ enum class EQUALITY_ADAPT_INDICATION : uint8 {
 
 	ADAPT_DOWN_BANDWIDTH = 2,
 };
-//UENUM(BlueprintType)
-//enum ECAPTURE_BRIGHTNESS_LEVEL_TYPE {
-//
-//	CAPTURE_BRIGHTNESS_LEVEL_INVALID = -1,
-//
-//	CAPTURE_BRIGHTNESS_LEVEL_NORMAL = 0,
-//
-//	CAPTURE_BRIGHTNESS_LEVEL_BRIGHT = 1,
-//
-//	CAPTURE_BRIGHTNESS_LEVEL_DARK = 2,
-//};
 
 UENUM(BlueprintType)
 enum class EENUMCUSTOM_CAPTURE_BRIGHTNESS_LEVEL_TYPE : uint8 {
@@ -2992,50 +4971,21 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|FENUMWRAP_CAPTURE_BRIGHTNESS_LEVEL_TYPE")
 	EENUMCUSTOM_CAPTURE_BRIGHTNESS_LEVEL_TYPE ValueWrapper = EENUMCUSTOM_CAPTURE_BRIGHTNESS_LEVEL_TYPE::CAPTURE_BRIGHTNESS_LEVEL_INVALID;
 
-	// default 
-	FENUMWRAP_CAPTURE_BRIGHTNESS_LEVEL_TYPE() :ValueWrapper(EENUMCUSTOM_CAPTURE_BRIGHTNESS_LEVEL_TYPE::CAPTURE_BRIGHTNESS_LEVEL_INVALID) {}
-
-	FENUMWRAP_CAPTURE_BRIGHTNESS_LEVEL_TYPE(EENUMCUSTOM_CAPTURE_BRIGHTNESS_LEVEL_TYPE Val) :ValueWrapper(Val) {}
-	void operator = (EENUMCUSTOM_CAPTURE_BRIGHTNESS_LEVEL_TYPE InValue) {
-		ValueWrapper = InValue;
-	}
-	FENUMWRAP_CAPTURE_BRIGHTNESS_LEVEL_TYPE(agora::rtc::CAPTURE_BRIGHTNESS_LEVEL_TYPE Val) {
-		switch (Val) {
-		case  agora::rtc::CAPTURE_BRIGHTNESS_LEVEL_TYPE::CAPTURE_BRIGHTNESS_LEVEL_INVALID:
-			ValueWrapper = EENUMCUSTOM_CAPTURE_BRIGHTNESS_LEVEL_TYPE::CAPTURE_BRIGHTNESS_LEVEL_INVALID;
-			break;
-		case  agora::rtc::CAPTURE_BRIGHTNESS_LEVEL_TYPE::CAPTURE_BRIGHTNESS_LEVEL_NORMAL:
-			ValueWrapper = EENUMCUSTOM_CAPTURE_BRIGHTNESS_LEVEL_TYPE::CAPTURE_BRIGHTNESS_LEVEL_NORMAL;
-			break;
-		case  agora::rtc::CAPTURE_BRIGHTNESS_LEVEL_TYPE::CAPTURE_BRIGHTNESS_LEVEL_BRIGHT:
-			ValueWrapper = EENUMCUSTOM_CAPTURE_BRIGHTNESS_LEVEL_TYPE::CAPTURE_BRIGHTNESS_LEVEL_BRIGHT;
-			break;
-		case  agora::rtc::CAPTURE_BRIGHTNESS_LEVEL_TYPE::CAPTURE_BRIGHTNESS_LEVEL_DARK:
-			ValueWrapper = EENUMCUSTOM_CAPTURE_BRIGHTNESS_LEVEL_TYPE::CAPTURE_BRIGHTNESS_LEVEL_DARK;
-			break;
-		}
-	}
-	agora::rtc::CAPTURE_BRIGHTNESS_LEVEL_TYPE GetRawValue() const {
-		switch (ValueWrapper)
-		{
-		case EENUMCUSTOM_CAPTURE_BRIGHTNESS_LEVEL_TYPE::CAPTURE_BRIGHTNESS_LEVEL_INVALID:
-			return  agora::rtc::CAPTURE_BRIGHTNESS_LEVEL_TYPE::CAPTURE_BRIGHTNESS_LEVEL_INVALID;
-		case EENUMCUSTOM_CAPTURE_BRIGHTNESS_LEVEL_TYPE::CAPTURE_BRIGHTNESS_LEVEL_NORMAL:
-			return agora::rtc::CAPTURE_BRIGHTNESS_LEVEL_TYPE::CAPTURE_BRIGHTNESS_LEVEL_NORMAL;
-		case EENUMCUSTOM_CAPTURE_BRIGHTNESS_LEVEL_TYPE::CAPTURE_BRIGHTNESS_LEVEL_BRIGHT:
-			return agora::rtc::CAPTURE_BRIGHTNESS_LEVEL_TYPE::CAPTURE_BRIGHTNESS_LEVEL_BRIGHT;
-		case EENUMCUSTOM_CAPTURE_BRIGHTNESS_LEVEL_TYPE::CAPTURE_BRIGHTNESS_LEVEL_DARK:
-			return agora::rtc::CAPTURE_BRIGHTNESS_LEVEL_TYPE::CAPTURE_BRIGHTNESS_LEVEL_DARK;
-		default:
-			return  agora::rtc::CAPTURE_BRIGHTNESS_LEVEL_TYPE::CAPTURE_BRIGHTNESS_LEVEL_INVALID;
-		}
-	}
+	AGORA_CREATE_UEENUM_CONVERT_STRUCT_INNER_4_ENTRIES(FENUMWRAP_CAPTURE_BRIGHTNESS_LEVEL_TYPE, agora::rtc::CAPTURE_BRIGHTNESS_LEVEL_TYPE, EENUMCUSTOM_CAPTURE_BRIGHTNESS_LEVEL_TYPE,
+	CAPTURE_BRIGHTNESS_LEVEL_INVALID, 
+	CAPTURE_BRIGHTNESS_LEVEL_NORMAL, 
+	CAPTURE_BRIGHTNESS_LEVEL_BRIGHT, 
+	CAPTURE_BRIGHTNESS_LEVEL_DARK)
 };
+
 
 USTRUCT(BlueprintType)
 struct FLocalVideoStats
 {
 	GENERATED_BODY()
+
+public:
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LocalVideoStats")
 	int64 uid = 0;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LocalVideoStats")
@@ -3074,13 +5024,73 @@ struct FLocalVideoStats
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LocalVideoStats")
 	EVIDEO_CODEC_TYPE codecType = EVIDEO_CODEC_TYPE::VIDEO_CODEC_GENERIC_H264;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LocalVideoStats")
-	int64 txPacketLossRate = 0;
+	int txPacketLossRate = 0;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LocalVideoStats")
 	FENUMWRAP_CAPTURE_BRIGHTNESS_LEVEL_TYPE  captureBrightnessLevel = EENUMCUSTOM_CAPTURE_BRIGHTNESS_LEVEL_TYPE::CAPTURE_BRIGHTNESS_LEVEL_INVALID;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LocalVideoStats")
 	bool dualStreamEnabled = false;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LocalVideoStats")
 	int hwEncoderAccelerating = 0;
+
+
+	FLocalVideoStats(){}
+	FLocalVideoStats(const agora::rtc::LocalVideoStats & AgoraData){
+		uid = AgoraData.uid;
+		sentBitrate = AgoraData.sentBitrate;
+		sentFrameRate = AgoraData.sentFrameRate;
+		captureFrameRate = AgoraData.captureFrameRate;
+		captureFrameWidth = AgoraData.captureFrameWidth;
+		captureFrameHeight = AgoraData.captureFrameHeight;
+		regulatedCaptureFrameRate = AgoraData.regulatedCaptureFrameRate;
+		regulatedCaptureFrameWidth = AgoraData.regulatedCaptureFrameWidth;
+		regulatedCaptureFrameHeight = AgoraData.regulatedCaptureFrameHeight;
+		encoderOutputFrameRate = AgoraData.encoderOutputFrameRate;
+		encodedFrameWidth = AgoraData.encodedFrameWidth;
+		encodedFrameHeight = AgoraData.encodedFrameHeight;
+		rendererOutputFrameRate = AgoraData.rendererOutputFrameRate;
+		targetBitrate = AgoraData.targetBitrate;
+		targetFrameRate = AgoraData.targetFrameRate;
+		qualityAdaptIndication = static_cast<EQUALITY_ADAPT_INDICATION>(AgoraData.qualityAdaptIndication);
+		encodedBitrate = AgoraData.encodedBitrate;
+		encodedFrameCount = AgoraData.encodedFrameCount;
+		codecType = static_cast<EVIDEO_CODEC_TYPE>(AgoraData.codecType);
+		txPacketLossRate = AgoraData.txPacketLossRate;
+		captureBrightnessLevel = FENUMWRAP_CAPTURE_BRIGHTNESS_LEVEL_TYPE(AgoraData.captureBrightnessLevel);
+		dualStreamEnabled = AgoraData.dualStreamEnabled;
+		hwEncoderAccelerating = AgoraData.hwEncoderAccelerating;
+	}
+
+	agora::rtc::LocalVideoStats CreateAgoraData() const {
+		agora::rtc::LocalVideoStats AgoraData;
+		AgoraData.uid = uid;
+		AgoraData.sentBitrate = sentBitrate;
+		AgoraData.sentFrameRate = sentFrameRate;
+		AgoraData.captureFrameRate = captureFrameRate;
+		AgoraData.captureFrameWidth = captureFrameWidth;
+		AgoraData.captureFrameHeight = captureFrameHeight;
+		AgoraData.regulatedCaptureFrameRate = regulatedCaptureFrameRate;
+		AgoraData.regulatedCaptureFrameWidth = regulatedCaptureFrameWidth;
+		AgoraData.regulatedCaptureFrameHeight = regulatedCaptureFrameHeight;
+		AgoraData.encoderOutputFrameRate = encoderOutputFrameRate;
+		AgoraData.encodedFrameWidth = encodedFrameWidth;
+		AgoraData.encodedFrameHeight = encodedFrameHeight;
+		AgoraData.rendererOutputFrameRate = rendererOutputFrameRate;
+		AgoraData.targetBitrate = targetBitrate;
+		AgoraData.targetFrameRate = targetFrameRate;
+		AgoraData.qualityAdaptIndication = static_cast<agora::rtc::QUALITY_ADAPT_INDICATION>(qualityAdaptIndication);
+		AgoraData.encodedBitrate = encodedBitrate;
+		AgoraData.encodedFrameCount = encodedFrameCount;
+		AgoraData.codecType = static_cast<agora::rtc::VIDEO_CODEC_TYPE>(codecType);
+		AgoraData.txPacketLossRate = txPacketLossRate;
+		AgoraData.captureBrightnessLevel = captureBrightnessLevel.GetRawValue();
+		AgoraData.dualStreamEnabled = dualStreamEnabled;
+		AgoraData.hwEncoderAccelerating = hwEncoderAccelerating;
+		return AgoraData;
+	}
+
+	void FreeAgoraData(agora::rtc::LocalVideoStats & AgoraData) const {
+
+	}
 };
 
 
@@ -3101,7 +5111,7 @@ struct FLocalVideoStats
 UENUM(BlueprintType)
 enum class EENUMCUSTOM_AUDIO_MIXING_STATE_TYPE : uint8 {
 
-	AUDIO_MIXING_STATE_NULL = 0,
+	INVALID_OPT_BPGEN_NULL UMETA(Hidden, DisplayName = "AGORA NULL VALUE"),
 
 	AUDIO_MIXING_STATE_PLAYING = 1,
 
@@ -3122,48 +5132,11 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|FENUMWRAP_AUDIO_MIXING_STATE_TYPE")
 	EENUMCUSTOM_AUDIO_MIXING_STATE_TYPE ValueWrapper = EENUMCUSTOM_AUDIO_MIXING_STATE_TYPE::AUDIO_MIXING_STATE_FAILED;
 
-	// default 
-	FENUMWRAP_AUDIO_MIXING_STATE_TYPE() :ValueWrapper(EENUMCUSTOM_AUDIO_MIXING_STATE_TYPE::AUDIO_MIXING_STATE_FAILED) {}
-
-	FENUMWRAP_AUDIO_MIXING_STATE_TYPE(EENUMCUSTOM_AUDIO_MIXING_STATE_TYPE Val) :ValueWrapper(Val) {}
-	FENUMWRAP_AUDIO_MIXING_STATE_TYPE(agora::rtc::AUDIO_MIXING_STATE_TYPE Val) {
-		switch (Val) {
-		case agora::rtc::AUDIO_MIXING_STATE_TYPE::AUDIO_MIXING_STATE_PLAYING:
-			ValueWrapper = EENUMCUSTOM_AUDIO_MIXING_STATE_TYPE::AUDIO_MIXING_STATE_PLAYING;
-			break;
-		case agora::rtc::AUDIO_MIXING_STATE_TYPE::AUDIO_MIXING_STATE_PAUSED:
-			ValueWrapper = EENUMCUSTOM_AUDIO_MIXING_STATE_TYPE::AUDIO_MIXING_STATE_PAUSED;
-			break;
-		case agora::rtc::AUDIO_MIXING_STATE_TYPE::AUDIO_MIXING_STATE_STOPPED:
-			ValueWrapper = EENUMCUSTOM_AUDIO_MIXING_STATE_TYPE::AUDIO_MIXING_STATE_STOPPED;
-			break;
-		case agora::rtc::AUDIO_MIXING_STATE_TYPE::AUDIO_MIXING_STATE_FAILED:
-			ValueWrapper = EENUMCUSTOM_AUDIO_MIXING_STATE_TYPE::AUDIO_MIXING_STATE_FAILED;
-			break;
-		default:
-			ValueWrapper = EENUMCUSTOM_AUDIO_MIXING_STATE_TYPE::AUDIO_MIXING_STATE_FAILED;
-			break;
-		}
-	}
-	void operator = (EENUMCUSTOM_AUDIO_MIXING_STATE_TYPE InValue) {
-		ValueWrapper = InValue;
-	}
-
-	agora::rtc::AUDIO_MIXING_STATE_TYPE GetRawValue() const {
-		switch (ValueWrapper)
-		{
-		case EENUMCUSTOM_AUDIO_MIXING_STATE_TYPE::AUDIO_MIXING_STATE_PLAYING:
-			return   agora::rtc::AUDIO_MIXING_STATE_TYPE::AUDIO_MIXING_STATE_PLAYING;
-		case EENUMCUSTOM_AUDIO_MIXING_STATE_TYPE::AUDIO_MIXING_STATE_PAUSED:
-			return   agora::rtc::AUDIO_MIXING_STATE_TYPE::AUDIO_MIXING_STATE_PAUSED;
-		case EENUMCUSTOM_AUDIO_MIXING_STATE_TYPE::AUDIO_MIXING_STATE_STOPPED:
-			return   agora::rtc::AUDIO_MIXING_STATE_TYPE::AUDIO_MIXING_STATE_STOPPED;
-		case EENUMCUSTOM_AUDIO_MIXING_STATE_TYPE::AUDIO_MIXING_STATE_FAILED:
-			return   agora::rtc::AUDIO_MIXING_STATE_TYPE::AUDIO_MIXING_STATE_FAILED;
-		default:
-			return agora::rtc::AUDIO_MIXING_STATE_TYPE::AUDIO_MIXING_STATE_FAILED;
-		}
-	}
+	AGORA_CREATE_UEENUM_CONVERT_STRUCT_INNER_4_ENTRIES(FENUMWRAP_AUDIO_MIXING_STATE_TYPE, agora::rtc::AUDIO_MIXING_STATE_TYPE, EENUMCUSTOM_AUDIO_MIXING_STATE_TYPE,
+		AUDIO_MIXING_STATE_PLAYING,
+		AUDIO_MIXING_STATE_PAUSED,
+		AUDIO_MIXING_STATE_STOPPED,
+		AUDIO_MIXING_STATE_FAILED)
 };
 //
 //UENUM(BlueprintType)
@@ -3215,61 +5188,14 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|FENUMWRAP_AUDIO_MIXING_REASON_TYPE")
 	EENUMCUSTOM_AUDIO_MIXING_REASON_TYPE ValueWrapper = EENUMCUSTOM_AUDIO_MIXING_REASON_TYPE::AUDIO_MIXING_REASON_OK;
 
-	// default
-	FENUMWRAP_AUDIO_MIXING_REASON_TYPE() :ValueWrapper(EENUMCUSTOM_AUDIO_MIXING_REASON_TYPE::AUDIO_MIXING_REASON_OK) {}
-
-	FENUMWRAP_AUDIO_MIXING_REASON_TYPE(EENUMCUSTOM_AUDIO_MIXING_REASON_TYPE Val) :ValueWrapper(Val) {}
-	FENUMWRAP_AUDIO_MIXING_REASON_TYPE(agora::rtc::AUDIO_MIXING_REASON_TYPE Val) {
-		switch (Val)
-		{
-		case agora::rtc::AUDIO_MIXING_REASON_TYPE::AUDIO_MIXING_REASON_OK:
-			ValueWrapper = EENUMCUSTOM_AUDIO_MIXING_REASON_TYPE::AUDIO_MIXING_REASON_OK;
-			break;
-		case agora::rtc::AUDIO_MIXING_REASON_TYPE::AUDIO_MIXING_REASON_CAN_NOT_OPEN:
-			ValueWrapper = EENUMCUSTOM_AUDIO_MIXING_REASON_TYPE::AUDIO_MIXING_REASON_CAN_NOT_OPEN;
-			break;
-		case agora::rtc::AUDIO_MIXING_REASON_TYPE::AUDIO_MIXING_REASON_TOO_FREQUENT_CALL:
-			ValueWrapper = EENUMCUSTOM_AUDIO_MIXING_REASON_TYPE::AUDIO_MIXING_REASON_TOO_FREQUENT_CALL;
-			break;
-		case agora::rtc::AUDIO_MIXING_REASON_TYPE::AUDIO_MIXING_REASON_INTERRUPTED_EOF:
-			ValueWrapper = EENUMCUSTOM_AUDIO_MIXING_REASON_TYPE::AUDIO_MIXING_REASON_INTERRUPTED_EOF;
-			break;
-		case agora::rtc::AUDIO_MIXING_REASON_TYPE::AUDIO_MIXING_REASON_ONE_LOOP_COMPLETED:
-			ValueWrapper = EENUMCUSTOM_AUDIO_MIXING_REASON_TYPE::AUDIO_MIXING_REASON_ONE_LOOP_COMPLETED;
-			break;
-		case agora::rtc::AUDIO_MIXING_REASON_TYPE::AUDIO_MIXING_REASON_ALL_LOOPS_COMPLETED:
-			ValueWrapper = EENUMCUSTOM_AUDIO_MIXING_REASON_TYPE::AUDIO_MIXING_REASON_ALL_LOOPS_COMPLETED;
-			break;
-		case agora::rtc::AUDIO_MIXING_REASON_TYPE::AUDIO_MIXING_REASON_STOPPED_BY_USER:
-			ValueWrapper = EENUMCUSTOM_AUDIO_MIXING_REASON_TYPE::AUDIO_MIXING_REASON_STOPPED_BY_USER;
-			break;
-		}
-	}
-	void operator = (EENUMCUSTOM_AUDIO_MIXING_REASON_TYPE InValue) {
-		ValueWrapper = InValue;
-	}
-
-	agora::rtc::AUDIO_MIXING_REASON_TYPE GetRawValue() const {
-		switch (ValueWrapper)
-		{
-		case EENUMCUSTOM_AUDIO_MIXING_REASON_TYPE::AUDIO_MIXING_REASON_OK:
-			return agora::rtc::AUDIO_MIXING_REASON_TYPE::AUDIO_MIXING_REASON_OK;
-		case EENUMCUSTOM_AUDIO_MIXING_REASON_TYPE::AUDIO_MIXING_REASON_CAN_NOT_OPEN:
-			return agora::rtc::AUDIO_MIXING_REASON_TYPE::AUDIO_MIXING_REASON_CAN_NOT_OPEN;
-		case EENUMCUSTOM_AUDIO_MIXING_REASON_TYPE::AUDIO_MIXING_REASON_TOO_FREQUENT_CALL:
-			return agora::rtc::AUDIO_MIXING_REASON_TYPE::AUDIO_MIXING_REASON_TOO_FREQUENT_CALL;
-		case EENUMCUSTOM_AUDIO_MIXING_REASON_TYPE::AUDIO_MIXING_REASON_INTERRUPTED_EOF:
-			return agora::rtc::AUDIO_MIXING_REASON_TYPE::AUDIO_MIXING_REASON_INTERRUPTED_EOF;
-		case EENUMCUSTOM_AUDIO_MIXING_REASON_TYPE::AUDIO_MIXING_REASON_ONE_LOOP_COMPLETED:
-			return agora::rtc::AUDIO_MIXING_REASON_TYPE::AUDIO_MIXING_REASON_ONE_LOOP_COMPLETED;
-		case EENUMCUSTOM_AUDIO_MIXING_REASON_TYPE::AUDIO_MIXING_REASON_ALL_LOOPS_COMPLETED:
-			return agora::rtc::AUDIO_MIXING_REASON_TYPE::AUDIO_MIXING_REASON_ALL_LOOPS_COMPLETED;
-		case EENUMCUSTOM_AUDIO_MIXING_REASON_TYPE::AUDIO_MIXING_REASON_STOPPED_BY_USER:
-			return agora::rtc::AUDIO_MIXING_REASON_TYPE::AUDIO_MIXING_REASON_STOPPED_BY_USER;
-		default:
-			return agora::rtc::AUDIO_MIXING_REASON_TYPE::AUDIO_MIXING_REASON_OK;
-		}
-	}
+	AGORA_CREATE_UEENUM_CONVERT_STRUCT_INNER_7_ENTRIES(FENUMWRAP_AUDIO_MIXING_REASON_TYPE, agora::rtc::AUDIO_MIXING_REASON_TYPE, EENUMCUSTOM_AUDIO_MIXING_REASON_TYPE,
+		AUDIO_MIXING_REASON_OK,
+		AUDIO_MIXING_REASON_CAN_NOT_OPEN,
+		AUDIO_MIXING_REASON_TOO_FREQUENT_CALL,
+		AUDIO_MIXING_REASON_INTERRUPTED_EOF,
+		AUDIO_MIXING_REASON_ONE_LOOP_COMPLETED,
+		AUDIO_MIXING_REASON_ALL_LOOPS_COMPLETED,
+		AUDIO_MIXING_REASON_STOPPED_BY_USER)
 };
 
 
@@ -3293,7 +5219,7 @@ public:
 UENUM(BlueprintType)
 enum class EENUMCUSTOM_RHYTHM_PLAYER_STATE_TYPE : uint8 {
 
-	RHYTHM_PLAYER_NULL = 0,
+	INVALID_OPT_BPGEN_NULL UMETA(Hidden, DisplayName = "AGORA NULL VALUE"),
 
 	RHYTHM_PLAYER_STATE_IDLE = 1,
 
@@ -3316,55 +5242,12 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|FENUMWRAP_RHYTHM_PLAYER_STATE_TYPE")
 	EENUMCUSTOM_RHYTHM_PLAYER_STATE_TYPE ValueWrapper = EENUMCUSTOM_RHYTHM_PLAYER_STATE_TYPE::RHYTHM_PLAYER_STATE_FAILED;
 
-	// default
-	FENUMWRAP_RHYTHM_PLAYER_STATE_TYPE() :ValueWrapper(EENUMCUSTOM_RHYTHM_PLAYER_STATE_TYPE::RHYTHM_PLAYER_STATE_FAILED) {}
-
-	FENUMWRAP_RHYTHM_PLAYER_STATE_TYPE(EENUMCUSTOM_RHYTHM_PLAYER_STATE_TYPE Val) :ValueWrapper(Val) {}
-
-	FENUMWRAP_RHYTHM_PLAYER_STATE_TYPE(agora::rtc::RHYTHM_PLAYER_STATE_TYPE Val) {
-		switch (Val)
-		{
-		case agora::rtc::RHYTHM_PLAYER_STATE_TYPE::RHYTHM_PLAYER_STATE_IDLE:
-			ValueWrapper = EENUMCUSTOM_RHYTHM_PLAYER_STATE_TYPE::RHYTHM_PLAYER_STATE_IDLE;
-			break;
-		case agora::rtc::RHYTHM_PLAYER_STATE_TYPE::RHYTHM_PLAYER_STATE_OPENING:
-			ValueWrapper = EENUMCUSTOM_RHYTHM_PLAYER_STATE_TYPE::RHYTHM_PLAYER_STATE_OPENING;
-			break;
-		case agora::rtc::RHYTHM_PLAYER_STATE_TYPE::RHYTHM_PLAYER_STATE_DECODING:
-			ValueWrapper = EENUMCUSTOM_RHYTHM_PLAYER_STATE_TYPE::RHYTHM_PLAYER_STATE_DECODING;
-			break;
-		case agora::rtc::RHYTHM_PLAYER_STATE_TYPE::RHYTHM_PLAYER_STATE_PLAYING:
-			ValueWrapper = EENUMCUSTOM_RHYTHM_PLAYER_STATE_TYPE::RHYTHM_PLAYER_STATE_PLAYING;
-			break;
-		case agora::rtc::RHYTHM_PLAYER_STATE_TYPE::RHYTHM_PLAYER_STATE_FAILED:
-			ValueWrapper = EENUMCUSTOM_RHYTHM_PLAYER_STATE_TYPE::RHYTHM_PLAYER_STATE_FAILED;
-			break;
-		default:
-			ValueWrapper = EENUMCUSTOM_RHYTHM_PLAYER_STATE_TYPE::RHYTHM_PLAYER_STATE_FAILED;
-			break;
-		}
-	}
-	void operator = (EENUMCUSTOM_RHYTHM_PLAYER_STATE_TYPE InValue) {
-		ValueWrapper = InValue;
-	}
-
-	agora::rtc::RHYTHM_PLAYER_STATE_TYPE GetRawValue() const {
-		switch (ValueWrapper)
-		{
-		case EENUMCUSTOM_RHYTHM_PLAYER_STATE_TYPE::RHYTHM_PLAYER_STATE_IDLE:
-			return agora::rtc::RHYTHM_PLAYER_STATE_TYPE::RHYTHM_PLAYER_STATE_IDLE;
-		case EENUMCUSTOM_RHYTHM_PLAYER_STATE_TYPE::RHYTHM_PLAYER_STATE_OPENING:
-			return agora::rtc::RHYTHM_PLAYER_STATE_TYPE::RHYTHM_PLAYER_STATE_OPENING;
-		case EENUMCUSTOM_RHYTHM_PLAYER_STATE_TYPE::RHYTHM_PLAYER_STATE_DECODING:
-			return agora::rtc::RHYTHM_PLAYER_STATE_TYPE::RHYTHM_PLAYER_STATE_DECODING;
-		case EENUMCUSTOM_RHYTHM_PLAYER_STATE_TYPE::RHYTHM_PLAYER_STATE_PLAYING:
-			return agora::rtc::RHYTHM_PLAYER_STATE_TYPE::RHYTHM_PLAYER_STATE_PLAYING;
-		case EENUMCUSTOM_RHYTHM_PLAYER_STATE_TYPE::RHYTHM_PLAYER_STATE_FAILED:
-			return agora::rtc::RHYTHM_PLAYER_STATE_TYPE::RHYTHM_PLAYER_STATE_FAILED;
-		default:
-			return agora::rtc::RHYTHM_PLAYER_STATE_TYPE::RHYTHM_PLAYER_STATE_FAILED;
-		}
-	}
+	AGORA_CREATE_UEENUM_CONVERT_STRUCT_INNER_5_ENTRIES(FENUMWRAP_RHYTHM_PLAYER_STATE_TYPE, agora::rtc::RHYTHM_PLAYER_STATE_TYPE, EENUMCUSTOM_RHYTHM_PLAYER_STATE_TYPE,
+		RHYTHM_PLAYER_STATE_IDLE,
+		RHYTHM_PLAYER_STATE_OPENING,
+		RHYTHM_PLAYER_STATE_DECODING,
+		RHYTHM_PLAYER_STATE_PLAYING,
+		RHYTHM_PLAYER_STATE_FAILED)
 };
 
 //UENUM(BlueprintType)
@@ -3383,76 +5266,35 @@ public:
 
 
 UENUM(BlueprintType)
-enum class EENUMCUSTOM_RHYTHM_PLAYER_ERROR_TYPE :uint8 {
+enum class EENUMCUSTOM_RHYTHM_PLAYER_REASON :uint8 {
 
-	RHYTHM_PLAYER_ERROR_OK = 0,
+	RHYTHM_PLAYER_REASON_OK = 0,
 
-	RHYTHM_PLAYER_ERROR_FAILED = 1,
+	RHYTHM_PLAYER_REASON_FAILED = 1,
 
-	RHYTHM_PLAYER_ERROR_CAN_NOT_OPEN,
+	RHYTHM_PLAYER_REASON_CAN_NOT_OPEN,
 
-	RHYTHM_PLAYER_ERROR_CAN_NOT_PLAY,
+	RHYTHM_PLAYER_REASON_CAN_NOT_PLAY,
 
-	RHYTHM_PLAYER_ERROR_FILE_OVER_DURATION_LIMIT,
+	RHYTHM_PLAYER_REASON_FILE_OVER_DURATION_LIMIT,
 };
 
 USTRUCT(BlueprintType)
-struct FENUMWRAP_RHYTHM_PLAYER_ERROR_TYPE
+struct FENUMWRAP_RHYTHM_PLAYER_REASON
 {
 	GENERATED_BODY()
 
 public:
 	// require to call [GetRawValue] method to get the raw value
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|FENUMWRAP_RHYTHM_PLAYER_ERROR_TYPE")
-	EENUMCUSTOM_RHYTHM_PLAYER_ERROR_TYPE ValueWrapper = EENUMCUSTOM_RHYTHM_PLAYER_ERROR_TYPE::RHYTHM_PLAYER_ERROR_OK;
+	EENUMCUSTOM_RHYTHM_PLAYER_REASON ValueWrapper = EENUMCUSTOM_RHYTHM_PLAYER_REASON::RHYTHM_PLAYER_REASON_OK;
 
-	// default 
-	FENUMWRAP_RHYTHM_PLAYER_ERROR_TYPE() :ValueWrapper(EENUMCUSTOM_RHYTHM_PLAYER_ERROR_TYPE::RHYTHM_PLAYER_ERROR_OK) {}
-
-	FENUMWRAP_RHYTHM_PLAYER_ERROR_TYPE(EENUMCUSTOM_RHYTHM_PLAYER_ERROR_TYPE Val) :ValueWrapper(Val) {}
-
-	FENUMWRAP_RHYTHM_PLAYER_ERROR_TYPE(agora::rtc::RHYTHM_PLAYER_ERROR_TYPE Val) {
-		switch (Val)
-		{
-		case agora::rtc::RHYTHM_PLAYER_ERROR_TYPE::RHYTHM_PLAYER_ERROR_OK:
-			ValueWrapper = EENUMCUSTOM_RHYTHM_PLAYER_ERROR_TYPE::RHYTHM_PLAYER_ERROR_OK;
-			break;
-		case agora::rtc::RHYTHM_PLAYER_ERROR_TYPE::RHYTHM_PLAYER_ERROR_FAILED:
-			ValueWrapper = EENUMCUSTOM_RHYTHM_PLAYER_ERROR_TYPE::RHYTHM_PLAYER_ERROR_FAILED;
-			break;
-		case agora::rtc::RHYTHM_PLAYER_ERROR_TYPE::RHYTHM_PLAYER_ERROR_CAN_NOT_OPEN:
-			ValueWrapper = EENUMCUSTOM_RHYTHM_PLAYER_ERROR_TYPE::RHYTHM_PLAYER_ERROR_CAN_NOT_OPEN;
-			break;
-		case agora::rtc::RHYTHM_PLAYER_ERROR_TYPE::RHYTHM_PLAYER_ERROR_CAN_NOT_PLAY:
-			ValueWrapper = EENUMCUSTOM_RHYTHM_PLAYER_ERROR_TYPE::RHYTHM_PLAYER_ERROR_CAN_NOT_PLAY;
-			break;
-		case agora::rtc::RHYTHM_PLAYER_ERROR_TYPE::RHYTHM_PLAYER_ERROR_FILE_OVER_DURATION_LIMIT:
-			ValueWrapper = EENUMCUSTOM_RHYTHM_PLAYER_ERROR_TYPE::RHYTHM_PLAYER_ERROR_FILE_OVER_DURATION_LIMIT;
-			break;
-		}
-	}
-
-	void operator = (EENUMCUSTOM_RHYTHM_PLAYER_ERROR_TYPE InValue) {
-		ValueWrapper = InValue;
-	}
-
-	agora::rtc::RHYTHM_PLAYER_ERROR_TYPE GetRawValue() const {
-		switch (ValueWrapper)
-		{
-		case EENUMCUSTOM_RHYTHM_PLAYER_ERROR_TYPE::RHYTHM_PLAYER_ERROR_OK:
-			return agora::rtc::RHYTHM_PLAYER_ERROR_TYPE::RHYTHM_PLAYER_ERROR_OK;
-		case EENUMCUSTOM_RHYTHM_PLAYER_ERROR_TYPE::RHYTHM_PLAYER_ERROR_FAILED:
-			return agora::rtc::RHYTHM_PLAYER_ERROR_TYPE::RHYTHM_PLAYER_ERROR_FAILED;
-		case EENUMCUSTOM_RHYTHM_PLAYER_ERROR_TYPE::RHYTHM_PLAYER_ERROR_CAN_NOT_OPEN:
-			return agora::rtc::RHYTHM_PLAYER_ERROR_TYPE::RHYTHM_PLAYER_ERROR_CAN_NOT_OPEN;
-		case EENUMCUSTOM_RHYTHM_PLAYER_ERROR_TYPE::RHYTHM_PLAYER_ERROR_CAN_NOT_PLAY:
-			return agora::rtc::RHYTHM_PLAYER_ERROR_TYPE::RHYTHM_PLAYER_ERROR_CAN_NOT_PLAY;
-		case EENUMCUSTOM_RHYTHM_PLAYER_ERROR_TYPE::RHYTHM_PLAYER_ERROR_FILE_OVER_DURATION_LIMIT:
-			return agora::rtc::RHYTHM_PLAYER_ERROR_TYPE::RHYTHM_PLAYER_ERROR_FILE_OVER_DURATION_LIMIT;
-		default:
-			return agora::rtc::RHYTHM_PLAYER_ERROR_TYPE::RHYTHM_PLAYER_ERROR_OK;
-		}
-	}
+	AGORA_CREATE_UEENUM_CONVERT_STRUCT_INNER_5_ENTRIES(FENUMWRAP_RHYTHM_PLAYER_REASON, agora::rtc::RHYTHM_PLAYER_REASON, EENUMCUSTOM_RHYTHM_PLAYER_REASON,
+		RHYTHM_PLAYER_REASON_OK,
+		RHYTHM_PLAYER_REASON_FAILED,
+		RHYTHM_PLAYER_REASON_CAN_NOT_OPEN,
+		RHYTHM_PLAYER_REASON_CAN_NOT_PLAY,
+		RHYTHM_PLAYER_REASON_FILE_OVER_DURATION_LIMIT)
 };
 
 UENUM(BlueprintType)
@@ -3468,19 +5310,19 @@ enum class ELOCAL_AUDIO_STREAM_STATE : uint8 {
 };
 
 UENUM(BlueprintType)
-enum class ELOCAL_AUDIO_STREAM_ERROR : uint8 {
+enum class ELOCAL_AUDIO_STREAM_REASON : uint8 {
 
-	LOCAL_AUDIO_STREAM_ERROR_OK = 0,
-	LOCAL_AUDIO_STREAM_ERROR_FAILURE = 1,
-	LOCAL_AUDIO_STREAM_ERROR_DEVICE_NO_PERMISSION = 2,
-	LOCAL_AUDIO_STREAM_ERROR_DEVICE_BUSY = 3,
-	LOCAL_AUDIO_STREAM_ERROR_RECORD_FAILURE = 4,
-	LOCAL_AUDIO_STREAM_ERROR_ENCODE_FAILURE = 5,
-	LOCAL_AUDIO_STREAM_ERROR_NO_RECORDING_DEVICE = 6,
-	LOCAL_AUDIO_STREAM_ERROR_NO_PLAYOUT_DEVICE = 7,
-	LOCAL_AUDIO_STREAM_ERROR_INTERRUPTED = 8,
-	LOCAL_AUDIO_STREAM_ERROR_RECORD_INVALID_ID = 9,
-	LOCAL_AUDIO_STREAM_ERROR_PLAYOUT_INVALID_ID = 10,
+	LOCAL_AUDIO_STREAM_REASON_OK = 0,
+	LOCAL_AUDIO_STREAM_REASON_FAILURE = 1,
+	LOCAL_AUDIO_STREAM_REASON_DEVICE_NO_PERMISSION = 2,
+	LOCAL_AUDIO_STREAM_REASON_DEVICE_BUSY = 3,
+	LOCAL_AUDIO_STREAM_REASON_RECORD_FAILURE = 4,
+	LOCAL_AUDIO_STREAM_REASON_ENCODE_FAILURE = 5,
+	LOCAL_AUDIO_STREAM_REASON_NO_RECORDING_DEVICE = 6,
+	LOCAL_AUDIO_STREAM_REASON_NO_PLAYOUT_DEVICE = 7,
+	LOCAL_AUDIO_STREAM_REASON_INTERRUPTED = 8,
+	LOCAL_AUDIO_STREAM_REASON_RECORD_INVALID_ID = 9,
+	LOCAL_AUDIO_STREAM_REASON_PLAYOUT_INVALID_ID = 10,
 };
 
 UENUM(BlueprintType)
@@ -3516,10 +5358,15 @@ enum class EREMOTE_AUDIO_STATE_REASON : uint8
 	REMOTE_AUDIO_REASON_REMOTE_UNMUTED = 6,
 
 	REMOTE_AUDIO_REASON_REMOTE_OFFLINE = 7,
+
+	REMOTE_AUDIO_REASON_NO_PACKET_RECEIVE = 8,
+	
+	REMOTE_AUDIO_REASON_LOCAL_PLAY_FAILED = 9,
+
 };
 UENUM(BlueprintType)
 enum class ECONTENT_INSPECT_RESULT : uint8 {
-	CONTENT_INSPECT_NULL = 0,
+	INVALID_OPT_BPGEN_NULL UMETA(Hidden, DisplayName = "AGORA NULL VALUE"),
 	CONTENT_INSPECT_NEUTRAL = 1,
 	CONTENT_INSPECT_SEXY = 2,
 	CONTENT_INSPECT_PORN = 3,
@@ -3528,7 +5375,7 @@ enum class ECONTENT_INSPECT_RESULT : uint8 {
 UENUM(BlueprintType)
 enum class ECLIENT_ROLE_CHANGE_FAILED_REASON : uint8 {
 
-	CLIENT_ROLE_CHANGE_FAILED_TOO_MANY_NULL = 0,
+	INVALID_OPT_BPGEN_NULL UMETA(Hidden, DisplayName = "AGORA NULL VALUE"),
 
 	CLIENT_ROLE_CHANGE_FAILED_TOO_MANY_BROADCASTERS = 1,
 
@@ -3592,67 +5439,19 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|FENUMWRAP_MEDIA_DEVICE_TYPE")
 	EENUMCUSTOM_MEDIA_DEVICE_TYPE ValueWrapper = EENUMCUSTOM_MEDIA_DEVICE_TYPE::UNKNOWN_AUDIO_DEVICE;
 
-	// default 
-	FENUMWRAP_MEDIA_DEVICE_TYPE() :ValueWrapper(EENUMCUSTOM_MEDIA_DEVICE_TYPE::UNKNOWN_AUDIO_DEVICE) {}
 
-	FENUMWRAP_MEDIA_DEVICE_TYPE(EENUMCUSTOM_MEDIA_DEVICE_TYPE Val) :ValueWrapper(Val) {}
-	FENUMWRAP_MEDIA_DEVICE_TYPE(agora::rtc::MEDIA_DEVICE_TYPE  Val) {
-		switch (Val)
-		{
-		case agora::rtc::MEDIA_DEVICE_TYPE::UNKNOWN_AUDIO_DEVICE:
-			ValueWrapper = EENUMCUSTOM_MEDIA_DEVICE_TYPE::UNKNOWN_AUDIO_DEVICE;
-			break;
-		case agora::rtc::MEDIA_DEVICE_TYPE::AUDIO_PLAYOUT_DEVICE:
-			ValueWrapper = EENUMCUSTOM_MEDIA_DEVICE_TYPE::AUDIO_PLAYOUT_DEVICE;
-			break;
-		case agora::rtc::MEDIA_DEVICE_TYPE::AUDIO_RECORDING_DEVICE:
-			ValueWrapper = EENUMCUSTOM_MEDIA_DEVICE_TYPE::AUDIO_RECORDING_DEVICE;
-			break;
-		case agora::rtc::MEDIA_DEVICE_TYPE::VIDEO_RENDER_DEVICE:
-			ValueWrapper = EENUMCUSTOM_MEDIA_DEVICE_TYPE::VIDEO_RENDER_DEVICE;
-			break;
-		case agora::rtc::MEDIA_DEVICE_TYPE::VIDEO_CAPTURE_DEVICE:
-			ValueWrapper = EENUMCUSTOM_MEDIA_DEVICE_TYPE::VIDEO_CAPTURE_DEVICE;
-			break;
-		case agora::rtc::MEDIA_DEVICE_TYPE::AUDIO_APPLICATION_PLAYOUT_DEVICE:
-			ValueWrapper = EENUMCUSTOM_MEDIA_DEVICE_TYPE::AUDIO_APPLICATION_PLAYOUT_DEVICE;
-			break;
-		case agora::rtc::MEDIA_DEVICE_TYPE::AUDIO_VIRTUAL_PLAYOUT_DEVICE:
-			ValueWrapper = EENUMCUSTOM_MEDIA_DEVICE_TYPE::AUDIO_VIRTUAL_PLAYOUT_DEVICE;
-			break;
-		case agora::rtc::MEDIA_DEVICE_TYPE::AUDIO_VIRTUAL_RECORDING_DEVICE:
-			ValueWrapper = EENUMCUSTOM_MEDIA_DEVICE_TYPE::AUDIO_VIRTUAL_RECORDING_DEVICE;
-			break;
-		}
 
-	}
-	void operator = (EENUMCUSTOM_MEDIA_DEVICE_TYPE InValue) {
-		ValueWrapper = InValue;
-	}
+	AGORA_CREATE_UEENUM_CONVERT_STRUCT_INNER_8_ENTRIES(FENUMWRAP_MEDIA_DEVICE_TYPE, agora::rtc::MEDIA_DEVICE_TYPE, EENUMCUSTOM_MEDIA_DEVICE_TYPE,
+		UNKNOWN_AUDIO_DEVICE,
+		AUDIO_PLAYOUT_DEVICE,
+		AUDIO_RECORDING_DEVICE,
+		VIDEO_RENDER_DEVICE,
+		VIDEO_CAPTURE_DEVICE,
+		AUDIO_APPLICATION_PLAYOUT_DEVICE,
+		AUDIO_VIRTUAL_PLAYOUT_DEVICE,
+		AUDIO_VIRTUAL_RECORDING_DEVICE)
 
-	agora::rtc::MEDIA_DEVICE_TYPE GetRawValue() const {
-		switch (ValueWrapper)
-		{
-		case EENUMCUSTOM_MEDIA_DEVICE_TYPE::UNKNOWN_AUDIO_DEVICE:
-			return agora::rtc::MEDIA_DEVICE_TYPE::UNKNOWN_AUDIO_DEVICE;
-		case EENUMCUSTOM_MEDIA_DEVICE_TYPE::AUDIO_PLAYOUT_DEVICE:
-			return agora::rtc::MEDIA_DEVICE_TYPE::AUDIO_PLAYOUT_DEVICE;
-		case EENUMCUSTOM_MEDIA_DEVICE_TYPE::AUDIO_RECORDING_DEVICE:
-			return agora::rtc::MEDIA_DEVICE_TYPE::AUDIO_RECORDING_DEVICE;
-		case EENUMCUSTOM_MEDIA_DEVICE_TYPE::VIDEO_RENDER_DEVICE:
-			return agora::rtc::MEDIA_DEVICE_TYPE::VIDEO_RENDER_DEVICE;
-		case EENUMCUSTOM_MEDIA_DEVICE_TYPE::VIDEO_CAPTURE_DEVICE:
-			return agora::rtc::MEDIA_DEVICE_TYPE::VIDEO_CAPTURE_DEVICE;
-		case EENUMCUSTOM_MEDIA_DEVICE_TYPE::AUDIO_APPLICATION_PLAYOUT_DEVICE:
-			return agora::rtc::MEDIA_DEVICE_TYPE::AUDIO_APPLICATION_PLAYOUT_DEVICE;
-		case EENUMCUSTOM_MEDIA_DEVICE_TYPE::AUDIO_VIRTUAL_PLAYOUT_DEVICE:
-			return agora::rtc::MEDIA_DEVICE_TYPE::AUDIO_VIRTUAL_PLAYOUT_DEVICE;
-		case EENUMCUSTOM_MEDIA_DEVICE_TYPE::AUDIO_VIRTUAL_RECORDING_DEVICE:
-			return agora::rtc::MEDIA_DEVICE_TYPE::AUDIO_VIRTUAL_RECORDING_DEVICE;
-		default:
-			return agora::rtc::MEDIA_DEVICE_TYPE::UNKNOWN_AUDIO_DEVICE;
-		}
-	}
+	
 };
 
 UENUM(BlueprintType)
@@ -3672,47 +5471,47 @@ enum class ERTMP_STREAM_PUBLISH_STATE : uint8 {
 };
 
 UENUM(BlueprintType)
-enum class ERTMP_STREAM_PUBLISH_ERROR_TYPE : uint8 {
+enum class ERTMP_STREAM_PUBLISH_REASON : uint8 {
 
-	RTMP_STREAM_PUBLISH_ERROR_OK = 0,
+	RTMP_STREAM_PUBLISH_REASON_OK = 0,
 
-	RTMP_STREAM_PUBLISH_ERROR_INVALID_ARGUMENT = 1,
+	RTMP_STREAM_PUBLISH_REASON_INVALID_ARGUMENT = 1,
 
-	RTMP_STREAM_PUBLISH_ERROR_ENCRYPTED_STREAM_NOT_ALLOWED = 2,
+	RTMP_STREAM_PUBLISH_REASON_ENCRYPTED_STREAM_NOT_ALLOWED = 2,
 
-	RTMP_STREAM_PUBLISH_ERROR_CONNECTION_TIMEOUT = 3,
+	RTMP_STREAM_PUBLISH_REASON_CONNECTION_TIMEOUT = 3,
 
-	RTMP_STREAM_PUBLISH_ERROR_INTERNAL_SERVER_ERROR = 4,
+	RTMP_STREAM_PUBLISH_REASON_INTERNAL_SERVER_ERROR = 4,
 
-	RTMP_STREAM_PUBLISH_ERROR_RTMP_SERVER_ERROR = 5,
+	RTMP_STREAM_PUBLISH_REASON_RTMP_SERVER_ERROR = 5,
 
-	RTMP_STREAM_PUBLISH_ERROR_TOO_OFTEN = 6,
+	RTMP_STREAM_PUBLISH_REASON_TOO_OFTEN = 6,
 
-	RTMP_STREAM_PUBLISH_ERROR_REACH_LIMIT = 7,
+	RTMP_STREAM_PUBLISH_REASON_REACH_LIMIT = 7,
 
-	RTMP_STREAM_PUBLISH_ERROR_NOT_AUTHORIZED = 8,
+	RTMP_STREAM_PUBLISH_REASON_NOT_AUTHORIZED = 8,
 
-	RTMP_STREAM_PUBLISH_ERROR_STREAM_NOT_FOUND = 9,
+	RTMP_STREAM_PUBLISH_REASON_STREAM_NOT_FOUND = 9,
 
-	RTMP_STREAM_PUBLISH_ERROR_FORMAT_NOT_SUPPORTED = 10,
+	RTMP_STREAM_PUBLISH_REASON_FORMAT_NOT_SUPPORTED = 10,
 
-	RTMP_STREAM_PUBLISH_ERROR_NOT_BROADCASTER = 11,
+	RTMP_STREAM_PUBLISH_REASON_NOT_BROADCASTER = 11,
 
-	RTMP_STREAM_PUBLISH_ERROR_TRANSCODING_NO_MIX_STREAM = 13,
+	RTMP_STREAM_PUBLISH_REASON_TRANSCODING_NO_MIX_STREAM = 13,
 
-	RTMP_STREAM_PUBLISH_ERROR_NET_DOWN = 14,
+	RTMP_STREAM_PUBLISH_REASON_NET_DOWN = 14,
 
-	RTMP_STREAM_PUBLISH_ERROR_INVALID_APPID = 15,
+	RTMP_STREAM_PUBLISH_REASON_INVALID_APPID = 15,
 
-	RTMP_STREAM_PUBLISH_ERROR_INVALID_PRIVILEGE = 16,
+	RTMP_STREAM_PUBLISH_REASON_INVALID_PRIVILEGE = 16,
 
-	RTMP_STREAM_UNPUBLISH_ERROR_OK = 100,
+	RTMP_STREAM_UNPUBLISH_REASON_OK = 100,
 };
 
 UENUM(BlueprintType)
 enum class ERTMP_STREAMING_EVENT : uint8 {
 
-	RTMP_STREAMING_EVENT_FAILED_LOAD_NULL = 0,
+	INVALID_OPT_BPGEN_NULL UMETA(Hidden, DisplayName = "AGORA NULL VALUE"),
 
 	RTMP_STREAMING_EVENT_FAILED_LOAD_IMAGE = 1,
 
@@ -3769,6 +5568,13 @@ enum class ECONNECTION_CHANGED_REASON_TYPE : uint8
 	CONNECTION_CHANGED_TOO_MANY_BROADCASTERS = 20,
 
 	CONNECTION_CHANGED_LICENSE_VERIFY_FAILED = 21,
+
+	CONNECTION_CHANGED_CERTIFICATION_VERYFY_FAILURE = 22,
+
+	CONNECTION_CHANGED_STREAM_CHANNEL_NOT_AVAILABLE = 23,
+
+	CONNECTION_CHANGED_INCONSISTENT_APPID = 24
+
 };
 
 
@@ -3803,27 +5609,12 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|FENUMWRAP_HEADPHONE_EQUALIZER_PRESET")
 	EENUMCUSTOM_HEADPHONE_EQUALIZER_PRESET ValueWrapper = EENUMCUSTOM_HEADPHONE_EQUALIZER_PRESET::HEADPHONE_EQUALIZER_OFF;
 
-	// default 
-	FENUMWRAP_HEADPHONE_EQUALIZER_PRESET() :ValueWrapper(EENUMCUSTOM_HEADPHONE_EQUALIZER_PRESET::HEADPHONE_EQUALIZER_OFF) {}
 
-	FENUMWRAP_HEADPHONE_EQUALIZER_PRESET(EENUMCUSTOM_HEADPHONE_EQUALIZER_PRESET Val) :ValueWrapper(Val) {}
-	void operator = (EENUMCUSTOM_HEADPHONE_EQUALIZER_PRESET InValue) {
-		ValueWrapper = InValue;
-	}
+	AGORA_CREATE_UEENUM_CONVERT_STRUCT_INNER_3_ENTRIES(FENUMWRAP_HEADPHONE_EQUALIZER_PRESET, agora::rtc::HEADPHONE_EQUALIZER_PRESET, EENUMCUSTOM_HEADPHONE_EQUALIZER_PRESET,
+		HEADPHONE_EQUALIZER_OFF,
+		HEADPHONE_EQUALIZER_OVEREAR,
+		HEADPHONE_EQUALIZER_INEAR)
 
-	agora::rtc::HEADPHONE_EQUALIZER_PRESET GetRawValue() const {
-		switch (ValueWrapper)
-		{
-		case EENUMCUSTOM_HEADPHONE_EQUALIZER_PRESET::HEADPHONE_EQUALIZER_OFF:
-			return agora::rtc::HEADPHONE_EQUALIZER_PRESET::HEADPHONE_EQUALIZER_OFF;
-		case EENUMCUSTOM_HEADPHONE_EQUALIZER_PRESET::HEADPHONE_EQUALIZER_OVEREAR:
-			return agora::rtc::HEADPHONE_EQUALIZER_PRESET::HEADPHONE_EQUALIZER_OVEREAR;
-		case EENUMCUSTOM_HEADPHONE_EQUALIZER_PRESET::HEADPHONE_EQUALIZER_INEAR:
-			return agora::rtc::HEADPHONE_EQUALIZER_PRESET::HEADPHONE_EQUALIZER_INEAR;
-		default:
-			return agora::rtc::HEADPHONE_EQUALIZER_PRESET::HEADPHONE_EQUALIZER_OFF;
-		}
-	}
 };
 
 UENUM(BlueprintType)
@@ -3881,6 +5672,9 @@ enum class EENUMCUSTOM_NETWORK_TYPE : uint8 {
 	NETWORK_TYPE_MOBILE_3G = 5,
 
 	NETWORK_TYPE_MOBILE_4G = 6,
+
+	NETWORK_TYPE_MOBILE_5G = 7
+
 };
 
 USTRUCT(BlueprintType)
@@ -3892,63 +5686,16 @@ public:
 	// require to call [GetRawValue] method to get the raw value
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|FENUMWRAP_NETWORK_TYPE")
 	EENUMCUSTOM_NETWORK_TYPE ValueWrapper = EENUMCUSTOM_NETWORK_TYPE::NETWORK_TYPE_UNKNOWN;
-
-	// default
-	FENUMWRAP_NETWORK_TYPE() :ValueWrapper(EENUMCUSTOM_NETWORK_TYPE::NETWORK_TYPE_UNKNOWN) {}
-
-	FENUMWRAP_NETWORK_TYPE(EENUMCUSTOM_NETWORK_TYPE Val) :ValueWrapper(Val) {}
-
-	FENUMWRAP_NETWORK_TYPE(agora::rtc::NETWORK_TYPE Val) {
-		switch (Val)
-		{
-		case agora::rtc::NETWORK_TYPE::NETWORK_TYPE_UNKNOWN:
-			ValueWrapper = EENUMCUSTOM_NETWORK_TYPE::NETWORK_TYPE_UNKNOWN;
-			break;
-		case agora::rtc::NETWORK_TYPE::NETWORK_TYPE_DISCONNECTED:
-			ValueWrapper = EENUMCUSTOM_NETWORK_TYPE::NETWORK_TYPE_DISCONNECTED;
-			break;
-		case agora::rtc::NETWORK_TYPE::NETWORK_TYPE_LAN:
-			ValueWrapper = EENUMCUSTOM_NETWORK_TYPE::NETWORK_TYPE_LAN;
-			break;
-		case agora::rtc::NETWORK_TYPE::NETWORK_TYPE_WIFI:
-			ValueWrapper = EENUMCUSTOM_NETWORK_TYPE::NETWORK_TYPE_WIFI;
-			break;
-		case agora::rtc::NETWORK_TYPE::NETWORK_TYPE_MOBILE_2G:
-			ValueWrapper = EENUMCUSTOM_NETWORK_TYPE::NETWORK_TYPE_MOBILE_2G;
-			break;
-		case agora::rtc::NETWORK_TYPE::NETWORK_TYPE_MOBILE_3G:
-			ValueWrapper = EENUMCUSTOM_NETWORK_TYPE::NETWORK_TYPE_MOBILE_3G;
-			break;
-		case agora::rtc::NETWORK_TYPE::NETWORK_TYPE_MOBILE_4G:
-			ValueWrapper = EENUMCUSTOM_NETWORK_TYPE::NETWORK_TYPE_MOBILE_4G;
-			break;
-		}
-	}
-	void operator = (EENUMCUSTOM_NETWORK_TYPE InValue) {
-		ValueWrapper = InValue;
-	}
-
-	agora::rtc::NETWORK_TYPE GetRawValue() const {
-		switch (ValueWrapper)
-		{
-		case EENUMCUSTOM_NETWORK_TYPE::NETWORK_TYPE_UNKNOWN:
-			return  agora::rtc::NETWORK_TYPE::NETWORK_TYPE_UNKNOWN;
-		case EENUMCUSTOM_NETWORK_TYPE::NETWORK_TYPE_DISCONNECTED:
-			return  agora::rtc::NETWORK_TYPE::NETWORK_TYPE_DISCONNECTED;
-		case EENUMCUSTOM_NETWORK_TYPE::NETWORK_TYPE_LAN:
-			return  agora::rtc::NETWORK_TYPE::NETWORK_TYPE_LAN;
-		case EENUMCUSTOM_NETWORK_TYPE::NETWORK_TYPE_WIFI:
-			return  agora::rtc::NETWORK_TYPE::NETWORK_TYPE_WIFI;
-		case EENUMCUSTOM_NETWORK_TYPE::NETWORK_TYPE_MOBILE_2G:
-			return  agora::rtc::NETWORK_TYPE::NETWORK_TYPE_MOBILE_2G;
-		case EENUMCUSTOM_NETWORK_TYPE::NETWORK_TYPE_MOBILE_3G:
-			return  agora::rtc::NETWORK_TYPE::NETWORK_TYPE_MOBILE_3G;
-		case EENUMCUSTOM_NETWORK_TYPE::NETWORK_TYPE_MOBILE_4G:
-			return  agora::rtc::NETWORK_TYPE::NETWORK_TYPE_MOBILE_4G;
-		default:
-			return  agora::rtc::NETWORK_TYPE::NETWORK_TYPE_UNKNOWN;
-		}
-	}
+	
+	AGORA_CREATE_UEENUM_CONVERT_STRUCT_INNER_8_ENTRIES(FENUMWRAP_NETWORK_TYPE, agora::rtc::NETWORK_TYPE, EENUMCUSTOM_NETWORK_TYPE,
+		NETWORK_TYPE_UNKNOWN,
+		NETWORK_TYPE_DISCONNECTED,
+		NETWORK_TYPE_LAN,
+		NETWORK_TYPE_WIFI,
+		NETWORK_TYPE_MOBILE_2G,
+		NETWORK_TYPE_MOBILE_3G,
+		NETWORK_TYPE_MOBILE_4G,
+		NETWORK_TYPE_MOBILE_5G)
 };
 
 UENUM(BlueprintType)
@@ -3956,6 +5703,9 @@ enum class EENCRYPTION_ERROR_TYPE : uint8 {
 	ENCRYPTION_ERROR_INTERNAL_FAILURE = 0,
 	ENCRYPTION_ERROR_DECRYPTION_FAILURE = 1,
 	ENCRYPTION_ERROR_ENCRYPTION_FAILURE = 2,
+	ENCRYPTION_ERROR_DATASTREAM_DECRYPTION_FAILURE = 3,
+	ENCRYPTION_ERROR_DATASTREAM_ENCRYPTION_FAILURE = 4,
+
 };
 
 UENUM(BlueprintType)
@@ -4011,6 +5761,9 @@ USTRUCT(BlueprintType)
 struct FRemoteVideoStats {
 
 	GENERATED_BODY()
+
+public:
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RemoteVideoStats")
 	int64 uid = 0;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RemoteVideoStats")
@@ -4048,31 +5801,122 @@ struct FRemoteVideoStats {
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RemoteVideoStats")
 	int64 rxVideoBytes = 0;
+
+
+	FRemoteVideoStats(){}
+	FRemoteVideoStats(const agora::rtc::RemoteVideoStats & AgoraData){
+		uid = AgoraData.uid;
+		delay = AgoraData.delay;
+		e2eDelay = AgoraData.e2eDelay;
+		width = AgoraData.width;
+		height = AgoraData.height;
+		receivedBitrate = AgoraData.receivedBitrate;
+		decoderOutputFrameRate = AgoraData.decoderOutputFrameRate;
+		rendererOutputFrameRate = AgoraData.rendererOutputFrameRate;
+		frameLossRate = AgoraData.frameLossRate;
+		packetLossRate = AgoraData.packetLossRate;
+		rxStreamType = static_cast<EVIDEO_STREAM_TYPE>(AgoraData.rxStreamType);
+		totalFrozenTime = AgoraData.totalFrozenTime;
+		frozenRate = AgoraData.frozenRate;
+		avSyncTimeMs = AgoraData.avSyncTimeMs;
+		totalActiveTime = AgoraData.totalActiveTime;
+		publishDuration = AgoraData.publishDuration;
+		mosValue = AgoraData.mosValue;
+		rxVideoBytes = AgoraData.rxVideoBytes;
+	}
+
+	agora::rtc::RemoteVideoStats CreateAgoraData() const {
+		agora::rtc::RemoteVideoStats AgoraData;
+		AgoraData.uid = uid;
+		AgoraData.delay = delay;
+		AgoraData.e2eDelay = e2eDelay;
+		AgoraData.width = width;
+		AgoraData.height = height;
+		AgoraData.receivedBitrate = receivedBitrate;
+		AgoraData.decoderOutputFrameRate = decoderOutputFrameRate;
+		AgoraData.rendererOutputFrameRate = rendererOutputFrameRate;
+		AgoraData.frameLossRate = frameLossRate;
+		AgoraData.packetLossRate = packetLossRate;
+		AgoraData.rxStreamType = static_cast<agora::rtc::VIDEO_STREAM_TYPE>(rxStreamType);
+		AgoraData.totalFrozenTime = totalFrozenTime;
+		AgoraData.frozenRate = frozenRate;
+		AgoraData.avSyncTimeMs = avSyncTimeMs;
+		AgoraData.totalActiveTime = totalActiveTime;
+		AgoraData.publishDuration = publishDuration;
+		AgoraData.mosValue = mosValue;
+		AgoraData.rxVideoBytes = rxVideoBytes;
+		return AgoraData;
+	}
+
+	void FreeAgoraData(agora::rtc::RemoteVideoStats & AgoraData) const {
+
+	}
 };
 
 USTRUCT(BlueprintType)
 struct FWlAccStats {
 
 	GENERATED_BODY()
+
+public:
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|WlAccStats")
 	int64 e2eDelayPercent = 0;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|WlAccStats")
 	int64 frozenRatioPercent = 0;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|WlAccStats")
 	int64 lossRatePercent = 0;
+
+	FWlAccStats(){}
+	FWlAccStats(const agora::rtc::WlAccStats & AgoraData){
+		e2eDelayPercent = AgoraData.e2eDelayPercent;
+		frozenRatioPercent = AgoraData.frozenRatioPercent;
+		lossRatePercent = AgoraData.lossRatePercent;
+	}
+
+	agora::rtc::WlAccStats CreateAgoraData() const {
+		agora::rtc::WlAccStats AgoraData;
+		AgoraData.e2eDelayPercent = e2eDelayPercent;
+		AgoraData.frozenRatioPercent = frozenRatioPercent;
+		AgoraData.lossRatePercent = lossRatePercent;
+		return AgoraData;
+	}
 };
 USTRUCT(BlueprintType)
 struct FAgoraMetadata
 {
 	GENERATED_BODY()
+
+public:
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|AgoraMetadata")
 	int64 uid = 0;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|AgoraMetadata")
 	int64 size = 0;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|AgoraMetadata")
-	TArray<int64> buffer;
+	FString buffer;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|AgoraMetadata")
 	int64 timeStampMs = 0;
+
+	FAgoraMetadata(){}
+	FAgoraMetadata(const agora::rtc::IMetadataObserver::Metadata & AgoraData){
+		uid = AgoraData.uid;
+		size = AgoraData.size;
+		buffer = UTF8_TO_TCHAR(AgoraData.buffer);
+		timeStampMs = AgoraData.timeStampMs;
+	}
+
+	agora::rtc::IMetadataObserver::Metadata CreateAgoraData() const {
+		agora::rtc::IMetadataObserver::Metadata AgoraData;
+		AgoraData.uid = uid;
+		AgoraData.size = size;
+		SET_UABT_FSTRING_TO_UNSIGNED_CHAR___MEMALLOC(AgoraData.buffer,this->buffer)
+		AgoraData.timeStampMs = timeStampMs;
+		return AgoraData;
+	}
+	void FreeAgoraData (agora::rtc::IMetadataObserver::Metadata& AgoraData){
+		SET_UABT_FSTRING_TO_UNSIGNED_CHAR___MEMFREE(AgoraData.buffer)
+	}
 };
 UENUM(BlueprintType)
 enum class EDIRECT_CDN_STREAMING_STATE : uint8 {
@@ -4089,25 +5933,27 @@ enum class EDIRECT_CDN_STREAMING_STATE : uint8 {
 };
 
 UENUM(BlueprintType)
-enum class EDIRECT_CDN_STREAMING_ERROR : uint8 {
+enum class EDIRECT_CDN_STREAMING_REASON : uint8 {
 
-	DIRECT_CDN_STREAMING_ERROR_OK = 0,
+	DIRECT_CDN_STREAMING_REASON_OK = 0,
 
-	DIRECT_CDN_STREAMING_ERROR_FAILED = 1,
+	DIRECT_CDN_STREAMING_REASON_FAILED = 1,
 
-	DIRECT_CDN_STREAMING_ERROR_AUDIO_PUBLICATION = 2,
+	DIRECT_CDN_STREAMING_REASON_AUDIO_PUBLICATION = 2,
 
-	DIRECT_CDN_STREAMING_ERROR_VIDEO_PUBLICATION = 3,
+	DIRECT_CDN_STREAMING_REASON_VIDEO_PUBLICATION = 3,
 
-	DIRECT_CDN_STREAMING_ERROR_NET_CONNECT = 4,
+	DIRECT_CDN_STREAMING_REASON_NET_CONNECT = 4,
 
-	DIRECT_CDN_STREAMING_ERROR_BAD_NAME = 5,
+	DIRECT_CDN_STREAMING_REASON_BAD_NAME = 5,
 };
 
 USTRUCT(BlueprintType)
 struct FDirectCdnStreamingStats {
 
 	GENERATED_BODY()
+
+public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|DirectCdnStreamingStats")
 	int videoWidth = 0;
@@ -4119,6 +5965,28 @@ struct FDirectCdnStreamingStats {
 	int videoBitrate = 0;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|DirectCdnStreamingStats")
 	int audioBitrate = 0;
+
+	FDirectCdnStreamingStats(){}
+	FDirectCdnStreamingStats(const agora::rtc::DirectCdnStreamingStats & AgoraData){
+		videoWidth = AgoraData.videoWidth;
+		videoHeight = AgoraData.videoHeight;
+		fps = AgoraData.fps;
+		videoBitrate = AgoraData.videoBitrate;
+		audioBitrate = AgoraData.audioBitrate;
+	}
+
+	agora::rtc::DirectCdnStreamingStats CreateAgoraData() const {
+		agora::rtc::DirectCdnStreamingStats AgoraData;
+		AgoraData.videoWidth = videoWidth;
+		AgoraData.videoHeight = videoHeight;
+		AgoraData.fps = fps;
+		AgoraData.videoBitrate = videoBitrate;
+		AgoraData.audioBitrate = audioBitrate;
+		return AgoraData;
+	}
+	void FreeAgoraData(agora::rtc::DirectCdnStreamingStats & AgoraData) const {
+
+	}
 };
 
 //UENUM(BlueprintType)
@@ -4146,26 +6014,10 @@ public:
 	// require to call [GetRawValue] method to get the raw value
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|FENUMWRAP_METADATA_TYPE")
 	EENUMCUSTOM_METADATA_TYPE ValueWrapper = EENUMCUSTOM_METADATA_TYPE::UNKNOWN_METADATA;
-
-	// default 
-	FENUMWRAP_METADATA_TYPE() :ValueWrapper(EENUMCUSTOM_METADATA_TYPE::UNKNOWN_METADATA) {}
-
-	FENUMWRAP_METADATA_TYPE(EENUMCUSTOM_METADATA_TYPE Val) :ValueWrapper(Val) {}
-	void operator = (EENUMCUSTOM_METADATA_TYPE InValue) {
-		ValueWrapper = InValue;
-	}
-
-	agora::rtc::IMetadataObserver::METADATA_TYPE GetRawValue() const {
-		switch (ValueWrapper)
-		{
-		case EENUMCUSTOM_METADATA_TYPE::UNKNOWN_METADATA:
-			return   agora::rtc::IMetadataObserver::METADATA_TYPE::UNKNOWN_METADATA;
-		case EENUMCUSTOM_METADATA_TYPE::VIDEO_METADATA:
-			return   agora::rtc::IMetadataObserver::METADATA_TYPE::VIDEO_METADATA;
-		default:
-			return   agora::rtc::IMetadataObserver::METADATA_TYPE::UNKNOWN_METADATA;
-		}
-	}
+	
+	AGORA_CREATE_UEENUM_CONVERT_STRUCT_INNER_2_ENTRIES(FENUMWRAP_METADATA_TYPE, agora::rtc::IMetadataObserver::METADATA_TYPE, EENUMCUSTOM_METADATA_TYPE,
+		UNKNOWN_METADATA,
+		VIDEO_METADATA)
 };
 
 
@@ -4230,14 +6082,51 @@ USTRUCT(BlueprintType)
 struct FThumbImageBuffer {
 
 	GENERATED_BODY()
+
+public:
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ThumbImageBuffer")
-	TArray<int64> buffer;
+	TArray<uint8> buffer;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ThumbImageBuffer")
 	int64 length = 0;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ThumbImageBuffer")
 	int64 width = 0;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ThumbImageBuffer")
 	int64 height = 0;
+
+#if defined(_WIN32) || (defined(__APPLE__) && TARGET_OS_MAC && !TARGET_OS_IPHONE)
+	FThumbImageBuffer(){}
+	FThumbImageBuffer(const agora::rtc::ThumbImageBuffer & AgoraData){
+
+		length = AgoraData.length;
+		buffer.SetNumZeroed(length);
+		for (int i = 0; i < length; i++) {
+			this->buffer[i] = AgoraData.buffer[i];
+		}
+		width = AgoraData.width;
+		height = AgoraData.height;
+	}
+
+	agora::rtc::ThumbImageBuffer CreateAgoraData() const {
+		agora::rtc::ThumbImageBuffer AgoraData;
+
+		// Temp solution for now
+		char* TmpChar = new char[length];
+		for (int i = 0; i < length; i++) {
+			TmpChar[i] = this->buffer[i];
+		}
+
+		AgoraData.buffer = TmpChar;
+		AgoraData.length = length;
+		AgoraData.width = width;
+		AgoraData.height = height;
+		return AgoraData;
+	}
+
+	void FreeAgoraData(agora::rtc::ThumbImageBuffer & AgoraData) const {
+		SET_UABT_GENERIC_PTR___MEMFREE(AgoraData.buffer)
+	}
+#endif
 };
 
 
@@ -4268,52 +6157,13 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|FENUMWRAP_ScreenCaptureSourceType")
 	EENUMCUSTOM_ScreenCaptureSourceType ValueWrapper = EENUMCUSTOM_ScreenCaptureSourceType::ScreenCaptureSourceType_Unknown;
 
-	// default 
-	FENUMWRAP_ScreenCaptureSourceType() :ValueWrapper(EENUMCUSTOM_ScreenCaptureSourceType::ScreenCaptureSourceType_Unknown) {}
-
-	FENUMWRAP_ScreenCaptureSourceType(EENUMCUSTOM_ScreenCaptureSourceType Val) :ValueWrapper(Val) {}
-
-	void operator = (EENUMCUSTOM_ScreenCaptureSourceType InValue) {
-		ValueWrapper = InValue;
-	}
-
 #if defined(_WIN32) || (defined(__APPLE__) && TARGET_OS_MAC && !TARGET_OS_IPHONE)
-
-	FENUMWRAP_ScreenCaptureSourceType(agora::rtc::ScreenCaptureSourceType Val) {
-		switch (Val)
-		{
-		case agora::rtc::ScreenCaptureSourceType::ScreenCaptureSourceType_Unknown:
-			ValueWrapper = EENUMCUSTOM_ScreenCaptureSourceType::ScreenCaptureSourceType_Unknown;
-			break;
-		case agora::rtc::ScreenCaptureSourceType::ScreenCaptureSourceType_Window:
-			ValueWrapper = EENUMCUSTOM_ScreenCaptureSourceType::ScreenCaptureSourceType_Window;
-			break;
-		case agora::rtc::ScreenCaptureSourceType::ScreenCaptureSourceType_Screen:
-			ValueWrapper = EENUMCUSTOM_ScreenCaptureSourceType::ScreenCaptureSourceType_Screen;
-			break;
-		case agora::rtc::ScreenCaptureSourceType::ScreenCaptureSourceType_Custom:
-			ValueWrapper = EENUMCUSTOM_ScreenCaptureSourceType::ScreenCaptureSourceType_Custom;
-			break;
-		default:
-			ValueWrapper = EENUMCUSTOM_ScreenCaptureSourceType::ScreenCaptureSourceType_Unknown;
-		}
-	}
-
-	agora::rtc::ScreenCaptureSourceType GetRawValue() const {
-		switch (ValueWrapper)
-		{
-		case EENUMCUSTOM_ScreenCaptureSourceType::ScreenCaptureSourceType_Unknown:
-			return agora::rtc::ScreenCaptureSourceType::ScreenCaptureSourceType_Unknown;
-		case EENUMCUSTOM_ScreenCaptureSourceType::ScreenCaptureSourceType_Window:
-			return agora::rtc::ScreenCaptureSourceType::ScreenCaptureSourceType_Window;
-		case EENUMCUSTOM_ScreenCaptureSourceType::ScreenCaptureSourceType_Screen:
-			return agora::rtc::ScreenCaptureSourceType::ScreenCaptureSourceType_Screen;
-		case EENUMCUSTOM_ScreenCaptureSourceType::ScreenCaptureSourceType_Custom:
-			return agora::rtc::ScreenCaptureSourceType::ScreenCaptureSourceType_Custom;
-		default:
-			return agora::rtc::ScreenCaptureSourceType::ScreenCaptureSourceType_Unknown;
-		}
-	}
+	
+	AGORA_CREATE_UEENUM_CONVERT_STRUCT_INNER_4_ENTRIES(FENUMWRAP_ScreenCaptureSourceType, agora::rtc::ScreenCaptureSourceType, EENUMCUSTOM_ScreenCaptureSourceType,
+		ScreenCaptureSourceType_Unknown,
+		ScreenCaptureSourceType_Window,
+		ScreenCaptureSourceType_Screen,
+		ScreenCaptureSourceType_Custom)
 
 #endif
 };
@@ -4322,8 +6172,10 @@ USTRUCT(BlueprintType)
 struct FScreenCaptureSourceInfo {
 	GENERATED_BODY()
 
+public:
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|FScreenCaptureSourceInfo")
-	FENUMWRAP_ScreenCaptureSourceType type = EENUMCUSTOM_ScreenCaptureSourceType::ScreenCaptureSourceType_Unknown;
+	FENUMWRAP_ScreenCaptureSourceType type = FENUMWRAP_ScreenCaptureSourceType();
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|FScreenCaptureSourceInfo")
 	int64 sourceId = 0;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|FScreenCaptureSourceInfo")
@@ -4340,6 +6192,56 @@ struct FScreenCaptureSourceInfo {
 	bool primaryMonitor = false;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|FScreenCaptureSourceInfo")
 	bool isOccluded = false;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|FScreenCaptureSourceInfo")
+	FRectangle position = FRectangle();
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|FScreenCaptureSourceInfo")
+	bool minimizeWindow = false;
+
+#if defined(_WIN32) || (defined(__APPLE__) && TARGET_OS_MAC && !TARGET_OS_IPHONE)
+	FScreenCaptureSourceInfo(){}
+	FScreenCaptureSourceInfo(const agora::rtc::ScreenCaptureSourceInfo & AgoraData){
+
+		type = FENUMWRAP_ScreenCaptureSourceType(static_cast<EENUMCUSTOM_ScreenCaptureSourceType>(AgoraData.type));
+
+
+		// sourceId = AgoraData.sourceId; not support
+		sourceName = UTF8_TO_TCHAR(AgoraData.sourceName);
+		thumbImage = FThumbImageBuffer(AgoraData.thumbImage);
+		iconImage = FThumbImageBuffer(AgoraData.iconImage);
+		processPath = UTF8_TO_TCHAR(AgoraData.processPath);
+		sourceTitle = UTF8_TO_TCHAR(AgoraData.sourceTitle);
+		primaryMonitor = AgoraData.primaryMonitor;
+		isOccluded = AgoraData.isOccluded;
+		position = FRectangle(AgoraData.position);
+		minimizeWindow = AgoraData.minimizeWindow;
+	}
+
+	agora::rtc::ScreenCaptureSourceInfo CreateAgoraData() const {
+		agora::rtc::ScreenCaptureSourceInfo AgoraData;
+		AgoraData.type = static_cast<agora::rtc::ScreenCaptureSourceType>(type.GetRawValue());
+		// AgoraData.sourceId = sourceId; Currrently Not Supported
+		SET_UABT_FSTRING_TO_CONST_CHAR___MEMALLOC(AgoraData.sourceName, sourceName)
+		AgoraData.thumbImage = thumbImage.CreateAgoraData();
+		AgoraData.iconImage = iconImage.CreateAgoraData();
+		SET_UABT_FSTRING_TO_CONST_CHAR___MEMALLOC(AgoraData.processPath, processPath)
+		SET_UABT_FSTRING_TO_CONST_CHAR___MEMALLOC(AgoraData.sourceTitle, sourceTitle)
+		AgoraData.primaryMonitor = primaryMonitor;
+		AgoraData.isOccluded = isOccluded;
+		AgoraData.position = position.CreateAgoraData();
+		AgoraData.minimizeWindow = minimizeWindow;
+		return AgoraData;
+	}
+
+	void FreeAgoraData(agora::rtc::ScreenCaptureSourceInfo & AgoraData) const {
+		SET_UABT_FSTRING_TO_CONST_CHAR___MEMFREE(AgoraData.sourceName)
+		thumbImage.FreeAgoraData(AgoraData.thumbImage);
+		thumbImage.FreeAgoraData(AgoraData.iconImage);
+		SET_UABT_FSTRING_TO_CONST_CHAR___MEMFREE(AgoraData.processPath)
+		SET_UABT_FSTRING_TO_CONST_CHAR___MEMFREE(AgoraData.sourceTitle)
+		position.FreeAgoraData(AgoraData.position);
+	}
+#endif
 };
 
 
@@ -4348,22 +6250,65 @@ struct FSIZE {
 
 	GENERATED_BODY()
 
+public:
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|SIZE")
 	int width = 0;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|SIZE")
 	int height = 0;
+
+#if (defined(__APPLE__) && TARGET_OS_MAC && !TARGET_OS_IPHONE)
+	FSIZE(){}
+	FSIZE(const agora::rtc::SIZE & AgoraData){
+		width = AgoraData.width;
+		height = AgoraData.height;
+	}
+
+	agora::rtc::SIZE CreateAgoraData() const {
+		agora::rtc::SIZE AgoraData;
+		AgoraData.width = width;
+		AgoraData.height = height;
+		return AgoraData;
+	}
+	
+	void FreeAgoraData(agora::rtc::SIZE & AgoraData) const {
+
+	}
+#endif
 };
 
 USTRUCT(BlueprintType)
 struct FRecorderInfo {
 
 	GENERATED_BODY()
+
+public:
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RecorderInfo")
 	FString fileName = "";
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RecorderInfo")
 	int64 durationMs = 0;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RecorderInfo")
 	int64 fileSize = 0;
+
+	FRecorderInfo(){}
+	FRecorderInfo(const agora::media::RecorderInfo & AgoraData){
+		fileName = UTF8_TO_TCHAR(AgoraData.fileName);
+		durationMs = AgoraData.durationMs;
+		fileSize = AgoraData.fileSize;
+	}
+
+	agora::media::RecorderInfo CreateAgoraData() const {
+		agora::media::RecorderInfo AgoraData;
+		SET_UABT_FSTRING_TO_CONST_CHAR___MEMALLOC(AgoraData.fileName, fileName)
+		AgoraData.durationMs = durationMs;
+		AgoraData.fileSize = fileSize;
+		return AgoraData;
+	}
+
+	void FreeAgoraData(agora::media::RecorderInfo & AgoraData) const {
+		SET_UABT_FSTRING_TO_CONST_CHAR___MEMFREE(AgoraData.fileName)
+	}
 };
 
 //UENUM(BlueprintType)
@@ -4382,7 +6327,7 @@ struct FRecorderInfo {
 UENUM(BlueprintType)
 enum class EENUMCUSTOM_RecorderState : uint8 {
 
-	RECORDER_STATE_NULL = 0,
+	INVALID_OPT_BPGEN_NULL UMETA(Hidden, DisplayName = "AGORA NULL VALUE"),
 
 	RECORDER_STATE_ERROR = 1,
 
@@ -4401,60 +6346,27 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|FENUMWRAP_RecorderState")
 	EENUMCUSTOM_RecorderState ValueWrapper = EENUMCUSTOM_RecorderState::RECORDER_STATE_ERROR;
 
-	// default  
-	FENUMWRAP_RecorderState() :ValueWrapper(EENUMCUSTOM_RecorderState::RECORDER_STATE_ERROR) {}
 
-	FENUMWRAP_RecorderState(EENUMCUSTOM_RecorderState Val) :ValueWrapper(Val) {}
-
-	FENUMWRAP_RecorderState(agora::media::RecorderState Val) {
-		switch (Val)
-		{
-		case agora::media::RecorderState::RECORDER_STATE_ERROR:
-			ValueWrapper = EENUMCUSTOM_RecorderState::RECORDER_STATE_ERROR;
-			break;
-		case agora::media::RecorderState::RECORDER_STATE_START:
-			ValueWrapper = EENUMCUSTOM_RecorderState::RECORDER_STATE_START;
-			break;
-		case agora::media::RecorderState::RECORDER_STATE_STOP:
-			ValueWrapper = EENUMCUSTOM_RecorderState::RECORDER_STATE_STOP;
-			break;
-		default:
-			ValueWrapper = EENUMCUSTOM_RecorderState::RECORDER_STATE_ERROR;
-		}
-	}
-	void operator = (EENUMCUSTOM_RecorderState InValue) {
-		ValueWrapper = InValue;
-	}
-
-	agora::media::RecorderState GetRawValue() const {
-		switch (ValueWrapper)
-		{
-		case EENUMCUSTOM_RecorderState::RECORDER_STATE_ERROR:
-			return agora::media::RecorderState::RECORDER_STATE_ERROR;
-		case EENUMCUSTOM_RecorderState::RECORDER_STATE_START:
-			return agora::media::RecorderState::RECORDER_STATE_START;
-		case EENUMCUSTOM_RecorderState::RECORDER_STATE_STOP:
-			return agora::media::RecorderState::RECORDER_STATE_STOP;
-		default:
-			return agora::media::RecorderState::RECORDER_STATE_ERROR;
-		}
-	}
+	AGORA_CREATE_UEENUM_CONVERT_STRUCT_INNER_3_ENTRIES(FENUMWRAP_RecorderState, agora::media::RecorderState, EENUMCUSTOM_RecorderState,
+		RECORDER_STATE_ERROR,
+		RECORDER_STATE_START,
+		RECORDER_STATE_STOP)
 };
 
 
 
 UENUM(BlueprintType)
-enum class ERecorderErrorCode : uint8 {
+enum class ERecorderReasonCode : uint8 {
 
-	RECORDER_ERROR_NONE = 0,
+	RECORDER_REASON_NONE = 0,
 
-	RECORDER_ERROR_WRITE_FAILED = 1,
+	RECORDER_REASON_WRITE_FAILED = 1,
 
-	RECORDER_ERROR_NO_STREAM = 2,
+	RECORDER_REASON_NO_STREAM = 2,
 
-	RECORDER_ERROR_OVER_MAX_DURATION = 3,
+	RECORDER_REASON_OVER_MAX_DURATION = 3,
 
-	RECORDER_ERROR_CONFIG_CHANGED = 4,
+	RECORDER_REASON_CONFIG_CHANGED = 4,
 };
 
 
@@ -4462,6 +6374,8 @@ USTRUCT(BlueprintType)
 struct FSpatialAudioZone {
 
 	GENERATED_BODY()
+
+public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|FSpatialAudioZone")
 	int zoneSetId = 0;
@@ -4482,4 +6396,131 @@ struct FSpatialAudioZone {
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|FSpatialAudioZone")
 	float audioAttenuation = 0;
 
+
+	FSpatialAudioZone(){}
+	FSpatialAudioZone(const agora::rtc::SpatialAudioZone & AgoraData){
+		zoneSetId = AgoraData.zoneSetId;
+		SET_UABT_AGORA_FLOAT3_TO_FVECTOR(this->position, AgoraData.position)
+		SET_UABT_AGORA_FLOAT3_TO_FVECTOR(this->forward, AgoraData.forward)
+		SET_UABT_AGORA_FLOAT3_TO_FVECTOR(this->right, AgoraData.right)
+		SET_UABT_AGORA_FLOAT3_TO_FVECTOR(this->up, AgoraData.up)
+		forwardLength = AgoraData.forwardLength;
+		rightLength = AgoraData.rightLength;
+		upLength = AgoraData.upLength;
+		audioAttenuation = AgoraData.audioAttenuation;
+	}
+
+	agora::rtc::SpatialAudioZone CreateAgoraData() const {
+
+		agora::rtc::SpatialAudioZone AgoraData;
+		AgoraData.zoneSetId = zoneSetId;
+		SET_UABT_FVECTOR_TO_AGORA_FLOAT3(AgoraData.position, this->position)
+		SET_UABT_FVECTOR_TO_AGORA_FLOAT3(AgoraData.forward, this->forward)
+		SET_UABT_FVECTOR_TO_AGORA_FLOAT3(AgoraData.right, this->right)
+		SET_UABT_FVECTOR_TO_AGORA_FLOAT3(AgoraData.up, this->up)
+		AgoraData.forwardLength = forwardLength;
+		AgoraData.rightLength = rightLength;
+		AgoraData.upLength = upLength;
+		AgoraData.audioAttenuation = audioAttenuation;
+		return AgoraData;
+	}
+
+	void FreeAgoraData(agora::rtc::SpatialAudioZone & AgoraData) const {
+
+	}
+};
+
+UENUM(BlueprintType)
+enum class ECONFIG_FETCH_TYPE :uint8{
+	INVALID_OPT_BPGEN_NULL UMETA(Hidden, DisplayName = "AGORA NULL VALUE"),
+	CONFIG_FETCH_TYPE_INITIALIZE = 1,
+	CONFIG_FETCH_TYPE_JOIN_CHANNEL = 2,
+};
+
+
+USTRUCT(BlueprintType)
+struct FVideoLayout
+{
+	GENERATED_BODY()
+	
+public:
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|FVideoLayout")
+	FString channelId;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|FVideoLayout")
+	int64 uid;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|FVideoLayout")
+	FString strUid;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|FVideoLayout")
+	int64 x;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|FVideoLayout")
+	int64 y;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|FVideoLayout")
+	int64 width;
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|FVideoLayout")
+	int64 height;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|FVideoLayout")
+	int64 videoState;
+
+	FVideoLayout(){}
+	FVideoLayout(const agora::VideoLayout & AgoraData){
+		channelId = UTF8_TO_TCHAR(AgoraData.channelId);
+		uid = AgoraData.uid;
+		strUid = UTF8_TO_TCHAR(AgoraData.strUid);
+		x = AgoraData.x;
+		y = AgoraData.y;
+		width = AgoraData.width;
+		height = AgoraData.height;
+		videoState = AgoraData.videoState;
+	}
+
+	agora::VideoLayout CreateAgoraData() const {
+		agora::VideoLayout AgoraData;
+		SET_UABT_FSTRING_TO_CONST_CHAR___MEMALLOC(AgoraData.channelId, channelId)
+		AgoraData.uid = uid;
+		SET_UABT_FSTRING_TO_CONST_CHAR___MEMALLOC(AgoraData.strUid, strUid)
+		AgoraData.x = x;
+		AgoraData.y = y;
+		AgoraData.width = width;
+		AgoraData.height = height;
+		AgoraData.videoState = videoState;
+		return AgoraData;
+	}
+
+	void FreeAgoraData(agora::VideoLayout & AgoraData) const {
+		SET_UABT_FSTRING_TO_CONST_CHAR___MEMFREE(AgoraData.channelId)
+		SET_UABT_FSTRING_TO_CONST_CHAR___MEMFREE(AgoraData.strUid)
+	}
+};
+
+
+UENUM(BlueprintType)
+enum class EENUMCUSTOM_REMOTE_USER_STATE : uint8 {
+	INVALID_OPT_BPGEN_NULL UMETA(Hidden, DisplayName = "AGORA NULL VALUE"),
+	USER_STATE_MUTE_AUDIO,
+	USER_STATE_MUTE_VIDEO,
+	USER_STATE_ENABLE_VIDEO,
+	USER_STATE_ENABLE_LOCAL_VIDEO,
+};
+
+USTRUCT(BlueprintType)
+struct FENUMWRAP_REMOTE_USER_STATE
+{
+	GENERATED_BODY()
+
+public:
+	// require to call [GetRawValue] method to get the raw value
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|EENUMWRAP_REMOTE_USER_STATE")
+	EENUMCUSTOM_REMOTE_USER_STATE ValueWrapper = EENUMCUSTOM_REMOTE_USER_STATE::USER_STATE_MUTE_AUDIO;
+
+	AGORA_CREATE_UEENUM_CONVERT_STRUCT_INNER_4_ENTRIES(FENUMWRAP_REMOTE_USER_STATE, agora::rtc::REMOTE_USER_STATE, EENUMCUSTOM_REMOTE_USER_STATE,
+			USER_STATE_MUTE_AUDIO,
+			USER_STATE_MUTE_VIDEO,
+			USER_STATE_ENABLE_VIDEO,
+			USER_STATE_ENABLE_LOCAL_VIDEO)
 };

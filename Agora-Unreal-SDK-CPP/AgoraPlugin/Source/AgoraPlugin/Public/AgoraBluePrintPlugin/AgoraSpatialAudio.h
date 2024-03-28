@@ -17,6 +17,23 @@ struct FLocalSpatialAudioConfig
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LocalSpatialAudioConfig")
 	UAgoraRtcEngine* rtcEngine = nullptr;
+
+	FLocalSpatialAudioConfig(){}
+	FLocalSpatialAudioConfig(UAgoraRtcEngine* rtcEngine)
+	{
+		this->rtcEngine = rtcEngine;
+	}
+
+	agora::rtc::LocalSpatialAudioConfig CreateAgoraData(){
+		agora::rtc::LocalSpatialAudioConfig AgoraData;
+		AgoraData.rtcEngine = RtcEngineProxyClassWrapper::GetInstance();
+		return AgoraData;
+	}
+
+	void FreeAgoraData(agora::rtc::LocalSpatialAudioConfig & AgoraData) const {
+	
+	}
+
 };
 
 USTRUCT(BlueprintType)
@@ -24,10 +41,31 @@ struct FRemoteVoicePositionInfo
 {
 	GENERATED_BODY()
 
+public:
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RemoteVoicePositionInfo")
 	FVector position = FVector(0,0,0);
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RemoteVoicePositionInfo")
 	FVector forward = FVector(0, 0, 0);
+
+	FRemoteVoicePositionInfo(){}
+	FRemoteVoicePositionInfo(const agora::rtc::RemoteVoicePositionInfo & AgoraData)
+	{
+		SET_UABT_AGORA_FLOAT3_TO_FVECTOR(this->position,position)
+		SET_UABT_AGORA_FLOAT3_TO_FVECTOR(this->forward, forward)
+	}
+
+	agora::rtc::RemoteVoicePositionInfo CreateAgoraData() const {
+		agora::rtc::RemoteVoicePositionInfo AgoraData;
+		SET_UABT_FVECTOR_TO_AGORA_FLOAT3(AgoraData.position, position)
+		SET_UABT_FVECTOR_TO_AGORA_FLOAT3(AgoraData.forward, forward)
+		return AgoraData;
+	}
+
+	void FreeAgoraData(agora::rtc::RemoteVoicePositionInfo & AgoraData) const {
+	
+	}
+
 };
 
 UCLASS(Blueprintable)

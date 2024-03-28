@@ -4,8 +4,10 @@
 #include "AgoraBluePrintPlugin/IMediaRecorderObserver.h"
 
 
-void UIMediaRecorderObserver::onRecorderStateChanged(const char* channelId, agora::rtc::uid_t uid, agora::media::RecorderState state, agora::media::RecorderErrorCode error)
+void UIMediaRecorderObserver::onRecorderStateChanged(const char* channelId, agora::rtc::uid_t uid, agora::media::RecorderState state, agora::media::RecorderReasonCode error)
 {
+	FString UEChannelId = UTF8_TO_TCHAR(channelId);
+
 	TWeakObjectPtr<UIMediaRecorderObserver> SelfWeakPtr(this);
 	if (!SelfWeakPtr.IsValid())
 		return;
@@ -19,11 +21,14 @@ void UIMediaRecorderObserver::onRecorderStateChanged(const char* channelId, agor
 			if (!SelfWeakPtr.IsValid())
 				return;
 
-			OnRecorderStateChanged.Broadcast((FString)(channelId), (int64)(uid), state, (ERecorderErrorCode)error);
+			OnRecorderStateChanged.Broadcast(UEChannelId, (int64)(uid), state, (ERecorderReasonCode)error);
 		});
 }
 void UIMediaRecorderObserver::onRecorderInfoUpdated(const char* channelId, agora::rtc::uid_t uid, const agora::media::RecorderInfo& info)
 {
+	FString UEChannelId = UTF8_TO_TCHAR(channelId);
+	FRecorderInfo UERecorderInfo = info;
+
 	TWeakObjectPtr<UIMediaRecorderObserver> SelfWeakPtr(this);
 	if (!SelfWeakPtr.IsValid())
 		return;
@@ -37,10 +42,7 @@ void UIMediaRecorderObserver::onRecorderInfoUpdated(const char* channelId, agora
 			if (!SelfWeakPtr.IsValid())
 				return;
 
-			FRecorderInfo recorderInfo;
-			recorderInfo.fileName = FString(info.fileName);
-			recorderInfo.durationMs = info.durationMs;
-			recorderInfo.fileSize = info.fileSize;
-			OnRecorderInfoUpdated.Broadcast((FString)(channelId), (int64)(uid), recorderInfo);
+
+			OnRecorderInfoUpdated.Broadcast(UEChannelId, (int64)(uid), UERecorderInfo);
 		});
 }

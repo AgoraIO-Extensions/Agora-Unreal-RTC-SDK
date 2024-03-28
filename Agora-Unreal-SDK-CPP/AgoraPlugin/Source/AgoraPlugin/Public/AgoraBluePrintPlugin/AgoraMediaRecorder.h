@@ -10,14 +10,14 @@
 UENUM(BlueprintType)
 enum class EMediaRecorderContainerFormat : uint8 {
 
-	FORMAT_NULL = 0,
+	INVALID_OPT_BPGEN_NULL UMETA(Hidden, DisplayName = "AGORA NULL VALUE"),
 	FORMAT_MP4 = 1,
 };
 
 UENUM(BlueprintType)
 enum class EMediaRecorderStreamType : uint8 {
 
-	STREAM_TYPE_NULL = 0,
+	INVALID_OPT_BPGEN_NULL UMETA(Hidden, DisplayName = "AGORA NULL VALUE"),
 
 	STREAM_TYPE_AUDIO = 0x01,
 
@@ -31,6 +31,8 @@ struct FMediaRecorderConfiguration
 {
 	GENERATED_BODY()
 
+public:
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|MediaRecorderConfiguration")
 	FString storagePath = "";
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|MediaRecorderConfiguration")
@@ -41,6 +43,32 @@ struct FMediaRecorderConfiguration
 	int maxDurationMs = 0;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|MediaRecorderConfiguration")
 	int recorderInfoUpdateInterval = 0;
+
+	FMediaRecorderConfiguration() {}
+	FMediaRecorderConfiguration(const agora::media::MediaRecorderConfiguration & AgoraData){
+		
+		storagePath = UTF8_TO_TCHAR(AgoraData.storagePath);
+		containerFormat = static_cast<EMediaRecorderContainerFormat>(AgoraData.containerFormat);
+		streamType = static_cast<EMediaRecorderStreamType>(AgoraData.streamType);
+		maxDurationMs = AgoraData.maxDurationMs;
+		recorderInfoUpdateInterval = AgoraData.recorderInfoUpdateInterval;
+
+	}
+
+	agora::media::MediaRecorderConfiguration CreateAgoraData() const{
+		
+		agora::media::MediaRecorderConfiguration AgoraData;
+		SET_UABT_FSTRING_TO_CONST_CHAR___MEMALLOC(AgoraData.storagePath, storagePath)
+		AgoraData.containerFormat = static_cast<agora::media::MediaRecorderContainerFormat>(containerFormat);
+		AgoraData.streamType = static_cast<agora::media::MediaRecorderStreamType>(streamType);
+		AgoraData.maxDurationMs = maxDurationMs;
+		AgoraData.recorderInfoUpdateInterval = recorderInfoUpdateInterval;
+		return AgoraData;
+	}
+
+	void FreeAgoraData(agora::media::MediaRecorderConfiguration &AgoraData) const {
+		SET_UABT_FSTRING_TO_CONST_CHAR___MEMFREE(AgoraData.storagePath)
+	}
 };
 /**
  *

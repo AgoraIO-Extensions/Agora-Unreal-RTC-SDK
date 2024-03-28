@@ -5,45 +5,45 @@
 
 int UIVideoDeviceCollection::GetCount()
 {
+	int ret = -ERROR_NULLPTR;
 	if (VideoDeviceCollection != nullptr)
 	{
-		return VideoDeviceCollection->getCount();
+		ret = VideoDeviceCollection->getCount();
 	}
-	return -ERROR_NULLPTR;
+	return ret;
 }
 int UIVideoDeviceCollection::SetDevice(FString& deviceIdUTF8)
 {
+	int ret = -ERROR_NULLPTR;
 	if (VideoDeviceCollection != nullptr)
 	{
-		int ret = VideoDeviceCollection->setDevice(TCHAR_TO_UTF8(*deviceIdUTF8));
-
-		return ret;
+		std::string STDdeviceIdUTF8 = TCHAR_TO_UTF8(*deviceIdUTF8);
+		ret = VideoDeviceCollection->setDevice(STDdeviceIdUTF8.c_str());
 	}
-	return -ERROR_NULLPTR;
+	return ret;
 }
 int UIVideoDeviceCollection::GetDevice(int index, FString& deviceNameUTF8, FString& deviceIdUTF8)
 {
+	int ret = -ERROR_NULLPTR;
 	if (VideoDeviceCollection != nullptr)
 	{
 		char tempDeviceName[agora::rtc::MAX_DEVICE_ID_LENGTH_TYPE::MAX_DEVICE_ID_LENGTH];
 
 		char tempDeviceId[agora::rtc::MAX_DEVICE_ID_LENGTH_TYPE::MAX_DEVICE_ID_LENGTH];
 
-		int ret = VideoDeviceCollection->getDevice(index, tempDeviceName, tempDeviceId);
+		ret = VideoDeviceCollection->getDevice(index, tempDeviceName, tempDeviceId);
 
 		deviceNameUTF8 = UTF8_TO_TCHAR(tempDeviceName);
 
 		deviceIdUTF8 = UTF8_TO_TCHAR(tempDeviceId);
-
-		return ret;
 	}
-	return -ERROR_NULLPTR;
+	return ret;
 }
 void UIVideoDeviceCollection::Release()
 {
 	if (VideoDeviceCollection != nullptr)
 	{
-		return VideoDeviceCollection->release();
+		VideoDeviceCollection->release();
 	}
 }
 void UIVideoDeviceCollection::SetVideoDeviceCollection(agora::rtc::IVideoDeviceCollection* videoDeviceCollection)
@@ -67,74 +67,80 @@ UIVideoDeviceCollection* UIVideoDeviceManager::EnumerateVideoDevices()
 }
 int UIVideoDeviceManager::SetDevice(FString deviceIdUTF8)
 {
+	int ret = -ERROR_NULLPTR;
 	if (VideoDeviceManager != nullptr)
 	{
-		int ret = VideoDeviceManager->setDevice(TCHAR_TO_UTF8(*deviceIdUTF8));
-
-		return ret;
+		std::string STDdeviceIdUTF8 = TCHAR_TO_UTF8(*deviceIdUTF8);
+		ret = VideoDeviceManager->setDevice(STDdeviceIdUTF8.c_str());
 	}
-	return -ERROR_NULLPTR;
+	return ret;
 }
 int UIVideoDeviceManager::GetDevice(FString& deviceIdUTF8)
 {
+	int ret = -ERROR_NULLPTR;
 	if (VideoDeviceManager != nullptr)
 	{
 		char tempDeviceId[agora::rtc::MAX_DEVICE_ID_LENGTH_TYPE::MAX_DEVICE_ID_LENGTH];
 
-		int ret = VideoDeviceManager->getDevice(tempDeviceId);
+		ret = VideoDeviceManager->getDevice(tempDeviceId);
 
 		deviceIdUTF8 = UTF8_TO_TCHAR(tempDeviceId);
-
-		return ret;
 	}
-	return -ERROR_NULLPTR;
+	return ret;
 }
 int UIVideoDeviceManager::NumberOfCapabilities(FString deviceIdUTF8)
 {
+	int ret = -ERROR_NULLPTR;
 #if defined(_WIN32) || (defined(__linux__) && !defined(__ANDROID__)) || (defined(__APPLE__) && TARGET_OS_MAC && !TARGET_OS_IPHONE)
 	if (VideoDeviceManager != nullptr)
 	{
-		return VideoDeviceManager->numberOfCapabilities(TCHAR_TO_UTF8(*deviceIdUTF8));
+		std::string STDdeviceIdUTF8 = TCHAR_TO_UTF8(*deviceIdUTF8);
+		ret = VideoDeviceManager->numberOfCapabilities(STDdeviceIdUTF8.c_str());
 	}
 #endif
-	return -ERROR_NULLPTR;
+	return ret;
 }
 int UIVideoDeviceManager::GetCapability(FString deviceIdUTF8, int deviceCapabilityNumber, FVideoFormat& capability)
 {
+	int ret = -ERROR_NULLPTR;
 #if defined(_WIN32) || (defined(__linux__) && !defined(__ANDROID__)) || (defined(__APPLE__) && TARGET_OS_MAC && !TARGET_OS_IPHONE)
-	agora::rtc::VideoFormat videoFormat;
-	videoFormat.width = capability.width;
-	videoFormat.height = capability.height;
-	videoFormat.fps = capability.fps;
+
 	if (VideoDeviceManager != nullptr)
 	{
-		return VideoDeviceManager->getCapability(TCHAR_TO_UTF8(*deviceIdUTF8), deviceCapabilityNumber, videoFormat);
+		agora::rtc::VideoFormat videoFormat = capability.CreateAgoraData();
+		std::string STDdeviceIdUTF8 = TCHAR_TO_UTF8(*deviceIdUTF8);
+
+		ret = VideoDeviceManager->getCapability(STDdeviceIdUTF8.c_str(), deviceCapabilityNumber, videoFormat);
+
+		capability.FreeAgoraData(videoFormat);
 	}
 #endif
-	return -ERROR_NULLPTR;
+	return ret;
 }
 int UIVideoDeviceManager::StartDeviceTest(int64 hwnd)
 {
+	int ret = -ERROR_NULLPTR;
 	if (VideoDeviceManager != nullptr)
 	{
-		return VideoDeviceManager->startDeviceTest((agora::view_t)hwnd);
+		ret = VideoDeviceManager->startDeviceTest((agora::view_t)hwnd);
 	}
-	return -ERROR_NULLPTR;
+	return ret;
 }
 int UIVideoDeviceManager::StopDeviceTest()
 {
+	int ret = -ERROR_NULLPTR;
 	if (VideoDeviceManager != nullptr)
 	{
-		return VideoDeviceManager->stopDeviceTest();
+		ret = VideoDeviceManager->stopDeviceTest();
 	}
-	return -ERROR_NULLPTR;
+	return ret;
 }
 void UIVideoDeviceManager::Release()
 {
 	deviceDevice = nullptr;
 	if (VideoDeviceManager != nullptr)
 	{
-		return VideoDeviceManager->release();
+		VideoDeviceManager->release();
 	}
 }
 void UIVideoDeviceManager::SetVideoDeviceManager(agora::rtc::IVideoDeviceManager* videoDeviceManager)

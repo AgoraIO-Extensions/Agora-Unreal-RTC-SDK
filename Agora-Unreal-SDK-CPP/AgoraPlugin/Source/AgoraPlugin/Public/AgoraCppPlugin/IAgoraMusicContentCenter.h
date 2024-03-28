@@ -18,59 +18,63 @@ typedef enum
     /**
      * 0: No error occurs and preload succeeds.
      */
-    kPreloadStatusCompleted = 0,
+    kPreloadStateCompleted = 0,
 
     /**
      * 1: A general error occurs.
      */
-    kPreloadStatusFailed = 1,
+    kPreloadStateFailed = 1,
 
     /**
      * 2: The media file is preloading.
      */
-    kPreloadStatusPreloading = 2,
+    kPreloadStatePreloading = 2,
         /**
      * 3: The media file is removed.
      */
-    kPreloadStatusRemoved = 3,
-} PreloadStatusCode;
+    kPreloadStateRemoved = 3,
+} PreloadState;
 
 typedef enum
 {
     /**
      * 0: No error occurs and request succeeds.
      */
-    kMusicContentCenterStatusOk = 0,
+    kMusicContentCenterReasonOk = 0,
     /**
      * 1: A general error occurs.
      */
-    kMusicContentCenterStatusErr = 1,
+    kMusicContentCenterReasonError = 1,
     /**
      * 2: The gateway error. There are several possible reasons:
      *  - Token is expired. Check if your token is expired.
      *  - Token is invalid. Check the type of token you passed in.
      *  - Network error. Check your network.
      */
-    kMusicContentCenterStatusErrGateway = 2,
+    kMusicContentCenterReasonGateway = 2,
     /**
      * 3: Permission and resource error. There are several possible reasons:
      *  - Your appid may not have the mcc permission. Please contact technical support 
      *  - The resource may not exist. Please contact technical support
      */
-    kMusicContentCenterStatusErrPermissionAndResource = 3,
+    kMusicContentCenterReasonPermissionAndResource = 3,
     /**
      * 4: Internal data parse error. Please contact technical support
      */
-    kMusicContentCenterStatusErrInternalDataParse = 4,
+    kMusicContentCenterReasonInternalDataParse = 4,
     /**
      * 5: Music loading error. Please contact technical support
      */
-    kMusicContentCenterStatusErrMusicLoading = 5,
+    kMusicContentCenterReasonMusicLoading = 5,
     /**
      * 6: Music decryption error. Please contact technical support
      */
-    kMusicContentCenterStatusErrMusicDecryption = 6, 
-} MusicContentCenterStatusCode;
+    kMusicContentCenterReasonMusicDecryption = 6, 
+    /**
+     * 7: Http internal error. Please retry later.
+     */
+    kMusicContentCenterReasonHttpInternalError = 7, 
+} MusicContentCenterStateReason;
 
 typedef struct 
 {
@@ -227,37 +231,53 @@ class IMusicContentCenterEventHandler {
 public:
     /**
      * The music chart result callback; occurs when getMusicCharts method is called.
-     * @param requestId The request id same with return from getMusicCharts.
+     * 
+     * @param requestId The request id is same as that returned by getMusicCharts.
      * @param result The result of music chart collection
-     * @param error_code The status of the request. See MusicContentCenterStatusCode
+     * @param reason The status of the request. See MusicContentCenterStateReason
      */
-    virtual void onMusicChartsResult(const char* requestId, agora_refptr<MusicChartCollection> result, MusicContentCenterStatusCode error_code) = 0;
+    virtual void onMusicChartsResult(const char* requestId, agora_refptr<MusicChartCollection> result, MusicContentCenterStateReason reason) = 0;
 
     /**
      * Music collection, occurs when getMusicCollectionByMusicChartId or searchMusic method is called.
-     * @param requestId The request id is the same with that returned by getMusicCollectionByMusicChartId or searchMusic
+     * 
+     * @param requestId The request id is same as that returned by getMusicCollectionByMusicChartId or searchMusic
      * @param result The result of music collection
-     * @param error_code The status of the request. See MusicContentCenterStatusCode
+     * @param reason The status of the request. See MusicContentCenterStateReason
      */
-    virtual void onMusicCollectionResult(const char* requestId, agora_refptr<MusicCollection> result, MusicContentCenterStatusCode error_code) = 0;
+    virtual void onMusicCollectionResult(const char* requestId, agora_refptr<MusicCollection> result, MusicContentCenterStateReason reason) = 0;
 
     /**
      * Lyric url callback of getLyric, occurs when getLyric is called
-     * @param requestId The request id same with return from getLyric
+     * 
+     * @param requestId The request id is same as that returned by getLyric
+     * @param songCode Song code
      * @param lyricUrl  The lyric url of this music
-     * @param error_code The status of the request. See MusicContentCenterStatusCode
+     * @param reason The status of the request. See MusicContentCenterStateReason
      */
-    virtual void onLyricResult(const char* requestId, const char* lyricUrl, MusicContentCenterStatusCode error_code) = 0;
+    virtual void onLyricResult(const char* requestId, int64_t songCode, const char* lyricUrl, MusicContentCenterStateReason reason) = 0;
+
     /**
-     * preload process callback, occurs when preload is called
-     *
+     * Simple info callback of getSongSimpleInfo, occurs when getSongSimpleInfo is called
+     * 
+     * @param requestId The request id is same as that returned by getSongSimpleInfo.
+     * @param songCode Song code
+     * @param simpleInfo The metadata of the music.
+     * @param reason The status of the request. See MusicContentCenterStateReason
+     */
+    virtual void onSongSimpleInfoResult(const char* requestId, int64_t songCode, const char* simpleInfo, MusicContentCenterStateReason reason) = 0;
+
+    /**
+     * Preload process callback, occurs when preload is called
+     * 
+     * @param requestId The request id is same as that returned by preload.
      * @param songCode Song code
      * @param percent Preload progress (0 ~ 100)
      * @param lyricUrl  The lyric url of this music
-     * @param status Preload status; see PreloadStatusCode.
-     * @param error_code The status of the request. See MusicContentCenterStatusCode
+     * @param state Preload state; see PreloadState.
+     * @param reason The status of the request. See MusicContentCenterStateReason
      */
-    virtual void onPreLoadEvent(int64_t songCode, int percent, const char* lyricUrl, PreloadStatusCode status, MusicContentCenterStatusCode error_code) = 0;
+    virtual void onPreLoadEvent(const char* requestId, int64_t songCode, int percent, const char* lyricUrl, PreloadState state, MusicContentCenterStateReason reason) = 0;
 
     virtual ~IMusicContentCenterEventHandler() {};
 };
@@ -280,12 +300,16 @@ struct MusicContentCenterConfiguration {
      */
     int32_t maxCacheSize;
     /**
+    * @technical preview
+    */
+    const char* mccDomain;
+    /**
      * Event handler to get callback result.
      */
     IMusicContentCenterEventHandler* eventHandler;
-    MusicContentCenterConfiguration():appId(nullptr),token(nullptr),eventHandler(nullptr),mccUid(0),maxCacheSize(10){}
-    MusicContentCenterConfiguration(const char*appid,const char* token,int64_t id,IMusicContentCenterEventHandler* handler,int32_t maxSize = 10):
-        appId(appid),token(token),mccUid(id),eventHandler(handler),maxCacheSize(maxSize){}
+    MusicContentCenterConfiguration():appId(nullptr),token(nullptr),eventHandler(nullptr),mccUid(0),maxCacheSize(10), mccDomain(nullptr){}
+    MusicContentCenterConfiguration(const char*appid,const char* token,int64_t id,IMusicContentCenterEventHandler* handler,int32_t maxSize = 10, const char* apiurl = nullptr):
+        appId(appid),token(token),mccUid(id),eventHandler(handler),maxCacheSize(maxSize), mccDomain(apiurl){}
 };
 
 class IMusicPlayer : public IMediaPlayer {
@@ -407,13 +431,26 @@ public:
     /**
      * Preload a media file with specified parameters.
      *
+     * @deprecated This method is deprecated. Use preload(int64_t songCode) instead.
+     * 
      * @param songCode The identifier of the media file that you want to play.
      * @param jsonOption The ext param, default is null.
      * @return
      * - 0: Success.
      * - < 0: Failure.
      */
-    virtual int preload(int64_t songCode, const char* jsonOption = nullptr) = 0;
+    virtual int preload(int64_t songCode, const char* jsonOption) __deprecated = 0;
+
+    /**
+     * Preload a media file with specified parameters.
+     * 
+     * @param requestId The request id you will get of this query, format is uuid.
+     * @param songCode The identifier of the media file that you want to play.
+     * @return
+     * - 0: Success.
+     * - < 0: Failure.
+     */
+    virtual int preload(agora::util::AString& requestId, int64_t songCode) = 0;
 
     /**
      * Remove a media file cache
@@ -462,6 +499,7 @@ public:
     /**
      * Get lyric of the music.
      *
+     * @param requestId The request id you will get of this query, format is uuid.
      * @param songCode The identifier of the media file that you want to play.
      * @param LyricType The type of the lyric file. 0:xml or 1:lrc.
      * @return
@@ -469,6 +507,31 @@ public:
      * - < 0: Failure.
      */
     virtual int getLyric(agora::util::AString& requestId, int64_t songCode, int32_t LyricType = 0) = 0;
+
+    /**
+     * Gets the metadata of a specific music. Once this method is called, the SDK triggers the onSongSimpleInfoResult callback to report the metadata of the music.
+     *
+     * @param requestId The request id you will get of this query, format is uuid.
+     * @param songCode The identifier of the media file.
+     * @return
+     * - 0: Success.
+     * - < 0: Failure.
+     */
+    virtual int getSongSimpleInfo(agora::util::AString& requestId, int64_t songCode) = 0;
+
+    /**
+     * Get internal songCodeKey from songCode and jsonOption
+     *
+     * @param songCode The identifier of the media file.
+     * @param jsonOption An extention parameter. The default value is null. it’s a json-format string and the `key` and `value` can be customized according to your scenarios.
+     * @param internalSongCode The identifier of internal 
+     * @return
+     * - 0: Success.
+     * - < 0: Failure.
+     */
+
+    virtual int getInternalSongCode(int64_t songCode, const char* jsonOption, int64_t& internalSongCode) = 0;
+
 };
 
 }  // namespace rtc

@@ -31,6 +31,19 @@ int UIAudioDeviceCollection::GetDevice(int index, FString& deviceName, FString& 
 	}
 	return -ERROR_NULLPTR;
 }
+
+int UIAudioDeviceCollection::GetDeviceWithDetail(int index, const FString& deviceName, const FString& deviceTypeName, const FString& deviceId)
+{
+	if (AudioDeviceCollection != nullptr)
+	{
+		int ret = AudioDeviceCollection->getDevice(index, TCHAR_TO_UTF8(*deviceName), TCHAR_TO_UTF8(*deviceTypeName), TCHAR_TO_UTF8(*deviceId));
+
+		return ret;
+	}
+	return -ERROR_NULLPTR;
+}
+
+
 int UIAudioDeviceCollection::SetDevice(FString deviceId)
 {
 	if (AudioDeviceCollection != nullptr)
@@ -41,6 +54,8 @@ int UIAudioDeviceCollection::SetDevice(FString deviceId)
 	}
 	return -ERROR_NULLPTR;
 }
+
+
 int UIAudioDeviceCollection::GetDefaultDevice(FString& deviceName, FString& deviceId)
 {
 	if (AudioDeviceCollection != nullptr)
@@ -61,6 +76,32 @@ int UIAudioDeviceCollection::GetDefaultDevice(FString& deviceName, FString& devi
 	}
 	return -ERROR_NULLPTR;
 }
+
+int UIAudioDeviceCollection::GetDefaultDeviceWithDetail( FString& deviceName,  FString& deviceTypeName,  FString& deviceId)
+{
+	if (AudioDeviceCollection != nullptr)
+	{
+		char tempDeviceName[agora::rtc::MAX_DEVICE_ID_LENGTH_TYPE::MAX_DEVICE_ID_LENGTH];
+
+		char tempDeviceTypeName[agora::rtc::MAX_DEVICE_ID_LENGTH_TYPE::MAX_DEVICE_ID_LENGTH];
+
+		char tempDeviceId[agora::rtc::MAX_DEVICE_ID_LENGTH_TYPE::MAX_DEVICE_ID_LENGTH];
+
+		int ret = AudioDeviceCollection->getDefaultDevice(tempDeviceName, tempDeviceTypeName, tempDeviceId);
+
+		std::string StdStrDeviceName = tempDeviceName;
+		std::string StdStrDeviceTypeName = tempDeviceTypeName;
+		std::string StdStrDeviceId = tempDeviceId;
+
+		deviceName = StdStrDeviceName.c_str();
+		deviceTypeName = StdStrDeviceTypeName.c_str();
+		deviceId = StdStrDeviceId.c_str();
+
+		return ret;
+	}
+	return -ERROR_NULLPTR;
+}
+
 int UIAudioDeviceCollection::SetApplicationVolume(int volume)
 {
 	if (AudioDeviceCollection != nullptr)
@@ -177,6 +218,29 @@ int UIAudioDeviceManager::GetPlaybackDeviceInfo(FString& deviceId, FString& devi
 	}
 	return -ERROR_NULLPTR;
 }
+
+int UIAudioDeviceManager::GetPlaybackDeviceInfoWithDetail(FString& deviceId, FString& deviceName, FString& deviceTypeName)
+{
+	if (AudioDeviceManager != nullptr)
+	{
+		char tempDeviceId[agora::rtc::MAX_DEVICE_ID_LENGTH_TYPE::MAX_DEVICE_ID_LENGTH];
+
+		char tempDeviceTypeName[agora::rtc::MAX_DEVICE_ID_LENGTH_TYPE::MAX_DEVICE_ID_LENGTH];
+
+		char tempDeviceName[agora::rtc::MAX_DEVICE_ID_LENGTH_TYPE::MAX_DEVICE_ID_LENGTH];
+		int ret = AudioDeviceManager->getPlaybackDeviceInfo(tempDeviceId, tempDeviceTypeName,tempDeviceName);
+
+
+
+		deviceId = UTF8_TO_TCHAR(tempDeviceId);
+		deviceTypeName = UTF8_TO_TCHAR(tempDeviceTypeName);
+		deviceName = UTF8_TO_TCHAR(tempDeviceName);
+
+		return ret;
+	}
+	return -ERROR_NULLPTR;
+}
+
 int UIAudioDeviceManager::SetPlaybackDeviceVolume(int volume)
 {
 	if (AudioDeviceManager != nullptr)
@@ -235,6 +299,27 @@ int UIAudioDeviceManager::GetRecordingDeviceInfo(FString& deviceId, FString& dev
 	}
 	return -ERROR_NULLPTR;
 }
+
+int UIAudioDeviceManager::GetRecordingDeviceInfoWithDetail(FString& deviceId, FString& deviceName, FString& deviceTypeName)
+{
+	if (AudioDeviceManager != nullptr)
+	{
+
+		char tempDeviceId[agora::rtc::MAX_DEVICE_ID_LENGTH_TYPE::MAX_DEVICE_ID_LENGTH];
+		char tempDeviceTypeName[agora::rtc::MAX_DEVICE_ID_LENGTH_TYPE::MAX_DEVICE_ID_LENGTH];
+		char tempDeviceName[agora::rtc::MAX_DEVICE_ID_LENGTH_TYPE::MAX_DEVICE_ID_LENGTH];
+
+		int ret = AudioDeviceManager->getRecordingDeviceInfo(tempDeviceId, tempDeviceTypeName,tempDeviceName);
+
+		deviceId = UTF8_TO_TCHAR(tempDeviceId);
+		deviceTypeName = UTF8_TO_TCHAR(tempDeviceTypeName);
+		deviceName = UTF8_TO_TCHAR(tempDeviceName);
+
+		return ret;
+	}
+	return -ERROR_NULLPTR;
+}
+
 int UIAudioDeviceManager::SetRecordingDeviceVolume(int volume)
 {
 	if (AudioDeviceManager != nullptr)
