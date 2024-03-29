@@ -6197,6 +6197,8 @@ public:
 	FRectangle position = FRectangle();
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|FScreenCaptureSourceInfo")
 	bool minimizeWindow = false;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|FScreenCaptureSourceInfo")
+	int64 sourceDisplayId = 0;
 
 #if defined(_WIN32) || (defined(__APPLE__) && TARGET_OS_MAC && !TARGET_OS_IPHONE)
 	FScreenCaptureSourceInfo(){}
@@ -6214,7 +6216,10 @@ public:
 		primaryMonitor = AgoraData.primaryMonitor;
 		isOccluded = AgoraData.isOccluded;
 		position = FRectangle(AgoraData.position);
+#if defined(_WIN32)
 		minimizeWindow = AgoraData.minimizeWindow;
+		//sourceDisplayId = AgoraData.sourceDisplayId; not support
+#endif
 	}
 
 	agora::rtc::ScreenCaptureSourceInfo CreateAgoraData() const {
@@ -6229,7 +6234,10 @@ public:
 		AgoraData.primaryMonitor = primaryMonitor;
 		AgoraData.isOccluded = isOccluded;
 		AgoraData.position = position.CreateAgoraData();
+#if defined(_WIN32)
 		AgoraData.minimizeWindow = minimizeWindow;
+		// AgoraData.sourceDisplayId = sourceDisplayId; Currrently
+#endif
 		return AgoraData;
 	}
 
