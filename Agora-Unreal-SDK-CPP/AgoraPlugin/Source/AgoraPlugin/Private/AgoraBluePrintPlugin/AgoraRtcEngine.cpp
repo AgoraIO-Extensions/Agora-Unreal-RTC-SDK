@@ -1226,7 +1226,7 @@ int UAgoraRtcEngine::SetCameraAutoExposureFaceModeEnabled(bool enabled)
 	return -AGORA_UNREAL_PLUGIN_ERROR_CODE::ERROR_NULLPTR;
 }
 
-int UAgoraRtcEngine::SetCameraStabilizationMode(EENUMCUSTOM_CAMERA_STABILIZATION_MODE mode)
+int UAgoraRtcEngine::SetCameraStabilizationMode(FENUMWRAP_CAMERA_STABILIZATION_MODE mode)
 {
 #if defined(__ANDROID__) || (defined(__APPLE__) && TARGET_OS_IOS)
 #if defined(__APPLE__)

@@ -312,8 +312,9 @@ public:
 		AgoraData.bytesPerSample = (agora::rtc::BYTES_PER_SAMPLE)bytesPerSample;
 		AgoraData.channels = channels;
 		AgoraData.samplesPerSec = samplesPerSec;
-		uint8* TmpBufferPtr = (uint8*)AgoraData.buffer;
+		uint8* TmpBufferPtr = nullptr;
 		SET_UABT_TARRAY_UINT8_TO_AGORA_UINT8_PTR___MEMALLOC(TmpBufferPtr, this->buffer)
+		AgoraData.buffer = TmpBufferPtr;
 		AgoraData.renderTimeMs = renderTimeMs;
 		AgoraData.avsync_type = avsync_type;
 

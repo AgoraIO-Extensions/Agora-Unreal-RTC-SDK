@@ -411,7 +411,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
 	int SetCameraAutoExposureFaceModeEnabled(bool enabled);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
-	int SetCameraStabilizationMode(EENUMCUSTOM_CAMERA_STABILIZATION_MODE mode);
+	int SetCameraStabilizationMode(FENUMWRAP_CAMERA_STABILIZATION_MODE mode);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
 	int SetDefaultAudioRouteToSpeakerphone(bool defaultToSpeaker);
 	UFUNCTION(BlueprintCallable, Category = "Agora|RtcEngineProxy")
