@@ -1,6 +1,7 @@
 //  Copyright (c) 2023 Agora.io. All rights reserved.
 
 using System;
+using System.Linq;
 using UnrealBuildTool;
 using System.Reflection;
 
@@ -54,7 +55,8 @@ public class AgoraPlugin : ModuleRules
             {
                 "Core",
                 "AgoraPluginLibrary",
-                "Projects"
+                "Projects",
+                "Eigen"
 				// ... add other public dependencies that you statically link with here ...
 			}
             );
@@ -92,5 +94,17 @@ public class AgoraPlugin : ModuleRules
             TargetRules Inner = (TargetRules)InnerField.GetValue(Target);
             Inner.AdditionalCompilerArguments += " -Wno-gcc-compat -Wno-reorder-ctor -Wno-nonportable-include-path ";
         }
+        
+        
+        if(Target.GlobalDefinitions.Contains("FORCE_ANSI_ALLOCATOR=1")){
+    
+            PublicDefinitions.Add(string.Format("USE_ANSI_ALLOCATOR=1"));
+            Console.WriteLine("[Agora Allocator] Use ANSI Allocator");
+        }
+        else{
+            PublicDefinitions.Add(string.Format("USE_ANSI_ALLOCATOR=0"));
+            Console.WriteLine("[Agora Allocator] Use UE Allocator");
+        }
+        
     }
 }
