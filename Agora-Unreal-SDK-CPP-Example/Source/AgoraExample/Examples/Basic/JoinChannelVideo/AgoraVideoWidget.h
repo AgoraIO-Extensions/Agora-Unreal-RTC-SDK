@@ -24,6 +24,7 @@
 
 #include "AgoraVideoWidget.generated.h"
 
+
 using namespace agora::rtc;
 using namespace agora;
 
@@ -56,6 +57,8 @@ public:
 		void onUserOffline(agora::rtc::uid_t uid, agora::rtc::USER_OFFLINE_REASON_TYPE reason) override;
 
 		void onVideoSizeChanged(VIDEO_SOURCE_TYPE sourceType, uid_t uid, int width, int height, int rotation) override;
+
+		void onVideoDeviceStateChanged(const char* deviceId, int deviceType, int deviceState) override;
 
 #pragma endregion
 
@@ -169,8 +172,6 @@ public:
 
 
 protected:
-
-	IRtcEngine* RtcEngineProxy;
 
 	FString AppId;
 	FString Token;

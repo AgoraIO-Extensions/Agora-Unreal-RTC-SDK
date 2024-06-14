@@ -51,14 +51,12 @@ void UMediaPlayerWithCustomDataWidget::InitAgoraEngine(FString APP_ID, FString T
 	Token = TOKEN;
 	ChannelName = CHANNEL_NAME;
 
-	RtcEngineProxy = agora::rtc::ue::createAgoraRtcEngineEx();
-
 	int SDKBuild = 0;
-	const char* SDKVersionInfo = RtcEngineProxy->getVersion(&SDKBuild);
+	const char* SDKVersionInfo = AgoraUERtcEngine::Get()->getVersion(&SDKBuild);
 	FString SDKInfo = FString::Printf(TEXT("SDK Version: %s Build: %d"), UTF8_TO_TCHAR(SDKVersionInfo), SDKBuild);
 	UBFL_Logger::Print(FString::Printf(TEXT("SDK Info:  %s"), *SDKInfo), LogMsgViewPtr);
 
-	int ret = RtcEngineProxy->initialize(RtcEngineContext);
+	int ret = AgoraUERtcEngine::Get()->initialize(RtcEngineContext);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 }
 
@@ -75,7 +73,7 @@ void UMediaPlayerWithCustomDataWidget::ShowUserGuide()
 
 void UMediaPlayerWithCustomDataWidget::InitAgoraMediaPlayer()
 {
-	MediaPlayer = RtcEngineProxy->createMediaPlayer();
+	MediaPlayer = AgoraUERtcEngine::Get()->createMediaPlayer();
 	UserIMediaPlayerSourceObserver = MakeShared<FUserIMediaPlayerSourceObserver>(this);
 	MediaPlayer->registerPlayerSourceObserver(UserIMediaPlayerSourceObserver.Get());
 	UBFL_Logger::Print(FString::Printf(TEXT("%s PlayerID=%d"), *FString(FUNCTION_MACRO), MediaPlayer->getMediaPlayerId()), LogMsgViewPtr);
@@ -84,9 +82,9 @@ void UMediaPlayerWithCustomDataWidget::InitAgoraMediaPlayer()
 void UMediaPlayerWithCustomDataWidget::JoinChannelWithMPK()
 {
 
-	RtcEngineProxy->enableAudio();
-	RtcEngineProxy->enableVideo();
-	RtcEngineProxy->setClientRole(CLIENT_ROLE_BROADCASTER);
+	AgoraUERtcEngine::Get()->enableAudio();
+	AgoraUERtcEngine::Get()->enableVideo();
+	AgoraUERtcEngine::Get()->setClientRole(CLIENT_ROLE_BROADCASTER);
 
 	ChannelMediaOptions Options;
 	Options.autoSubscribeAudio = true;
@@ -99,7 +97,7 @@ void UMediaPlayerWithCustomDataWidget::JoinChannelWithMPK()
 	Options.enableAudioRecordingOrPlayout = true;
 	Options.clientRoleType = CLIENT_ROLE_TYPE::CLIENT_ROLE_BROADCASTER;
 
-	int ret = RtcEngineProxy->joinChannel(TCHAR_TO_UTF8(*Token), TCHAR_TO_UTF8(*ChannelName), 0, Options);
+	int ret = AgoraUERtcEngine::Get()->joinChannel(TCHAR_TO_UTF8(*Token), TCHAR_TO_UTF8(*ChannelName), 0, Options);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 
 }
@@ -174,7 +172,7 @@ void UMediaPlayerWithCustomDataWidget::NativeDestruct()
 
 void UMediaPlayerWithCustomDataWidget::UnInitAgoraEngine()
 {
-	if (RtcEngineProxy != nullptr)
+	if (AgoraUERtcEngine::Get() != nullptr)
 	{
 		if (UserIMediaPlayerCustomDataProvider != nullptr)
 			UserIMediaPlayerCustomDataProvider->Release();
@@ -182,12 +180,11 @@ void UMediaPlayerWithCustomDataWidget::UnInitAgoraEngine()
 		if (MediaPlayer)
 			MediaPlayer->stop();
 
-		RtcEngineProxy->destroyMediaPlayer(MediaPlayer);
+		AgoraUERtcEngine::Get()->destroyMediaPlayer(MediaPlayer);
 
-		RtcEngineProxy->leaveChannel();
-		RtcEngineProxy->unregisterEventHandler(UserRtcEventHandlerEx.Get());
-		RtcEngineProxy->release();
-		RtcEngineProxy = nullptr;
+		AgoraUERtcEngine::Get()->leaveChannel();
+		AgoraUERtcEngine::Get()->unregisterEventHandler(UserRtcEventHandlerEx.Get());
+		AgoraUERtcEngine::Release();
 
 		UBFL_Logger::Print(FString::Printf(TEXT("%s release agora engine"), *FString(FUNCTION_MACRO)), LogMsgViewPtr);
 	}
@@ -207,10 +204,8 @@ int UMediaPlayerWithCustomDataWidget::MakeVideoView(uint32 uid, agora::rtc::VIDE
 		channelId will be set in [setupLocalVideo] / [setupRemoteVideo]
 	*/
 
-	int ret = -ERROR_NULLPTR;
+	int ret = 0;
 
-	if (RtcEngineProxy == nullptr)
-		return ret;
 
 	agora::rtc::VideoCanvas videoCanvas;
 	videoCanvas.uid = uid;
@@ -219,7 +214,7 @@ int UMediaPlayerWithCustomDataWidget::MakeVideoView(uint32 uid, agora::rtc::VIDE
 	if (uid == 0) {
 		FVideoViewIdentity VideoViewIdentity(uid, sourceType, "");
 		videoCanvas.view = UBFL_VideoViewManager::CreateOneVideoViewToCanvasPanel(VideoViewIdentity, CanvasPanel_VideoView, VideoViewMap, DraggableVideoViewTemplate);
-		ret = RtcEngineProxy->setupLocalVideo(videoCanvas);
+		ret = AgoraUERtcEngine::Get()->setupLocalVideo(videoCanvas);
 	}
 	else
 	{
@@ -228,13 +223,13 @@ int UMediaPlayerWithCustomDataWidget::MakeVideoView(uint32 uid, agora::rtc::VIDE
 		videoCanvas.view = UBFL_VideoViewManager::CreateOneVideoViewToCanvasPanel(VideoViewIdentity, CanvasPanel_VideoView, VideoViewMap, DraggableVideoViewTemplate);
 
 		if (channelId == "") {
-			ret = RtcEngineProxy->setupRemoteVideo(videoCanvas);
+			ret = AgoraUERtcEngine::Get()->setupRemoteVideo(videoCanvas);
 		}
 		else {
 			agora::rtc::RtcConnection connection;
 			std::string StdStrChannelId = TCHAR_TO_UTF8(*channelId);
 			connection.channelId = StdStrChannelId.c_str();
-			ret = ((agora::rtc::IRtcEngineEx*)RtcEngineProxy)->setupRemoteVideoEx(videoCanvas, connection);
+			ret = ((agora::rtc::IRtcEngineEx*)AgoraUERtcEngine::Get())->setupRemoteVideoEx(videoCanvas, connection);
 		}
 	}
 
@@ -243,10 +238,8 @@ int UMediaPlayerWithCustomDataWidget::MakeVideoView(uint32 uid, agora::rtc::VIDE
 
 int UMediaPlayerWithCustomDataWidget::ReleaseVideoView(uint32 uid, agora::rtc::VIDEO_SOURCE_TYPE sourceType /*= VIDEO_SOURCE_CAMERA_PRIMARY*/, FString channelId /*= ""*/)
 {
-	int ret = -ERROR_NULLPTR;
+	int ret = 0;
 
-	if (RtcEngineProxy == nullptr)
-		return ret;
 
 	agora::rtc::VideoCanvas videoCanvas;
 	videoCanvas.view = nullptr;
@@ -256,20 +249,20 @@ int UMediaPlayerWithCustomDataWidget::ReleaseVideoView(uint32 uid, agora::rtc::V
 	if (uid == 0) {
 		FVideoViewIdentity VideoViewIdentity(uid, sourceType, "");
 		UBFL_VideoViewManager::ReleaseOneVideoView(VideoViewIdentity, VideoViewMap);
-		ret = RtcEngineProxy->setupLocalVideo(videoCanvas);
+		ret = AgoraUERtcEngine::Get()->setupLocalVideo(videoCanvas);
 	}
 	else
 	{
 		FVideoViewIdentity VideoViewIdentity(uid, sourceType, channelId);
 		UBFL_VideoViewManager::ReleaseOneVideoView(VideoViewIdentity, VideoViewMap);
 		if (channelId == "") {
-			ret = RtcEngineProxy->setupRemoteVideo(videoCanvas);
+			ret = AgoraUERtcEngine::Get()->setupRemoteVideo(videoCanvas);
 		}
 		else {
 			agora::rtc::RtcConnection connection;
 			std::string StdStrChannelId = TCHAR_TO_UTF8(*channelId);
 			connection.channelId = StdStrChannelId.c_str();
-			ret = ((agora::rtc::IRtcEngineEx*)RtcEngineProxy)->setupRemoteVideoEx(videoCanvas, connection);
+			ret = ((agora::rtc::IRtcEngineEx*)AgoraUERtcEngine::Get())->setupRemoteVideoEx(videoCanvas, connection);
 		}
 	}
 	return ret;
@@ -374,7 +367,7 @@ void UMediaPlayerWithCustomDataWidget::FUserRtcEventHandlerEx::onUserOffline(con
 
 #pragma region AgoraCallback - IMediaPlayerSourceObserver
 
-void UMediaPlayerWithCustomDataWidget::FUserIMediaPlayerSourceObserver::onPlayerSourceStateChanged(media::base::MEDIA_PLAYER_STATE state, media::base::MEDIA_PLAYER_ERROR ec)
+void UMediaPlayerWithCustomDataWidget::FUserIMediaPlayerSourceObserver::onPlayerSourceStateChanged(media::base::MEDIA_PLAYER_STATE state, media::base::MEDIA_PLAYER_REASON reason)
 {
 	if (!IsWidgetValid())
 		return;
@@ -403,7 +396,7 @@ void UMediaPlayerWithCustomDataWidget::FUserIMediaPlayerSourceObserver::onPlayer
 		});
 }
 
-void UMediaPlayerWithCustomDataWidget::FUserIMediaPlayerSourceObserver::onPositionChanged(int64_t position_ms)
+void UMediaPlayerWithCustomDataWidget::FUserIMediaPlayerSourceObserver::onPositionChanged(int64_t positionMs, int64_t timestampMs)
 {
 
 }

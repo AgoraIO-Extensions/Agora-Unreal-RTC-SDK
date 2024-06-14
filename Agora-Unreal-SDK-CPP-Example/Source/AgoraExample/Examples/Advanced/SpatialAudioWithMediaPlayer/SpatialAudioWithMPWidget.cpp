@@ -60,14 +60,12 @@ void USpatialAudioWithMPWidget::InitAgoraEngine(FString APP_ID, FString TOKEN, F
 	Token = TOKEN;
 	ChannelName = CHANNEL_NAME;
 
-	RtcEngineProxy = agora::rtc::ue::createAgoraRtcEngineEx();
-
 	int SDKBuild = 0;
-	const char* SDKVersionInfo = RtcEngineProxy->getVersion(&SDKBuild);
+	const char* SDKVersionInfo = AgoraUERtcEngine::Get()->getVersion(&SDKBuild);
 	FString SDKInfo = FString::Printf(TEXT("SDK Version: %s Build: %d"), UTF8_TO_TCHAR(SDKVersionInfo), SDKBuild);
 	UBFL_Logger::Print(FString::Printf(TEXT("SDK Info:  %s"), *SDKInfo), LogMsgViewPtr);
 
-	int ret = RtcEngineProxy->initialize(RtcEngineContext);
+	int ret = AgoraUERtcEngine::Get()->initialize(RtcEngineContext);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 }
 
@@ -98,7 +96,7 @@ void USpatialAudioWithMPWidget::ShowUserGuide()
 
 void USpatialAudioWithMPWidget::InitAgoraMediaPlayer()
 {
-	MediaPlayer = RtcEngineProxy->createMediaPlayer();
+	MediaPlayer = AgoraUERtcEngine::Get()->createMediaPlayer();
 	MediaPlayerSourceObserverWarpper = MakeShared<FUserIMediaPlayerSourceObserver>(this);
 	int ret = MediaPlayer->registerPlayerSourceObserver(MediaPlayerSourceObserverWarpper.Get());
 	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
@@ -108,14 +106,14 @@ void USpatialAudioWithMPWidget::InitAgoraSpatialAudioEngine()
 {
 	if (LocalSpatialAudioEngine == nullptr)
 	{
-		RtcEngineProxy->queryInterface(AGORA_IID_LOCAL_SPATIAL_AUDIO, (void**)&LocalSpatialAudioEngine);
+		AgoraUERtcEngine::Get()->queryInterface(AGORA_IID_LOCAL_SPATIAL_AUDIO, (void**)&LocalSpatialAudioEngine);
 	}
 
 	if (LocalSpatialAudioEngine != nullptr)
 	{
 		LocalSpatialAudioConfig AudioConfig;
 
-		AudioConfig.rtcEngine = RtcEngineProxy;
+		AudioConfig.rtcEngine = AgoraUERtcEngine::Get();
 
 		auto ret = LocalSpatialAudioEngine->initialize(AudioConfig);
 
@@ -128,10 +126,10 @@ void USpatialAudioWithMPWidget::InitAgoraSpatialAudioEngine()
 
 void USpatialAudioWithMPWidget::JoinChannel()
 {
-	RtcEngineProxy->enableAudio();
-	RtcEngineProxy->enableVideo();
-	RtcEngineProxy->enableSpatialAudio(true);
-	RtcEngineProxy->setClientRole(CLIENT_ROLE_BROADCASTER);
+	AgoraUERtcEngine::Get()->enableAudio();
+	AgoraUERtcEngine::Get()->enableVideo();
+	AgoraUERtcEngine::Get()->enableSpatialAudio(true);
+	AgoraUERtcEngine::Get()->setClientRole(CLIENT_ROLE_BROADCASTER);
 
 	agora::rtc::ChannelMediaOptions ChannelMediaOptions;
 	ChannelMediaOptions.autoSubscribeAudio = true;
@@ -144,7 +142,7 @@ void USpatialAudioWithMPWidget::JoinChannel()
 
 	std::string StdStrChannelName = TCHAR_TO_UTF8(*ChannelName);
 	agora::rtc::RtcConnection connection(StdStrChannelName.c_str(), UID);
-	int ret = RtcEngineProxy->joinChannelEx(TCHAR_TO_UTF8(*Token), connection, ChannelMediaOptions, nullptr);
+	int ret = AgoraUERtcEngine::Get()->joinChannelEx(TCHAR_TO_UTF8(*Token), connection, ChannelMediaOptions, nullptr);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 }
 
@@ -170,19 +168,19 @@ void USpatialAudioWithMPWidget::JoinChannelWithMPK()
 
 	std::string StdStrChannelName = TCHAR_TO_UTF8(*ChannelName);
 	agora::rtc::RtcConnection connection(StdStrChannelName.c_str(), UID_UsedInMPK);
-	int ret = RtcEngineProxy->joinChannelEx(TCHAR_TO_UTF8(*Token), connection, ChannelMediaOptions, nullptr);
-	RtcEngineProxy->updateChannelMediaOptionsEx(ChannelMediaOptions, connection);
+	int ret = AgoraUERtcEngine::Get()->joinChannelEx(TCHAR_TO_UTF8(*Token), connection, ChannelMediaOptions, nullptr);
+	AgoraUERtcEngine::Get()->updateChannelMediaOptionsEx(ChannelMediaOptions, connection);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s joinChannelEx ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 }
 
 
 void USpatialAudioWithMPWidget::OnBtnLeftClicked()
 {
-	RemoteVoicePositionInfo remoteVoicePos{ { 0.0f, -1.0f, 0.0f }, { 0.0f, 0.0f, 0.0f } };
-	std::string StdStrChannelName = TCHAR_TO_UTF8(*ChannelName);
-	agora::rtc::RtcConnection connection(StdStrChannelName.c_str(), UID);
-	int ret = LocalSpatialAudioEngine->updateRemotePositionEx(UID_UsedInMPK, remoteVoicePos, connection);
-	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
+	//RemoteVoicePositionInfo remoteVoicePos{ { 0.0f, -1.0f, 0.0f }, { 0.0f, 0.0f, 0.0f } };
+	//std::string StdStrChannelName = TCHAR_TO_UTF8(*ChannelName);
+	//agora::rtc::RtcConnection connection(StdStrChannelName.c_str(), UID);
+	//int ret = LocalSpatialAudioEngine->updateRemotePositionEx(UID_UsedInMPK, remoteVoicePos, connection);
+	//UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 }
 
 void USpatialAudioWithMPWidget::OnBtnPlayClicked()
@@ -197,13 +195,13 @@ void USpatialAudioWithMPWidget::OnBtnPlayClicked()
 
 void USpatialAudioWithMPWidget::OnBtnRightClicked()
 {
-	RemoteVoicePositionInfo remoteVoicePos{ { 0.0f, 1.0f, 0.0f }, { 0.0f, 0.0f, 0.0f } };
+	//RemoteVoicePositionInfo remoteVoicePos{ { 0.0f, 1.0f, 0.0f }, { 0.0f, 0.0f, 0.0f } };
 
-	std::string StdStrChannelName = TCHAR_TO_UTF8(*ChannelName);
-	agora::rtc::RtcConnection connection(StdStrChannelName.c_str(), UID);
-	int ret = LocalSpatialAudioEngine->updateRemotePositionEx(UID_UsedInMPK, remoteVoicePos, connection);
+	//std::string StdStrChannelName = TCHAR_TO_UTF8(*ChannelName);
+	//agora::rtc::RtcConnection connection(StdStrChannelName.c_str(), UID);
+	//int ret = LocalSpatialAudioEngine->updateRemotePositionEx(UID_UsedInMPK, remoteVoicePos, connection);
 
-	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
+	//UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 }
 
 void USpatialAudioWithMPWidget::OnBtnBackToHomeClicked()
@@ -224,7 +222,7 @@ void USpatialAudioWithMPWidget::NativeDestruct()
 
 void USpatialAudioWithMPWidget::UnInitAgoraEngine()
 {
-	if (RtcEngineProxy != nullptr)
+	if (AgoraUERtcEngine::Get() != nullptr)
 	{
 		if (MediaPlayer)
 		{
@@ -232,10 +230,9 @@ void USpatialAudioWithMPWidget::UnInitAgoraEngine()
 			MediaPlayer->unregisterPlayerSourceObserver(MediaPlayerSourceObserverWarpper.Get());
 		}
 
-		RtcEngineProxy->leaveChannel();
-		RtcEngineProxy->unregisterEventHandler(UserRtcEventHandlerEx.Get());
-		RtcEngineProxy->release();
-		RtcEngineProxy = nullptr;
+		AgoraUERtcEngine::Get()->leaveChannel();
+		AgoraUERtcEngine::Get()->unregisterEventHandler(UserRtcEventHandlerEx.Get());
+		AgoraUERtcEngine::Release();
 
 		UBFL_Logger::Print(FString::Printf(TEXT("%s release agora engine"), *FString(FUNCTION_MACRO)), LogMsgViewPtr);
 	}
@@ -256,10 +253,8 @@ int USpatialAudioWithMPWidget::MakeVideoView(uint32 uid, agora::rtc::VIDEO_SOURC
 		channelId will be set in [setupLocalVideo] / [setupRemoteVideo]
 	*/
 
-	int ret = -ERROR_NULLPTR;
+	int ret = 0;
 
-	if (RtcEngineProxy == nullptr)
-		return ret;
 
 	agora::rtc::VideoCanvas videoCanvas;
 	videoCanvas.uid = uid;
@@ -268,7 +263,7 @@ int USpatialAudioWithMPWidget::MakeVideoView(uint32 uid, agora::rtc::VIDEO_SOURC
 	if (uid == 0) {
 		FVideoViewIdentity VideoViewIdentity(uid, sourceType, "");
 		videoCanvas.view = UBFL_VideoViewManager::CreateOneVideoViewToCanvasPanel(VideoViewIdentity, CanvasPanel_VideoView, VideoViewMap, DraggableVideoViewTemplate);
-		ret = RtcEngineProxy->setupLocalVideo(videoCanvas);
+		ret = AgoraUERtcEngine::Get()->setupLocalVideo(videoCanvas);
 	}
 	else
 	{
@@ -277,13 +272,13 @@ int USpatialAudioWithMPWidget::MakeVideoView(uint32 uid, agora::rtc::VIDEO_SOURC
 		videoCanvas.view = UBFL_VideoViewManager::CreateOneVideoViewToCanvasPanel(VideoViewIdentity, CanvasPanel_VideoView, VideoViewMap, DraggableVideoViewTemplate);
 
 		if (channelId == "") {
-			ret = RtcEngineProxy->setupRemoteVideo(videoCanvas);
+			ret = AgoraUERtcEngine::Get()->setupRemoteVideo(videoCanvas);
 		}
 		else {
 			agora::rtc::RtcConnection connection;
 			std::string StdStrChannelId = TCHAR_TO_UTF8(*channelId);
 			connection.channelId = StdStrChannelId.c_str();
-			ret = ((agora::rtc::IRtcEngineEx*)RtcEngineProxy)->setupRemoteVideoEx(videoCanvas, connection);
+			ret = ((agora::rtc::IRtcEngineEx*)AgoraUERtcEngine::Get())->setupRemoteVideoEx(videoCanvas, connection);
 		}
 	}
 
@@ -292,10 +287,8 @@ int USpatialAudioWithMPWidget::MakeVideoView(uint32 uid, agora::rtc::VIDEO_SOURC
 
 int USpatialAudioWithMPWidget::ReleaseVideoView(uint32 uid, agora::rtc::VIDEO_SOURCE_TYPE sourceType /*= VIDEO_SOURCE_CAMERA_PRIMARY*/, FString channelId /*= ""*/)
 {
-	int ret = -ERROR_NULLPTR;
+	int ret = 0;
 
-	if (RtcEngineProxy == nullptr)
-		return ret;
 
 	agora::rtc::VideoCanvas videoCanvas;
 	videoCanvas.view = nullptr;
@@ -305,20 +298,20 @@ int USpatialAudioWithMPWidget::ReleaseVideoView(uint32 uid, agora::rtc::VIDEO_SO
 	if (uid == 0) {
 		FVideoViewIdentity VideoViewIdentity(uid, sourceType, "");
 		UBFL_VideoViewManager::ReleaseOneVideoView(VideoViewIdentity, VideoViewMap);
-		ret = RtcEngineProxy->setupLocalVideo(videoCanvas);
+		ret = AgoraUERtcEngine::Get()->setupLocalVideo(videoCanvas);
 	}
 	else
 	{
 		FVideoViewIdentity VideoViewIdentity(uid, sourceType, channelId);
 		UBFL_VideoViewManager::ReleaseOneVideoView(VideoViewIdentity, VideoViewMap);
 		if (channelId == "") {
-			ret = RtcEngineProxy->setupRemoteVideo(videoCanvas);
+			ret = AgoraUERtcEngine::Get()->setupRemoteVideo(videoCanvas);
 		}
 		else {
 			agora::rtc::RtcConnection connection;
 			std::string StdStrChannelId = TCHAR_TO_UTF8(*channelId);
 			connection.channelId = StdStrChannelId.c_str();
-			ret = ((agora::rtc::IRtcEngineEx*)RtcEngineProxy)->setupRemoteVideoEx(videoCanvas, connection);
+			ret = ((agora::rtc::IRtcEngineEx*)AgoraUERtcEngine::Get())->setupRemoteVideoEx(videoCanvas, connection);
 		}
 	}
 	return ret;
@@ -442,7 +435,7 @@ void USpatialAudioWithMPWidget::FUserRtcEventHandlerEx::onUserOffline(const agor
 
 #pragma region  AgoraCallback - IMediaPlayerSourceObserver
 
-void USpatialAudioWithMPWidget::FUserIMediaPlayerSourceObserver::onPlayerSourceStateChanged(media::base::MEDIA_PLAYER_STATE state, media::base::MEDIA_PLAYER_ERROR ec)
+void USpatialAudioWithMPWidget::FUserIMediaPlayerSourceObserver::onPlayerSourceStateChanged(media::base::MEDIA_PLAYER_STATE state, media::base::MEDIA_PLAYER_REASON reason)
 {
 	if (state != media::base::MEDIA_PLAYER_STATE::PLAYER_STATE_OPEN_COMPLETED)
 		return;
@@ -475,7 +468,7 @@ void USpatialAudioWithMPWidget::FUserIMediaPlayerSourceObserver::onPlayerSourceS
 		});
 }
 
-void USpatialAudioWithMPWidget::FUserIMediaPlayerSourceObserver::onPositionChanged(int64_t position_ms)
+void USpatialAudioWithMPWidget::FUserIMediaPlayerSourceObserver::onPositionChanged(int64_t positionMs, int64_t timestampMs)
 {
 
 }

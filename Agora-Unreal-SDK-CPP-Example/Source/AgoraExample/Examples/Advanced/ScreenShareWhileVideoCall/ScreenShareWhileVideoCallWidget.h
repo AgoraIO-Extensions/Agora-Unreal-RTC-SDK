@@ -171,7 +171,7 @@ protected:
 #endif
 
 
-	IRtcEngineEx* RtcEngineProxy;
+
 
 
 

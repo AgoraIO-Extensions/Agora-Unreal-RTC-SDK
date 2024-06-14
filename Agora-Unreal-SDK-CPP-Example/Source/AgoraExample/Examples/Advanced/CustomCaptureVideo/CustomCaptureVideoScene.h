@@ -111,7 +111,6 @@ protected:
 	FString Token = "";
 	FString ChannelName = "";
 
-	IRtcEngine* RtcEngineProxy;
 	agora::media::IMediaEngine* MediaEngineManager;
 
 	FDelegateHandle eventId;

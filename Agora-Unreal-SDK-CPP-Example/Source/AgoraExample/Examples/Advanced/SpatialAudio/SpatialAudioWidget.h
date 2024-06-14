@@ -139,7 +139,7 @@ protected:
 	FString Token = "";
 	FString ChannelName = "";
 
-	IRtcEngineEx* RtcEngineProxy;
+
 	ILocalSpatialAudioEngine* LocalSpatialAudioEngine = nullptr;
 
 

@@ -55,14 +55,12 @@ void UJoinMultipleChannelsWidget::InitAgoraEngine(FString APP_ID, FString TOKEN,
 	ChannelName1 = CHANNEL_NAME;
 	ChannelName2 = CHANNEL_NAME + "2";
 
-	RtcEngineProxy = agora::rtc::ue::createAgoraRtcEngineEx();
-
 	int SDKBuild = 0;
-	const char* SDKVersionInfo = RtcEngineProxy->getVersion(&SDKBuild);
+	const char* SDKVersionInfo = AgoraUERtcEngine::Get()->getVersion(&SDKBuild);
 	FString SDKInfo = FString::Printf(TEXT("SDK Version: %s Build: %d"), UTF8_TO_TCHAR(SDKVersionInfo), SDKBuild);
 	UBFL_Logger::Print(FString::Printf(TEXT("SDK Info:  %s"), *SDKInfo), LogMsgViewPtr);
 
-	int ret = RtcEngineProxy->initialize(RtcEngineContext);
+	int ret = AgoraUERtcEngine::Get()->initialize(RtcEngineContext);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 }
 
@@ -96,8 +94,8 @@ void UJoinMultipleChannelsWidget::ShowUserGuide()
 
 void UJoinMultipleChannelsWidget::JoinChannel1()
 {
-	RtcEngineProxy->enableAudio();
-	RtcEngineProxy->enableVideo();
+	AgoraUERtcEngine::Get()->enableAudio();
+	AgoraUERtcEngine::Get()->enableVideo();
 
 	agora::rtc::ChannelMediaOptions ChannelMediaOptions;
 	ChannelMediaOptions.autoSubscribeAudio = true;
@@ -113,7 +111,7 @@ void UJoinMultipleChannelsWidget::JoinChannel1()
 	connection.channelId = StdStrChannelName.c_str();
 	connection.localUid = UIDChannel1;
 
-	int ret = RtcEngineProxy->joinChannelEx(TCHAR_TO_UTF8(*Token), connection, ChannelMediaOptions, nullptr);
+	int ret = AgoraUERtcEngine::Get()->joinChannelEx(TCHAR_TO_UTF8(*Token), connection, ChannelMediaOptions, nullptr);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s ChannelName=%s ret %d"), *FString(FUNCTION_MACRO), *ChannelName1, ret), LogMsgViewPtr);
 }
 
@@ -134,7 +132,7 @@ void UJoinMultipleChannelsWidget::JoinChannel2()
 	connection.channelId = StdStrChannelName.c_str();
 	connection.localUid = UIDChannel2;
 
-	int ret = RtcEngineProxy->joinChannelEx(TCHAR_TO_UTF8(*Token), connection, ChannelMediaOptions, nullptr);
+	int ret = AgoraUERtcEngine::Get()->joinChannelEx(TCHAR_TO_UTF8(*Token), connection, ChannelMediaOptions, nullptr);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s ChannelName=%s ret %d"), *FString(FUNCTION_MACRO), *ChannelName2, ret), LogMsgViewPtr);
 }
 
@@ -154,7 +152,7 @@ void UJoinMultipleChannelsWidget::OnBtnPublishChannel1()
 	Connection2.channelId = StdStrChannelName2.c_str();
 	Connection2.localUid = UIDChannel2;
 
-	int ret2 = RtcEngineProxy->updateChannelMediaOptionsEx(Options2, Connection2);
+	int ret2 = AgoraUERtcEngine::Get()->updateChannelMediaOptionsEx(Options2, Connection2);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s ChannelName=%s ret %d"), *FString(FUNCTION_MACRO), *ChannelName2, ret2), LogMsgViewPtr);
 
 
@@ -168,7 +166,7 @@ void UJoinMultipleChannelsWidget::OnBtnPublishChannel1()
 	Connection1.channelId = StdStrChannelName1.c_str();
 	Connection1.localUid = UIDChannel1;
 
-	int ret1 = RtcEngineProxy->updateChannelMediaOptionsEx(Options1, Connection1);
+	int ret1 = AgoraUERtcEngine::Get()->updateChannelMediaOptionsEx(Options1, Connection1);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s ChannelName=%s ret %d"), *FString(FUNCTION_MACRO), *ChannelName1, ret1), LogMsgViewPtr);
 }
 
@@ -185,7 +183,7 @@ void UJoinMultipleChannelsWidget::OnBtnPublishChannel2()
 	Connection1.channelId = StdStrChannelName1.c_str();
 	Connection1.localUid = UIDChannel1;
 
-	int ret1 = RtcEngineProxy->updateChannelMediaOptionsEx(Options1, Connection1);
+	int ret1 = AgoraUERtcEngine::Get()->updateChannelMediaOptionsEx(Options1, Connection1);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s ChannelName=%s ret %d"), *FString(FUNCTION_MACRO), *ChannelName1, ret1), LogMsgViewPtr);
 
 
@@ -199,7 +197,7 @@ void UJoinMultipleChannelsWidget::OnBtnPublishChannel2()
 	Connection2.channelId = StdStrChannelName2.c_str();
 	Connection2.localUid = UIDChannel2;
 
-	int ret2 = RtcEngineProxy->updateChannelMediaOptionsEx(Options2, Connection2);
+	int ret2 = AgoraUERtcEngine::Get()->updateChannelMediaOptionsEx(Options2, Connection2);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s ChannelName=%s ret %d"), *FString(FUNCTION_MACRO), *ChannelName2, ret2), LogMsgViewPtr);
 
 }
@@ -225,12 +223,11 @@ void UJoinMultipleChannelsWidget::NativeDestruct()
 
 void UJoinMultipleChannelsWidget::UnInitAgoraEngine()
 {
-	if (RtcEngineProxy != nullptr)
+	if (AgoraUERtcEngine::Get() != nullptr)
 	{
-		RtcEngineProxy->leaveChannel();
-		RtcEngineProxy->unregisterEventHandler(UserRtcEventHandlerEx.Get());
-		RtcEngineProxy->release();
-		RtcEngineProxy = nullptr;
+		AgoraUERtcEngine::Get()->leaveChannel();
+		AgoraUERtcEngine::Get()->unregisterEventHandler(UserRtcEventHandlerEx.Get());
+		AgoraUERtcEngine::Release();
 
 		UBFL_Logger::Print(FString::Printf(TEXT("%s release agora engine"), *FString(FUNCTION_MACRO)), LogMsgViewPtr);
 	}
@@ -251,10 +248,8 @@ int UJoinMultipleChannelsWidget::MakeVideoView(uint32 uid, agora::rtc::VIDEO_SOU
 		channelId will be set in [setupLocalVideo] / [setupRemoteVideo]
 	*/
 
-	int ret = -ERROR_NULLPTR;
+	int ret = 0;
 
-	if (RtcEngineProxy == nullptr)
-		return ret;
 
 	agora::rtc::VideoCanvas videoCanvas;
 	videoCanvas.uid = uid;
@@ -263,7 +258,7 @@ int UJoinMultipleChannelsWidget::MakeVideoView(uint32 uid, agora::rtc::VIDEO_SOU
 	if (uid == 0) {
 		FVideoViewIdentity VideoViewIdentity(uid, sourceType, "");
 		videoCanvas.view = UBFL_VideoViewManager::CreateOneVideoViewToCanvasPanel(VideoViewIdentity, CanvasPanel_VideoView, VideoViewMap, DraggableVideoViewTemplate);
-		ret = RtcEngineProxy->setupLocalVideo(videoCanvas);
+		ret = AgoraUERtcEngine::Get()->setupLocalVideo(videoCanvas);
 	}
 	else
 	{
@@ -272,13 +267,13 @@ int UJoinMultipleChannelsWidget::MakeVideoView(uint32 uid, agora::rtc::VIDEO_SOU
 		videoCanvas.view = UBFL_VideoViewManager::CreateOneVideoViewToCanvasPanel(VideoViewIdentity, CanvasPanel_VideoView, VideoViewMap, DraggableVideoViewTemplate);
 
 		if (channelId == "") {
-			ret = RtcEngineProxy->setupRemoteVideo(videoCanvas);
+			ret = AgoraUERtcEngine::Get()->setupRemoteVideo(videoCanvas);
 		}
 		else {
 			agora::rtc::RtcConnection connection;
 			std::string StdStrChannelId = TCHAR_TO_UTF8(*channelId);
 			connection.channelId = StdStrChannelId.c_str();
-			ret = ((agora::rtc::IRtcEngineEx*)RtcEngineProxy)->setupRemoteVideoEx(videoCanvas, connection);
+			ret = ((agora::rtc::IRtcEngineEx*)AgoraUERtcEngine::Get())->setupRemoteVideoEx(videoCanvas, connection);
 		}
 	}
 
@@ -287,10 +282,8 @@ int UJoinMultipleChannelsWidget::MakeVideoView(uint32 uid, agora::rtc::VIDEO_SOU
 
 int UJoinMultipleChannelsWidget::ReleaseVideoView(uint32 uid, agora::rtc::VIDEO_SOURCE_TYPE sourceType /*= VIDEO_SOURCE_CAMERA_PRIMARY*/, FString channelId /*= ""*/)
 {
-	int ret = -ERROR_NULLPTR;
+	int ret = 0;
 
-	if (RtcEngineProxy == nullptr)
-		return ret;
 
 	agora::rtc::VideoCanvas videoCanvas;
 	videoCanvas.view = nullptr;
@@ -300,20 +293,20 @@ int UJoinMultipleChannelsWidget::ReleaseVideoView(uint32 uid, agora::rtc::VIDEO_
 	if (uid == 0) {
 		FVideoViewIdentity VideoViewIdentity(uid, sourceType, "");
 		UBFL_VideoViewManager::ReleaseOneVideoView(VideoViewIdentity, VideoViewMap);
-		ret = RtcEngineProxy->setupLocalVideo(videoCanvas);
+		ret = AgoraUERtcEngine::Get()->setupLocalVideo(videoCanvas);
 	}
 	else
 	{
 		FVideoViewIdentity VideoViewIdentity(uid, sourceType, channelId);
 		UBFL_VideoViewManager::ReleaseOneVideoView(VideoViewIdentity, VideoViewMap);
 		if (channelId == "") {
-			ret = RtcEngineProxy->setupRemoteVideo(videoCanvas);
+			ret = AgoraUERtcEngine::Get()->setupRemoteVideo(videoCanvas);
 		}
 		else {
 			agora::rtc::RtcConnection connection;
 			std::string StdStrChannelId = TCHAR_TO_UTF8(*channelId);
 			connection.channelId = StdStrChannelId.c_str();
-			ret = ((agora::rtc::IRtcEngineEx*)RtcEngineProxy)->setupRemoteVideoEx(videoCanvas, connection);
+			ret = ((agora::rtc::IRtcEngineEx*)AgoraUERtcEngine::Get())->setupRemoteVideoEx(videoCanvas, connection);
 		}
 	}
 	return ret;

@@ -65,14 +65,12 @@ void UScreenShareWidget::InitAgoraEngine(FString APP_ID, FString TOKEN, FString 
 	Token = TOKEN;
 	ChannelName = CHANNEL_NAME;
 
-	RtcEngineProxy = agora::rtc::ue::createAgoraRtcEngineEx();
-
 	int SDKBuild = 0;
-	const char* SDKVersionInfo = RtcEngineProxy->getVersion(&SDKBuild);
+	const char* SDKVersionInfo = AgoraUERtcEngine::Get()->getVersion(&SDKBuild);
 	FString SDKInfo = FString::Printf(TEXT("SDK Version: %s Build: %d"), UTF8_TO_TCHAR(SDKVersionInfo), SDKBuild);
 	UBFL_Logger::Print(FString::Printf(TEXT("SDK Info:  %s"), *SDKInfo), LogMsgViewPtr);
 
-	int ret = RtcEngineProxy->initialize(RtcEngineContext);
+	int ret = AgoraUERtcEngine::Get()->initialize(RtcEngineContext);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 }
 
@@ -105,7 +103,7 @@ void UScreenShareWidget::PrepareScreenShare()
 	size.height = 240;
 #endif
 
-	infos = RtcEngineProxy->getScreenCaptureSources(size, size, true);
+	infos = AgoraUERtcEngine::Get()->getScreenCaptureSources(size, size, true);
 
 	if (infos == nullptr)
 	{
@@ -127,15 +125,15 @@ void UScreenShareWidget::PrepareScreenShare()
 #endif
 
 
-	RtcEngineProxy->enableAudio();
-	RtcEngineProxy->enableVideo();
-	RtcEngineProxy->setClientRole(CLIENT_ROLE_BROADCASTER);
+	AgoraUERtcEngine::Get()->enableAudio();
+	AgoraUERtcEngine::Get()->enableVideo();
+	AgoraUERtcEngine::Get()->setClientRole(CLIENT_ROLE_BROADCASTER);
 
 
 #if PLATFORM_WINDOWS || PLATFORM_MAC
 	// Share PC's Audio
-	RtcEngineProxy->enableLoopbackRecording(true);
-	RtcEngineProxy->adjustLoopbackSignalVolume(100);
+	AgoraUERtcEngine::Get()->enableLoopbackRecording(true);
+	AgoraUERtcEngine::Get()->adjustLoopbackSignalVolume(100);
 
 	// On mobile platforms, we can use publishScreenCaptureAudio in ChannelMediaOptions
 #endif
@@ -145,12 +143,12 @@ void UScreenShareWidget::PrepareScreenShare()
 
 void UScreenShareWidget::OnBtnStartScreenShareClicked()
 {
-	RtcEngineProxy->stopScreenCapture();
+	AgoraUERtcEngine::Get()->stopScreenCapture();
 #if PLATFORM_ANDROID || PLATFORM_IOS
 	ScreenCaptureParameters2 parameters2;
 	parameters2.captureAudio = true;
 	parameters2.captureVideo = true;
-	auto ret = RtcEngineProxy->startScreenCapture(parameters2);
+	auto ret = AgoraUERtcEngine::Get()->startScreenCapture(parameters2);
 	UE_LOG(LogTemp, Warning, TEXT("StartScreenShrareClick JoinChannel ====== %d"), ret);
 #else
 	agora::rtc::ScreenCaptureParameters capParam;
@@ -180,11 +178,11 @@ void UScreenShareWidget::OnBtnStartScreenShareClicked()
 	int ret = -1;
 	if (info.type == agora::rtc::ScreenCaptureSourceType_Screen)
 	{
-		ret = RtcEngineProxy->startScreenCaptureByDisplayId((uint64)(info.sourceId), regionRect, capParam);
+		ret = AgoraUERtcEngine::Get()->startScreenCaptureByDisplayId((uint64)(info.sourceId), regionRect, capParam);
 	}
 	else if (info.type == agora::rtc::ScreenCaptureSourceType_Window)
 	{
-		ret = RtcEngineProxy->startScreenCaptureByWindowId(info.sourceId, regionRect, capParam);
+		ret = AgoraUERtcEngine::Get()->startScreenCaptureByWindowId(info.sourceId, regionRect, capParam);
 	}
 #endif
 
@@ -210,10 +208,10 @@ void UScreenShareWidget::JoinChannel_ScreenShare()
 	connection.channelId = StdStrChannelName.c_str();
 	connection.localUid = UID_Screen;
 
-	int ret = RtcEngineProxy->joinChannel(TCHAR_TO_UTF8(*Token), TCHAR_TO_UTF8(*ChannelName), 0, options);
+	int ret = AgoraUERtcEngine::Get()->joinChannel(TCHAR_TO_UTF8(*Token), TCHAR_TO_UTF8(*ChannelName), 0, options);
 
 	// [joinChannelEx] will unpublish your loopback audio stream in this version, it will be fixed in the next version.
-	//int ret = RtcEngineProxy->joinChannelEx(TCHAR_TO_UTF8(*Token), connection, options, nullptr);
+	//int ret = AgoraUERtcEngine::Get()->joinChannelEx(TCHAR_TO_UTF8(*Token), connection, options, nullptr);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s uid=%u ret %d"), *FString(FUNCTION_MACRO), UID_Screen, ret), LogMsgViewPtr);
 }
 
@@ -227,9 +225,9 @@ void UScreenShareWidget::OnBtnStopScreenShareClicked()
 	connection.channelId = StdStrChannelName.c_str();
 	connection.localUid = UID_Screen;
 
-	int ret0 = RtcEngineProxy->stopScreenCapture();
-	//int ret = RtcEngineProxy->leaveChannelEx(connection);
-	int ret = RtcEngineProxy->leaveChannel();
+	int ret0 = AgoraUERtcEngine::Get()->stopScreenCapture();
+	//int ret = AgoraUERtcEngine::Get()->leaveChannelEx(connection);
+	int ret = AgoraUERtcEngine::Get()->leaveChannel();
 	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 }
 
@@ -245,12 +243,11 @@ void UScreenShareWidget::OnCBSDisplayIDSelectedValueChanged(FString SelectedItem
 
 void UScreenShareWidget::OnBtnBackToHomeClicked()
 {
-	if (RtcEngineProxy != nullptr)
+	if (AgoraUERtcEngine::Get() != nullptr)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("UJoinChannelVideoTokenWidget::NativeDestruct"));
-		RtcEngineProxy->unregisterEventHandler(UserRtcEventHandlerEx.Get());
-		RtcEngineProxy->release();
-		RtcEngineProxy = nullptr;
+		AgoraUERtcEngine::Get()->unregisterEventHandler(UserRtcEventHandlerEx.Get());
+		AgoraUERtcEngine::Release();
 	}
 	UGameplayStatics::OpenLevel(UGameplayStatics::GetPlayerController(GWorld, 0)->GetWorld(), FName("MainLevel"));
 }
@@ -266,13 +263,12 @@ void UScreenShareWidget::NativeDestruct()
 
 void UScreenShareWidget::UnInitAgoraEngine()
 {
-	if (RtcEngineProxy != nullptr)
+	if (AgoraUERtcEngine::Get() != nullptr)
 	{
-		RtcEngineProxy->stopScreenCapture();
-		RtcEngineProxy->leaveChannel();
-		RtcEngineProxy->unregisterEventHandler(UserRtcEventHandlerEx.Get());
-		RtcEngineProxy->release();
-		RtcEngineProxy = nullptr;
+		AgoraUERtcEngine::Get()->stopScreenCapture();
+		AgoraUERtcEngine::Get()->leaveChannel();
+		AgoraUERtcEngine::Get()->unregisterEventHandler(UserRtcEventHandlerEx.Get());
+		AgoraUERtcEngine::Release();
 
 		UBFL_Logger::Print(FString::Printf(TEXT("%s release agora engine"), *FString(FUNCTION_MACRO)), LogMsgViewPtr);
 	}
@@ -294,10 +290,8 @@ int UScreenShareWidget::MakeVideoView(uint32 uid, agora::rtc::VIDEO_SOURCE_TYPE 
 		channelId will be set in [setupLocalVideo] / [setupRemoteVideo]
 	*/
 
-	int ret = -ERROR_NULLPTR;
+	int ret = 0;
 
-	if (RtcEngineProxy == nullptr)
-		return ret;
 
 	agora::rtc::VideoCanvas videoCanvas;
 	videoCanvas.uid = uid;
@@ -306,7 +300,7 @@ int UScreenShareWidget::MakeVideoView(uint32 uid, agora::rtc::VIDEO_SOURCE_TYPE 
 	if (uid == 0) {
 		FVideoViewIdentity VideoViewIdentity(uid, sourceType, "");
 		videoCanvas.view = UBFL_VideoViewManager::CreateOneVideoViewToCanvasPanel(VideoViewIdentity, CanvasPanel_VideoView, VideoViewMap, DraggableVideoViewTemplate);
-		ret = RtcEngineProxy->setupLocalVideo(videoCanvas);
+		ret = AgoraUERtcEngine::Get()->setupLocalVideo(videoCanvas);
 	}
 	else
 	{
@@ -315,13 +309,13 @@ int UScreenShareWidget::MakeVideoView(uint32 uid, agora::rtc::VIDEO_SOURCE_TYPE 
 		videoCanvas.view = UBFL_VideoViewManager::CreateOneVideoViewToCanvasPanel(VideoViewIdentity, CanvasPanel_VideoView, VideoViewMap, DraggableVideoViewTemplate);
 
 		if (channelId == "") {
-			ret = RtcEngineProxy->setupRemoteVideo(videoCanvas);
+			ret = AgoraUERtcEngine::Get()->setupRemoteVideo(videoCanvas);
 		}
 		else {
 			agora::rtc::RtcConnection connection;
 			std::string StdStrChannelId = TCHAR_TO_UTF8(*channelId);
 			connection.channelId = StdStrChannelId.c_str();
-			ret = ((agora::rtc::IRtcEngineEx*)RtcEngineProxy)->setupRemoteVideoEx(videoCanvas, connection);
+			ret = ((agora::rtc::IRtcEngineEx*)AgoraUERtcEngine::Get())->setupRemoteVideoEx(videoCanvas, connection);
 		}
 	}
 
@@ -330,10 +324,8 @@ int UScreenShareWidget::MakeVideoView(uint32 uid, agora::rtc::VIDEO_SOURCE_TYPE 
 
 int UScreenShareWidget::ReleaseVideoView(uint32 uid, agora::rtc::VIDEO_SOURCE_TYPE sourceType /*= VIDEO_SOURCE_CAMERA_PRIMARY*/, FString channelId /*= ""*/)
 {
-	int ret = -ERROR_NULLPTR;
+	int ret = 0;
 
-	if (RtcEngineProxy == nullptr)
-		return ret;
 
 	agora::rtc::VideoCanvas videoCanvas;
 	videoCanvas.view = nullptr;
@@ -343,20 +335,20 @@ int UScreenShareWidget::ReleaseVideoView(uint32 uid, agora::rtc::VIDEO_SOURCE_TY
 	if (uid == 0) {
 		FVideoViewIdentity VideoViewIdentity(uid, sourceType, "");
 		UBFL_VideoViewManager::ReleaseOneVideoView(VideoViewIdentity, VideoViewMap);
-		ret = RtcEngineProxy->setupLocalVideo(videoCanvas);
+		ret = AgoraUERtcEngine::Get()->setupLocalVideo(videoCanvas);
 	}
 	else
 	{
 		FVideoViewIdentity VideoViewIdentity(uid, sourceType, channelId);
 		UBFL_VideoViewManager::ReleaseOneVideoView(VideoViewIdentity, VideoViewMap);
 		if (channelId == "") {
-			ret = RtcEngineProxy->setupRemoteVideo(videoCanvas);
+			ret = AgoraUERtcEngine::Get()->setupRemoteVideo(videoCanvas);
 		}
 		else {
 			agora::rtc::RtcConnection connection;
 			std::string StdStrChannelId = TCHAR_TO_UTF8(*channelId);
 			connection.channelId = StdStrChannelId.c_str();
-			ret = ((agora::rtc::IRtcEngineEx*)RtcEngineProxy)->setupRemoteVideoEx(videoCanvas, connection);
+			ret = ((agora::rtc::IRtcEngineEx*)AgoraUERtcEngine::Get())->setupRemoteVideoEx(videoCanvas, connection);
 		}
 	}
 	return ret;

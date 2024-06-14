@@ -30,19 +30,17 @@ void UDeviceManagerUserWidget::InitAgoraEngine(FString APP_ID, FString TOKEN, FS
 	Token = TOKEN;
 	ChannelName = CHANNEL_NAME;
 
-	RtcEngineProxy = agora::rtc::ue::createAgoraRtcEngineEx();
-
 	int SDKBuild = 0;
-	const char* SDKVersionInfo = RtcEngineProxy->getVersion(&SDKBuild);
+	const char* SDKVersionInfo = AgoraUERtcEngine::Get()->getVersion(&SDKBuild);
 	FString SDKInfo = FString::Printf(TEXT("SDK Version: %s Build: %d"), UTF8_TO_TCHAR(SDKVersionInfo), SDKBuild);
 	UBFL_Logger::Print(FString::Printf(TEXT("SDK Info:  %s"), *SDKInfo), LogMsgViewPtr);
 
-	int ret = RtcEngineProxy->initialize(RtcEngineContext);
+	int ret = AgoraUERtcEngine::Get()->initialize(RtcEngineContext);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 
 
-	RtcEngineProxy->queryInterface(AGORA_IID_AUDIO_DEVICE_MANAGER, (void**)&AudioDeviceManager);
-	RtcEngineProxy->queryInterface(AGORA_IID_VIDEO_DEVICE_MANAGER, (void**)&VideoDeviceManager);
+	AgoraUERtcEngine::Get()->queryInterface(AGORA_IID_AUDIO_DEVICE_MANAGER, (void**)&AudioDeviceManager);
+	AgoraUERtcEngine::Get()->queryInterface(AGORA_IID_VIDEO_DEVICE_MANAGER, (void**)&VideoDeviceManager);
 }
 
 void UDeviceManagerUserWidget::ShowUserGuide()
@@ -109,7 +107,7 @@ void UDeviceManagerUserWidget::GetAudioPlaybackDevice()
 
 void UDeviceManagerUserWidget::GetVideoDeviceManager()
 {
-	int ret = RtcEngineProxy->startPreview();
+	int ret = AgoraUERtcEngine::Get()->startPreview();
 	UBFL_Logger::Print(FString::Printf(TEXT("%s startPreview ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 
 
@@ -197,17 +195,16 @@ void UDeviceManagerUserWidget::NativeDestruct()
 
 void UDeviceManagerUserWidget::UnInitAgoraEngine()
 {
-	if (RtcEngineProxy != nullptr)
+	if (AgoraUERtcEngine::Get() != nullptr)
 	{
 		AudioRecordingDeviceInfos->release();
 		AudioPlaybackDeviceInfos->release();
 		VideoDeviceInfos->release();
 		AudioDeviceManager->release();
 		VideoDeviceManager->release();
-		RtcEngineProxy->stopPreview();
-		RtcEngineProxy->unregisterEventHandler(UserRtcEventHandler.Get());
-		RtcEngineProxy->release();
-		RtcEngineProxy = nullptr;
+		AgoraUERtcEngine::Get()->stopPreview();
+		AgoraUERtcEngine::Get()->unregisterEventHandler(UserRtcEventHandler.Get());
+		AgoraUERtcEngine::Release();
 
 		UBFL_Logger::Print(FString::Printf(TEXT("%s release agora engine"), *FString(FUNCTION_MACRO)), LogMsgViewPtr);
 	}

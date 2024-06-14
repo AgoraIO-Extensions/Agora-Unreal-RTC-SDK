@@ -130,7 +130,6 @@ protected:
 	FString Token;
 	FString ChannelName;
 
-	IRtcEngine* RtcEngineProxy;
 
 	TSharedPtr<FUserRtcEventHandlerEx> UserRtcEventHandlerEx;
 };

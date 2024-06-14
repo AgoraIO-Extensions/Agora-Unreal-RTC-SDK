@@ -174,7 +174,7 @@ protected:
 	uint32 UID1 = 123;
 	uint32 UID2 = 456;
 
-	IRtcEngineEx* RtcEngineProxy;
+
 
 	CameraCapturerConfiguration MainCameraConfig;
 	CameraCapturerConfiguration SecondCameraConfig;
