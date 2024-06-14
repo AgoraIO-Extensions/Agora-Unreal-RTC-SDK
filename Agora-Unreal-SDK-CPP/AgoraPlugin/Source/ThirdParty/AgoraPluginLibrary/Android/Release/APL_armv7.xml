@@ -54,6 +54,12 @@
 		</insert>
 	</gameActivityImportAdditions>
 
+	<proguardAdditions>
+		<insert>
+			-keep class io.agora.** { *; }
+		</insert>
+	</proguardAdditions>
+
 	<gameActivityClassAdditions>
 		<insert>
 			<![CDATA[

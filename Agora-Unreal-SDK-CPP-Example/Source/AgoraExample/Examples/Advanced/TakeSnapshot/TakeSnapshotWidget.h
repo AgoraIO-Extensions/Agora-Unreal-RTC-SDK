@@ -13,6 +13,7 @@
 // UI Utility
 #include "../../../Utility/BFL_VideoViewManager.h"
 #include "../../../Utility/BFL_Logger.h"
+#include "../../../Utility/BFL_UtilityTool.h" 
 
 #if PLATFORM_ANDROID
 #include "AndroidPermission/Classes/AndroidPermissionFunctionLibrary.h"
@@ -25,7 +26,7 @@ using namespace agora::rtc;
 using namespace agora;
 
 /**
- * 
+ *
  */
 UCLASS()
 class AGORAEXAMPLE_API UTakeSnapshotWidget : public UBaseAgoraUserWidget
@@ -69,10 +70,10 @@ public:
 
 #pragma region UI
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-		UButton* Btn_BackToHome = nullptr;
+	UButton* Btn_BackToHome = nullptr;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-		UButton* Btn_TakeOneSnapshot = nullptr;
+	UButton* Btn_TakeOneSnapshot = nullptr;
 
 	UFUNCTION(BlueprintCallable)
 	void OnBtnBackToHomeClicked();
@@ -92,13 +93,13 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
 	UCanvasPanel* CanvasPanel_VideoView = nullptr;
-	
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<UDraggableVideoViewWidget> DraggableVideoViewTemplate;
-	
+
 protected:
 
-	int MakeVideoView(uint32 uid, agora::rtc::VIDEO_SOURCE_TYPE sourceType = VIDEO_SOURCE_CAMERA_PRIMARY,FString channelId = "");
+	int MakeVideoView(uint32 uid, agora::rtc::VIDEO_SOURCE_TYPE sourceType = VIDEO_SOURCE_CAMERA_PRIMARY, FString channelId = "");
 	int ReleaseVideoView(uint32 uid, agora::rtc::VIDEO_SOURCE_TYPE sourceType = VIDEO_SOURCE_CAMERA_PRIMARY, FString channelId = "");
 
 	TMap<FVideoViewIdentity, UDraggableVideoViewWidget*> VideoViewMap;
@@ -112,10 +113,10 @@ public:
 	UCanvasPanel* CanvasPanel_LogMsgView = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TSubclassOf<UDraggableLogMsgViewWidget> DraggableLogMsgViewTemplate;
+	TSubclassOf<UDraggableLogMsgViewWidget> DraggableLogMsgViewTemplate;
 
 public:
-	inline UDraggableLogMsgViewWidget* GetLogMsgViewPtr() {return LogMsgViewPtr;} 
+	inline UDraggableLogMsgViewWidget* GetLogMsgViewPtr() { return LogMsgViewPtr; }
 
 private:
 	UDraggableLogMsgViewWidget* LogMsgViewPtr = nullptr;
@@ -136,6 +137,7 @@ protected:
 	void NativeDestruct() override;
 
 	void InitAgoraEngine(FString APP_ID, FString TOKEN, FString CHANNEL_NAME);
+	void ShowUserGuide();
 	void UnInitAgoraEngine();
 
 	FString AppId = "";

@@ -72,7 +72,7 @@ Delete all the original implementations or add your own implementations.
 
 @implemetation SampleHandler
 
-#end
+@end
 ```
 
 6. Build Your App

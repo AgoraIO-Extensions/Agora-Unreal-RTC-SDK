@@ -7,7 +7,7 @@
 // Sets default values
 AAgoraActor::AAgoraActor()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 }
@@ -16,7 +16,7 @@ AAgoraActor::AAgoraActor()
 void AAgoraActor::BeginPlay()
 {
 	Super::BeginPlay();
-	if (VideoWidget==nullptr)
+	if (VideoWidget == nullptr)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, "please set VideoWidget in AgoraActor");
 		return;
@@ -36,7 +36,7 @@ void AAgoraActor::BeginPlay()
 
 	}
 
-	if (APP_ID == "YOUR_APPID" || APP_ID=="")
+	if (APP_ID == "YOUR_APPID" || APP_ID == "")
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, "please input your APP_ID");
 		return;

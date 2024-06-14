@@ -12,6 +12,8 @@ void URtmpStreamWithTranscodingWidget::InitAgoraWidget(FString APP_ID, FString T
 
 	InitAgoraEngine(APP_ID, TOKEN, CHANNEL_NAME);
 
+	ShowUserGuide();
+
 	JoinChannel();
 }
 
@@ -51,12 +53,24 @@ void URtmpStreamWithTranscodingWidget::InitAgoraEngine(FString APP_ID, FString T
 	RtcEngineProxy = agora::rtc::ue::createAgoraRtcEngine();
 
 	int SDKBuild = 0;
-	FString SDKInfo = FString::Printf(TEXT("SDK Version: %s Build: %d"), UTF8_TO_TCHAR(RtcEngineProxy->getVersion(&SDKBuild)), SDKBuild);
+	const char* SDKVersionInfo = RtcEngineProxy->getVersion(&SDKBuild);
+	FString SDKInfo = FString::Printf(TEXT("SDK Version: %s Build: %d"), UTF8_TO_TCHAR(SDKVersionInfo), SDKBuild);
 	UBFL_Logger::Print(FString::Printf(TEXT("SDK Info:  %s"), *SDKInfo), LogMsgViewPtr);
 
 	int ret = RtcEngineProxy->initialize(RtcEngineContext);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 
+}
+
+void URtmpStreamWithTranscodingWidget::ShowUserGuide()
+{
+	FString Guide =
+		"Case: [RtmpStreamWithTranscoding]\n"
+		"1. Publishes the local stream with transcoding to a specified CDN live RTMP address.  (CDN live only.)\n"
+		"2. Remember to enter your URL in the editable text box.\n"
+		"";
+
+	UBFL_Logger::DisplayUserGuide(Guide, LogMsgViewPtr);
 }
 
 void URtmpStreamWithTranscodingWidget::JoinChannel()
@@ -103,7 +117,7 @@ void URtmpStreamWithTranscodingWidget::OnBtnStartClicked()
 	auto ret = RtcEngineProxy->startRtmpStreamWithTranscoding(TCHAR_TO_UTF8(*URL), ValLiveTranscoding);
 
 	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
-	
+
 	if (ret == 0)
 	{
 		UBFL_Logger::Print(FString::Printf(TEXT("%s url %s"), *FString(FUNCTION_MACRO), *URL), LogMsgViewPtr);
@@ -121,7 +135,7 @@ void URtmpStreamWithTranscodingWidget::OnBtnUpdateClicked()
 {
 	agora::rtc::LiveTranscoding ValLiveTranscoding;
 	ValLiveTranscoding.userCount = 1;
-	
+
 	TSharedPtr<TranscodingUser> ValTranscodingUsers = MakeShared<TranscodingUser>();
 	ValTranscodingUsers->uid = UID;
 	ValTranscodingUsers->x = 0;
@@ -163,7 +177,7 @@ void URtmpStreamWithTranscodingWidget::NativeDestruct()
 
 	UnInitAgoraEngine();
 
-	
+
 }
 
 
@@ -274,7 +288,11 @@ void URtmpStreamWithTranscodingWidget::FUserRtcEventHandler::onJoinChannelSucces
 	if (!IsWidgetValid())
 		return;
 
+#if  ((__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)) 
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!IsWidgetValid())
 			{
@@ -295,7 +313,11 @@ void URtmpStreamWithTranscodingWidget::FUserRtcEventHandler::onUserJoined(agora:
 	if (!IsWidgetValid())
 		return;
 
+#if  ((__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)) 
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!IsWidgetValid())
 			{
@@ -312,7 +334,11 @@ void URtmpStreamWithTranscodingWidget::FUserRtcEventHandler::onUserOffline(agora
 	if (!IsWidgetValid())
 		return;
 
+#if  ((__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)) 
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!IsWidgetValid())
 			{
@@ -329,7 +355,11 @@ void URtmpStreamWithTranscodingWidget::FUserRtcEventHandler::onLeaveChannel(cons
 	if (!IsWidgetValid())
 		return;
 
+#if  ((__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)) 
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!IsWidgetValid())
 			{
@@ -348,7 +378,11 @@ void URtmpStreamWithTranscodingWidget::FUserRtcEventHandler::onTranscodingUpdate
 	if (!IsWidgetValid())
 		return;
 
+#if  ((__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)) 
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!IsWidgetValid())
 			{
@@ -364,7 +398,11 @@ void URtmpStreamWithTranscodingWidget::FUserRtcEventHandler::onRtmpStreamingStat
 	if (!IsWidgetValid())
 		return;
 
+#if  ((__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)) 
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!IsWidgetValid())
 			{

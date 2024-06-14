@@ -7,10 +7,14 @@
 void USpatialAudioWithMPWidget::InitAgoraWidget(FString APP_ID, FString TOKEN, FString CHANNEL_NAME)
 {
 	LogMsgViewPtr = UBFL_Logger::CreateLogView(CanvasPanel_LogMsgView, DraggableLogMsgViewTemplate);
-	
+
 	CheckPermission();
-	
+
 	InitAgoraEngine(APP_ID, TOKEN, CHANNEL_NAME);
+
+	InitData();
+
+	ShowUserGuide();
 
 	InitAgoraMediaPlayer();
 
@@ -59,13 +63,38 @@ void USpatialAudioWithMPWidget::InitAgoraEngine(FString APP_ID, FString TOKEN, F
 	RtcEngineProxy = agora::rtc::ue::createAgoraRtcEngineEx();
 
 	int SDKBuild = 0;
-	FString SDKInfo = FString::Printf(TEXT("SDK Version: %s Build: %d"), UTF8_TO_TCHAR(RtcEngineProxy->getVersion(&SDKBuild)), SDKBuild);
+	const char* SDKVersionInfo = RtcEngineProxy->getVersion(&SDKBuild);
+	FString SDKInfo = FString::Printf(TEXT("SDK Version: %s Build: %d"), UTF8_TO_TCHAR(SDKVersionInfo), SDKBuild);
 	UBFL_Logger::Print(FString::Printf(TEXT("SDK Info:  %s"), *SDKInfo), LogMsgViewPtr);
 
 	int ret = RtcEngineProxy->initialize(RtcEngineContext);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 }
 
+
+void USpatialAudioWithMPWidget::InitData()
+{
+	FString MachineCode = UBFL_UtilityTool::GenSimpleUIDPart_MachineCode();
+	FString FuncCode1 = UBFL_UtilityTool::GenSimpleUIDPart_FuncCode(EUIDFuncType::CAMERA);
+	FString FuncCode2 = UBFL_UtilityTool::GenSimpleUIDPart_FuncCode(EUIDFuncType::MPK);
+
+	UID = FCString::Atoi(*(MachineCode + FuncCode1 + "1"));
+	UID_UsedInMPK = FCString::Atoi(*(MachineCode + FuncCode2 + "2"));
+
+	UBFL_Logger::Print(FString::Printf(TEXT(" >>>> UID Generation <<< ")), LogMsgViewPtr);
+	UBFL_Logger::Print(FString::Printf(TEXT("UID Camera:  %d"), UID), LogMsgViewPtr);
+	UBFL_Logger::Print(FString::Printf(TEXT("UID MPK:  %d"), UID_UsedInMPK), LogMsgViewPtr);
+}
+
+void USpatialAudioWithMPWidget::ShowUserGuide()
+{
+	FString Guide =
+		"Case: [SpatialAudio]\n"
+		"1. Play spatial audio using the audio data from your local mpk (media player kit).\n"
+		"";
+
+	UBFL_Logger::DisplayUserGuide(Guide, LogMsgViewPtr);
+}
 
 void USpatialAudioWithMPWidget::InitAgoraMediaPlayer()
 {
@@ -123,9 +152,15 @@ void USpatialAudioWithMPWidget::JoinChannelWithMPK()
 {
 	int playerId = MediaPlayer->getMediaPlayerId();
 
+	/*
+		If a client wants to add multiple connections to the same channel,
+		then auto-subscribing to audio and video in just one connection is enough, [autoSubscribeAudio/autoSubscribeVideo]
+		and set subscriptions to false for other connections.
+	*/
+
 	agora::rtc::ChannelMediaOptions ChannelMediaOptions;
 	ChannelMediaOptions.autoSubscribeAudio = false;
-	ChannelMediaOptions.autoSubscribeVideo = true;
+	ChannelMediaOptions.autoSubscribeVideo = false;
 	ChannelMediaOptions.publishCameraTrack = false;
 	ChannelMediaOptions.publishMediaPlayerAudioTrack = true;
 	ChannelMediaOptions.publishMediaPlayerVideoTrack = true;
@@ -155,7 +190,6 @@ void USpatialAudioWithMPWidget::OnBtnPlayClicked()
 	if (MediaPlayer)
 	{
 		int ret = MediaPlayer->open(TCHAR_TO_UTF8(*MPL_URL), 0);
-		MediaPlayer->play();
 		MediaPlayer->adjustPlayoutVolume(0);
 		UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 	}
@@ -185,15 +219,18 @@ void USpatialAudioWithMPWidget::NativeDestruct()
 
 	UnInitAgoraEngine();
 
-	
+
 }
 
 void USpatialAudioWithMPWidget::UnInitAgoraEngine()
 {
 	if (RtcEngineProxy != nullptr)
 	{
-		if(MediaPlayer)
+		if (MediaPlayer)
+		{
+			MediaPlayer->stop();
 			MediaPlayer->unregisterPlayerSourceObserver(MediaPlayerSourceObserverWarpper.Get());
+		}
 
 		RtcEngineProxy->leaveChannel();
 		RtcEngineProxy->unregisterEventHandler(UserRtcEventHandlerEx.Get());
@@ -299,16 +336,20 @@ void USpatialAudioWithMPWidget::FUserRtcEventHandlerEx::onJoinChannelSuccess(con
 	if (!IsWidgetValid())
 		return;
 
+#if  ((__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)) 
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!IsWidgetValid())
 			{
 				UBFL_Logger::Print(FString::Printf(TEXT("%s bIsDestruct "), *FString(FUNCTION_MACRO)));
 				return;
 			}
-			UBFL_Logger::Print(FString::Printf(TEXT("%s local uid=%d"), *FString(FUNCTION_MACRO), connection.localUid), WidgetPtr->GetLogMsgViewPtr());
+			UBFL_Logger::Print(FString::Printf(TEXT("%s local uid=%u"), *FString(FUNCTION_MACRO), connection.localUid), WidgetPtr->GetLogMsgViewPtr());
 
-			if(connection.localUid == WidgetPtr->GetUID_Camrea()){
+			if (connection.localUid == WidgetPtr->GetUID_Camrea()) {
 				WidgetPtr->MakeVideoView(0, agora::rtc::VIDEO_SOURCE_TYPE::VIDEO_SOURCE_CAMERA);
 			}
 
@@ -327,19 +368,23 @@ void USpatialAudioWithMPWidget::FUserRtcEventHandlerEx::onLeaveChannel(const ago
 	if (!IsWidgetValid())
 		return;
 
+#if  ((__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)) 
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!IsWidgetValid())
 			{
 				UBFL_Logger::Print(FString::Printf(TEXT("%s bIsDestruct "), *FString(FUNCTION_MACRO)));
 				return;
 			}
-			UBFL_Logger::Print(FString::Printf(TEXT("%s local uid=%d"), *FString(FUNCTION_MACRO), connection.localUid), WidgetPtr->GetLogMsgViewPtr());
+			UBFL_Logger::Print(FString::Printf(TEXT("%s local uid=%u"), *FString(FUNCTION_MACRO), connection.localUid), WidgetPtr->GetLogMsgViewPtr());
 
 			if (connection.localUid == WidgetPtr->GetUID_Camrea()) {
 				WidgetPtr->ReleaseVideoView(0, agora::rtc::VIDEO_SOURCE_TYPE::VIDEO_SOURCE_CAMERA);
 			}
-			
+
 		});
 }
 
@@ -348,19 +393,23 @@ void USpatialAudioWithMPWidget::FUserRtcEventHandlerEx::onUserJoined(const agora
 	if (!IsWidgetValid())
 		return;
 
+#if  ((__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)) 
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!IsWidgetValid())
 			{
 				UBFL_Logger::Print(FString::Printf(TEXT("%s bIsDestruct "), *FString(FUNCTION_MACRO)));
 				return;
 			}
-			UBFL_Logger::Print(FString::Printf(TEXT("%s remote uid=%d"), *FString(FUNCTION_MACRO), remoteUid), WidgetPtr->GetLogMsgViewPtr());
+			UBFL_Logger::Print(FString::Printf(TEXT("%s remote uid=%u"), *FString(FUNCTION_MACRO), remoteUid), WidgetPtr->GetLogMsgViewPtr());
 
-			if (remoteUid != WidgetPtr->GetUID_Camrea() && remoteUid != WidgetPtr->GetUID_UsedInMPK()){
+			if (remoteUid != WidgetPtr->GetUID_Camrea() && remoteUid != WidgetPtr->GetUID_UsedInMPK()) {
 				WidgetPtr->MakeVideoView(remoteUid, agora::rtc::VIDEO_SOURCE_TYPE::VIDEO_SOURCE_REMOTE, WidgetPtr->GetChannelName());
 			}
-		
+
 		});
 }
 
@@ -369,14 +418,18 @@ void USpatialAudioWithMPWidget::FUserRtcEventHandlerEx::onUserOffline(const agor
 	if (!IsWidgetValid())
 		return;
 
+#if  ((__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)) 
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!IsWidgetValid())
 			{
 				UBFL_Logger::Print(FString::Printf(TEXT("%s bIsDestruct "), *FString(FUNCTION_MACRO)));
 				return;
 			}
-			UBFL_Logger::Print(FString::Printf(TEXT("%s remote uid=%d"), *FString(FUNCTION_MACRO), remoteUid), WidgetPtr->GetLogMsgViewPtr());
+			UBFL_Logger::Print(FString::Printf(TEXT("%s remote uid=%u"), *FString(FUNCTION_MACRO), remoteUid), WidgetPtr->GetLogMsgViewPtr());
 
 			if (remoteUid != WidgetPtr->GetUID_Camrea() && remoteUid != WidgetPtr->GetUID_UsedInMPK()) {
 				WidgetPtr->MakeVideoView(remoteUid, agora::rtc::VIDEO_SOURCE_TYPE::VIDEO_SOURCE_REMOTE, WidgetPtr->GetChannelName());
@@ -397,7 +450,11 @@ void USpatialAudioWithMPWidget::FUserIMediaPlayerSourceObserver::onPlayerSourceS
 	if (!IsWidgetValid())
 		return;
 
+#if  ((__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)) 
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 
 			if (!IsWidgetValid())
@@ -405,13 +462,13 @@ void USpatialAudioWithMPWidget::FUserIMediaPlayerSourceObserver::onPlayerSourceS
 				UBFL_Logger::Print(FString::Printf(TEXT("%s bIsDestruct "), *FString(FUNCTION_MACRO)));
 				return;
 			}
-			
+
 
 			auto TmpMediaPlayer = WidgetPtr->GetMediaPlayer();
 
 			// VIDEO_SOURCE_MEDIA_PLAYER 
 			int ret = TmpMediaPlayer->play();
-			UBFL_Logger::Print(FString::Printf(TEXT("%s MediaPlayer Play ret %d"), *FString(FUNCTION_MACRO),ret), WidgetPtr->GetLogMsgViewPtr());
+			UBFL_Logger::Print(FString::Printf(TEXT("%s MediaPlayer Play ret %d"), *FString(FUNCTION_MACRO), ret), WidgetPtr->GetLogMsgViewPtr());
 
 			WidgetPtr->MakeVideoView(TmpMediaPlayer->getMediaPlayerId(), agora::rtc::VIDEO_SOURCE_TYPE::VIDEO_SOURCE_MEDIA_PLAYER, WidgetPtr->GetChannelName());
 

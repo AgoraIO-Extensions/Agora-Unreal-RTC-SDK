@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+//  Copyright (c) 2023 Agora.io. All rights reserved.
 
 #pragma once
 
@@ -8,7 +8,7 @@
 #include "AgoraAudioDeviceManager.generated.h"
 
 /**
- * 
+ *
  */
 UCLASS(Blueprintable)
 class AGORAPLUGIN_API UIAudioDeviceCollection : public UObject
@@ -17,7 +17,7 @@ class AGORAPLUGIN_API UIAudioDeviceCollection : public UObject
 
 private:
 	agora::rtc::IAudioDeviceCollection* AudioDeviceCollection;
-	
+
 public:
 	UFUNCTION(BlueprintCallable, Category = "Agora|IAudioDeviceCollection")
 	int GetCount();
@@ -30,7 +30,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Agora|IAudioDeviceCollection")
 	int SetApplicationVolume(int volume);
 	UFUNCTION(BlueprintCallable, Category = "Agora|IAudioDeviceCollection")
-	int GetApplicationVolume(int volume);
+	int GetApplicationVolume(int& volume);
 	UFUNCTION(BlueprintCallable, Category = "Agora|IAudioDeviceCollection")
 	int SetApplicationMute(bool mute);
 	UFUNCTION(BlueprintCallable, Category = "Agora|IAudioDeviceCollection")

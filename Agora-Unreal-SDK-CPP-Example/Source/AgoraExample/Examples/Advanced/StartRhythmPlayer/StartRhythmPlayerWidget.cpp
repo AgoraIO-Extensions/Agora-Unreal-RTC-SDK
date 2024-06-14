@@ -12,6 +12,8 @@ void UStartRhythmPlayerWidget::InitAgoraWidget(FString APP_ID, FString TOKEN, FS
 
 	InitAgoraEngine(APP_ID, TOKEN, CHANNEL_NAME);
 
+	ShowUserGuide();
+
 	JoinChannel();
 }
 
@@ -50,12 +52,23 @@ void UStartRhythmPlayerWidget::InitAgoraEngine(FString APP_ID, FString TOKEN, FS
 	RtcEngineProxy = agora::rtc::ue::createAgoraRtcEngineEx();
 
 	int SDKBuild = 0;
-	FString SDKInfo = FString::Printf(TEXT("SDK Version: %s Build: %d"), UTF8_TO_TCHAR(RtcEngineProxy->getVersion(&SDKBuild)), SDKBuild);
+	const char* SDKVersionInfo = RtcEngineProxy->getVersion(&SDKBuild);
+	FString SDKInfo = FString::Printf(TEXT("SDK Version: %s Build: %d"), UTF8_TO_TCHAR(SDKVersionInfo), SDKBuild);
 	UBFL_Logger::Print(FString::Printf(TEXT("SDK Info:  %s"), *SDKInfo), LogMsgViewPtr);
 
 	int ret = RtcEngineProxy->initialize(RtcEngineContext);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 
+}
+
+void UStartRhythmPlayerWidget::ShowUserGuide()
+{
+	FString Guide =
+		"Case: [StartRhythmPlayer]\n"
+		"1. Start a rhythm player using the files you provided in the content folder.\n"
+		"";
+
+	UBFL_Logger::DisplayUserGuide(Guide, LogMsgViewPtr);
 }
 
 void UStartRhythmPlayerWidget::JoinChannel()
@@ -86,7 +99,7 @@ void UStartRhythmPlayerWidget::OnBtnStartClicked()
 
 
 #if PLATFORM_ANDROID || PLATFORM_IOS
-	
+
 	UBFL_Logger::Print(FString::Printf(TEXT("%s SrcPath=%s"), *FString(FUNCTION_MACRO), *PathSound1), LogMsgViewPtr);
 	FString ValSavedFilePath1 = FPaths::ProjectSavedDir() / TEXT("Ding.mp3");
 	ValSavedFilePath1 = UBFL_UtilityTool::ConvertToAbsolutePath(ValSavedFilePath1, false);
@@ -269,7 +282,11 @@ void UStartRhythmPlayerWidget::FUserRtcEventHandlerEx::onJoinChannelSuccess(cons
 	if (!IsWidgetValid())
 		return;
 
+#if  ((__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)) 
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!IsWidgetValid())
 			{
@@ -287,7 +304,11 @@ void UStartRhythmPlayerWidget::FUserRtcEventHandlerEx::onLeaveChannel(const agor
 	if (!IsWidgetValid())
 		return;
 
+#if  ((__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)) 
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!IsWidgetValid())
 			{
@@ -305,14 +326,18 @@ void UStartRhythmPlayerWidget::FUserRtcEventHandlerEx::onUserJoined(const agora:
 	if (!IsWidgetValid())
 		return;
 
+#if  ((__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)) 
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!IsWidgetValid())
 			{
 				UBFL_Logger::Print(FString::Printf(TEXT("%s bIsDestruct "), *FString(FUNCTION_MACRO)));
 				return;
 			}
-			UBFL_Logger::Print(FString::Printf(TEXT("%s remote uid=%d"), *FString(FUNCTION_MACRO), remoteUid), WidgetPtr->GetLogMsgViewPtr());
+			UBFL_Logger::Print(FString::Printf(TEXT("%s remote uid=%u"), *FString(FUNCTION_MACRO), remoteUid), WidgetPtr->GetLogMsgViewPtr());
 
 			//WidgetPtr->MakeVideoView(remoteUid, agora::rtc::VIDEO_SOURCE_TYPE::VIDEO_SOURCE_REMOTE, WidgetPtr->GetChannelName());
 		});
@@ -323,14 +348,18 @@ void UStartRhythmPlayerWidget::FUserRtcEventHandlerEx::onUserOffline(const agora
 	if (!IsWidgetValid())
 		return;
 
+#if  ((__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)) 
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!IsWidgetValid())
 			{
 				UBFL_Logger::Print(FString::Printf(TEXT("%s bIsDestruct "), *FString(FUNCTION_MACRO)));
 				return;
 			}
-			UBFL_Logger::Print(FString::Printf(TEXT("%s remote uid=%d"), *FString(FUNCTION_MACRO), remoteUid), WidgetPtr->GetLogMsgViewPtr());
+			UBFL_Logger::Print(FString::Printf(TEXT("%s remote uid=%u"), *FString(FUNCTION_MACRO), remoteUid), WidgetPtr->GetLogMsgViewPtr());
 
 			//WidgetPtr->ReleaseVideoView(remoteUid, agora::rtc::VIDEO_SOURCE_TYPE::VIDEO_SOURCE_REMOTE, WidgetPtr->GetChannelName());
 		});
@@ -341,14 +370,18 @@ void UStartRhythmPlayerWidget::FUserRtcEventHandlerEx::onRhythmPlayerStateChange
 	if (!IsWidgetValid())
 		return;
 
+#if  ((__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)) 
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!IsWidgetValid())
 			{
 				UBFL_Logger::Print(FString::Printf(TEXT("%s bIsDestruct "), *FString(FUNCTION_MACRO)));
 				return;
 			}
-			UBFL_Logger::Print(FString::Printf(TEXT("%s state=%d errorcode=%d"), *FString(FUNCTION_MACRO), (int)state,(int)errorCode), WidgetPtr->GetLogMsgViewPtr());
+			UBFL_Logger::Print(FString::Printf(TEXT("%s state=%d errorcode=%d"), *FString(FUNCTION_MACRO), (int)state, (int)errorCode), WidgetPtr->GetLogMsgViewPtr());
 		});
 }
 

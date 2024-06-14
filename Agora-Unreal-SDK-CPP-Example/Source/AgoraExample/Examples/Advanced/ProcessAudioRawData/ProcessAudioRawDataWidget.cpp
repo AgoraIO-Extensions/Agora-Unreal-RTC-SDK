@@ -14,6 +14,8 @@ void UProcessAudioRawDataWidget::InitAgoraWidget(FString APP_ID, FString TOKEN, 
 
 	InitAgoraEngine(APP_ID, TOKEN, CHANNEL_NAME);
 
+	ShowUserGuide();
+
 }
 
 
@@ -41,6 +43,7 @@ void UProcessAudioRawDataWidget::InitConfig()
 	audioParams.mode = agora::rtc::RAW_AUDIO_FRAME_OP_MODE_TYPE::RAW_AUDIO_FRAME_OP_MODE_READ_WRITE;
 	audioParams.samples_per_call = 1024;
 
+	FirstRemoteUID = 0;
 
 	if (AgoraSoundWaveProcedural == nullptr)
 	{
@@ -78,7 +81,8 @@ void UProcessAudioRawDataWidget::InitAgoraEngine(FString APP_ID, FString TOKEN, 
 	RtcEngineProxy = agora::rtc::ue::createAgoraRtcEngineEx();
 
 	int SDKBuild = 0;
-	FString SDKInfo = FString::Printf(TEXT("SDK Version: %s Build: %d"), UTF8_TO_TCHAR(RtcEngineProxy->getVersion(&SDKBuild)), SDKBuild);
+	const char* SDKVersionInfo = RtcEngineProxy->getVersion(&SDKBuild);
+	FString SDKInfo = FString::Printf(TEXT("SDK Version: %s Build: %d"), UTF8_TO_TCHAR(SDKVersionInfo), SDKBuild);
 	UBFL_Logger::Print(FString::Printf(TEXT("SDK Info:  %s"), *SDKInfo), LogMsgViewPtr);
 
 	int ret = RtcEngineProxy->initialize(RtcEngineContext);
@@ -89,8 +93,27 @@ void UProcessAudioRawDataWidget::InitAgoraEngine(FString APP_ID, FString TOKEN, 
 	MediaEngine->registerAudioFrameObserver(UserAudioFrameObserver.Get());
 }
 
+void UProcessAudioRawDataWidget::ShowUserGuide()
+{
+	FString Guide =
+		"Case: [ProcessAudioRawData]\n"
+		"1. You can retrieve your raw audio data (in this case, the data would be your playback audio data) and handle it yourself.\n"
+		"2. If you want to mute the original playback stream and play it independently, there are two methods:\n"
+		"*  Set [adjustPlaybackSignalVolume] to 0 and Use [onPlaybackAudioFrameBeforeMixing]\n"
+		"*  Please refer to the example [CustomRenderAudio]\n"
+		"3. If you set [adjustPlaybackSignalVolume] to 0, the audio frames you receive from [onPlaybackAudioFrame] will also be muted."
+		"4. This example only plays one remote user's audio stream; you can expand and manage it yourself."
+		"";
+
+	UBFL_Logger::DisplayUserGuide(Guide, LogMsgViewPtr);
+}
+
 void UProcessAudioRawDataWidget::OnBtnJoinChannelClicked()
 {
+	
+	// Mute the playback volume of SDK (not UE).
+	RtcEngineProxy->adjustPlaybackSignalVolume(0);
+
 	RtcEngineProxy->enableAudio();
 	RtcEngineProxy->setClientRole(CLIENT_ROLE_BROADCASTER);
 	int ret = RtcEngineProxy->joinChannel(TCHAR_TO_UTF8(*Token), TCHAR_TO_UTF8(*ChannelName), "", 0);
@@ -102,6 +125,14 @@ void UProcessAudioRawDataWidget::OnBtnLeaveChannelClicked()
 {
 	int ret = RtcEngineProxy->leaveChannel();
 	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
+}
+
+void UProcessAudioRawDataWidget::OnBtnStopUEAudioClicked()
+{
+	if (AgoraSound)
+	{
+		AgoraSound->Stop();
+	}
 }
 
 void UProcessAudioRawDataWidget::OnBtnBackToHomeClicked()
@@ -144,7 +175,11 @@ void UProcessAudioRawDataWidget::FUserRtcEventHandlerEx::onJoinChannelSuccess(co
 	if (!IsWidgetValid())
 		return;
 
+#if  ((__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)) 
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!IsWidgetValid())
 			{
@@ -161,7 +196,11 @@ void UProcessAudioRawDataWidget::FUserRtcEventHandlerEx::onLeaveChannel(const ag
 	if (!IsWidgetValid())
 		return;
 
+#if  ((__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)) 
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!IsWidgetValid())
 			{
@@ -177,14 +216,21 @@ void UProcessAudioRawDataWidget::FUserRtcEventHandlerEx::onUserJoined(const agor
 	if (!IsWidgetValid())
 		return;
 
+#if  ((__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)) 
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!IsWidgetValid())
 			{
 				UBFL_Logger::Print(FString::Printf(TEXT("%s bIsDestruct "), *FString(FUNCTION_MACRO)));
 				return;
 			}
-			UBFL_Logger::Print(FString::Printf(TEXT("%s remote uid=%d"), *FString(FUNCTION_MACRO), remoteUid), WidgetPtr->GetLogMsgViewPtr());
+
+			WidgetPtr->SetFirstRemoteUID(remoteUid);
+
+			UBFL_Logger::Print(FString::Printf(TEXT("%s remote uid=%u"), *FString(FUNCTION_MACRO), remoteUid), WidgetPtr->GetLogMsgViewPtr());
 
 		});
 }
@@ -194,14 +240,21 @@ void UProcessAudioRawDataWidget::FUserRtcEventHandlerEx::onUserOffline(const ago
 	if (!IsWidgetValid())
 		return;
 
+#if  ((__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)) 
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!IsWidgetValid())
 			{
 				UBFL_Logger::Print(FString::Printf(TEXT("%s bIsDestruct "), *FString(FUNCTION_MACRO)));
 				return;
 			}
-			UBFL_Logger::Print(FString::Printf(TEXT("%s remote uid=%d"), *FString(FUNCTION_MACRO), remoteUid), WidgetPtr->GetLogMsgViewPtr());
+
+			WidgetPtr->ClearFirstRemoteUID(remoteUid);
+
+			UBFL_Logger::Print(FString::Printf(TEXT("%s remote uid=%u"), *FString(FUNCTION_MACRO), remoteUid), WidgetPtr->GetLogMsgViewPtr());
 
 		});
 }
@@ -212,6 +265,16 @@ void UProcessAudioRawDataWidget::FUserRtcEventHandlerEx::onUserOffline(const ago
 
 bool UProcessAudioRawDataWidget::FUserAudioFrameObserver::onPlaybackAudioFrameBeforeMixing(const char* channelId, agora::rtc::uid_t uid, AudioFrame& audioFrame)
 {
+	if (!IsWidgetValid())
+		return false;
+
+	if(WidgetPtr->GetFirstRemoteUID() == uid){
+
+		// We only record 1 remote user's audio stream. You could expand it.
+		WidgetPtr->GetAgoraSoundWaveProcedural()->AddToFrames(audioFrame);
+	
+	}
+
 	return true;
 }
 
@@ -226,16 +289,12 @@ bool UProcessAudioRawDataWidget::FUserAudioFrameObserver::onRecordAudioFrame(con
 
 bool UProcessAudioRawDataWidget::FUserAudioFrameObserver::onPlaybackAudioFrame(const char* channelId, AudioFrame& audioFrame)
 {
-	if(!IsWidgetValid())
+	if (!IsWidgetValid())
 		return false;
 
-	WidgetPtr->GetAgoraSoundWaveProcedural()->AddToFrames(audioFrame);
+	//WidgetPtr->GetAgoraSoundWaveProcedural()->AddToFrames(audioFrame);
 
-	// [To Discard Original Audio Frame], use the frame only in UAgoraSoundWaveProcedural
-	// 1. Set to agora::rtc::RAW_AUDIO_FRAME_OP_MODE_TYPE::RAW_AUDIO_FRAME_OP_MODE_READ_WRITE mode
-	// 2. return false
-
-	return false;
+	return true;
 }
 
 bool UProcessAudioRawDataWidget::FUserAudioFrameObserver::onMixedAudioFrame(const char* channelId, AudioFrame& audioFrame)
@@ -283,7 +342,7 @@ agora::media::IAudioFrameObserverBase::AudioParams UProcessAudioRawDataWidget::F
 
 agora::media::IAudioFrameObserverBase::AudioParams UProcessAudioRawDataWidget::FUserAudioFrameObserver::getEarMonitoringAudioParams()
 {
-	if(!IsWidgetValid())
+	if (!IsWidgetValid())
 		return agora::media::IAudioFrameObserverBase::AudioParams();
 
 	return WidgetPtr->GetAudioParams();

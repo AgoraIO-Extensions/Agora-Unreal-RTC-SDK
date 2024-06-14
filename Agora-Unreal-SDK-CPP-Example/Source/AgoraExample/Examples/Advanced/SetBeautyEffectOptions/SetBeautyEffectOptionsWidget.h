@@ -25,7 +25,7 @@
 using namespace agora::rtc;
 
 /**
- * 
+ *
  */
 UCLASS()
 class AGORAEXAMPLE_API USetBeautyEffectOptionsWidget : public UBaseAgoraUserWidget
@@ -69,31 +69,31 @@ public:
 
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-		UButton* Btn_BackToHome = nullptr;
+	UButton* Btn_BackToHome = nullptr;
 
 	// With Current Config
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-		UButton* Btn_Apply = nullptr;
+	UButton* Btn_Apply = nullptr;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-		UButton* Btn_Stop = nullptr;
+	UButton* Btn_Stop = nullptr;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-		USlider* Slider_LighteningLevel = nullptr;
+	USlider* Slider_LighteningLevel = nullptr;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-		USlider* Slider_SmoothnessLevel = nullptr;
+	USlider* Slider_SmoothnessLevel = nullptr;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-		USlider* Slider_RednessLevel = nullptr;
+	USlider* Slider_RednessLevel = nullptr;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-		USlider* Slider_SharpnessLevel = nullptr;
+	USlider* Slider_SharpnessLevel = nullptr;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-		UTextBlock* Txt_LighteningLevel = nullptr;
+	UTextBlock* Txt_LighteningLevel = nullptr;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-		UTextBlock* Txt_SmoothnessLevel = nullptr;
+	UTextBlock* Txt_SmoothnessLevel = nullptr;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-		UTextBlock* Txt_RednessLevel = nullptr;
+	UTextBlock* Txt_RednessLevel = nullptr;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-		UTextBlock* Txt_SharpnessLevel = nullptr;
+	UTextBlock* Txt_SharpnessLevel = nullptr;
 
 	UFUNCTION(BlueprintCallable)
 	void OnBtnBackToHomeClicked();
@@ -124,13 +124,13 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
 	UCanvasPanel* CanvasPanel_VideoView = nullptr;
-	
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<UDraggableVideoViewWidget> DraggableVideoViewTemplate;
-	
+
 protected:
 
-	int MakeVideoView(uint32 uid, agora::rtc::VIDEO_SOURCE_TYPE sourceType = VIDEO_SOURCE_CAMERA_PRIMARY,FString channelId = "");
+	int MakeVideoView(uint32 uid, agora::rtc::VIDEO_SOURCE_TYPE sourceType = VIDEO_SOURCE_CAMERA_PRIMARY, FString channelId = "");
 	int ReleaseVideoView(uint32 uid, agora::rtc::VIDEO_SOURCE_TYPE sourceType = VIDEO_SOURCE_CAMERA_PRIMARY, FString channelId = "");
 
 	TMap<FVideoViewIdentity, UDraggableVideoViewWidget*> VideoViewMap;
@@ -144,10 +144,10 @@ public:
 	UCanvasPanel* CanvasPanel_LogMsgView = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TSubclassOf<UDraggableLogMsgViewWidget> DraggableLogMsgViewTemplate;
+	TSubclassOf<UDraggableLogMsgViewWidget> DraggableLogMsgViewTemplate;
 
 public:
-	inline UDraggableLogMsgViewWidget* GetLogMsgViewPtr() {return LogMsgViewPtr;} 
+	inline UDraggableLogMsgViewWidget* GetLogMsgViewPtr() { return LogMsgViewPtr; }
 
 private:
 	UDraggableLogMsgViewWidget* LogMsgViewPtr = nullptr;
@@ -162,6 +162,7 @@ public:
 protected:
 	void CheckPermission();
 	void InitAgoraEngine(FString APP_ID, FString TOKEN, FString CHANNEL_NAME);
+	void ShowUserGuide();
 	void JoinChannel();
 
 	void NativeDestruct() override;

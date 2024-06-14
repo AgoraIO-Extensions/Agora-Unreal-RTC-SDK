@@ -32,7 +32,7 @@ using namespace agora;
 class FUserRtcEventHandler;
 
 /**
- * 
+ *
  */
 UCLASS()
 class AGORAEXAMPLE_API UAudioSpectrumWidget : public UBaseAgoraUserWidget
@@ -150,27 +150,27 @@ public:
 
 #pragma region UI
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-		UButton* Btn_BackToHome = nullptr;
-	
+	UButton* Btn_BackToHome = nullptr;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-		UButton* Btn_Open = nullptr;
+	UButton* Btn_Open = nullptr;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-		UButton* Btn_Play = nullptr;
+	UButton* Btn_Play = nullptr;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-		UButton* Btn_Stop = nullptr;
+	UButton* Btn_Stop = nullptr;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-		UButton* Btn_Pause = nullptr;
+	UButton* Btn_Pause = nullptr;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-		UButton* Btn_Resume = nullptr;
+	UButton* Btn_Resume = nullptr;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
-		UEditableText* ET_URL = nullptr;
+	UEditableText* ET_URL = nullptr;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget))
-		UCheckBox* CB_URL = nullptr;
+	UCheckBox* CB_URL = nullptr;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget))
-		UCheckBox* CB_Loop = nullptr;
+	UCheckBox* CB_Loop = nullptr;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget))
-		UCanvasPanel* CanvasPanel_Spectrum = nullptr;
+	UCanvasPanel* CanvasPanel_Spectrum = nullptr;
 
 
 	UFUNCTION(BlueprintCallable)
@@ -199,13 +199,13 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
 	UCanvasPanel* CanvasPanel_VideoView = nullptr;
-	
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<UDraggableVideoViewWidget> DraggableVideoViewTemplate;
-	
+
 protected:
 
-	int MakeVideoView(uint32 uid, agora::rtc::VIDEO_SOURCE_TYPE sourceType = VIDEO_SOURCE_CAMERA_PRIMARY,FString channelId = "");
+	int MakeVideoView(uint32 uid, agora::rtc::VIDEO_SOURCE_TYPE sourceType = VIDEO_SOURCE_CAMERA_PRIMARY, FString channelId = "");
 	int ReleaseVideoView(uint32 uid, agora::rtc::VIDEO_SOURCE_TYPE sourceType = VIDEO_SOURCE_CAMERA_PRIMARY, FString channelId = "");
 
 	TMap<FVideoViewIdentity, UDraggableVideoViewWidget*> VideoViewMap;
@@ -219,10 +219,10 @@ public:
 	UCanvasPanel* CanvasPanel_LogMsgView = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TSubclassOf<UDraggableLogMsgViewWidget> DraggableLogMsgViewTemplate;
+	TSubclassOf<UDraggableLogMsgViewWidget> DraggableLogMsgViewTemplate;
 
 public:
-	inline UDraggableLogMsgViewWidget* GetLogMsgViewPtr() {return LogMsgViewPtr;} 
+	inline UDraggableLogMsgViewWidget* GetLogMsgViewPtr() { return LogMsgViewPtr; }
 
 private:
 	UDraggableLogMsgViewWidget* LogMsgViewPtr = nullptr;
@@ -241,6 +241,7 @@ protected:
 	void InitUI();
 	void CheckPermission();
 	void InitAgoraEngine(FString APP_ID, FString TOKEN, FString CHANNEL_NAME);
+	void ShowUserGuide();
 	void InitAgoraMediaPlayer();
 	void JoinChannelWithMPK();
 

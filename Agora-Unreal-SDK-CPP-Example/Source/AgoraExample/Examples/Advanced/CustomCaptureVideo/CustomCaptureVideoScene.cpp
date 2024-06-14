@@ -8,7 +8,7 @@
 #include "Rendering/SlateRenderer.h"
 #include "Widgets/SWindow.h"
 #include "RHIDefinitions.h"
-
+#include <chrono>
 
 void UCustomCaptureVideoScene::InitAgoraWidget(FString APP_ID, FString TOKEN, FString CHANNEL_NAME)
 {
@@ -19,6 +19,8 @@ void UCustomCaptureVideoScene::InitAgoraWidget(FString APP_ID, FString TOKEN, FS
 	CheckPermission();
 
 	InitAgoraEngine(APP_ID, TOKEN, CHANNEL_NAME);
+
+	ShowUserGuide();
 
 	SetExternalVideoSource();
 
@@ -66,12 +68,23 @@ void UCustomCaptureVideoScene::InitAgoraEngine(FString APP_ID, FString TOKEN, FS
 	RtcEngineProxy = agora::rtc::ue::createAgoraRtcEngineEx();
 
 	int SDKBuild = 0;
-	FString SDKInfo = FString::Printf(TEXT("SDK Version: %s Build: %d"), UTF8_TO_TCHAR(RtcEngineProxy->getVersion(&SDKBuild)), SDKBuild);
+	const char* SDKVersionInfo = RtcEngineProxy->getVersion(&SDKBuild);
+	FString SDKInfo = FString::Printf(TEXT("SDK Version: %s Build: %d"), UTF8_TO_TCHAR(SDKVersionInfo), SDKBuild);
 	UBFL_Logger::Print(FString::Printf(TEXT("SDK Info:  %s"), *SDKInfo), LogMsgViewPtr);
 
 	int ret = RtcEngineProxy->initialize(RtcEngineContext);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 
+}
+
+void UCustomCaptureVideoScene::ShowUserGuide()
+{
+	FString Guide =
+		"Case: [CustomCaptureVideo]\n"
+		"1. It will push the video data to the remote side with the custom data you provide.\n"
+		"";
+
+	UBFL_Logger::DisplayUserGuide(Guide, LogMsgViewPtr);
 }
 
 void UCustomCaptureVideoScene::SetExternalVideoSource()

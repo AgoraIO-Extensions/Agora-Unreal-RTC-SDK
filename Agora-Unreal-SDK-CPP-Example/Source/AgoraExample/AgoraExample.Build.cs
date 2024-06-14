@@ -20,7 +20,6 @@ public class AgoraExample : ModuleRules
             "RHI", 
             "HTTP", 
             "AudioMixer",
-            "MyShaderLibrary",
 
             // For JoinChannelWithToken
             "HTTP",

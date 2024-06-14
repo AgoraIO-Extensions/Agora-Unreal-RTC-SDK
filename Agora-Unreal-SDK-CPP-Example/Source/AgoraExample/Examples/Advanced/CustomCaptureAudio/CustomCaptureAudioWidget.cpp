@@ -12,6 +12,8 @@ void UCustomCaptureAudioWidget::InitAgoraWidget(FString APP_ID, FString TOKEN, F
 
 	InitAgoraEngine(APP_ID, TOKEN, CHANNEL_NAME);
 
+	ShowUserGuide();
+
 	SetExternalAudioSource();
 
 	JoinChannel();
@@ -52,13 +54,24 @@ void UCustomCaptureAudioWidget::InitAgoraEngine(FString APP_ID, FString TOKEN, F
 	RtcEngineProxy = agora::rtc::ue::createAgoraRtcEngineEx();
 
 	int SDKBuild = 0;
-	FString SDKInfo = FString::Printf(TEXT("SDK Version: %s Build: %d"), UTF8_TO_TCHAR(RtcEngineProxy->getVersion(&SDKBuild)), SDKBuild);
+	const char* SDKVersionInfo = RtcEngineProxy->getVersion(&SDKBuild);
+	FString SDKInfo = FString::Printf(TEXT("SDK Version: %s Build: %d"), UTF8_TO_TCHAR(SDKVersionInfo), SDKBuild);
 	UBFL_Logger::Print(FString::Printf(TEXT("SDK Info:  %s"), *SDKInfo), LogMsgViewPtr);
 
 	int ret = RtcEngineProxy->initialize(RtcEngineContext);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 
 	RtcEngineProxy->queryInterface(AGORA_IID_MEDIA_ENGINE, (void**)&MediaEngine);
+}
+
+void UCustomCaptureAudioWidget::ShowUserGuide()
+{
+	FString Guide =
+		"Case: [CustomCaptureAudio]\n"
+		"1. It will push the audio data to the remote side with the custom data you provide.\n"
+		"";
+
+	UBFL_Logger::DisplayUserGuide(Guide, LogMsgViewPtr);
 }
 
 void UCustomCaptureAudioWidget::SetExternalAudioSource()
@@ -82,7 +95,7 @@ void UCustomCaptureAudioWidget::StartPushAudio()
 	TArray<uint8> AudioData;
 	FFileHelper::LoadFileToArray(AudioData, *LoadDir, 0);
 	Runnable = new FAgoraCaptureRunnable(MediaEngine, AudioData.GetData(), AudioData.Num() * sizeof(uint8));
-	FRunnableThread* RunnableThread = FRunnableThread::Create(Runnable, TEXT("Agora"));
+	FRunnableThread* RunnableThread = FRunnableThread::Create(Runnable, TEXT("AgoraUE-UserThread"));
 }
 
 void UCustomCaptureAudioWidget::OnBtnBackToHomeClicked()
@@ -129,14 +142,18 @@ void UCustomCaptureAudioWidget::FUserRtcEventHandler::onJoinChannelSuccess(const
 	if (!IsWidgetValid())
 		return;
 
+#if  ((__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)) 
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!IsWidgetValid())
 			{
 				UBFL_Logger::PrintError(FString::Printf(TEXT("%s bIsDestruct "), *FString(FUNCTION_MACRO)));
 				return;
 			}
-			UBFL_Logger::Print(FString::Printf(TEXT("%s uid=%d"), *FString(FUNCTION_MACRO), uid), WidgetPtr->GetLogMsgViewPtr());
+			UBFL_Logger::Print(FString::Printf(TEXT("%s uid=%u"), *FString(FUNCTION_MACRO), uid), WidgetPtr->GetLogMsgViewPtr());
 
 		});
 }
@@ -145,7 +162,11 @@ void UCustomCaptureAudioWidget::FUserRtcEventHandler::onLeaveChannel(const agora
 {
 	if (!IsWidgetValid())
 		return;
+#if  ((__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)) 
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!IsWidgetValid())
 			{
@@ -163,14 +184,18 @@ void UCustomCaptureAudioWidget::FUserRtcEventHandler::onUserJoined(agora::rtc::u
 {
 	if (!IsWidgetValid())
 		return;
+#if  ((__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)) 
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!IsWidgetValid())
 			{
 				UBFL_Logger::PrintError(FString::Printf(TEXT("%s bIsDestruct "), *FString(FUNCTION_MACRO)));
 				return;
 			}
-			UBFL_Logger::Print(FString::Printf(TEXT("%s uid=%d"), *FString(FUNCTION_MACRO), uid), WidgetPtr->GetLogMsgViewPtr());
+			UBFL_Logger::Print(FString::Printf(TEXT("%s uid=%u"), *FString(FUNCTION_MACRO), uid), WidgetPtr->GetLogMsgViewPtr());
 
 		});
 
@@ -181,7 +206,11 @@ void UCustomCaptureAudioWidget::FUserRtcEventHandler::onUserOffline(agora::rtc::
 	if (!IsWidgetValid())
 		return;
 
+#if  ((__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)) 
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 
 			if (!IsWidgetValid())
@@ -189,7 +218,7 @@ void UCustomCaptureAudioWidget::FUserRtcEventHandler::onUserOffline(agora::rtc::
 				UBFL_Logger::PrintError(FString::Printf(TEXT("%s bIsDestruct "), *FString(FUNCTION_MACRO)));
 				return;
 			}
-			UBFL_Logger::Print(FString::Printf(TEXT("%s uid=%d"), *FString(FUNCTION_MACRO), uid), WidgetPtr->GetLogMsgViewPtr());
+			UBFL_Logger::Print(FString::Printf(TEXT("%s uid=%u"), *FString(FUNCTION_MACRO), uid), WidgetPtr->GetLogMsgViewPtr());
 
 		});
 }

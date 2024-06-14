@@ -11,6 +11,8 @@ void UMetadataWidget::InitAgoraWidget(FString APP_ID, FString TOKEN, FString CHA
 
 	InitAgoraEngine(APP_ID, TOKEN, CHANNEL_NAME);
 
+	ShowUserGuide();
+
 	JoinChannel();
 }
 
@@ -51,7 +53,8 @@ void UMetadataWidget::InitAgoraEngine(FString APP_ID, FString TOKEN, FString CHA
 	RtcEngineProxy = agora::rtc::ue::createAgoraRtcEngine();
 
 	int SDKBuild = 0;
-	FString SDKInfo = FString::Printf(TEXT("SDK Version: %s Build: %d"), UTF8_TO_TCHAR(RtcEngineProxy->getVersion(&SDKBuild)), SDKBuild);
+	const char* SDKVersionInfo = RtcEngineProxy->getVersion(&SDKBuild);
+	FString SDKInfo = FString::Printf(TEXT("SDK Version: %s Build: %d"), UTF8_TO_TCHAR(SDKVersionInfo), SDKBuild);
 	UBFL_Logger::Print(FString::Printf(TEXT("SDK Info:  %s"), *SDKInfo), LogMsgViewPtr);
 
 	int ret = RtcEngineProxy->initialize(RtcEngineContext);
@@ -60,6 +63,16 @@ void UMetadataWidget::InitAgoraEngine(FString APP_ID, FString TOKEN, FString CHA
 	MetadataObserver = MakeShareable(new FUserMetadataObserver(this));
 	int ret2 = RtcEngineProxy->registerMediaMetadataObserver(MetadataObserver.Get(), IMetadataObserver::METADATA_TYPE::VIDEO_METADATA);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s registerMediaMetadataObserver ret %d"), *FString(FUNCTION_MACRO), ret2), LogMsgViewPtr);
+}
+
+void UMetadataWidget::ShowUserGuide()
+{
+	FString Guide =
+		"Case: [Metadata]\n"
+		"1. It could send the metadata and the remote user in the same channel would be able to receive the data.\n"
+		"";
+
+	UBFL_Logger::DisplayUserGuide(Guide, LogMsgViewPtr);
 }
 
 void UMetadataWidget::JoinChannel()
@@ -74,7 +87,7 @@ void UMetadataWidget::JoinChannel()
 void UMetadataWidget::OnBtnStartSendMetadataClicked()
 {
 	IsSending = true;
-	FString Status = IsSending? "True" : "False";
+	FString Status = IsSending ? "True" : "False";
 	UBFL_Logger::Print(FString::Printf(TEXT("%s ==> IsSending %s"), *FString(FUNCTION_MACRO), *Status), LogMsgViewPtr);
 }
 
@@ -97,7 +110,7 @@ void UMetadataWidget::NativeDestruct()
 
 	UnInitAgoraEngine();
 
-	
+
 }
 
 void UMetadataWidget::UnInitAgoraEngine()
@@ -208,7 +221,11 @@ void UMetadataWidget::FUserRtcEventHandlerEx::onJoinChannelSuccess(const agora::
 	if (!IsWidgetValid())
 		return;
 
+#if  ((__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)) 
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!IsWidgetValid())
 			{
@@ -226,7 +243,11 @@ void UMetadataWidget::FUserRtcEventHandlerEx::onLeaveChannel(const agora::rtc::R
 	if (!IsWidgetValid())
 		return;
 
+#if  ((__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)) 
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!IsWidgetValid())
 			{
@@ -244,14 +265,18 @@ void UMetadataWidget::FUserRtcEventHandlerEx::onUserJoined(const agora::rtc::Rtc
 	if (!IsWidgetValid())
 		return;
 
+#if  ((__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)) 
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!IsWidgetValid())
 			{
 				UBFL_Logger::Print(FString::Printf(TEXT("%s bIsDestruct "), *FString(FUNCTION_MACRO)));
 				return;
 			}
-			UBFL_Logger::Print(FString::Printf(TEXT("%s remote uid=%d"), *FString(FUNCTION_MACRO), remoteUid), WidgetPtr->GetLogMsgViewPtr());
+			UBFL_Logger::Print(FString::Printf(TEXT("%s remote uid=%u"), *FString(FUNCTION_MACRO), remoteUid), WidgetPtr->GetLogMsgViewPtr());
 
 			WidgetPtr->MakeVideoView(remoteUid, agora::rtc::VIDEO_SOURCE_TYPE::VIDEO_SOURCE_REMOTE, WidgetPtr->GetChannelName());
 		});
@@ -262,14 +287,18 @@ void UMetadataWidget::FUserRtcEventHandlerEx::onUserOffline(const agora::rtc::Rt
 	if (!IsWidgetValid())
 		return;
 
+#if  ((__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)) 
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!IsWidgetValid())
 			{
 				UBFL_Logger::Print(FString::Printf(TEXT("%s bIsDestruct "), *FString(FUNCTION_MACRO)));
 				return;
 			}
-			UBFL_Logger::Print(FString::Printf(TEXT("%s remote uid=%d"), *FString(FUNCTION_MACRO), remoteUid), WidgetPtr->GetLogMsgViewPtr());
+			UBFL_Logger::Print(FString::Printf(TEXT("%s remote uid=%u"), *FString(FUNCTION_MACRO), remoteUid), WidgetPtr->GetLogMsgViewPtr());
 
 			WidgetPtr->ReleaseVideoView(remoteUid, agora::rtc::VIDEO_SOURCE_TYPE::VIDEO_SOURCE_REMOTE, WidgetPtr->GetChannelName());
 		});
@@ -288,7 +317,7 @@ UMetadataWidget::FUserMetadataObserver::FUserMetadataObserver(UMetadataWidget* W
 
 UMetadataWidget::FUserMetadataObserver::~FUserMetadataObserver()
 {
-	
+
 }
 
 int UMetadataWidget::FUserMetadataObserver::getMaxMetadataSize()
@@ -305,7 +334,11 @@ bool UMetadataWidget::FUserMetadataObserver::onReadyToSendMetadata(Metadata& met
 			FString Str = "[MetaData]: TickInfo" + FString::FromInt(tick);
 			FMemory::Memcpy(metadata.buffer, TCHAR_TO_UTF8(*Str), Str.Len() * sizeof(unsigned char));
 			metadata.size = Str.Len() * sizeof(unsigned char);
+#if  ((__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)) 
+			AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 			AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 				{
 					if (!IsWidgetValid())
 					{
@@ -323,7 +356,11 @@ bool UMetadataWidget::FUserMetadataObserver::onReadyToSendMetadata(Metadata& met
 void UMetadataWidget::FUserMetadataObserver::onMetadataReceived(const Metadata& metadata)
 {
 	FString Data((char*)metadata.buffer);
+#if  ((__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)) 
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!IsWidgetValid())
 			{
@@ -332,7 +369,7 @@ void UMetadataWidget::FUserMetadataObserver::onMetadataReceived(const Metadata& 
 			}
 			UBFL_Logger::Print(FString::Printf(TEXT("%s Receive ==> Data Received %s"), *FString(FUNCTION_MACRO), *(Data)), WidgetPtr->GetLogMsgViewPtr());
 		});
-	
+
 }
 
 #pragma endregion

@@ -112,7 +112,7 @@ echo "[Unreal CI] copying Mac ..."
 MAC_DST_PATH="$PLUGIN_PATH/Mac/Release"
 mkdir -p $MAC_DST_PATH
 rm -f MAC_DST_PATH/*
-cp -PRf $MAC_SRC_PATH/Agora_*/libs/*.xcframework/macos-arm64_x86_64/*framework "$MAC_DST_PATH"
+cp -PRfa $MAC_SRC_PATH/Agora_*/libs/*.xcframework/macos-arm64_x86_64/*framework "$MAC_DST_PATH"
 
 echo "[Unreal CI] copying Win x86 ..."
 WINx86_DST_PATH="$PLUGIN_PATH/Win/Release/"
@@ -132,7 +132,7 @@ cd $CI_DIR/temp
 # Zip Package
 #--------------------------------------
 
-zip -r "$PLUGIN_NAME".zip $PLUGIN_NAME
+zip -ry "$PLUGIN_NAME".zip $PLUGIN_NAME
 
 #--------------------------------------
 # Copy to $CI_DIR/output

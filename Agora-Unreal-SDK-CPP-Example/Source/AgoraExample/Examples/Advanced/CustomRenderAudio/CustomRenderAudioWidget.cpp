@@ -12,6 +12,8 @@ void UCustomRenderAudioWidget::InitAgoraWidget(FString APP_ID, FString TOKEN, FS
 
 	InitAgoraEngine(APP_ID, TOKEN, CHANNEL_NAME);
 
+	ShowUserGuide();
+
 	JoinChannel();
 
 	InitConfig();
@@ -19,7 +21,7 @@ void UCustomRenderAudioWidget::InitAgoraWidget(FString APP_ID, FString TOKEN, FS
 	if (Runnable == nullptr)
 	{
 		Runnable = new FAgoraRenderRunnable(MediaEngine, AgoraSoundWaveProcedural);
-		FRunnableThread* RunnableThread = FRunnableThread::Create(Runnable, TEXT("Agora"));
+		FRunnableThread* RunnableThread = FRunnableThread::Create(Runnable, TEXT("AgoraUE-UserThread"));
 	}
 }
 
@@ -56,7 +58,8 @@ void UCustomRenderAudioWidget::InitAgoraEngine(FString APP_ID, FString TOKEN, FS
 	RtcEngineProxy = agora::rtc::ue::createAgoraRtcEngineEx();
 
 	int SDKBuild = 0;
-	FString SDKInfo = FString::Printf(TEXT("SDK Version: %s Build: %d"), UTF8_TO_TCHAR(RtcEngineProxy->getVersion(&SDKBuild)), SDKBuild);
+	const char* SDKVersionInfo = RtcEngineProxy->getVersion(&SDKBuild);
+	FString SDKInfo = FString::Printf(TEXT("SDK Version: %s Build: %d"), UTF8_TO_TCHAR(SDKVersionInfo), SDKBuild);
 	UBFL_Logger::Print(FString::Printf(TEXT("SDK Info:  %s"), *SDKInfo), LogMsgViewPtr);
 
 	int ret = RtcEngineProxy->initialize(RtcEngineContext);
@@ -65,12 +68,44 @@ void UCustomRenderAudioWidget::InitAgoraEngine(FString APP_ID, FString TOKEN, FS
 	RtcEngineProxy->queryInterface(AGORA_IID_MEDIA_ENGINE, (void**)&MediaEngine);
 }
 
+void UCustomRenderAudioWidget::ShowUserGuide()
+{
+	FString Guide =
+		"Case: [CustomRenderAudio]\n"
+		"[Limitation on IOS]\n"
+		"You may not be able to hear sounds. This is because UE may not consider cooperating with third-party audio systems in this case.\n"
+		"UE and SDK would compete for the ADM (audio device module). Please refer to the code [IOSAppDelegate.cpp]. \n"
+		"If we are not in [Playback] or [RecordActive] status, the AVAudioSessionCategory won't be set to [AVAudioSessionCategoryPlayAndRecord].\n"
+		"The temporary solution you could check the comment in the [JoinChannel] method. We would provide a better solution in the future.\n"
+		"1. It will pull the audio data from the remote side and then play it using your own tools (e.g., UE audio Tools).\n"
+		"";
+
+	UBFL_Logger::DisplayUserGuide(Guide, LogMsgViewPtr);
+}
+
 void UCustomRenderAudioWidget::JoinChannel()
 {
 	RtcEngineProxy->enableAudio();
+
+
+#if PLATFORM_IOS
+
+	// UE and SDK would compete for the ADM.
+
+	// [Tmp Solution]
+	// It would disable SDK's ADM, therefore, it would disable the functionality of Recording and Playout.
+	// You could get the sample effect with ChannelMediaOptions.enableAudioRecordingOrPlayout to false
+	// int ret00 = RtcEngineProxy->enableLocalAudio(false);
+
+	// [Solution]
+	int ret00 = RtcEngineProxy->setParameters("{\"che.audio.keep.audiosession\": true}");
+	UBFL_Logger::Print(FString::Printf(TEXT("%s setParameters ret %d"), *FString(FUNCTION_MACRO), ret00), LogMsgViewPtr);
+
+#endif
+
 	int ret0 = MediaEngine->setExternalAudioSink(true, SAMPLE_RATE, CHANNEL);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s setExternalAudioSink ret %d"), *FString(FUNCTION_MACRO), ret0), LogMsgViewPtr);
-	
+
 	RtcEngineProxy->setClientRole(CLIENT_ROLE_BROADCASTER);
 	int ret = RtcEngineProxy->joinChannel(TCHAR_TO_UTF8(*Token), TCHAR_TO_UTF8(*ChannelName), "", 0);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s joinChannel ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
@@ -141,14 +176,18 @@ void UCustomRenderAudioWidget::FUserRtcEventHandler::onJoinChannelSuccess(const 
 	if (!IsWidgetValid())
 		return;
 
+#if  ((__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)) 
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!IsWidgetValid())
 			{
 				UBFL_Logger::PrintError(FString::Printf(TEXT("%s bIsDestruct "), *FString(FUNCTION_MACRO)));
 				return;
 			}
-			UBFL_Logger::Print(FString::Printf(TEXT("%s uid=%d"), *FString(FUNCTION_MACRO), uid), WidgetPtr->GetLogMsgViewPtr());
+			UBFL_Logger::Print(FString::Printf(TEXT("%s uid=%u"), *FString(FUNCTION_MACRO), uid), WidgetPtr->GetLogMsgViewPtr());
 
 		});
 }
@@ -157,7 +196,11 @@ void UCustomRenderAudioWidget::FUserRtcEventHandler::onLeaveChannel(const agora:
 {
 	if (!IsWidgetValid())
 		return;
+#if  ((__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)) 
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!IsWidgetValid())
 			{
@@ -175,14 +218,18 @@ void UCustomRenderAudioWidget::FUserRtcEventHandler::onUserJoined(agora::rtc::ui
 {
 	if (!IsWidgetValid())
 		return;
+#if  ((__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)) 
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!IsWidgetValid())
 			{
 				UBFL_Logger::PrintError(FString::Printf(TEXT("%s bIsDestruct "), *FString(FUNCTION_MACRO)));
 				return;
 			}
-			UBFL_Logger::Print(FString::Printf(TEXT("%s uid=%d"), *FString(FUNCTION_MACRO), uid), WidgetPtr->GetLogMsgViewPtr());
+			UBFL_Logger::Print(FString::Printf(TEXT("%s uid=%u"), *FString(FUNCTION_MACRO), uid), WidgetPtr->GetLogMsgViewPtr());
 
 		});
 
@@ -193,7 +240,11 @@ void UCustomRenderAudioWidget::FUserRtcEventHandler::onUserOffline(agora::rtc::u
 	if (!IsWidgetValid())
 		return;
 
+#if  ((__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)) 
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 
 			if (!IsWidgetValid())
@@ -201,7 +252,7 @@ void UCustomRenderAudioWidget::FUserRtcEventHandler::onUserOffline(agora::rtc::u
 				UBFL_Logger::PrintError(FString::Printf(TEXT("%s bIsDestruct "), *FString(FUNCTION_MACRO)));
 				return;
 			}
-			UBFL_Logger::Print(FString::Printf(TEXT("%s uid=%d"), *FString(FUNCTION_MACRO), uid), WidgetPtr->GetLogMsgViewPtr());
+			UBFL_Logger::Print(FString::Printf(TEXT("%s uid=%u"), *FString(FUNCTION_MACRO), uid), WidgetPtr->GetLogMsgViewPtr());
 
 		});
 }
@@ -212,7 +263,11 @@ void UCustomRenderAudioWidget::FUserRtcEventHandler::onAudioVolumeIndication(con
 	if (!IsWidgetValid())
 		return;
 
+#if  ((__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)) 
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 
 			if (!IsWidgetValid())
@@ -278,15 +333,15 @@ uint32 FAgoraRenderRunnable::Run()
 			//UE_LOG(LogTemp, Warning, TEXT("UCustomRenderAudioWidget pullAudioFrame ====== %d"), ret);
 			if (ret == 0)
 			{
-//			unreal playback failed, but the data is normal. Customers can modify it by themselves if they find the right way
-//#if PLATFORM_IOS
-//                NSString* path = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) objectAtIndex:0];
-//                std::string temp =std::string([path UTF8String]);
-//                std::string output = temp +std::string("/CustomAudiodata.pcm");
-//                FILE* file = fopen(output.c_str(),"ab+");
-//                fwrite(externalAudioFrame.buffer, 1, externalAudioFrame.bytesPerSample * externalAudioFrame.samplesPerChannel * externalAudioFrame.channels, file);
-//                fclose(file);
-//#endif
+				// [To retrieve iOS audio data]	IOS playback failed, but the data is normal. Customers can modify it by themselves
+				//#if PLATFORM_IOS
+				//                NSString* path = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) objectAtIndex:0];
+				//                std::string temp =std::string([path UTF8String]);
+				//                std::string output = temp +std::string("/CustomAudiodata.pcm");
+				//                FILE* file = fopen(output.c_str(),"ab+");
+				//                fwrite(externalAudioFrame.buffer, 1, externalAudioFrame.bytesPerSample * externalAudioFrame.samplesPerChannel * externalAudioFrame.channels, file);
+				//                fclose(file);
+				//#endif
 				AgoraSoundWaveProcedural->AddToFrames(externalAudioFrame);
 			}
 		}

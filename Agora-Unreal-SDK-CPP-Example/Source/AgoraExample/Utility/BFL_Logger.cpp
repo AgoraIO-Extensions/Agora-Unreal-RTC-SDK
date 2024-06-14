@@ -12,7 +12,7 @@ bool UBFL_Logger::bDisablePrintOnScreen = false;
 
 FString UBFL_Logger::ConsolePreix = "[Agora-UE]";
 
-FString UBFL_Logger::ConsoleLogTitle =" ======= Init Log Msg View ======= \n";
+FString UBFL_Logger::ConsoleLogTitle = " ======= Init Log Msg View ======= \n";
 
 UDraggableLogMsgViewWidget* UBFL_Logger::CreateLogView(UCanvasPanel* ParentCanvasPanel, TSubclassOf<UUserWidget> Template)
 {
@@ -36,7 +36,7 @@ void UBFL_Logger::ReleaseLogView(UDraggableLogMsgViewWidget* LogMsgViewWidgetPtr
 
 void UBFL_Logger::InitLogMsgView(UDraggableLogMsgViewWidget* Widget)
 {
-	if(Widget){
+	if (Widget) {
 		Widget->Txt_LogMsg->SetText(FText::FromString(ConsoleLogTitle));
 	}
 }
@@ -103,4 +103,21 @@ void UBFL_Logger::PrintError(FString LogMsg, UDraggableLogMsgViewWidget* Widget 
 		// Print Log To LogMsgView
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, LogMsg);
 	}
+}
+
+void UBFL_Logger::DisplayUserGuide(FString UserGuide, UDraggableLogMsgViewWidget* Widget /*= nullptr*/, bool bToConsole /*= true*/, bool bToLogMsgView /*= true*/, bool bOnScreen /*= false*/)
+{
+	FString GuideBegin = "\n"\
+		"******************************************\n" \
+		"======== User Guide Begin ========\n" \
+		"[Notice]: All the views are draggable\n" \
+		"---------------------------------------\n";
+
+	FString GuideEnd = ""\
+		"========= User Guide End ========\n"\
+		"******************************************\n";
+
+	FString ContentMsg = GuideBegin + UserGuide + GuideEnd;
+
+	Print(ContentMsg, Widget, false, bToLogMsgView, bOnScreen);
 }

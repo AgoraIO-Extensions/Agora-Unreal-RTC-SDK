@@ -28,7 +28,7 @@ using namespace agora::rtc;
 using namespace agora;
 
 /**
- * 
+ *
  */
 UCLASS(Abstract)
 class AGORAEXAMPLE_API UAgoraVideoWidget : public UBaseAgoraUserWidget
@@ -69,16 +69,16 @@ public:
 #pragma endregion
 
 public:
-		
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
 	UButton* Btn_BackToHome = nullptr;
-	
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
 	UButton* Btn_JoinChannel = nullptr;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget))
 	UButton* Btn_LeaveChannel = nullptr;
-	
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget))
 	UButton* Btn_StartPublish = nullptr;
 
@@ -89,17 +89,17 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
 	UEditableText* ET_FPS = nullptr;
 
-		UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
 	UEditableText* ET_Width = nullptr;
 
-		UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
 	UEditableText* ET_Height = nullptr;
 
 
-		UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
 	UEditableText* ET_BitRate = nullptr;
 
-		UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
 	UEditableText* ET_MinBitRate = nullptr;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
@@ -116,7 +116,7 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void OnBtnStartPublishClicked();
-	
+
 	UFUNCTION(BlueprintCallable)
 	void OnBtnStopPublishClicked();
 
@@ -136,9 +136,9 @@ public:
 	UCanvasPanel* CanvasPanel_LogMsgView = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TSubclassOf<UDraggableLogMsgViewWidget> DraggableLogMsgViewTemplate;
+	TSubclassOf<UDraggableLogMsgViewWidget> DraggableLogMsgViewTemplate;
 public:
-	inline UDraggableLogMsgViewWidget* GetLogMsgViewPtr() {return LogMsgViewPtr;} 
+	inline UDraggableLogMsgViewWidget* GetLogMsgViewPtr() { return LogMsgViewPtr; }
 private:
 	UDraggableLogMsgViewWidget* LogMsgViewPtr = nullptr;
 #pragma endregion
@@ -149,7 +149,7 @@ private:
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
 	UCanvasPanel* CanvasPanel_VideoView = nullptr;
-	
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<UDraggableVideoViewWidget> DraggableVideoViewTemplate;
 
@@ -167,7 +167,7 @@ public:
 	inline FString GetToken() { return Token; };
 	inline FString GetChannelName() { return ChannelName; };
 
-	
+
 protected:
 
 	IRtcEngine* RtcEngineProxy;
@@ -179,6 +179,7 @@ protected:
 	void CheckPermission();
 
 	void InitAgoraEngine(FString APP_ID, FString TOKEN, FString CHANNEL_NAME);
+	void ShowUserGuide();
 	void UnInitAgoraEngine();
 	void NativeDestruct() override;
 

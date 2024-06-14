@@ -13,6 +13,8 @@ void USpatialAudioWidget::InitAgoraWidget(FString APP_ID, FString TOKEN, FString
 
 	InitAgoraEngine(APP_ID, TOKEN, CHANNEL_NAME);
 
+	ShowUserGuide();
+
 	InitSpatialAudioEngine(RtcEngineProxy);
 }
 
@@ -57,7 +59,8 @@ void USpatialAudioWidget::InitAgoraEngine(FString APP_ID, FString TOKEN, FString
 	RtcEngineProxy = agora::rtc::ue::createAgoraRtcEngineEx();
 
 	int SDKBuild = 0;
-	FString SDKInfo = FString::Printf(TEXT("SDK Version: %s Build: %d"), UTF8_TO_TCHAR(RtcEngineProxy->getVersion(&SDKBuild)), SDKBuild);
+	const char* SDKVersionInfo = RtcEngineProxy->getVersion(&SDKBuild);
+	FString SDKInfo = FString::Printf(TEXT("SDK Version: %s Build: %d"), UTF8_TO_TCHAR(SDKVersionInfo), SDKBuild);
 	UBFL_Logger::Print(FString::Printf(TEXT("SDK Info:  %s"), *SDKInfo), LogMsgViewPtr);
 
 	int ret = RtcEngineProxy->initialize(RtcEngineContext);
@@ -65,6 +68,16 @@ void USpatialAudioWidget::InitAgoraEngine(FString APP_ID, FString TOKEN, FString
 
 }
 
+
+void USpatialAudioWidget::ShowUserGuide()
+{
+	FString Guide =
+		"Case: [SpatialAudio]\n"
+		"1. Play spatial audio using the audio data from the remote user. \n"
+		"";
+
+	UBFL_Logger::DisplayUserGuide(Guide, LogMsgViewPtr);
+}
 
 void USpatialAudioWidget::InitSpatialAudioEngine(IRtcEngine* engine)
 {
@@ -88,8 +101,8 @@ void USpatialAudioWidget::InitSpatialAudioEngine(IRtcEngine* engine)
 
 		LocalSpatialAudioEngine->setDistanceUnit(1);
 
-		float pos[3] = {0,0,0};
-		float forward[3] = {1,0,0 };
+		float pos[3] = { 0,0,0 };
+		float forward[3] = { 1,0,0 };
 		float right[3] = { 0,1,0 };
 		float up[3] = { 0,0,1 };
 
@@ -123,8 +136,8 @@ void USpatialAudioWidget::OnBtnLeaveChannelClicked()
 void USpatialAudioWidget::OnSliderDistanceValChanged(float val)
 {
 	Txt_Distance->SetText(FText::FromString(FString::Printf(TEXT("%.2f"), val)));
-	
-	if(RemoteUID == 0)
+
+	if (RemoteUID == 0)
 		return;
 
 	int ret = UpdateRemotePositionWithCurrentDistanceVal();
@@ -174,7 +187,11 @@ void USpatialAudioWidget::FUserRtcEventHandlerEx::onJoinChannelSuccess(const ago
 	if (!IsWidgetValid())
 		return;
 
+#if  ((__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)) 
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!IsWidgetValid())
 			{
@@ -192,7 +209,11 @@ void USpatialAudioWidget::FUserRtcEventHandlerEx::onLeaveChannel(const agora::rt
 	if (!IsWidgetValid())
 		return;
 
+#if  ((__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)) 
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!IsWidgetValid())
 			{
@@ -209,7 +230,11 @@ void USpatialAudioWidget::FUserRtcEventHandlerEx::onUserJoined(const agora::rtc:
 	if (!IsWidgetValid())
 		return;
 
+#if  ((__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)) 
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!IsWidgetValid())
 			{
@@ -219,7 +244,7 @@ void USpatialAudioWidget::FUserRtcEventHandlerEx::onUserJoined(const agora::rtc:
 
 			WidgetPtr->SetRemoteUID(remoteUid);
 			int ret = WidgetPtr->UpdateRemotePositionWithCurrentDistanceVal();
-			UBFL_Logger::Print(FString::Printf(TEXT("%s remote uid=%d update position ret=%d"), *FString(FUNCTION_MACRO), remoteUid,ret), WidgetPtr->GetLogMsgViewPtr());
+			UBFL_Logger::Print(FString::Printf(TEXT("%s remote uid=%u update position ret=%d"), *FString(FUNCTION_MACRO), remoteUid, ret), WidgetPtr->GetLogMsgViewPtr());
 
 		});
 }
@@ -229,7 +254,11 @@ void USpatialAudioWidget::FUserRtcEventHandlerEx::onUserOffline(const agora::rtc
 	if (!IsWidgetValid())
 		return;
 
+#if  ((__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)) 
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!IsWidgetValid())
 			{
@@ -237,7 +266,7 @@ void USpatialAudioWidget::FUserRtcEventHandlerEx::onUserOffline(const agora::rtc
 				return;
 			}
 			WidgetPtr->SetRemoteUID(0);
-			UBFL_Logger::Print(FString::Printf(TEXT("%s remote uid=%d"), *FString(FUNCTION_MACRO), remoteUid), WidgetPtr->GetLogMsgViewPtr());
+			UBFL_Logger::Print(FString::Printf(TEXT("%s remote uid=%u"), *FString(FUNCTION_MACRO), remoteUid), WidgetPtr->GetLogMsgViewPtr());
 
 		});
 }

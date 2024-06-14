@@ -7,6 +7,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "GameFrameWork/PlayerController.h"
 #include <string>
+#include "Async/Async.h"
 #include "BaseAgoraUserWidget.generated.h"
 
 /**

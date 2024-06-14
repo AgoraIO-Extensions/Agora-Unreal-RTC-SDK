@@ -7,13 +7,13 @@
 #include "LevelSwitchItem.generated.h"
 
 /**
- * 
+ *
  */
 UCLASS(Blueprintable)
 class ULevelSwitchItem : public UObject
 {
 	GENERATED_BODY()
-	
+
 public:
 
 	UPROPERTY(BlueprintReadOnly)
