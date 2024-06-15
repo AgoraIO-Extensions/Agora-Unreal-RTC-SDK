@@ -76,6 +76,16 @@ void UScreenShareWhileVideoCallWidget::InitAgoraEngine(FString APP_ID, FString T
 
 	int ret = AgoraUERtcEngine::Get()->initialize(RtcEngineContext);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
+
+#pragma region Load Android So
+
+#if PLATFORM_ANDROID
+	int retSo = AgoraUERtcEngine::Get()->loadExtensionProvider("agora_screen_capture_extension");
+
+	UBFL_Logger::Print(FString::Printf(TEXT("Initialize loadExtensionProvider ret %d"), retSo), LogMsgViewPtr);
+#endif
+
+#pragma endregion Load Android So
 }
 
 void UScreenShareWhileVideoCallWidget::InitData()
