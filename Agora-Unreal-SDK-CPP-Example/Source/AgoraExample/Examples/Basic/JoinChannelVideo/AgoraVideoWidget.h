@@ -131,7 +131,7 @@ public:
 
 	void InitAgoraWidget(FString APP_ID, FString TOKEN, FString CHANNEL_NAME) override;
 
-
+	//virtual void NativeTick(const FGeometry& MyGeometry, float DeltaTime) override;
 
 #pragma region UI Utility - Log Msg View
 public:

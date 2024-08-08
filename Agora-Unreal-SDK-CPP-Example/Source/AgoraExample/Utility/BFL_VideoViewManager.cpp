@@ -5,7 +5,7 @@
 #include "Components/CanvasPanelSlot.h"
 #include "Blueprint/WidgetLayoutLibrary.h"
 
-UImage* UBFL_VideoViewManager::CreateOneVideoViewToCanvasPanel(int64 uid, UCanvasPanel* CanvasPanel, TMap<int64, UDraggableVideoViewWidget*>& VideoViewMap, UImage* VideoView, TSubclassOf<UUserWidget> Template)
+UImage* UBFL_VideoViewManager::CreateOneVideoViewToCanvasPanel(int64 uid, UCanvasPanel* CanvasPanel, TMap<int64, UDraggableVideoViewWidget*>& VideoViewMap, UImage* VideoView, TSubclassOf<UUserWidget> Template, bool bAutoSize /* = false */)
 {
 	if (VideoViewMap.Contains(uid))
 	{
@@ -18,14 +18,21 @@ UImage* UBFL_VideoViewManager::CreateOneVideoViewToCanvasPanel(int64 uid, UCanva
 		UDraggableVideoViewWidget* VideoViewWidget = CreateWidget<UDraggableVideoViewWidget>(world, Template);
 		VideoViewMap.Add(uid, VideoViewWidget);
 		UPanelSlot* PanelSlot = CanvasPanel->AddChild(VideoViewWidget);
+
+		// set the whole UDraggableVideoViewWidget widget size
 		UCanvasPanelSlot* CanvasPanelSlot = UWidgetLayoutLibrary::SlotAsCanvasSlot(VideoViewWidget);
 		CanvasPanelSlot->SetSize(FVector2D(640, 360));
+
+		// make the image auto-sized, the same as its brush size
+		UCanvasPanelSlot* ViewCanvasPanelSlot = UWidgetLayoutLibrary::SlotAsCanvasSlot(VideoViewWidget->View);
+		ViewCanvasPanelSlot->SetAutoSize(bAutoSize);
+
 		return  VideoViewWidget->View;
 	}
 }
 
 
-UImage* UBFL_VideoViewManager::CreateOneVideoViewToCanvasPanel(const FVideoViewIdentity& Key, UCanvasPanel* CanvasPanel, TMap<FVideoViewIdentity, UDraggableVideoViewWidget*>& VideoViewMap, TSubclassOf<UUserWidget> Template)
+UImage* UBFL_VideoViewManager::CreateOneVideoViewToCanvasPanel(const FVideoViewIdentity& Key, UCanvasPanel* CanvasPanel, TMap<FVideoViewIdentity, UDraggableVideoViewWidget*>& VideoViewMap, TSubclassOf<UUserWidget> Template, bool bAutoSize /* = false */)
 {
 	if (VideoViewMap.Contains(Key))
 	{
@@ -48,8 +55,14 @@ UImage* UBFL_VideoViewManager::CreateOneVideoViewToCanvasPanel(const FVideoViewI
 
 		VideoViewMap.Add(Key, VideoViewWidget);
 		UPanelSlot* PanelSlot = CanvasPanel->AddChild(VideoViewWidget);
+
+		// set the whole UDraggableVideoViewWidget widget size
 		UCanvasPanelSlot* CanvasPanelSlot = UWidgetLayoutLibrary::SlotAsCanvasSlot(VideoViewWidget);
 		CanvasPanelSlot->SetSize(FVector2D(640, 360));
+
+		// make the image auto-sized, the same as its brush size
+		UCanvasPanelSlot* ViewCanvasPanelSlot = UWidgetLayoutLibrary::SlotAsCanvasSlot(VideoViewWidget->View);
+		ViewCanvasPanelSlot->SetAutoSize(bAutoSize);
 		return  VideoViewWidget->View;
 	}
 }

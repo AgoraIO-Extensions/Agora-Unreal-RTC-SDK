@@ -3,6 +3,9 @@
 
 #include "AgoraVideoWidget.h"
 
+#include "Components/CanvasPanelSlot.h"
+#include "Blueprint/WidgetLayoutLibrary.h"
+
 void UAgoraVideoWidget::InitAgoraWidget(FString APP_ID, FString TOKEN, FString CHANNEL_NAME)
 {
 	LogMsgViewPtr = UBFL_Logger::CreateLogView(CanvasPanel_LogMsgView, DraggableLogMsgViewTemplate);
@@ -13,6 +16,7 @@ void UAgoraVideoWidget::InitAgoraWidget(FString APP_ID, FString TOKEN, FString C
 
 	ShowUserGuide();
 }
+
 
 void UAgoraVideoWidget::CheckPermission() {
 #if PLATFORM_ANDROID
@@ -60,6 +64,7 @@ void UAgoraVideoWidget::ShowUserGuide()
 	FString Guide =
 		"Case: [BasicVideoScene]\n"
 		"1. This is a basic video scene.\n"
+		"2. Notice: we set [CreateOneVideoViewToCanvasPanel] param 'bAutoSize' to be true to make the image view auto size with its brush size.\n"
 		"";
 
 	UBFL_Logger::DisplayUserGuide(Guide, LogMsgViewPtr);
@@ -155,6 +160,11 @@ void UAgoraVideoWidget::NativeDestruct() {
 
 }
 
+//void UAgoraVideoWidget::NativeTick(const FGeometry& MyGeometry, float DeltaTime)
+//{
+//	Super::NativeTick(MyGeometry, DeltaTime);
+//}
+
 
 #pragma region UI Utility
 
@@ -179,14 +189,14 @@ int UAgoraVideoWidget::MakeVideoView(uint32 uid, agora::rtc::VIDEO_SOURCE_TYPE s
 
 	if (uid == 0) {
 		FVideoViewIdentity VideoViewIdentity(uid, sourceType, "");
-		videoCanvas.view = UBFL_VideoViewManager::CreateOneVideoViewToCanvasPanel(VideoViewIdentity, CanvasPanel_VideoView, VideoViewMap, DraggableVideoViewTemplate);
+		videoCanvas.view = UBFL_VideoViewManager::CreateOneVideoViewToCanvasPanel(VideoViewIdentity, CanvasPanel_VideoView, VideoViewMap, DraggableVideoViewTemplate,true);
 		ret = AgoraUERtcEngine::Get()->setupLocalVideo(videoCanvas);
 	}
 	else
 	{
 
 		FVideoViewIdentity VideoViewIdentity(uid, sourceType, channelId);
-		videoCanvas.view = UBFL_VideoViewManager::CreateOneVideoViewToCanvasPanel(VideoViewIdentity, CanvasPanel_VideoView, VideoViewMap, DraggableVideoViewTemplate);
+		videoCanvas.view = UBFL_VideoViewManager::CreateOneVideoViewToCanvasPanel(VideoViewIdentity, CanvasPanel_VideoView, VideoViewMap, DraggableVideoViewTemplate,true);
 
 		if (channelId == "") {
 			ret = AgoraUERtcEngine::Get()->setupRemoteVideo(videoCanvas);
