@@ -1,7 +1,8 @@
-//  Copyright (c) 2023 Agora.io. All rights reserved.
+// Copyright Epic Games, Inc. All Rights Reserved.
 
 using System;
 using System.Linq;
+using System.IO;
 using UnrealBuildTool;
 using System.Reflection;
 
@@ -18,6 +19,11 @@ public class AgoraPlugin : ModuleRules
         // Notice: for now, the audio-only plugin is only available for Android and iOS. The [Windows/Mac] version still remains the FULL version, even if you have downloaded the voice version SDK.
         PublicDefinitions.Add(String.Format("AGORA_UESDK_AUDIO_ONLY={0}", (bIsAudioOnlySDK ? 1 : 0)));
 
+
+        // if need to set callbacks during agora sdk lifetime
+        bool bWithAgoraCallbacks = true;
+        PublicDefinitions.Add(String.Format("WITH_AGORA_CALLBACKS={0}", (bWithAgoraCallbacks ? 1 : 0)));
+
         // Whether to compile video-related code or not.
         if (!bIsAudioOnlySDK || (!(Target.Platform == UnrealTargetPlatform.Android || Target.Platform == UnrealTargetPlatform.IOS)))
         {
@@ -31,14 +37,34 @@ public class AgoraPlugin : ModuleRules
         PublicIncludePaths.AddRange(
             new string[] {
 				// ... add public include paths required here ...
-			}
+                Path.Combine(ModuleDirectory,"Public","AgoraCppPlugin"),
+                Path.Combine(ModuleDirectory,"Public","AgoraCppPlugin","include"),
+                // "AgoraPlugin/Public/AgoraCppPlugin/include",
+                 Path.Combine(ModuleDirectory,"Public","AgoraBlueprintPlugin"),
+            }
             );
+
+
+        bool bUseBlueprintModule = true;
+
+        if(bUseBlueprintModule)
+        {
+            PublicDependencyModuleNames.AddRange(
+                new string[]
+                {
+                    "MediaAssets",
+                    "AgoraUtilityHelper",
+                }
+            );
+        }
 
 
         PrivateIncludePaths.AddRange(
             new string[] {
 				// ... add other private include paths required here ...
-			}
+                Path.Combine(ModuleDirectory,"Private","AgoraCppPlugin","PrivateInclude"),
+                Path.Combine(ModuleDirectory,"Private","AgoraCppPlugin","PrivateInclude","VideoRender"),
+            }
             );
 
         if (Target.Platform == UnrealTargetPlatform.Android)
@@ -54,9 +80,9 @@ public class AgoraPlugin : ModuleRules
             new string[]
             {
                 "Core",
-                "AgoraPluginLibrary",
                 "Projects",
-                "Eigen"
+                "AgoraPluginLibrary",
+
 				// ... add other public dependencies that you statically link with here ...
 			}
             );
@@ -83,28 +109,34 @@ public class AgoraPlugin : ModuleRules
             );
 
 
-        // Add Compile Options
-        if (Target.Platform == UnrealTargetPlatform.Mac || Target.Platform == UnrealTargetPlatform.IOS)
+
+
+        //// Add Compile Options
+        //if (Target.Platform == UnrealTargetPlatform.Mac || Target.Platform == UnrealTargetPlatform.IOS)
+        //{
+        //    // -Wno-gcc-compat: gcc does not allow an atrribute in this position on a function declaration
+        //    // -Wno-reorder-ctor: fix error "field 'eventHandler' will be initialized after field 'mccUid'"
+        //    // -Wno-nonportable-include-path: In some cases, path <Private\AgoraCppPlugin\Include> would be changed from <Include> to <include>.
+        //    Type TargetType = Target.GetType();
+        //    FieldInfo InnerField = TargetType.GetField("Inner", BindingFlags.Instance | BindingFlags.NonPublic);
+        //    TargetRules Inner = (TargetRules)InnerField.GetValue(Target);
+        //    Inner.AdditionalCompilerArguments += " -Wno-gcc-compat -Wno-reorder-ctor -Wno-nonportable-include-path ";
+        //}
+
+
+
+        if (Target.GlobalDefinitions.Contains("FORCE_ANSI_ALLOCATOR=1"))
         {
-            // -Wno-gcc-compat: gcc does not allow an atrribute in this position on a function declaration
-            // -Wno-reorder-ctor: fix error "field 'eventHandler' will be initialized after field 'mccUid'"
-            // -Wno-nonportable-include-path: In some cases, path <Private\AgoraCppPlugin\Include> would be changed from <Include> to <include>.
-            Type TargetType = Target.GetType();
-            FieldInfo InnerField = TargetType.GetField("Inner", BindingFlags.Instance | BindingFlags.NonPublic);
-            TargetRules Inner = (TargetRules)InnerField.GetValue(Target);
-            Inner.AdditionalCompilerArguments += " -Wno-gcc-compat -Wno-reorder-ctor -Wno-nonportable-include-path ";
-        }
-        
-        
-        if(Target.GlobalDefinitions.Contains("FORCE_ANSI_ALLOCATOR=1")){
-    
+
             PublicDefinitions.Add(string.Format("USE_ANSI_ALLOCATOR=1"));
             Console.WriteLine("[Agora Allocator] Use ANSI Allocator");
+
+            PublicDependencyModuleNames.AddRange(new string[] { "Eigen" });
         }
-        else{
+        else
+        {
             PublicDefinitions.Add(string.Format("USE_ANSI_ALLOCATOR=0"));
             Console.WriteLine("[Agora Allocator] Use UE Allocator");
         }
-        
     }
 }

@@ -11,9 +11,19 @@ public class AgoraPluginLibrary : ModuleRules
 
     private string soFormatStr = "		<copyFile src=\"$S(PluginDir)/$S(Architecture)/{0}\" dst=\"$S(BuildDir)/libs/$S(Architecture)/{0}\"/>";
 
+    // bool bUE427OrLater = false;
 
     public AgoraPluginLibrary(ReadOnlyTargetRules Target) : base(Target)
     {
+        // if(Target.Version.MajorVersion >= 4 && Target.Version.MinorVersion >= 27)
+        // {
+        //     bUE427OrLater = true;
+        // }
+        // else
+        // {
+        //     bUE427OrLater = false;
+        // }
+
 
         Type = ModuleType.External;
         if (Target.Platform == UnrealTargetPlatform.Win64)
@@ -62,7 +72,13 @@ public class AgoraPluginLibrary : ModuleRules
             {
                 string filenamWithoutExtension = Path.GetFileNameWithoutExtension(fileNames[i]);
                 string filenamWithoutFrameWork = Path.GetFileNameWithoutExtension(filenamWithoutExtension);
-                PublicAdditionalFrameworks.Add(new Framework(filenamWithoutFrameWork, Path.Combine(librarypath, fileNames[i]), "", true));
+
+#if UE_4_27_OR_LATER
+    PublicAdditionalFrameworks.Add(new Framework(filenamWithoutFrameWork, Path.Combine(librarypath, fileNames[i]), "", true));
+#else
+    PublicAdditionalFrameworks.Add(new Framework(filenamWithoutFrameWork, Path.Combine(librarypath, fileNames[i]), ""));
+#endif
+
                 Console.WriteLine("PublicAdditionalFrameworks Add" + fileNames[i]);
             }
         }
@@ -72,7 +88,7 @@ public class AgoraPluginLibrary : ModuleRules
 
     public void LoadAndroidLibrary(string librarypath)
     {
-        string xmlTemplateData = File.ReadAllText(Path.Combine(librarypath, "APL_armv7Template.xml"));
+        string xmlTemplateData = File.ReadAllText(Path.Combine(librarypath, "APL_Template.xml"));
         string[] Architectures = { "armeabi-v7a", "arm64-v8a" };
         string sopathwrite = "";
         for (int i = 0; i < Architectures.Length; i++)
@@ -99,8 +115,8 @@ public class AgoraPluginLibrary : ModuleRules
         sopathwrite += "		<copyFile src=\"$S(PluginDir)/agora-rtc-sdk-javadoc.jar\" dst=\"$S(BuildDir)/libs/agora-rtc-sdk-javadoc.jar\" />" + "\r\n";
         sopathwrite += "		<copyFile src=\"$S(PluginDir)/AgoraScreenShareExtension.aar\" dst=\"$S(BuildDir)/libs/AgoraScreenShareExtension.aar\" />";
         xmlTemplateData = xmlTemplateData.Replace("<!-- AgoraInsert -->", sopathwrite);
-        File.WriteAllText(Path.Combine(librarypath, "APL_armv7.xml"), xmlTemplateData);
-        AdditionalPropertiesForReceipt.Add("AndroidPlugin", Path.Combine(librarypath, "APL_armv7.xml"));
+        File.WriteAllText(Path.Combine(librarypath, "APL_Generated.xml"), xmlTemplateData);
+        AdditionalPropertiesForReceipt.Add("AndroidPlugin", Path.Combine(librarypath, "APL_Generated.xml"));
     }
 
     public void LoadWindowsLibrary(string librarypath)
