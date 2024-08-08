@@ -132,7 +132,6 @@ protected:
 
 	int StreamId = -1;
 
-	IRtcEngine* RtcEngineProxy;
 
 
 

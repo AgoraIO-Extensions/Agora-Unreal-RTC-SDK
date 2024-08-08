@@ -7,7 +7,6 @@
 #include "AgoraPluginInterface.h"
 #include "Utility/BFL_Logger.h"
 #include "AgoraGameInstanceWithConsoleFunc.generated.h"
-
 /**
  * 
  */

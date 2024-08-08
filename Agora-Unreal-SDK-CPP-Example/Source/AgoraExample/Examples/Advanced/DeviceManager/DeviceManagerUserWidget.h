@@ -108,17 +108,17 @@ protected:
 	FString Token = "";
 	FString ChannelName = "";
 
-	IRtcEngineEx* RtcEngineProxy;
 
-	TSharedPtr<FUserRtcEventHandler> UserRtcEventHandler;
 
-	IAudioDeviceManager* AudioDeviceManager;
+	TSharedPtr<FUserRtcEventHandler> UserRtcEventHandler = nullptr;
 
-	IVideoDeviceManager* VideoDeviceManager;
+	IAudioDeviceManager* AudioDeviceManager = nullptr;
 
-	IAudioDeviceCollection* AudioRecordingDeviceInfos;
+	IVideoDeviceManager* VideoDeviceManager = nullptr;
 
-	IAudioDeviceCollection* AudioPlaybackDeviceInfos;
+	IAudioDeviceCollection* AudioRecordingDeviceInfos = nullptr;
 
-	IVideoDeviceCollection* VideoDeviceInfos;
+	IAudioDeviceCollection* AudioPlaybackDeviceInfos = nullptr;
+
+	IVideoDeviceCollection* VideoDeviceInfos = nullptr;
 };

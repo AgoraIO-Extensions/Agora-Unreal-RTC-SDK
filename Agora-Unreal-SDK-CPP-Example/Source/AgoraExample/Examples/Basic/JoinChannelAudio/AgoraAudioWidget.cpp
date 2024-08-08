@@ -55,14 +55,13 @@ void UAgoraAudioWidget::InitAgoraEngine(FString APP_ID, FString TOKEN, FString C
 	Token = TOKEN;
 	ChannelName = CHANNEL_NAME;
 
-	RtcEngineProxy = agora::rtc::ue::createAgoraRtcEngine();
 
 	int SDKBuild = 0;
-	const char* SDKVersionInfo = RtcEngineProxy->getVersion(&SDKBuild);
+	const char* SDKVersionInfo = AgoraUERtcEngine::Get()->getVersion(&SDKBuild);
 	FString SDKInfo = FString::Printf(TEXT("SDK Version: %s Build: %d"), UTF8_TO_TCHAR(SDKVersionInfo), SDKBuild);
 	UBFL_Logger::Print(FString::Printf(TEXT("SDK Info:  %s"), *SDKInfo), LogMsgViewPtr);
 
-	int ret = RtcEngineProxy->initialize(RtcEngineContext);
+	int ret = AgoraUERtcEngine::Get()->initialize(RtcEngineContext);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 }
 
@@ -78,12 +77,11 @@ void UAgoraAudioWidget::ShowUserGuide()
 
 void UAgoraAudioWidget::UnInitAgoraEngine()
 {
-	if (RtcEngineProxy != nullptr)
+	if (AgoraUERtcEngine::Get() != nullptr)
 	{
-		RtcEngineProxy->leaveChannel();
-		RtcEngineProxy->unregisterEventHandler(UserRtcEventHandler.Get());
-		RtcEngineProxy->release();
-		RtcEngineProxy = nullptr;
+		AgoraUERtcEngine::Get()->leaveChannel();
+		AgoraUERtcEngine::Get()->unregisterEventHandler(UserRtcEventHandler.Get());
+		AgoraUERtcEngine::Release();
 		UBFL_Logger::Print(FString::Printf(TEXT("%s release agora engine"), *FString(FUNCTION_MACRO)), LogMsgViewPtr);
 	}
 }
@@ -96,27 +94,29 @@ void UAgoraAudioWidget::OnBtnBackToHomeClicked()
 
 void UAgoraAudioWidget::OnBtnStartEchoTestClicked()
 {
-	int ret = RtcEngineProxy->startEchoTest(10);
+	agora::rtc::EchoTestConfiguration Config;
+	Config.intervalInSeconds = 10;
+	int ret = AgoraUERtcEngine::Get()->startEchoTest(Config);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 }
 
 void UAgoraAudioWidget::OnBtnStopEchoTestClicked()
 {
-	int ret = RtcEngineProxy->stopEchoTest();
+	int ret = AgoraUERtcEngine::Get()->stopEchoTest();
 	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 }
 
 void UAgoraAudioWidget::OnBtnJoinChannelClicked()
 {
-	RtcEngineProxy->enableAudio();
-	int ret = RtcEngineProxy->joinChannel(TCHAR_TO_UTF8(*Token), TCHAR_TO_UTF8(*ChannelName), "", 0);
-	RtcEngineProxy->setClientRole(agora::rtc::CLIENT_ROLE_TYPE::CLIENT_ROLE_BROADCASTER);
+	AgoraUERtcEngine::Get()->enableAudio();
+	int ret = AgoraUERtcEngine::Get()->joinChannel(TCHAR_TO_UTF8(*Token), TCHAR_TO_UTF8(*ChannelName), "", 0);
+	AgoraUERtcEngine::Get()->setClientRole(agora::rtc::CLIENT_ROLE_TYPE::CLIENT_ROLE_BROADCASTER);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 }
 
 void UAgoraAudioWidget::OnBtnLeaveChannelClicked()
 {
-	int ret = RtcEngineProxy->leaveChannel();
+	int ret = AgoraUERtcEngine::Get()->leaveChannel();
 	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 }
 
@@ -124,7 +124,7 @@ void UAgoraAudioWidget::OnBtnStartPublishClicked()
 {
 	ChannelMediaOptions options;
 	options.publishMicrophoneTrack = true;
-	int ret = RtcEngineProxy->updateChannelMediaOptions(options);
+	int ret = AgoraUERtcEngine::Get()->updateChannelMediaOptions(options);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 }
 
@@ -132,27 +132,27 @@ void UAgoraAudioWidget::OnBtnStopPublishClicked()
 {
 	ChannelMediaOptions options;
 	options.publishMicrophoneTrack = false;
-	int ret = RtcEngineProxy->updateChannelMediaOptions(options);
+	int ret = AgoraUERtcEngine::Get()->updateChannelMediaOptions(options);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 }
 
 void UAgoraAudioWidget::OnSliderPlaybackSignalVolumeValChanged(float val)
 {
 	Txt_PlaybackSignalVolume->SetText(FText::FromString(FString::FromInt(FMath::RoundToInt(val))));
-	int ret = RtcEngineProxy->adjustPlaybackSignalVolume(val);
+	int ret = AgoraUERtcEngine::Get()->adjustPlaybackSignalVolume(val);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 }
 
 void UAgoraAudioWidget::OnSliderRecordingSignalVolumeValChanged(float val)
 {
 	Txt_RecordingSignalVolume->SetText(FText::FromString(FString::FromInt(FMath::RoundToInt(val))));
-	int ret = RtcEngineProxy->adjustRecordingSignalVolume(val);
+	int ret = AgoraUERtcEngine::Get()->adjustRecordingSignalVolume(val);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 }
 
 void UAgoraAudioWidget::OnBtnEnableAudioIndicationClicked()
 {
-	int ret = RtcEngineProxy->enableAudioVolumeIndication(200, 3, false);
+	int ret = AgoraUERtcEngine::Get()->enableAudioVolumeIndication(200, 3, false);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 }
 
@@ -176,7 +176,7 @@ void UAgoraAudioWidget::OnCBSAudioProfileSelectionChanged(FString SelectedItem, 
 	else if (SelectedOption == "AUDIO_PROFILE_IOT")
 		audioProfile = AUDIO_PROFILE_IOT;
 
-	int ret = RtcEngineProxy->setAudioProfile(audioProfile);
+	int ret = AgoraUERtcEngine::Get()->setAudioProfile(audioProfile);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d AudioProfile=%s"), *FString(FUNCTION_MACRO), ret, *SelectedOption), LogMsgViewPtr);
 }
 
@@ -196,7 +196,7 @@ void UAgoraAudioWidget::OnCBSAudioSenarioSelectionChanged(FString SelectedItem, 
 	else if (SelectedOption == "AUDIO_SCENARIO_MEETING")
 		scenario = AUDIO_SCENARIO_MEETING;
 
-	int ret = RtcEngineProxy->setAudioScenario(scenario);
+	int ret = AgoraUERtcEngine::Get()->setAudioScenario(scenario);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d  AudioScenario=%s"), *FString(FUNCTION_MACRO), ret, *SelectedOption), LogMsgViewPtr);
 }
 

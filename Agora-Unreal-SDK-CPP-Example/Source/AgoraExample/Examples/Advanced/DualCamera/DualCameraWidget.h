@@ -174,7 +174,11 @@ protected:
 	uint32 UID1 = 123;
 	uint32 UID2 = 456;
 
-	IRtcEngineEx* RtcEngineProxy;
+	char MainCameraDeviceName[MAX_DEVICE_ID_LENGTH] = {};
+	char MainCameraDeviceId[MAX_DEVICE_ID_LENGTH] = {};
+	char SecondCameraDeviceId[MAX_DEVICE_ID_LENGTH] = {};
+	char SecondCameraDeviceName[MAX_DEVICE_ID_LENGTH] = {};
+
 
 	CameraCapturerConfiguration MainCameraConfig;
 	CameraCapturerConfiguration SecondCameraConfig;

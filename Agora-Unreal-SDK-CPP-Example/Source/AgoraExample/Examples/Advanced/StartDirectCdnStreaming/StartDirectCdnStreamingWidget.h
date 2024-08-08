@@ -70,7 +70,7 @@ public:
 
 #pragma region AgoraCallback - IDirectCdnStreamingEventHandler
 
-		void onDirectCdnStreamingStateChanged(DIRECT_CDN_STREAMING_STATE state, DIRECT_CDN_STREAMING_ERROR error, const char* message) override;
+		void onDirectCdnStreamingStateChanged(DIRECT_CDN_STREAMING_STATE state, DIRECT_CDN_STREAMING_REASON reason, const char* message) override;
 
 		void onDirectCdnStreamingStats(const DirectCdnStreamingStats& stats) override;
 
@@ -169,12 +169,11 @@ protected:
 	FString Token;
 	FString ChannelName;
 
-	IRtcEngine* RtcEngineProxy;
 
 
 
 
-	TSharedPtr<FUserIDirectCdnStreamingEventHandler> DirectCdnStreamingEventHandlerWarper;
+	TSharedPtr<FUserIDirectCdnStreamingEventHandler> DirectCdnStreamingEventHandlerWarper = nullptr;
 	TSharedPtr<FUserRtcEventHandlerEx> UserRtcEventHandlerEx;
 
 };

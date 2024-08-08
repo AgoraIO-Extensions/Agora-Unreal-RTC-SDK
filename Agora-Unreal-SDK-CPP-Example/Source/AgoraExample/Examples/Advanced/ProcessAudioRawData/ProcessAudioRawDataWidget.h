@@ -193,7 +193,7 @@ protected:
 	FString Token = "";
 	FString ChannelName = "";
 
-	IRtcEngineEx* RtcEngineProxy;
+
 	agora::media::IMediaEngine* MediaEngine;
 
 	agora::rtc::uid_t FirstRemoteUID = 0;

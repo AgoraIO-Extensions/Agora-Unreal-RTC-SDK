@@ -149,7 +149,7 @@ protected:
 	uint32 UIDChannel1 = 123;
 	uint32 UIDChannel2 = 456;
 
-	IRtcEngineEx* RtcEngineProxy;
+
 
 	TSharedPtr<FUserRtcEventHandlerEx> UserRtcEventHandlerEx;
 };

@@ -7,6 +7,7 @@
 #include "Components/Button.h"
 #include "Components/TileView.h"
 #include "Components/EditableTextBox.h"
+#include "Components/TextBlock.h"
 #include "Kismet/GameplayStatics.h"
 #include "../Config/AgoraConfig.h"
 #include "LevelSwitchItem.h"
@@ -91,6 +92,9 @@ public:
 	FString TOKEN;
 
 	FString CHANNEL_NAME;
+
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	UTextBlock* Txt_SDKVer;
 
 protected:
 	void NativeConstruct() override;

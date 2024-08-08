@@ -174,7 +174,7 @@ protected:
 	FString Token = "";
 	FString ChannelName = "";
 
-	IRtcEngineEx* RtcEngineProxy;
+
 
 	CONNECTION_STATE_TYPE ConnectionState = CONNECTION_STATE_TYPE::CONNECTION_STATE_DISCONNECTED;
 

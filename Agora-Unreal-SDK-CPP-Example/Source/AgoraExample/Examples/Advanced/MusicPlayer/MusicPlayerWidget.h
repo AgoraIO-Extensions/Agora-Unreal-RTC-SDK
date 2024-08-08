@@ -73,10 +73,11 @@ public:
 
 		FUserIMediaPlayerSourceObserver(UMusicPlayerWidget* Widget) : WidgetPtr(Widget) {}
 
-		void onPlayerSourceStateChanged(media::base::MEDIA_PLAYER_STATE state, media::base::MEDIA_PLAYER_ERROR ec) override;
+		void onPlayerSourceStateChanged(media::base::MEDIA_PLAYER_STATE state,
+			media::base::MEDIA_PLAYER_REASON reason) override;
 
 
-		void onPositionChanged(int64_t position_ms) override;
+		void onPositionChanged(int64_t positionMs, int64_t timestampMs) override;
 
 
 		void onPlayerEvent(media::base::MEDIA_PLAYER_EVENT eventCode, int64_t elapsedTime, const char* message) override;
@@ -122,16 +123,18 @@ public:
 
 #pragma region AgoraCallback - IMusicContentCenterEventHandler
 
-		void onMusicChartsResult(const char* requestId, agora_refptr<MusicChartCollection> result, MusicContentCenterStatusCode error_code) override;
+		void onMusicChartsResult(const char* requestId, agora_refptr<MusicChartCollection> result, MusicContentCenterStateReason reason) override;
 
 
-		void onMusicCollectionResult(const char* requestId, agora_refptr<MusicCollection> result, MusicContentCenterStatusCode error_code) override;
+		void onMusicCollectionResult(const char* requestId, agora_refptr<MusicCollection> result, MusicContentCenterStateReason reason) override;
 
 
-		void onLyricResult(const char* requestId, const char* lyricUrl, MusicContentCenterStatusCode error_code) override;
+		void onLyricResult(const char* requestId, int64_t songCode, const char* lyricUrl, MusicContentCenterStateReason reason) override;
 
 
-		void onPreLoadEvent(int64_t songCode, int percent, const char* lyricUrl, PreloadStatusCode status, MusicContentCenterStatusCode error_code) override;
+		void onSongSimpleInfoResult(const char* requestId, int64_t songCode, const char* simpleInfo, MusicContentCenterStateReason reason) override;
+
+		void onPreLoadEvent(const char* requestId, int64_t songCode, int percent, const char* lyricUrl, PreloadState state, MusicContentCenterStateReason reason) override;
 #pragma endregion
 
 		inline bool IsWidgetValid() { return WidgetPtr.IsValid(); }
@@ -286,7 +289,6 @@ protected:
 	FString Token = "";
 	FString ChannelName = "";
 
-	IRtcEngine* RtcEngineProxy;
 	agora::media::IMediaEngine* MusicContentCenter;
 
 

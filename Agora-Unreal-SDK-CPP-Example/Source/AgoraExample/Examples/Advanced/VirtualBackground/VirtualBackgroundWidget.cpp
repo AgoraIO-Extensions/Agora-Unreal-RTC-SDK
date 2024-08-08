@@ -50,14 +50,13 @@ void UVirtualBackgroundWidget::InitAgoraEngine(FString APP_ID, FString TOKEN, FS
 	Token = TOKEN;
 	ChannelName = CHANNEL_NAME;
 
-	RtcEngineProxy = agora::rtc::ue::createAgoraRtcEngine();
 
 	int SDKBuild = 0;
-	const char* SDKVersionInfo = RtcEngineProxy->getVersion(&SDKBuild);
+	const char* SDKVersionInfo = AgoraUERtcEngine::Get()->getVersion(&SDKBuild);
 	FString SDKInfo = FString::Printf(TEXT("SDK Version: %s Build: %d"), UTF8_TO_TCHAR(SDKVersionInfo), SDKBuild);
 	UBFL_Logger::Print(FString::Printf(TEXT("SDK Info:  %s"), *SDKInfo), LogMsgViewPtr);
 
-	int ret = RtcEngineProxy->initialize(RtcEngineContext);
+	int ret = AgoraUERtcEngine::Get()->initialize(RtcEngineContext);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 }
 
@@ -74,10 +73,10 @@ void UVirtualBackgroundWidget::ShowUserGuide()
 
 void UVirtualBackgroundWidget::JoinChannel()
 {
-	RtcEngineProxy->enableAudio();
-	RtcEngineProxy->enableVideo();
-	RtcEngineProxy->setClientRole(CLIENT_ROLE_BROADCASTER);
-	int ret = RtcEngineProxy->joinChannel(TCHAR_TO_UTF8(*Token), TCHAR_TO_UTF8(*ChannelName), "", 0);
+	AgoraUERtcEngine::Get()->enableAudio();
+	AgoraUERtcEngine::Get()->enableVideo();
+	AgoraUERtcEngine::Get()->setClientRole(CLIENT_ROLE_BROADCASTER);
+	int ret = AgoraUERtcEngine::Get()->joinChannel(TCHAR_TO_UTF8(*Token), TCHAR_TO_UTF8(*ChannelName), "", 0);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 }
 
@@ -88,7 +87,7 @@ void UVirtualBackgroundWidget::OnBtnEnableVirtualBackgroundColorClicked()
 	backgroundSource.background_source_type = agora::rtc::VirtualBackgroundSource::BACKGROUND_SOURCE_TYPE::BACKGROUND_COLOR;
 	backgroundSource.color = 0x6de3ff;
 	SegmentationProperty valSegmentationProperty;
-	int ret = RtcEngineProxy->enableVirtualBackground(true, backgroundSource, valSegmentationProperty, agora::media::MEDIA_SOURCE_TYPE::PRIMARY_CAMERA_SOURCE);
+	int ret = AgoraUERtcEngine::Get()->enableVirtualBackground(true, backgroundSource, valSegmentationProperty, agora::media::MEDIA_SOURCE_TYPE::PRIMARY_CAMERA_SOURCE);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 }
 
@@ -112,7 +111,7 @@ void UVirtualBackgroundWidget::OnBtnEnableVirtualBackgroundImageClicked()
 	backgroundSource.source = StdStrPath.c_str();
 	backgroundSource.background_source_type = agora::rtc::VirtualBackgroundSource::BACKGROUND_SOURCE_TYPE::BACKGROUND_IMG;
 	agora::rtc::SegmentationProperty valSegmentationProperty;
-	int ret = RtcEngineProxy->enableVirtualBackground(true, backgroundSource, valSegmentationProperty, agora::media::MEDIA_SOURCE_TYPE::PRIMARY_CAMERA_SOURCE);
+	int ret = AgoraUERtcEngine::Get()->enableVirtualBackground(true, backgroundSource, valSegmentationProperty, agora::media::MEDIA_SOURCE_TYPE::PRIMARY_CAMERA_SOURCE);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 
 }
@@ -121,7 +120,7 @@ void UVirtualBackgroundWidget::OnBtnDisableVirtualBackgroundClicked()
 {
 	agora::rtc::VirtualBackgroundSource backgroundSource;
 	agora::rtc::SegmentationProperty valSegmentationProperty;
-	int ret = RtcEngineProxy->enableVirtualBackground(false, backgroundSource, valSegmentationProperty, agora::media::MEDIA_SOURCE_TYPE::PRIMARY_CAMERA_SOURCE);
+	int ret = AgoraUERtcEngine::Get()->enableVirtualBackground(false, backgroundSource, valSegmentationProperty, agora::media::MEDIA_SOURCE_TYPE::PRIMARY_CAMERA_SOURCE);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 }
 
@@ -142,12 +141,11 @@ void UVirtualBackgroundWidget::NativeDestruct()
 
 void UVirtualBackgroundWidget::UnInitAgoraEngine()
 {
-	if (RtcEngineProxy != nullptr)
+	if (AgoraUERtcEngine::Get() != nullptr)
 	{
-		RtcEngineProxy->leaveChannel();
-		RtcEngineProxy->unregisterEventHandler(UserRtcEventHandlerEx.Get());
-		RtcEngineProxy->release();
-		RtcEngineProxy = nullptr;
+		AgoraUERtcEngine::Get()->leaveChannel();
+		AgoraUERtcEngine::Get()->unregisterEventHandler(UserRtcEventHandlerEx.Get());
+		AgoraUERtcEngine::Release();
 
 		UBFL_Logger::Print(FString::Printf(TEXT("%s release agora engine"), *FString(FUNCTION_MACRO)), LogMsgViewPtr);
 	}
@@ -167,10 +165,8 @@ int UVirtualBackgroundWidget::MakeVideoView(uint32 uid, agora::rtc::VIDEO_SOURCE
 		channelId will be set in [setupLocalVideo] / [setupRemoteVideo]
 	*/
 
-	int ret = -ERROR_NULLPTR;
+	int ret = 0;
 
-	if (RtcEngineProxy == nullptr)
-		return ret;
 
 	agora::rtc::VideoCanvas videoCanvas;
 	videoCanvas.uid = uid;
@@ -179,7 +175,7 @@ int UVirtualBackgroundWidget::MakeVideoView(uint32 uid, agora::rtc::VIDEO_SOURCE
 	if (uid == 0) {
 		FVideoViewIdentity VideoViewIdentity(uid, sourceType, "");
 		videoCanvas.view = UBFL_VideoViewManager::CreateOneVideoViewToCanvasPanel(VideoViewIdentity, CanvasPanel_VideoView, VideoViewMap, DraggableVideoViewTemplate);
-		ret = RtcEngineProxy->setupLocalVideo(videoCanvas);
+		ret = AgoraUERtcEngine::Get()->setupLocalVideo(videoCanvas);
 	}
 	else
 	{
@@ -188,13 +184,13 @@ int UVirtualBackgroundWidget::MakeVideoView(uint32 uid, agora::rtc::VIDEO_SOURCE
 		videoCanvas.view = UBFL_VideoViewManager::CreateOneVideoViewToCanvasPanel(VideoViewIdentity, CanvasPanel_VideoView, VideoViewMap, DraggableVideoViewTemplate);
 
 		if (channelId == "") {
-			ret = RtcEngineProxy->setupRemoteVideo(videoCanvas);
+			ret = AgoraUERtcEngine::Get()->setupRemoteVideo(videoCanvas);
 		}
 		else {
 			agora::rtc::RtcConnection connection;
 			std::string StdStrChannelId = TCHAR_TO_UTF8(*channelId);
 			connection.channelId = StdStrChannelId.c_str();
-			ret = ((agora::rtc::IRtcEngineEx*)RtcEngineProxy)->setupRemoteVideoEx(videoCanvas, connection);
+			ret = ((agora::rtc::IRtcEngineEx*)AgoraUERtcEngine::Get())->setupRemoteVideoEx(videoCanvas, connection);
 		}
 	}
 
@@ -203,10 +199,8 @@ int UVirtualBackgroundWidget::MakeVideoView(uint32 uid, agora::rtc::VIDEO_SOURCE
 
 int UVirtualBackgroundWidget::ReleaseVideoView(uint32 uid, agora::rtc::VIDEO_SOURCE_TYPE sourceType /*= VIDEO_SOURCE_CAMERA_PRIMARY*/, FString channelId /*= ""*/)
 {
-	int ret = -ERROR_NULLPTR;
+	int ret = 0;
 
-	if (RtcEngineProxy == nullptr)
-		return ret;
 
 	agora::rtc::VideoCanvas videoCanvas;
 	videoCanvas.view = nullptr;
@@ -216,20 +210,20 @@ int UVirtualBackgroundWidget::ReleaseVideoView(uint32 uid, agora::rtc::VIDEO_SOU
 	if (uid == 0) {
 		FVideoViewIdentity VideoViewIdentity(uid, sourceType, "");
 		UBFL_VideoViewManager::ReleaseOneVideoView(VideoViewIdentity, VideoViewMap);
-		ret = RtcEngineProxy->setupLocalVideo(videoCanvas);
+		ret = AgoraUERtcEngine::Get()->setupLocalVideo(videoCanvas);
 	}
 	else
 	{
 		FVideoViewIdentity VideoViewIdentity(uid, sourceType, channelId);
 		UBFL_VideoViewManager::ReleaseOneVideoView(VideoViewIdentity, VideoViewMap);
 		if (channelId == "") {
-			ret = RtcEngineProxy->setupRemoteVideo(videoCanvas);
+			ret = AgoraUERtcEngine::Get()->setupRemoteVideo(videoCanvas);
 		}
 		else {
 			agora::rtc::RtcConnection connection;
 			std::string StdStrChannelId = TCHAR_TO_UTF8(*channelId);
 			connection.channelId = StdStrChannelId.c_str();
-			ret = ((agora::rtc::IRtcEngineEx*)RtcEngineProxy)->setupRemoteVideoEx(videoCanvas, connection);
+			ret = ((agora::rtc::IRtcEngineEx*)AgoraUERtcEngine::Get())->setupRemoteVideoEx(videoCanvas, connection);
 		}
 	}
 	return ret;

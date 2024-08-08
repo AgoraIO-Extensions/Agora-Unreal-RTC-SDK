@@ -54,14 +54,13 @@ void UStartLocalVideoTranscoderWidget::InitAgoraEngine(FString APP_ID, FString T
 	Token = TOKEN;
 	ChannelName = CHANNEL_NAME;
 
-	RtcEngineProxy = agora::rtc::ue::createAgoraRtcEngine();
 
 	int SDKBuild = 0;
-	const char* SDKVersionInfo = RtcEngineProxy->getVersion(&SDKBuild);
+	const char* SDKVersionInfo = AgoraUERtcEngine::Get()->getVersion(&SDKBuild);
 	FString SDKInfo = FString::Printf(TEXT("SDK Version: %s Build: %d"), UTF8_TO_TCHAR(SDKVersionInfo), SDKBuild);
 	UBFL_Logger::Print(FString::Printf(TEXT("SDK Info:  %s"), *SDKInfo), LogMsgViewPtr);
 
-	int ret = RtcEngineProxy->initialize(RtcEngineContext);
+	int ret = AgoraUERtcEngine::Get()->initialize(RtcEngineContext);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 }
 
@@ -77,7 +76,7 @@ void UStartLocalVideoTranscoderWidget::ShowUserGuide()
 
 void UStartLocalVideoTranscoderWidget::InitAgoraMediaPlayer()
 {
-	MediaPlayer = RtcEngineProxy->createMediaPlayer();
+	MediaPlayer = AgoraUERtcEngine::Get()->createMediaPlayer();
 	MediaPlayerSourceObserverWarpper = MakeShared<FUserIMediaPlayerSourceObserver>(this);
 	MediaPlayer->registerPlayerSourceObserver(MediaPlayerSourceObserverWarpper.Get());
 	UBFL_Logger::Print(FString::Printf(TEXT("%s PlayerID=%d"), *FString(FUNCTION_MACRO), MediaPlayer->getMediaPlayerId()), LogMsgViewPtr);
@@ -86,16 +85,16 @@ void UStartLocalVideoTranscoderWidget::InitAgoraMediaPlayer()
 
 void UStartLocalVideoTranscoderWidget::JoinChannel()
 {
-	RtcEngineProxy->enableAudio();
-	RtcEngineProxy->enableVideo();
-	RtcEngineProxy->setClientRole(CLIENT_ROLE_BROADCASTER);
+	AgoraUERtcEngine::Get()->enableAudio();
+	AgoraUERtcEngine::Get()->enableVideo();
+	AgoraUERtcEngine::Get()->setClientRole(CLIENT_ROLE_BROADCASTER);
 	MakeVideoView(0, VIDEO_SOURCE_TYPE::VIDEO_SOURCE_TRANSCODED, "");
 
 	agora::rtc::ChannelMediaOptions ChannelMediaOptions;
 	ChannelMediaOptions.publishCameraTrack = false;
 	ChannelMediaOptions.publishSecondaryCameraTrack = false;
 	ChannelMediaOptions.publishTranscodedVideoTrack = true;
-	int ret = RtcEngineProxy->joinChannel(TCHAR_TO_UTF8(*Token), TCHAR_TO_UTF8(*ChannelName), 0, ChannelMediaOptions);
+	int ret = AgoraUERtcEngine::Get()->joinChannel(TCHAR_TO_UTF8(*Token), TCHAR_TO_UTF8(*ChannelName), 0, ChannelMediaOptions);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 }
 
@@ -104,14 +103,14 @@ void UStartLocalVideoTranscoderWidget::JoinChannel()
 void UStartLocalVideoTranscoderWidget::OnBtnStartClicked()
 {
 	LocalTranscoderConfiguration Config = GenerateLocalTranscoderConfiguration();
-	int ret = RtcEngineProxy->startLocalVideoTranscoder(Config);
+	int ret = AgoraUERtcEngine::Get()->startLocalVideoTranscoder(Config);
 	ReleaseLocalTranscoderConfiguration(Config);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s startLocalVideoTranscoder ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 	agora::rtc::ChannelMediaOptions options;
 	options.publishCameraTrack = false;
 	options.publishSecondaryCameraTrack = false;
 	options.publishTranscodedVideoTrack = true;
-	RtcEngineProxy->updateChannelMediaOptions(options);
+	AgoraUERtcEngine::Get()->updateChannelMediaOptions(options);
 
 	return;
 
@@ -120,7 +119,7 @@ void UStartLocalVideoTranscoderWidget::OnBtnStartClicked()
 void UStartLocalVideoTranscoderWidget::OnBtnUpdateClicked()
 {
 	LocalTranscoderConfiguration Config = GenerateLocalTranscoderConfiguration();
-	int ret = RtcEngineProxy->updateLocalTranscoderConfiguration(Config);
+	int ret = AgoraUERtcEngine::Get()->updateLocalTranscoderConfiguration(Config);
 	ReleaseLocalTranscoderConfiguration(Config);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 }
@@ -128,7 +127,11 @@ void UStartLocalVideoTranscoderWidget::OnBtnUpdateClicked()
 
 void UStartLocalVideoTranscoderWidget::OnBtnStopClicked()
 {
-	int ret = RtcEngineProxy->stopLocalVideoTranscoder();
+	if (CB_MediaPlay->GetCheckedState() == ECheckBoxState::Checked) {
+		MediaPlayer->stop();
+	}
+
+	int ret = AgoraUERtcEngine::Get()->stopLocalVideoTranscoder();
 	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 }
 
@@ -137,7 +140,7 @@ agora::rtc::LocalTranscoderConfiguration UStartLocalVideoTranscoderWidget::Gener
 {
 	TArray<TranscodingVideoStream> List;
 
-	if (CB_PrimaryCamera->CheckedState == ECheckBoxState::Checked)
+	if (CB_PrimaryCamera->GetCheckedState() == ECheckBoxState::Checked)
 	{
 
 		CameraCapturerConfiguration Configuration;
@@ -147,17 +150,15 @@ agora::rtc::LocalTranscoderConfiguration UStartLocalVideoTranscoderWidget::Gener
 		Configuration.cameraDirection = CAMERA_DIRECTION::CAMERA_FRONT;
 #else 
 		agora::rtc::IVideoDeviceManager* VideoDeviceManager = nullptr;
-		RtcEngineProxy->queryInterface(agora::rtc::INTERFACE_ID_TYPE::AGORA_IID_VIDEO_DEVICE_MANAGER, (void**)&VideoDeviceManager);
+		AgoraUERtcEngine::Get()->queryInterface(agora::rtc::INTERFACE_ID_TYPE::AGORA_IID_VIDEO_DEVICE_MANAGER, (void**)&VideoDeviceManager);
 		IVideoDeviceCollection* VideoDeviceInfos = VideoDeviceManager->enumerateVideoDevices();
 		if (VideoDeviceInfos->getCount() >= 1)
 		{
 			Configuration.format = VideoFormat(640, 320, 30);
 
-			char deviceId[512] = { 0 };
-			char deviceName[512] = { 0 };
 			// Get camera information
-			VideoDeviceInfos->getDevice(0, deviceName, deviceId);
-			FMemory::Memcpy(Configuration.deviceId, deviceId, 512);
+			VideoDeviceInfos->getDevice(0, MainCameraDeviceName, MainCameraDeviceId);
+			Configuration.deviceId = MainCameraDeviceId;
 		}
 		else
 		{
@@ -168,7 +169,7 @@ agora::rtc::LocalTranscoderConfiguration UStartLocalVideoTranscoderWidget::Gener
 #endif
 
 		if (bSuccess) {
-			int ret = RtcEngineProxy->startCameraCapture(VIDEO_SOURCE_CAMERA_PRIMARY, Configuration);
+			int ret = AgoraUERtcEngine::Get()->startCameraCapture(VIDEO_SOURCE_CAMERA_PRIMARY, Configuration);
 			UBFL_Logger::Print(FString::Printf(TEXT("%s startCameraCapture ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 			TranscodingVideoStream TranscodingVideoStreamConfig;
 			TranscodingVideoStreamConfig.sourceType = VIDEO_SOURCE_CAMERA;
@@ -183,7 +184,7 @@ agora::rtc::LocalTranscoderConfiguration UStartLocalVideoTranscoderWidget::Gener
 	}
 
 
-	if (CB_SecondaryCamera->CheckedState == ECheckBoxState::Checked)
+	if (CB_SecondaryCamera->GetCheckedState() == ECheckBoxState::Checked)
 	{
 
 		CameraCapturerConfiguration Configuration;
@@ -194,18 +195,17 @@ agora::rtc::LocalTranscoderConfiguration UStartLocalVideoTranscoderWidget::Gener
 #else 
 
 		agora::rtc::IVideoDeviceManager* VideoDeviceManager = nullptr;
-		RtcEngineProxy->queryInterface(agora::rtc::INTERFACE_ID_TYPE::AGORA_IID_VIDEO_DEVICE_MANAGER, (void**)&VideoDeviceManager);
+		AgoraUERtcEngine::Get()->queryInterface(agora::rtc::INTERFACE_ID_TYPE::AGORA_IID_VIDEO_DEVICE_MANAGER, (void**)&VideoDeviceManager);
 		IVideoDeviceCollection* VideoDeviceInfos = VideoDeviceManager->enumerateVideoDevices();
 		if (VideoDeviceInfos->getCount() >= 2)
 		{
 
 			Configuration.format = VideoFormat(640, 320, 30);
 
-			char deviceId[512] = { 0 };
-			char deviceName[512] = { 0 };
 			// Get camera information
-			VideoDeviceInfos->getDevice(1, deviceName, deviceId);
-			FMemory::Memcpy(Configuration.deviceId, deviceId, 512);
+			VideoDeviceInfos->getDevice(1, SecondCameraDeviceName, SecondCameraDeviceId);
+			Configuration.deviceId = SecondCameraDeviceId;
+
 		}
 		else
 		{
@@ -217,7 +217,7 @@ agora::rtc::LocalTranscoderConfiguration UStartLocalVideoTranscoderWidget::Gener
 
 		if (bSuccess) {
 
-			int ret = RtcEngineProxy->startCameraCapture(VIDEO_SOURCE_CAMERA_SECONDARY, Configuration);
+			int ret = AgoraUERtcEngine::Get()->startCameraCapture(VIDEO_SOURCE_CAMERA_SECONDARY, Configuration);
 			UBFL_Logger::Print(FString::Printf(TEXT("%s startCameraCapture VIDEO_SOURCE_CAMERA_SECONDARY ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 			TranscodingVideoStream TranscodingVideoStreamConfig;
 			TranscodingVideoStreamConfig.sourceType = VIDEO_SOURCE_CAMERA_SECONDARY;
@@ -232,7 +232,7 @@ agora::rtc::LocalTranscoderConfiguration UStartLocalVideoTranscoderWidget::Gener
 	}
 
 
-	if (CB_PNG->CheckedState == ECheckBoxState::Checked)
+	if (CB_PNG->GetCheckedState() == ECheckBoxState::Checked)
 	{
 		FString Path = FPaths::ProjectContentDir() / TEXT("Image/png.png");
 
@@ -270,7 +270,7 @@ agora::rtc::LocalTranscoderConfiguration UStartLocalVideoTranscoderWidget::Gener
 		List.Add(TranscodingVideoStreamConfig);
 	}
 
-	if (CB_JPG->CheckedState == ECheckBoxState::Checked)
+	if (CB_JPG->GetCheckedState() == ECheckBoxState::Checked)
 	{
 		FString Path = FPaths::ProjectContentDir() / TEXT("Image/jpg.jpg");
 
@@ -309,7 +309,7 @@ agora::rtc::LocalTranscoderConfiguration UStartLocalVideoTranscoderWidget::Gener
 	}
 
 
-	if (CB_GIF->CheckedState == ECheckBoxState::Checked)
+	if (CB_GIF->GetCheckedState() == ECheckBoxState::Checked)
 	{
 		FString Path = FPaths::ProjectContentDir() / TEXT("Image/gif.gif");
 
@@ -346,7 +346,7 @@ agora::rtc::LocalTranscoderConfiguration UStartLocalVideoTranscoderWidget::Gener
 		TranscodingVideoStreamConfig.zOrder = 1;
 		List.Add(TranscodingVideoStreamConfig);
 	}
-	if (CB_ScreenShare->CheckedState == ECheckBoxState::Checked) {
+	if (CB_ScreenShare->GetCheckedState() == ECheckBoxState::Checked) {
 		StartScreenShare();
 
 		TranscodingVideoStream TranscodingVideoStreamConfig;
@@ -359,7 +359,7 @@ agora::rtc::LocalTranscoderConfiguration UStartLocalVideoTranscoderWidget::Gener
 		List.Add(TranscodingVideoStreamConfig);
 	}
 
-	if (CB_MediaPlay->CheckedState == ECheckBoxState::Checked) {
+	if (CB_MediaPlay->GetCheckedState() == ECheckBoxState::Checked) {
 		MediaPlayer->stop();
 		int ret = MediaPlayer->open("https://big-class-test.oss-cn-hangzhou.aliyuncs.com/61102.1592987815092.mp4", 0);
 		int PlayerID = MediaPlayer->getMediaPlayerId();
@@ -405,10 +405,10 @@ int UStartLocalVideoTranscoderWidget::StartScreenShare()
 	ScreenCaptureParameters2 parameters2;
 	parameters2.captureAudio = true;
 	parameters2.captureVideo = true;
-	auto ret = RtcEngineProxy->startScreenCapture(parameters2);
+	auto ret = AgoraUERtcEngine::Get()->startScreenCapture(parameters2);
 	UE_LOG(LogTemp, Warning, TEXT("StartScreenShrareClick JoinChannel ====== %d"), ret);
 #else
-	RtcEngineProxy->stopScreenCapture();
+	AgoraUERtcEngine::Get()->stopScreenCapture();
 	agora::rtc::ScreenCaptureParameters capParam;
 	VideoDimensions dimensions(640, 360);
 	capParam.dimensions = dimensions;
@@ -427,7 +427,7 @@ int UStartLocalVideoTranscoderWidget::StartScreenShare()
 	size.width = 360;
 	size.height = 240;
 #endif
-	agora::rtc::IScreenCaptureSourceList* infos = RtcEngineProxy->getScreenCaptureSources(size, size, true);
+	agora::rtc::IScreenCaptureSourceList* infos = AgoraUERtcEngine::Get()->getScreenCaptureSources(size, size, true);
 	if (infos == nullptr)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("GetScreenDisplay is null"));
@@ -437,11 +437,11 @@ int UStartLocalVideoTranscoderWidget::StartScreenShare()
 	int ret = -1;
 	if (info.type == agora::rtc::ScreenCaptureSourceType_Screen)
 	{
-		ret = RtcEngineProxy->startScreenCaptureByDisplayId((uint64)(info.sourceId), regionRect, capParam);
+		ret = AgoraUERtcEngine::Get()->startScreenCaptureByDisplayId((uint64)(info.sourceId), regionRect, capParam);
 	}
 	else if (info.type == agora::rtc::ScreenCaptureSourceType_Window)
 	{
-		ret = RtcEngineProxy->startScreenCaptureByWindowId(info.sourceId, regionRect, capParam);
+		ret = AgoraUERtcEngine::Get()->startScreenCaptureByWindowId(info.sourceId, regionRect, capParam);
 	}
 #endif
 	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
@@ -466,7 +466,7 @@ void UStartLocalVideoTranscoderWidget::NativeDestruct()
 
 void UStartLocalVideoTranscoderWidget::UnInitAgoraEngine()
 {
-	if (RtcEngineProxy != nullptr)
+	if (AgoraUERtcEngine::Get() != nullptr)
 	{
 		if (MediaPlayer)
 		{
@@ -474,10 +474,9 @@ void UStartLocalVideoTranscoderWidget::UnInitAgoraEngine()
 			MediaPlayer->unregisterPlayerSourceObserver(MediaPlayerSourceObserverWarpper.Get());
 		}
 
-		RtcEngineProxy->leaveChannel();
-		RtcEngineProxy->unregisterEventHandler(UserRtcEventHandlerEx.Get());
-		RtcEngineProxy->release();
-		RtcEngineProxy = nullptr;
+		AgoraUERtcEngine::Get()->leaveChannel();
+		AgoraUERtcEngine::Get()->unregisterEventHandler(UserRtcEventHandlerEx.Get());
+		AgoraUERtcEngine::Release();
 
 		UBFL_Logger::Print(FString::Printf(TEXT("%s release agora engine"), *FString(FUNCTION_MACRO)), LogMsgViewPtr);
 	}
@@ -499,10 +498,8 @@ int UStartLocalVideoTranscoderWidget::MakeVideoView(uint32 uid, agora::rtc::VIDE
 		channelId will be set in [setupLocalVideo] / [setupRemoteVideo]
 	*/
 
-	int ret = -ERROR_NULLPTR;
+	int ret = 0;
 
-	if (RtcEngineProxy == nullptr)
-		return ret;
 
 	agora::rtc::VideoCanvas videoCanvas;
 	videoCanvas.uid = uid;
@@ -511,7 +508,7 @@ int UStartLocalVideoTranscoderWidget::MakeVideoView(uint32 uid, agora::rtc::VIDE
 	if (uid == 0) {
 		FVideoViewIdentity VideoViewIdentity(uid, sourceType, "");
 		videoCanvas.view = UBFL_VideoViewManager::CreateOneVideoViewToCanvasPanel(VideoViewIdentity, CanvasPanel_VideoView, VideoViewMap, DraggableVideoViewTemplate);
-		ret = RtcEngineProxy->setupLocalVideo(videoCanvas);
+		ret = AgoraUERtcEngine::Get()->setupLocalVideo(videoCanvas);
 	}
 	else
 	{
@@ -520,13 +517,13 @@ int UStartLocalVideoTranscoderWidget::MakeVideoView(uint32 uid, agora::rtc::VIDE
 		videoCanvas.view = UBFL_VideoViewManager::CreateOneVideoViewToCanvasPanel(VideoViewIdentity, CanvasPanel_VideoView, VideoViewMap, DraggableVideoViewTemplate);
 
 		if (channelId == "") {
-			ret = RtcEngineProxy->setupRemoteVideo(videoCanvas);
+			ret = AgoraUERtcEngine::Get()->setupRemoteVideo(videoCanvas);
 		}
 		else {
 			agora::rtc::RtcConnection connection;
 			std::string StdStrChannelId = TCHAR_TO_UTF8(*channelId);
 			connection.channelId = StdStrChannelId.c_str();
-			ret = ((agora::rtc::IRtcEngineEx*)RtcEngineProxy)->setupRemoteVideoEx(videoCanvas, connection);
+			ret = ((agora::rtc::IRtcEngineEx*)AgoraUERtcEngine::Get())->setupRemoteVideoEx(videoCanvas, connection);
 		}
 	}
 
@@ -535,10 +532,8 @@ int UStartLocalVideoTranscoderWidget::MakeVideoView(uint32 uid, agora::rtc::VIDE
 
 int UStartLocalVideoTranscoderWidget::ReleaseVideoView(uint32 uid, agora::rtc::VIDEO_SOURCE_TYPE sourceType /*= VIDEO_SOURCE_CAMERA_PRIMARY*/, FString channelId /*= ""*/)
 {
-	int ret = -ERROR_NULLPTR;
+	int ret = 0;
 
-	if (RtcEngineProxy == nullptr)
-		return ret;
 
 	agora::rtc::VideoCanvas videoCanvas;
 	videoCanvas.view = nullptr;
@@ -548,20 +543,20 @@ int UStartLocalVideoTranscoderWidget::ReleaseVideoView(uint32 uid, agora::rtc::V
 	if (uid == 0) {
 		FVideoViewIdentity VideoViewIdentity(uid, sourceType, "");
 		UBFL_VideoViewManager::ReleaseOneVideoView(VideoViewIdentity, VideoViewMap);
-		ret = RtcEngineProxy->setupLocalVideo(videoCanvas);
+		ret = AgoraUERtcEngine::Get()->setupLocalVideo(videoCanvas);
 	}
 	else
 	{
 		FVideoViewIdentity VideoViewIdentity(uid, sourceType, channelId);
 		UBFL_VideoViewManager::ReleaseOneVideoView(VideoViewIdentity, VideoViewMap);
 		if (channelId == "") {
-			ret = RtcEngineProxy->setupRemoteVideo(videoCanvas);
+			ret = AgoraUERtcEngine::Get()->setupRemoteVideo(videoCanvas);
 		}
 		else {
 			agora::rtc::RtcConnection connection;
 			std::string StdStrChannelId = TCHAR_TO_UTF8(*channelId);
 			connection.channelId = StdStrChannelId.c_str();
-			ret = ((agora::rtc::IRtcEngineEx*)RtcEngineProxy)->setupRemoteVideoEx(videoCanvas, connection);
+			ret = ((agora::rtc::IRtcEngineEx*)AgoraUERtcEngine::Get())->setupRemoteVideoEx(videoCanvas, connection);
 		}
 	}
 	return ret;
@@ -666,7 +661,7 @@ void UStartLocalVideoTranscoderWidget::FUserRtcEventHandlerEx::onUserOffline(con
 
 #pragma region  AgoraCallback - IMediaPlayerSourceObserver
 
-void UStartLocalVideoTranscoderWidget::FUserIMediaPlayerSourceObserver::onPlayerSourceStateChanged(media::base::MEDIA_PLAYER_STATE state, media::base::MEDIA_PLAYER_ERROR ec)
+void UStartLocalVideoTranscoderWidget::FUserIMediaPlayerSourceObserver::onPlayerSourceStateChanged(media::base::MEDIA_PLAYER_STATE state, media::base::MEDIA_PLAYER_REASON reason)
 {
 	if (state != media::base::MEDIA_PLAYER_STATE::PLAYER_STATE_OPEN_COMPLETED)
 		return;
@@ -699,7 +694,7 @@ void UStartLocalVideoTranscoderWidget::FUserIMediaPlayerSourceObserver::onPlayer
 		});
 }
 
-void UStartLocalVideoTranscoderWidget::FUserIMediaPlayerSourceObserver::onPositionChanged(int64_t position_ms)
+void UStartLocalVideoTranscoderWidget::FUserIMediaPlayerSourceObserver::onPositionChanged(int64_t positionMs, int64_t timestampMs)
 {
 
 }

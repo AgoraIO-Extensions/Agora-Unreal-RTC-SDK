@@ -1,8 +1,12 @@
-//  Copyright (c) 2023 Agora.io. All rights reserved.
+// Copyright Epic Games, Inc. All Rights Reserved.
 
 #pragma once
 
+
+#include "CoreMinimal.h"
 #include "Modules/ModuleManager.h"
+
+DECLARE_LOG_CATEGORY_EXTERN(LogAgora, Log, All);
 
 class FAgoraPluginModule : public IModuleInterface
 {

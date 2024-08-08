@@ -48,14 +48,13 @@ void UStreamMessageWidget::InitAgoraEngine(FString APP_ID, FString TOKEN, FStrin
 	Token = TOKEN;
 	ChannelName = CHANNEL_NAME;
 
-	RtcEngineProxy = agora::rtc::ue::createAgoraRtcEngine();
 
 	int SDKBuild = 0;
-	const char* SDKVersionInfo = RtcEngineProxy->getVersion(&SDKBuild);
+	const char* SDKVersionInfo = AgoraUERtcEngine::Get()->getVersion(&SDKBuild);
 	FString SDKInfo = FString::Printf(TEXT("SDK Version: %s Build: %d"), UTF8_TO_TCHAR(SDKVersionInfo), SDKBuild);
 	UBFL_Logger::Print(FString::Printf(TEXT("SDK Info:  %s"), *SDKInfo), LogMsgViewPtr);
 
-	int ret = RtcEngineProxy->initialize(RtcEngineContext);
+	int ret = AgoraUERtcEngine::Get()->initialize(RtcEngineContext);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 
 }
@@ -72,10 +71,10 @@ void UStreamMessageWidget::ShowUserGuide()
 
 void UStreamMessageWidget::JoinChannel()
 {
-	RtcEngineProxy->enableAudio();
-	RtcEngineProxy->enableVideo();
-	RtcEngineProxy->setClientRole(CLIENT_ROLE_BROADCASTER);
-	int ret = RtcEngineProxy->joinChannel(TCHAR_TO_UTF8(*Token), TCHAR_TO_UTF8(*ChannelName), "", 0);
+	AgoraUERtcEngine::Get()->enableAudio();
+	AgoraUERtcEngine::Get()->enableVideo();
+	AgoraUERtcEngine::Get()->setClientRole(CLIENT_ROLE_BROADCASTER);
+	int ret = AgoraUERtcEngine::Get()->joinChannel(TCHAR_TO_UTF8(*Token), TCHAR_TO_UTF8(*ChannelName), "", 0);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 }
 
@@ -118,7 +117,7 @@ int UStreamMessageWidget::CreateDataStreamId()
 		DataStreamConfig config;
 		config.syncWithAudio = false;
 		config.ordered = true;
-		int ret = RtcEngineProxy->createDataStream(&StreamId, config);
+		int ret = AgoraUERtcEngine::Get()->createDataStream(&StreamId, config);
 		UBFL_Logger::Print(FString::Printf(TEXT("%s createDataStream ret %d, streamId %d"), *FString(FUNCTION_MACRO), ret, StreamId), LogMsgViewPtr);
 	}
 	return StreamId;
@@ -128,7 +127,7 @@ void UStreamMessageWidget::SendStreamMessage(int StreamID, FString Msg)
 {
 	std::string StdStrMsg = TCHAR_TO_UTF8(*Msg);
 	int Size = strlen(StdStrMsg.c_str()) + 1;
-	int ret = RtcEngineProxy->sendStreamMessage(StreamID, TCHAR_TO_UTF8(*Msg), Size);
+	int ret = AgoraUERtcEngine::Get()->sendStreamMessage(StreamID, TCHAR_TO_UTF8(*Msg), Size);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s sendStreamMessage ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s sendStreamMessage  message %s,length %d"), *FString(FUNCTION_MACRO), *Msg, Msg.Len()), LogMsgViewPtr);
 }
@@ -147,12 +146,11 @@ void UStreamMessageWidget::NativeDestruct()
 
 void UStreamMessageWidget::UnInitAgoraEngine()
 {
-	if (RtcEngineProxy != nullptr)
+	if (AgoraUERtcEngine::Get() != nullptr)
 	{
-		RtcEngineProxy->leaveChannel();
-		RtcEngineProxy->unregisterEventHandler(UserRtcEventHandler.Get());
-		RtcEngineProxy->release();
-		RtcEngineProxy = nullptr;
+		AgoraUERtcEngine::Get()->leaveChannel();
+		AgoraUERtcEngine::Get()->unregisterEventHandler(UserRtcEventHandler.Get());
+		AgoraUERtcEngine::Release();
 
 		UBFL_Logger::Print(FString::Printf(TEXT("%s release agora engine"), *FString(FUNCTION_MACRO)), LogMsgViewPtr);
 	}

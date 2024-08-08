@@ -29,14 +29,13 @@ void UAudioMixingWidget::InitAgoraEngine(FString APP_ID, FString TOKEN, FString 
 	Token = TOKEN;
 	ChannelName = CHANNEL_NAME;
 
-	RtcEngineProxy = agora::rtc::ue::createAgoraRtcEngine();
 
 	int SDKBuild = 0;
-	const char* SDKVersionInfo = RtcEngineProxy->getVersion(&SDKBuild);
+	const char* SDKVersionInfo = AgoraUERtcEngine::Get()->getVersion(&SDKBuild);
 	FString SDKInfo = FString::Printf(TEXT("SDK Version: %s Build: %d"), UTF8_TO_TCHAR(SDKVersionInfo), SDKBuild);
 	UBFL_Logger::Print(FString::Printf(TEXT("SDK Info:  %s"), *SDKInfo), LogMsgViewPtr);
 
-	int ret = RtcEngineProxy->initialize(RtcEngineContext);
+	int ret = AgoraUERtcEngine::Get()->initialize(RtcEngineContext);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 
 }
@@ -56,9 +55,9 @@ void UAudioMixingWidget::ShowUserGuide()
 
 void UAudioMixingWidget::JoinChannel()
 {
-	RtcEngineProxy->enableAudio();
-	RtcEngineProxy->setClientRole(CLIENT_ROLE_BROADCASTER);
-	int ret = RtcEngineProxy->joinChannel(TCHAR_TO_UTF8(*Token), TCHAR_TO_UTF8(*ChannelName), "", 0);
+	AgoraUERtcEngine::Get()->enableAudio();
+	AgoraUERtcEngine::Get()->setClientRole(CLIENT_ROLE_BROADCASTER);
+	int ret = AgoraUERtcEngine::Get()->joinChannel(TCHAR_TO_UTF8(*Token), TCHAR_TO_UTF8(*ChannelName), "", 0);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 }
 
@@ -73,13 +72,13 @@ void UAudioMixingWidget::OnStartMixingClicked()
 {
 	FString Path = FPaths::Combine(FPaths::ProjectContentDir(), TEXT("Audio"), TEXT("Agora.io-Interactions.wav"));
 
-	if (CB_URL->CheckedState == ECheckBoxState::Checked && ET_URL->GetText().ToString() == "")
+	if (CB_URL->GetCheckedState() == ECheckBoxState::Checked && ET_URL->GetText().ToString() == "")
 	{
 		UBFL_Logger::Print(FString::Printf(TEXT("%s URL Is Empty"), *FString(FUNCTION_MACRO)), LogMsgViewPtr);
 		return;
 	}
 
-	if (CB_URL->CheckedState == ECheckBoxState::Checked) {
+	if (CB_URL->GetCheckedState() == ECheckBoxState::Checked) {
 
 		Path = ET_URL->GetText().ToString();
 	}
@@ -101,14 +100,14 @@ void UAudioMixingWidget::OnStartMixingClicked()
 #endif
 	}
 
-	int ParamLoop = CB_Loop->CheckedState == ECheckBoxState::Checked ? -1 : 1;
-	int ret = RtcEngineProxy->startAudioMixing(TCHAR_TO_UTF8(*Path), CB_LocalOnly->CheckedState == ECheckBoxState::Checked, ParamLoop);
+	int ParamLoop = CB_Loop->GetCheckedState() == ECheckBoxState::Checked ? -1 : 1;
+	int ret = AgoraUERtcEngine::Get()->startAudioMixing(TCHAR_TO_UTF8(*Path), CB_LocalOnly->GetCheckedState() == ECheckBoxState::Checked, ParamLoop);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 }
 
 void UAudioMixingWidget::OnStopMixingClicked()
 {
-	int ret = RtcEngineProxy->stopAudioMixing();
+	int ret = AgoraUERtcEngine::Get()->stopAudioMixing();
 	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 }
 
@@ -116,13 +115,13 @@ void UAudioMixingWidget::OnStartEffectClicked()
 {
 	FString Path = FPaths::Combine(FPaths::ProjectContentDir(), TEXT("Audio"), TEXT("Agora.io-Interactions.wav"));
 
-	if (CB_URL->CheckedState == ECheckBoxState::Checked && ET_URL->GetText().ToString() == "")
+	if (CB_URL->GetCheckedState() == ECheckBoxState::Checked && ET_URL->GetText().ToString() == "")
 	{
 		UBFL_Logger::Print(FString::Printf(TEXT("%s URL Is Empty"), *FString(FUNCTION_MACRO)), LogMsgViewPtr);
 		return;
 	}
 
-	if (CB_URL->CheckedState == ECheckBoxState::Checked) {
+	if (CB_URL->GetCheckedState() == ECheckBoxState::Checked) {
 
 		Path = ET_URL->GetText().ToString();
 	}
@@ -144,14 +143,14 @@ void UAudioMixingWidget::OnStartEffectClicked()
 #endif
 
 	}
-	int ParamLoop = CB_Loop->CheckedState == ECheckBoxState::Checked ? -1 : 1;
-	int ret = RtcEngineProxy->playEffect(1, TCHAR_TO_UTF8(*Path), ParamLoop, 0.5, 1, 80, CB_LocalOnly->CheckedState != ECheckBoxState::Checked, 0);
+	int ParamLoop = CB_Loop->GetCheckedState() == ECheckBoxState::Checked ? -1 : 1;
+	int ret = AgoraUERtcEngine::Get()->playEffect(1, TCHAR_TO_UTF8(*Path), ParamLoop, 0.5, 1, 80, CB_LocalOnly->GetCheckedState() != ECheckBoxState::Checked, 0);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 }
 
 void UAudioMixingWidget::OnStopEffectClicked()
 {
-	int ret = RtcEngineProxy->stopAllEffects();
+	int ret = AgoraUERtcEngine::Get()->stopAllEffects();
 	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 }
 
@@ -166,12 +165,11 @@ void UAudioMixingWidget::NativeDestruct()
 
 void UAudioMixingWidget::UnInitAgoraEngine()
 {
-	if (RtcEngineProxy != nullptr)
+	if (AgoraUERtcEngine::Get() != nullptr)
 	{
-		RtcEngineProxy->leaveChannel();
-		RtcEngineProxy->unregisterEventHandler(UserRtcEventHandlerEx.Get());
-		RtcEngineProxy->release();
-		RtcEngineProxy = nullptr;
+		AgoraUERtcEngine::Get()->leaveChannel();
+		AgoraUERtcEngine::Get()->unregisterEventHandler(UserRtcEventHandlerEx.Get());
+		AgoraUERtcEngine::Release();
 
 		UBFL_Logger::Print(FString::Printf(TEXT("%s release agora engine"), *FString(FUNCTION_MACRO)), LogMsgViewPtr);
 	}

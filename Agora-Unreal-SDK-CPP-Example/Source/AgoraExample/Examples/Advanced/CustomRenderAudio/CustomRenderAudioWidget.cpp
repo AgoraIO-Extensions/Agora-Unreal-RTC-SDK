@@ -55,17 +55,15 @@ void UCustomRenderAudioWidget::InitAgoraEngine(FString APP_ID, FString TOKEN, FS
 	Token = TOKEN;
 	ChannelName = CHANNEL_NAME;
 
-	RtcEngineProxy = agora::rtc::ue::createAgoraRtcEngineEx();
-
 	int SDKBuild = 0;
-	const char* SDKVersionInfo = RtcEngineProxy->getVersion(&SDKBuild);
+	const char* SDKVersionInfo = AgoraUERtcEngine::Get()->getVersion(&SDKBuild);
 	FString SDKInfo = FString::Printf(TEXT("SDK Version: %s Build: %d"), UTF8_TO_TCHAR(SDKVersionInfo), SDKBuild);
 	UBFL_Logger::Print(FString::Printf(TEXT("SDK Info:  %s"), *SDKInfo), LogMsgViewPtr);
 
-	int ret = RtcEngineProxy->initialize(RtcEngineContext);
+	int ret = AgoraUERtcEngine::Get()->initialize(RtcEngineContext);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 
-	RtcEngineProxy->queryInterface(AGORA_IID_MEDIA_ENGINE, (void**)&MediaEngine);
+	AgoraUERtcEngine::Get()->queryInterface(AGORA_IID_MEDIA_ENGINE, (void**)&MediaEngine);
 }
 
 void UCustomRenderAudioWidget::ShowUserGuide()
@@ -85,7 +83,7 @@ void UCustomRenderAudioWidget::ShowUserGuide()
 
 void UCustomRenderAudioWidget::JoinChannel()
 {
-	RtcEngineProxy->enableAudio();
+	AgoraUERtcEngine::Get()->enableAudio();
 
 
 #if PLATFORM_IOS
@@ -95,10 +93,10 @@ void UCustomRenderAudioWidget::JoinChannel()
 	// [Tmp Solution]
 	// It would disable SDK's ADM, therefore, it would disable the functionality of Recording and Playout.
 	// You could get the sample effect with ChannelMediaOptions.enableAudioRecordingOrPlayout to false
-	// int ret00 = RtcEngineProxy->enableLocalAudio(false);
+	// int ret00 = AgoraUERtcEngine::Get()->enableLocalAudio(false);
 
 	// [Solution]
-	int ret00 = RtcEngineProxy->setParameters("{\"che.audio.keep.audiosession\": true}");
+	int ret00 = AgoraUERtcEngine::Get()->setParameters("{\"che.audio.keep.audiosession\": true}");
 	UBFL_Logger::Print(FString::Printf(TEXT("%s setParameters ret %d"), *FString(FUNCTION_MACRO), ret00), LogMsgViewPtr);
 
 #endif
@@ -106,8 +104,8 @@ void UCustomRenderAudioWidget::JoinChannel()
 	int ret0 = MediaEngine->setExternalAudioSink(true, SAMPLE_RATE, CHANNEL);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s setExternalAudioSink ret %d"), *FString(FUNCTION_MACRO), ret0), LogMsgViewPtr);
 
-	RtcEngineProxy->setClientRole(CLIENT_ROLE_BROADCASTER);
-	int ret = RtcEngineProxy->joinChannel(TCHAR_TO_UTF8(*Token), TCHAR_TO_UTF8(*ChannelName), "", 0);
+	AgoraUERtcEngine::Get()->setClientRole(CLIENT_ROLE_BROADCASTER);
+	int ret = AgoraUERtcEngine::Get()->joinChannel(TCHAR_TO_UTF8(*Token), TCHAR_TO_UTF8(*ChannelName), "", 0);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s joinChannel ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 }
 
@@ -156,12 +154,11 @@ void UCustomRenderAudioWidget::UnInitAgoraEngine()
 		Runnable = nullptr;
 	}
 
-	if (RtcEngineProxy != nullptr)
+	if (AgoraUERtcEngine::Get() != nullptr)
 	{
-		RtcEngineProxy->leaveChannel();
-		RtcEngineProxy->unregisterEventHandler(UserRtcEventHandler.Get());
-		RtcEngineProxy->release();
-		RtcEngineProxy = nullptr;
+		AgoraUERtcEngine::Get()->leaveChannel();
+		AgoraUERtcEngine::Get()->unregisterEventHandler(UserRtcEventHandler.Get());
+		AgoraUERtcEngine::Release();
 
 		UBFL_Logger::Print(FString::Printf(TEXT("%s release agora engine"), *FString(FUNCTION_MACRO)), LogMsgViewPtr);
 	}

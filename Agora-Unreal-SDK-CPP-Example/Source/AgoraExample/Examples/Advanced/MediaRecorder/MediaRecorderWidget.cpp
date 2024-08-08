@@ -48,14 +48,12 @@ void UMediaRecorderWidget::InitAgoraEngine(FString APP_ID, FString TOKEN, FStrin
 	Token = TOKEN;
 	ChannelName = CHANNEL_NAME;
 
-	RtcEngineProxy = agora::rtc::ue::createAgoraRtcEngineEx();
-
 	int SDKBuild = 0;
-	const char* SDKVersionInfo = RtcEngineProxy->getVersion(&SDKBuild);
+	const char* SDKVersionInfo = AgoraUERtcEngine::Get()->getVersion(&SDKBuild);
 	FString SDKInfo = FString::Printf(TEXT("SDK Version: %s Build: %d"), UTF8_TO_TCHAR(SDKVersionInfo), SDKBuild);
 	UBFL_Logger::Print(FString::Printf(TEXT("SDK Info:  %s"), *SDKInfo), LogMsgViewPtr);
 
-	int ret = RtcEngineProxy->initialize(RtcEngineContext);
+	int ret = AgoraUERtcEngine::Get()->initialize(RtcEngineContext);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 
 }
@@ -73,9 +71,9 @@ void UMediaRecorderWidget::ShowUserGuide()
 
 void UMediaRecorderWidget::JoinChannel()
 {
-	RtcEngineProxy->enableAudio();
-	RtcEngineProxy->enableVideo();
-	RtcEngineProxy->setClientRole(CLIENT_ROLE_BROADCASTER);
+	AgoraUERtcEngine::Get()->enableAudio();
+	AgoraUERtcEngine::Get()->enableVideo();
+	AgoraUERtcEngine::Get()->setClientRole(CLIENT_ROLE_BROADCASTER);
 
 	ChannelMediaOptions Options;
 	Options.publishMicrophoneTrack = true;
@@ -85,7 +83,7 @@ void UMediaRecorderWidget::JoinChannel()
 	Options.enableAudioRecordingOrPlayout = true;
 	Options.clientRoleType = CLIENT_ROLE_TYPE::CLIENT_ROLE_BROADCASTER;
 
-	int ret = RtcEngineProxy->joinChannel(TCHAR_TO_UTF8(*Token), TCHAR_TO_UTF8(*ChannelName), 0, Options);
+	int ret = AgoraUERtcEngine::Get()->joinChannel(TCHAR_TO_UTF8(*Token), TCHAR_TO_UTF8(*ChannelName), 0, Options);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 }
 
@@ -134,12 +132,11 @@ void UMediaRecorderWidget::NativeDestruct()
 
 void UMediaRecorderWidget::UnInitAgoraEngine()
 {
-	if (RtcEngineProxy != nullptr)
+	if (AgoraUERtcEngine::Get() != nullptr)
 	{
-		RtcEngineProxy->leaveChannel();
-		RtcEngineProxy->unregisterEventHandler(UserRtcEventHandlerEx.Get());
-		RtcEngineProxy->release();
-		RtcEngineProxy = nullptr;
+		AgoraUERtcEngine::Get()->leaveChannel();
+		AgoraUERtcEngine::Get()->unregisterEventHandler(UserRtcEventHandlerEx.Get());
+		AgoraUERtcEngine::Release();
 
 		UBFL_Logger::Print(FString::Printf(TEXT("%s release agora engine"), *FString(FUNCTION_MACRO)), LogMsgViewPtr);
 	}
@@ -160,10 +157,8 @@ int UMediaRecorderWidget::MakeVideoView(uint32 uid, agora::rtc::VIDEO_SOURCE_TYP
 		channelId will be set in [setupLocalVideo] / [setupRemoteVideo]
 	*/
 
-	int ret = -ERROR_NULLPTR;
+	int ret = 0;
 
-	if (RtcEngineProxy == nullptr)
-		return ret;
 
 	agora::rtc::VideoCanvas videoCanvas;
 	videoCanvas.uid = uid;
@@ -172,7 +167,7 @@ int UMediaRecorderWidget::MakeVideoView(uint32 uid, agora::rtc::VIDEO_SOURCE_TYP
 	if (uid == 0) {
 		FVideoViewIdentity VideoViewIdentity(uid, sourceType, "");
 		videoCanvas.view = UBFL_VideoViewManager::CreateOneVideoViewToCanvasPanel(VideoViewIdentity, CanvasPanel_VideoView, VideoViewMap, DraggableVideoViewTemplate);
-		ret = RtcEngineProxy->setupLocalVideo(videoCanvas);
+		ret = AgoraUERtcEngine::Get()->setupLocalVideo(videoCanvas);
 	}
 	else
 	{
@@ -181,13 +176,13 @@ int UMediaRecorderWidget::MakeVideoView(uint32 uid, agora::rtc::VIDEO_SOURCE_TYP
 		videoCanvas.view = UBFL_VideoViewManager::CreateOneVideoViewToCanvasPanel(VideoViewIdentity, CanvasPanel_VideoView, VideoViewMap, DraggableVideoViewTemplate);
 
 		if (channelId == "") {
-			ret = RtcEngineProxy->setupRemoteVideo(videoCanvas);
+			ret = AgoraUERtcEngine::Get()->setupRemoteVideo(videoCanvas);
 		}
 		else {
 			agora::rtc::RtcConnection connection;
 			std::string StdStrChannelId = TCHAR_TO_UTF8(*channelId);
 			connection.channelId = StdStrChannelId.c_str();
-			ret = ((agora::rtc::IRtcEngineEx*)RtcEngineProxy)->setupRemoteVideoEx(videoCanvas, connection);
+			ret = ((agora::rtc::IRtcEngineEx*)AgoraUERtcEngine::Get())->setupRemoteVideoEx(videoCanvas, connection);
 		}
 	}
 
@@ -196,10 +191,8 @@ int UMediaRecorderWidget::MakeVideoView(uint32 uid, agora::rtc::VIDEO_SOURCE_TYP
 
 int UMediaRecorderWidget::ReleaseVideoView(uint32 uid, agora::rtc::VIDEO_SOURCE_TYPE sourceType /*= VIDEO_SOURCE_CAMERA_PRIMARY*/, FString channelId /*= ""*/)
 {
-	int ret = -ERROR_NULLPTR;
+	int ret = 0;
 
-	if (RtcEngineProxy == nullptr)
-		return ret;
 
 	agora::rtc::VideoCanvas videoCanvas;
 	videoCanvas.view = nullptr;
@@ -209,20 +202,20 @@ int UMediaRecorderWidget::ReleaseVideoView(uint32 uid, agora::rtc::VIDEO_SOURCE_
 	if (uid == 0) {
 		FVideoViewIdentity VideoViewIdentity(uid, sourceType, "");
 		UBFL_VideoViewManager::ReleaseOneVideoView(VideoViewIdentity, VideoViewMap);
-		ret = RtcEngineProxy->setupLocalVideo(videoCanvas);
+		ret = AgoraUERtcEngine::Get()->setupLocalVideo(videoCanvas);
 	}
 	else
 	{
 		FVideoViewIdentity VideoViewIdentity(uid, sourceType, channelId);
 		UBFL_VideoViewManager::ReleaseOneVideoView(VideoViewIdentity, VideoViewMap);
 		if (channelId == "") {
-			ret = RtcEngineProxy->setupRemoteVideo(videoCanvas);
+			ret = AgoraUERtcEngine::Get()->setupRemoteVideo(videoCanvas);
 		}
 		else {
 			agora::rtc::RtcConnection connection;
 			std::string StdStrChannelId = TCHAR_TO_UTF8(*channelId);
 			connection.channelId = StdStrChannelId.c_str();
-			ret = ((agora::rtc::IRtcEngineEx*)RtcEngineProxy)->setupRemoteVideoEx(videoCanvas, connection);
+			ret = ((agora::rtc::IRtcEngineEx*)AgoraUERtcEngine::Get())->setupRemoteVideoEx(videoCanvas, connection);
 		}
 	}
 	return ret;
@@ -331,7 +324,7 @@ void UMediaRecorderWidget::FUserRtcEventHandlerEx::onUserOffline(const agora::rt
 #pragma region AgoraCallback - IMediaRecorderObserver
 
 
-void UMediaRecorderWidget::FUserMediaRecorderObserver::onRecorderStateChanged(const char* channelId, agora::rtc::uid_t uid, agora::media::RecorderState state, agora::media::RecorderErrorCode error)
+void UMediaRecorderWidget::FUserMediaRecorderObserver::onRecorderStateChanged(const char* channelId, rtc::uid_t uid, RecorderState state, RecorderReasonCode reason)
 {
 	if (!IsWidgetValid())
 		return;
@@ -347,14 +340,17 @@ void UMediaRecorderWidget::FUserMediaRecorderObserver::onRecorderStateChanged(co
 				UBFL_Logger::Print(FString::Printf(TEXT("%s bIsDestruct "), *FString(FUNCTION_MACRO)));
 				return;
 			}
-			UBFL_Logger::Print(FString::Printf(TEXT("%s channelId=%s uid=%u state=%d error=%d"), *FString(FUNCTION_MACRO), UTF8_TO_TCHAR(channelId), uid, (int)state, (int)error), WidgetPtr->GetLogMsgViewPtr());
+			UBFL_Logger::Print(FString::Printf(TEXT("%s channelId=%s uid=%u state=%d error=%d"), *FString(FUNCTION_MACRO), UTF8_TO_TCHAR(channelId), uid, (int)state, (int)reason), WidgetPtr->GetLogMsgViewPtr());
 		});
 }
 
-void UMediaRecorderWidget::FUserMediaRecorderObserver::onRecorderInfoUpdated(const char* channelId, agora::rtc::uid_t uid, const  agora::media::RecorderInfo& info)
+
+void UMediaRecorderWidget::FUserMediaRecorderObserver::onRecorderInfoUpdated(const char* channelId, rtc::uid_t uid, const RecorderInfo& info)
 {
 	if (!IsWidgetValid())
 		return;
+
+	FString ChannelID = UTF8_TO_TCHAR(channelId);
 
 #if  ((__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)) 
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
@@ -367,9 +363,10 @@ void UMediaRecorderWidget::FUserMediaRecorderObserver::onRecorderInfoUpdated(con
 				UBFL_Logger::Print(FString::Printf(TEXT("%s bIsDestruct "), *FString(FUNCTION_MACRO)));
 				return;
 			}
-			UBFL_Logger::Print(FString::Printf(TEXT("%s channelId=%s uid=%u"), *FString(FUNCTION_MACRO), UTF8_TO_TCHAR(channelId), uid), WidgetPtr->GetLogMsgViewPtr());
+			UBFL_Logger::Print(FString::Printf(TEXT("%s channelId=%s uid=%u"), *FString(FUNCTION_MACRO),*ChannelID, uid), WidgetPtr->GetLogMsgViewPtr());
 
 		});
 }
+
 
 #pragma endregion

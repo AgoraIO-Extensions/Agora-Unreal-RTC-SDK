@@ -22,6 +22,8 @@
 #include "MediaRecorderWidget.generated.h"
 
 using namespace agora::rtc;
+using namespace agora::media;
+using namespace agora;
 
 /**
  *
@@ -71,11 +73,10 @@ public:
 
 #pragma region AgoraCallback - IMediaRecorderObserver
 
+		void onRecorderStateChanged(const char* channelId, rtc::uid_t uid, RecorderState state, RecorderReasonCode reason) override;
 
-		void onRecorderStateChanged(const char* channelId, agora::rtc::uid_t uid, agora::media::RecorderState state, agora::media::RecorderErrorCode error) override;
 
-
-		void onRecorderInfoUpdated(const char* channelId, agora::rtc::uid_t uid, const  agora::media::RecorderInfo& info) override;
+		void onRecorderInfoUpdated(const char* channelId, rtc::uid_t uid, const RecorderInfo& info) override;
 
 
 #pragma endregion
@@ -162,7 +163,7 @@ public:
 		std::string StdStrChannelName = TCHAR_TO_UTF8(*ChannelName);
 		Info.channelId = StdStrChannelName.c_str();
 		Info.uid = uid;
-		LocalRecorder = RtcEngineProxy->createMediaRecorder(Info);
+		LocalRecorder = AgoraUERtcEngine::Get()->createMediaRecorder(Info);
 
 		UserMediaRecorderObserver = MakeShared<FUserMediaRecorderObserver>(this);
 		LocalRecorder->setMediaRecorderObserver(UserMediaRecorderObserver.Get());
@@ -181,7 +182,7 @@ protected:
 	FString Token = "";
 	FString ChannelName = "";
 
-	IRtcEngineEx* RtcEngineProxy;
+
 
 	TSharedPtr<FUserRtcEventHandlerEx> UserRtcEventHandlerEx;
 	TSharedPtr<FUserMediaRecorderObserver> UserMediaRecorderObserver;

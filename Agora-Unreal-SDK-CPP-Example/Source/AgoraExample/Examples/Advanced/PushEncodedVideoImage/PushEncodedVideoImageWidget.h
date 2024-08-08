@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "../../BaseAgoraUserWidget.h"
 #include "AgoraPluginInterface.h"
-#include "AgoraPlugin/Private/AgoraCppPlugin/include/VideoObserverInternal.h"
+//#include "AgoraPlugin/Private/AgoraCppPlugin/include/AgoraUEVideoFrameObserver.h"
 
 // UI
 #include "Components/Button.h"
@@ -147,7 +147,7 @@ private:
 public:
 	inline FString GetAppId() { return AppId; };
 	inline FString GetToken() { return Token; };
-	inline IRtcEngineEx* GetRtcEngine() { return RtcEngineProxy; };
+	inline IRtcEngineEx* GetRtcEngine() { return AgoraUERtcEngine::Get(); };
 	inline FString GetChannelName() { return ChannelName; };
 
 	inline uint32 GetUID1() { return UID1; };
@@ -177,7 +177,7 @@ protected:
 	FString Token;
 	FString ChannelName;
 
-	IRtcEngineEx* RtcEngineProxy;
+
 
 	agora::media::IMediaEngine* MediaEngine;
 	TSharedPtr<FUserIVideoEncodedFrameObserver> VideoObserver;

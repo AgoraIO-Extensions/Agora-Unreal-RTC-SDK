@@ -82,10 +82,10 @@ public:
 
 		FUserIMediaPlayerSourceObserver(UAudioSpectrumWidget* Widget) : WidgetPtr(Widget) {}
 
-		void onPlayerSourceStateChanged(media::base::MEDIA_PLAYER_STATE state, media::base::MEDIA_PLAYER_ERROR ec) override;
+		void onPlayerSourceStateChanged(media::base::MEDIA_PLAYER_STATE state, media::base::MEDIA_PLAYER_REASON reason) override;
 
 
-		void onPositionChanged(int64_t position_ms) override;
+		void onPositionChanged(int64_t position_ms, int64_t timestampMs) override;
 
 
 		void onPlayerEvent(media::base::MEDIA_PLAYER_EVENT eventCode, int64_t elapsedTime, const char* message) override;
@@ -259,7 +259,6 @@ protected:
 
 	const char* MPK_URL = "https://agora-adc-artifacts.oss-cn-beijing.aliyuncs.com/video/meta_live_mpk.mov";
 
-	IRtcEngine* RtcEngineProxy;
 	agora::agora_refptr<agora::rtc::IMediaPlayer> MediaPlayer;
 
 

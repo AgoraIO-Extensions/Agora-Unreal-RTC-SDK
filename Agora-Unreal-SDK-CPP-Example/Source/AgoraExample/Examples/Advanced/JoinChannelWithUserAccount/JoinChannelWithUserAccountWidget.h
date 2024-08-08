@@ -140,7 +140,7 @@ protected:
 	FString Token = "";
 	FString ChannelName = "";
 	FString ValUserAccount = "UnrealAccount";
-	IRtcEngineEx* RtcEngineProxy;
+
 
 
 	TSharedPtr<FUserRtcEventHandlerEx> UserRtcEventHandlerEx;

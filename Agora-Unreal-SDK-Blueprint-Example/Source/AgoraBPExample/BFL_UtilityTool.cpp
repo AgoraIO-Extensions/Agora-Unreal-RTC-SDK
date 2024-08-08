@@ -7,6 +7,8 @@ bool UBFL_UtilityTool::IsAgoraAudioOnlySDK()
 {
 #if AGORA_UESDK_AUDIO_ONLY
 	return true;
-#endif
+#else
 	return false;
+#endif
+
 }
