@@ -127,6 +127,10 @@ void UStartLocalVideoTranscoderWidget::OnBtnUpdateClicked()
 
 void UStartLocalVideoTranscoderWidget::OnBtnStopClicked()
 {
+	if (CB_MediaPlay->GetCheckedState() == ECheckBoxState::Checked) {
+		MediaPlayer->stop();
+	}
+
 	int ret = AgoraUERtcEngine::Get()->stopLocalVideoTranscoder();
 	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 }
@@ -152,14 +156,9 @@ agora::rtc::LocalTranscoderConfiguration UStartLocalVideoTranscoderWidget::Gener
 		{
 			Configuration.format = VideoFormat(640, 320, 30);
 
-			char deviceId[512] = { 0 };
-			char deviceName[512] = { 0 };
 			// Get camera information
-			VideoDeviceInfos->getDevice(0, deviceName, deviceId);
-
-			char* DataDeviceId = nullptr;
-			FMemory::Memcpy(DataDeviceId, deviceId, 512);
-			Configuration.deviceId = DataDeviceId;
+			VideoDeviceInfos->getDevice(0, MainCameraDeviceName, MainCameraDeviceId);
+			Configuration.deviceId = MainCameraDeviceId;
 		}
 		else
 		{
@@ -203,13 +202,9 @@ agora::rtc::LocalTranscoderConfiguration UStartLocalVideoTranscoderWidget::Gener
 
 			Configuration.format = VideoFormat(640, 320, 30);
 
-			char deviceId[512] = { 0 };
-			char deviceName[512] = { 0 };
 			// Get camera information
-			VideoDeviceInfos->getDevice(1, deviceName, deviceId);
-			char* DataDeviceId = nullptr;
-			FMemory::Memcpy(DataDeviceId, deviceId, 512);
-			Configuration.deviceId = DataDeviceId;
+			VideoDeviceInfos->getDevice(1, SecondCameraDeviceName, SecondCameraDeviceId);
+			Configuration.deviceId = SecondCameraDeviceId;
 
 		}
 		else

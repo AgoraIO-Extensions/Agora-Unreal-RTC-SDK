@@ -327,38 +327,40 @@ void UAgoraVideoWidget::FUserRtcEventHandler::onUserOffline(agora::rtc::uid_t ui
 		});
 }
 
-void UAgoraVideoWidget::FUserRtcEventHandler::onVideoSizeChanged(VIDEO_SOURCE_TYPE sourceType, uid_t uid, int width, int height, int rotation)
-{
-	if (!IsWidgetValid())
-		return;
-
-#if  ((__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)) 
-	AsyncTask(ENamedThreads::GameThread, [=, this]()
-#else
-	AsyncTask(ENamedThreads::GameThread, [=]()
-#endif
-		{
-			if (!IsWidgetValid())
-			{
-				UBFL_Logger::PrintError(FString::Printf(TEXT("%s bIsDestruct "), *FString(FUNCTION_MACRO)));
-				return;
-			}
-			UBFL_Logger::Print(FString::Printf(TEXT("%s uid=%u width=%d height=%d rotation=%d"), *FString(FUNCTION_MACRO), uid, width, height, rotation), WidgetPtr->GetLogMsgViewPtr());
-
-			FVideoViewIdentity VideoViewIdentity(uid, sourceType, "");
-
-			//if(rotation == 0){
-			//	// no need to consider the rotation.
-			//	UBFL_VideoViewManager::ChangeSizeForOneVideoView(VideoViewIdentity, width, height, WidgetPtr->VideoViewMap);	
-			//}
-			//else{
-			//	UBFL_VideoViewManager::ResizeTheRotationAppliedImage(VideoViewIdentity, width, height, rotation, WidgetPtr->VideoViewMap);
-			//}
-
-			// Because [getRotationApplied] in [VideoObserverInternal.h] is set to True, we just change the size.
-			UBFL_VideoViewManager::ResizeTheRotationAppliedImage(VideoViewIdentity, width, height, rotation, WidgetPtr->VideoViewMap);
-		});
-}
+// No need to use this callback function
+//void UAgoraVideoWidget::FUserRtcEventHandler::onVideoSizeChanged(VIDEO_SOURCE_TYPE sourceType, uid_t uid, int width, int height, int rotation)
+//{
+//	if (!IsWidgetValid())
+//		return;
+//
+//#if  ((__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)) 
+//	AsyncTask(ENamedThreads::GameThread, [=, this]()
+//#else
+//	AsyncTask(ENamedThreads::GameThread, [=]()
+//#endif
+//		{
+//			if (!IsWidgetValid())
+//			{
+//				UBFL_Logger::PrintError(FString::Printf(TEXT("%s bIsDestruct "), *FString(FUNCTION_MACRO)));
+//				return;
+//			}
+//			UBFL_Logger::Print(FString::Printf(TEXT("%s uid=%u width=%d height=%d rotation=%d"), *FString(FUNCTION_MACRO), uid, width, height, rotation), WidgetPtr->GetLogMsgViewPtr());
+//
+//			FVideoViewIdentity VideoViewIdentity(uid, sourceType, "");
+//
+//			//if(rotation == 0){
+//			//	// no need to consider the rotation.
+//			//	UBFL_VideoViewManager::ChangeSizeForOneVideoView(VideoViewIdentity, width, height, WidgetPtr->VideoViewMap);	
+//			//}
+//			//else{
+//			//	UBFL_VideoViewManager::ResizeTheRotationAppliedImage(VideoViewIdentity, width, height, rotation, WidgetPtr->VideoViewMap);
+//			//}
+//
+//			// Because [getRotationApplied] in [VideoObserverInternal.h] is set to True, we just change the size.
+//
+//			UBFL_VideoViewManager::ResizeTheRotationAppliedImage(VideoViewIdentity, width, height, rotation, WidgetPtr->VideoViewMap);
+//		});
+//}
 
 
 

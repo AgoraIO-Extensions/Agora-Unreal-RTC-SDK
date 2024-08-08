@@ -83,7 +83,7 @@ void USpatialAudioWidget::InitSpatialAudioEngine(IRtcEngine* engine)
 	if (LocalSpatialAudioEngine == nullptr)
 	{
 		engine->queryInterface(AGORA_IID_LOCAL_SPATIAL_AUDIO, (void**)&LocalSpatialAudioEngine);
-	}
+	}	
 
 	if (LocalSpatialAudioEngine != nullptr)
 	{
@@ -111,9 +111,9 @@ void USpatialAudioWidget::InitSpatialAudioEngine(IRtcEngine* engine)
 int USpatialAudioWidget::UpdateRemotePositionWithCurrentDistanceVal()
 {
 	int ret = -1;
-	//float Val = Slider_Distance->GetValue();
-	//RemoteVoicePositionInfo ValRemotePositionInfo{ { 0.0f , Val, 0.0f },{ 0.0f ,0.0f , 0.0f } };
-	//int ret = LocalSpatialAudioEngine->updateRemotePosition(RemoteUID, ValRemotePositionInfo);
+	float Val = Slider_Distance->GetValue();
+	RemoteVoicePositionInfo ValRemotePositionInfo{ { 0.0f , Val, 0.0f },{ 0.0f ,0.0f , 0.0f } };
+	ret = LocalSpatialAudioEngine->updateRemotePosition(RemoteUID, ValRemotePositionInfo);
 	return ret;
 }
 

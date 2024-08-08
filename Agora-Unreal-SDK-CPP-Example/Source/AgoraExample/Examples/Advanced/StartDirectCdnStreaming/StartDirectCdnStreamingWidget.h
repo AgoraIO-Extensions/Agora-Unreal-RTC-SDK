@@ -173,7 +173,7 @@ protected:
 
 
 
-	TSharedPtr<FUserIDirectCdnStreamingEventHandler> DirectCdnStreamingEventHandlerWarper;
+	TSharedPtr<FUserIDirectCdnStreamingEventHandler> DirectCdnStreamingEventHandlerWarper = nullptr;
 	TSharedPtr<FUserRtcEventHandlerEx> UserRtcEventHandlerEx;
 
 };

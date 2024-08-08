@@ -106,7 +106,11 @@ void UStartDirectCdnStreamingWidget::OnBtnStartClicked()
 	int ret0 = AgoraUERtcEngine::Get()->setDirectCdnStreamingVideoConfiguration(videoEncoderConfiguration);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s setDirectCdnStreamingVideoConfiguration ret %d"), *FString(FUNCTION_MACRO), ret0), LogMsgViewPtr);
 
-	DirectCdnStreamingEventHandlerWarper = MakeShared<FUserIDirectCdnStreamingEventHandler>(this);
+	if (DirectCdnStreamingEventHandlerWarper == nullptr)
+	{
+		DirectCdnStreamingEventHandlerWarper = MakeShared<FUserIDirectCdnStreamingEventHandler>(this);
+	}
+
 	int ret = AgoraUERtcEngine::Get()->startDirectCdnStreaming(DirectCdnStreamingEventHandlerWarper.Get(), TCHAR_TO_UTF8(*URL), options);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s startDirectCdnStreaming ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 	AgoraUERtcEngine::Get()->startPreview();

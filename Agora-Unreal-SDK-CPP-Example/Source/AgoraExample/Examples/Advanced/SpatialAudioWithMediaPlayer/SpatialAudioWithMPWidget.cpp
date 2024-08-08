@@ -176,11 +176,11 @@ void USpatialAudioWithMPWidget::JoinChannelWithMPK()
 
 void USpatialAudioWithMPWidget::OnBtnLeftClicked()
 {
-	//RemoteVoicePositionInfo remoteVoicePos{ { 0.0f, -1.0f, 0.0f }, { 0.0f, 0.0f, 0.0f } };
-	//std::string StdStrChannelName = TCHAR_TO_UTF8(*ChannelName);
-	//agora::rtc::RtcConnection connection(StdStrChannelName.c_str(), UID);
-	//int ret = LocalSpatialAudioEngine->updateRemotePositionEx(UID_UsedInMPK, remoteVoicePos, connection);
-	//UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
+	RemoteVoicePositionInfo remoteVoicePos{ { 0.0f, -1.0f, 0.0f }, { 0.0f, 0.0f, 0.0f } };
+	std::string StdStrChannelName = TCHAR_TO_UTF8(*ChannelName);
+	agora::rtc::RtcConnection connection(StdStrChannelName.c_str(), UID);
+	int ret = LocalSpatialAudioEngine->updateRemotePositionEx(UID_UsedInMPK, remoteVoicePos, connection);
+	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 }
 
 void USpatialAudioWithMPWidget::OnBtnPlayClicked()
@@ -195,13 +195,13 @@ void USpatialAudioWithMPWidget::OnBtnPlayClicked()
 
 void USpatialAudioWithMPWidget::OnBtnRightClicked()
 {
-	//RemoteVoicePositionInfo remoteVoicePos{ { 0.0f, 1.0f, 0.0f }, { 0.0f, 0.0f, 0.0f } };
+	RemoteVoicePositionInfo remoteVoicePos{ { 0.0f, 1.0f, 0.0f }, { 0.0f, 0.0f, 0.0f } };
 
-	//std::string StdStrChannelName = TCHAR_TO_UTF8(*ChannelName);
-	//agora::rtc::RtcConnection connection(StdStrChannelName.c_str(), UID);
-	//int ret = LocalSpatialAudioEngine->updateRemotePositionEx(UID_UsedInMPK, remoteVoicePos, connection);
+	std::string StdStrChannelName = TCHAR_TO_UTF8(*ChannelName);
+	agora::rtc::RtcConnection connection(StdStrChannelName.c_str(), UID);
+	int ret = LocalSpatialAudioEngine->updateRemotePositionEx(UID_UsedInMPK, remoteVoicePos, connection);
 
-	//UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
+	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 }
 
 void USpatialAudioWithMPWidget::OnBtnBackToHomeClicked()

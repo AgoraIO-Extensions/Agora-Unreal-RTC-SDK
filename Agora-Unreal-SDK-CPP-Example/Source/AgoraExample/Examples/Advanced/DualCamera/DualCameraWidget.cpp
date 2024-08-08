@@ -100,23 +100,15 @@ void UDualCameraWidget::GetVideoDeviceManager()
 	IVideoDeviceCollection* VideoDeviceInfos = VideoDeviceManager->enumerateVideoDevices();
 
 	if (VideoDeviceInfos->getCount() >= 1) {
-		char deviceId[512] = { 0 };
-		char deviceName[512] = { 0 };
 		// Get camera information
-		VideoDeviceInfos->getDevice(0, deviceName, deviceId);
-		char* DataDeviceId = nullptr;
-		FMemory::Memcpy(DataDeviceId, deviceId, 512);
-		MainCameraConfig.deviceId = DataDeviceId;
+		VideoDeviceInfos->getDevice(0, MainCameraDeviceName, MainCameraDeviceId);
+		MainCameraConfig.deviceId = MainCameraDeviceId;
 	}
 
 	if (VideoDeviceInfos->getCount() >= 2) {
-		char deviceId[512] = { 0 };
-		char deviceName[512] = { 0 };
 		// Get camera information
-		VideoDeviceInfos->getDevice(1, deviceName, deviceId);
-		char* DataDeviceId = nullptr;
-		FMemory::Memcpy(DataDeviceId, deviceId, 512);
-		SecondCameraConfig.deviceId = DataDeviceId;
+		VideoDeviceInfos->getDevice(1, SecondCameraDeviceName, SecondCameraDeviceId);
+		SecondCameraConfig.deviceId = SecondCameraDeviceId;
 	}
 
 #endif

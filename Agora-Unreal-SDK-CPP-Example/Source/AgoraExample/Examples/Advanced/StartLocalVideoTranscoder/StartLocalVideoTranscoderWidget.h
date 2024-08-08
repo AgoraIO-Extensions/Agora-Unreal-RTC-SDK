@@ -230,6 +230,11 @@ protected:
 	agora::agora_refptr<agora::rtc::IMediaPlayer> MediaPlayer;
 
 
+	char MainCameraDeviceName[MAX_DEVICE_ID_LENGTH] = {};
+	char MainCameraDeviceId[MAX_DEVICE_ID_LENGTH] = {};
+	char SecondCameraDeviceId[MAX_DEVICE_ID_LENGTH] = {};
+	char SecondCameraDeviceName[MAX_DEVICE_ID_LENGTH] = {};
+
 	TSharedPtr<FUserIMediaPlayerSourceObserver> MediaPlayerSourceObserverWarpper;
 	TSharedPtr<FUserRtcEventHandlerEx> UserRtcEventHandlerEx;
 

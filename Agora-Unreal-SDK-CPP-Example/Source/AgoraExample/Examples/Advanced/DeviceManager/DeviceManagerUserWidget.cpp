@@ -197,11 +197,31 @@ void UDeviceManagerUserWidget::UnInitAgoraEngine()
 {
 	if (AgoraUERtcEngine::Get() != nullptr)
 	{
-		AudioRecordingDeviceInfos->release();
-		AudioPlaybackDeviceInfos->release();
-		VideoDeviceInfos->release();
-		AudioDeviceManager->release();
-		VideoDeviceManager->release();
+		if(AudioRecordingDeviceInfos){
+			AudioRecordingDeviceInfos->release();
+			AudioRecordingDeviceInfos = nullptr;
+		}
+
+		if (AudioPlaybackDeviceInfos) {
+			AudioPlaybackDeviceInfos->release();
+			AudioPlaybackDeviceInfos = nullptr;
+		}
+
+		if (VideoDeviceInfos) {
+			VideoDeviceInfos->release();
+			VideoDeviceInfos = nullptr;
+		}
+
+		if (AudioDeviceManager) {
+			AudioDeviceManager->release();
+			AudioDeviceManager = nullptr;
+		}
+
+		if (VideoDeviceManager) {
+			VideoDeviceManager->release();
+			VideoDeviceManager = nullptr;
+		}
+
 		AgoraUERtcEngine::Get()->stopPreview();
 		AgoraUERtcEngine::Get()->unregisterEventHandler(UserRtcEventHandler.Get());
 		AgoraUERtcEngine::Release();

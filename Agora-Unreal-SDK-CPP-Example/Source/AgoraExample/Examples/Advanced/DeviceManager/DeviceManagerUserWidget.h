@@ -110,15 +110,15 @@ protected:
 
 
 
-	TSharedPtr<FUserRtcEventHandler> UserRtcEventHandler;
+	TSharedPtr<FUserRtcEventHandler> UserRtcEventHandler = nullptr;
 
-	IAudioDeviceManager* AudioDeviceManager;
+	IAudioDeviceManager* AudioDeviceManager = nullptr;
 
-	IVideoDeviceManager* VideoDeviceManager;
+	IVideoDeviceManager* VideoDeviceManager = nullptr;
 
-	IAudioDeviceCollection* AudioRecordingDeviceInfos;
+	IAudioDeviceCollection* AudioRecordingDeviceInfos = nullptr;
 
-	IAudioDeviceCollection* AudioPlaybackDeviceInfos;
+	IAudioDeviceCollection* AudioPlaybackDeviceInfos = nullptr;
 
-	IVideoDeviceCollection* VideoDeviceInfos;
+	IVideoDeviceCollection* VideoDeviceInfos = nullptr;
 };
