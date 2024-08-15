@@ -22,14 +22,21 @@ public class AgoraBPExample : ModuleRules
 
         // To include OnlineSubsystemSteam, add it to the plugins section in your uproject file with the Enabled attribute set to true
 
-
         if (Target.Platform == UnrealTargetPlatform.Android)
         {
             PrivateDependencyModuleNames.AddRange(new string[] { "AndroidPermission" });
-            string UPLFilePath = Path.Combine(ModuleDirectory, "UPL", "AgoraExample_UPL.xml");
+            string UPLFilePath = Path.Combine(ModuleDirectory, "UPL","AgoraExample_UPL_Android.xml");
             Console.WriteLine("AgoraExample UPL Path: " + UPLFilePath);
             // Modify AndroidMenifest.xml
             AdditionalPropertiesForReceipt.Add("AndroidPlugin", UPLFilePath);
+        }
+
+        if (Target.Platform == UnrealTargetPlatform.IOS)
+        {
+            string UPLFilePath = Path.Combine(ModuleDirectory, "UPL","AgoraExample_UPL_IOS.xml");
+            Console.WriteLine("AgoraExample IOS UPL Path: " + UPLFilePath);
+            // Modify info.plist
+            AdditionalPropertiesForReceipt.Add("IOSPlugin", UPLFilePath);
         }
     }
 }

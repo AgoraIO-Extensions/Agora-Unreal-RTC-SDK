@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+    <init>
+        <log text="IOS UPL Init: adding elements to plist..."/>
+    </init>
+    <trace enable="true"/>
+    <iosPListUpdates>
+		<addElements tag="dict" once="true">
+			<key>UIBackgroundModes</key>
+			<array>
+				<string>audio</string>
+				<string>fetch</string>
+				<string>location</string>
+				<string>voip</string>
+				<string>processing</string>
+				<string>fetch</string>
+			</array>
+        </addElements>
+
+		<log text = "IOS UPL addition complete"/>
+    </iosPListUpdates>
+	<log text = "IOS UPL End"/>
+</root>
