@@ -1262,6 +1262,26 @@ int UAgoraBPuRtcEngine::SetRouteInCommunicationMode(int route)
 #endif
 }
 
+bool UAgoraBPuRtcEngine::IsCameraCenterStageSupported()
+{
+#if defined(__APPLE__)
+	auto ret = AgoraUERtcEngine::Get()->isCameraCenterStageSupported();
+	return ret;
+#else
+	return false;
+#endif
+}
+
+int UAgoraBPuRtcEngine::EnableCameraCenterStage(bool enabled)
+{
+#if defined(__APPLE__)
+	auto ret = AgoraUERtcEngine::Get()->enableCameraCenterStage(enabled);
+	return ret;
+#else
+	return AGORA_UE_ERR_CODE(ERROR_NOT_SUPPORT_PLATFORM);
+#endif
+}
+
 int UAgoraBPuRtcEngine::QueryCameraFocalLengthCapability(const TArray<FFocalLengthInfo>& focalLengthInfos)
 {
 #if defined(__ANDROID__) || (defined(__APPLE__) && TARGET_OS_IOS)
@@ -2223,6 +2243,12 @@ int UAgoraBPuRtcEngine::SetHeadphoneEQParameters(int lowGain, int highGain)
 	return ret;
 }
 
+
+int UAgoraBPuRtcEngine::EnableVoiceAITuner(bool enabled, EVOICE_AI_TUNER_TYPE type)
+{
+	auto ret = AgoraUERtcEngine::Get()->enableVoiceAITuner(enabled, (agora::rtc::VOICE_AI_TUNER_TYPE)type);
+	return ret;
+}
 
 int UAgoraBPuRtcEngine::SetEarMonitoringAudioFrameParameters(int sampleRate, int channel, ERAW_AUDIO_FRAME_OP_MODE_TYPE mode, int samplesPerCall)
 {

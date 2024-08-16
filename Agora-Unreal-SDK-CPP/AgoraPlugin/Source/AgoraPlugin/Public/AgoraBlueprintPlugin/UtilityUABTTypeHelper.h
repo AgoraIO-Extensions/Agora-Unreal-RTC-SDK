@@ -44,6 +44,15 @@ namespace agora {
 					return static_cast<agora::rtc::uid_t>(num);
 				}
 
+				static inline uint32_t ToUInt32(int64 num) {
+					if (num < 0 || num > static_cast<int64>(std::numeric_limits<uint32_t>::max())) {
+						FString Msg = FString::Printf(TEXT("%lld is over the range of uid_t"), num);
+						UAgoraBPuLogger::PrintWarn(Msg);
+					}
+
+					return static_cast<uint32_t>(num);
+				}
+
 				static inline agora::rtc::track_id_t ToVTID(int64 ID) {
 					if (ID < 0 || ID > static_cast<int64>(std::numeric_limits<uint32>::max())) {
 						FString Msg = FString::Printf(TEXT("%lld is over the range of track_id_t"), ID);
