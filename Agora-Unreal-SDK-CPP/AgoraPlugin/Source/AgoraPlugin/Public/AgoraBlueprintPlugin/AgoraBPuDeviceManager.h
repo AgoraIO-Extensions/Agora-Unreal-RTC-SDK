@@ -85,6 +85,20 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Agora|IVideoDeviceManager")
 	UVideoDeviceCollection* EnumerateVideoDevices();
 
+
+	UFUNCTION(BlueprintCallable, Category = "Agora|IVideoDeviceManager")
+	int SetDevice(const FString & deviceIdUTF8);
+	UFUNCTION(BlueprintCallable, Category = "Agora|IVideoDeviceManager")
+	int GetDevice(FString& deviceIdUTF8);
+	UFUNCTION(BlueprintCallable, Category = "Agora|IVideoDeviceManager")
+	int NumberOfCapabilities(const FString & deviceIdUTF8);
+	UFUNCTION(BlueprintCallable, Category = "Agora|IVideoDeviceManager")
+	int GetCapability(const FString & deviceIdUTF8, int deviceCapabilityNumber, FVideoFormat& capability);
+	UFUNCTION(BlueprintCallable, Category = "Agora|IVideoDeviceManager")
+	int StartDeviceTest(int64 hwnd);
+	UFUNCTION(BlueprintCallable, Category = "Agora|IVideoDeviceManager")
+	int StopDeviceTest();
+
 private:
 
 	static UAgoraBPuVideoDeviceManager* Instance;
@@ -116,6 +130,64 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Agora|IAudioDeviceManager")
 	UAudioDeviceCollection* EnumerateRecordingDevices();
+
+
+
+
+
+	UFUNCTION(BlueprintCallable, Category = "Agora|IAudioDeviceManager")
+	int SetPlaybackDevice(const FString & deviceId);
+	UFUNCTION(BlueprintCallable, Category = "Agora|IAudioDeviceManager")
+	int GetPlaybackDevice(FString& deviceId);
+	UFUNCTION(BlueprintCallable, Category = "Agora|IAudioDeviceManager")
+	int GetPlaybackDeviceInfo(FString& deviceId, FString& deviceName, FString& deviceTypeName);
+	UFUNCTION(BlueprintCallable, Category = "Agora|IAudioDeviceManager")
+	int SetPlaybackDeviceVolume(int volume);
+	UFUNCTION(BlueprintCallable, Category = "Agora|IAudioDeviceManager")
+	int GetPlaybackDeviceVolume(int& volume);
+	UFUNCTION(BlueprintCallable, Category = "Agora|IAudioDeviceManager")
+	int SetRecordingDevice(const FString & deviceId);
+	UFUNCTION(BlueprintCallable, Category = "Agora|IAudioDeviceManager")
+	int GetRecordingDevice(FString& deviceId);
+	UFUNCTION(BlueprintCallable, Category = "Agora|IAudioDeviceManager")
+	int GetRecordingDeviceInfo(FString& deviceId, FString& deviceName, FString& deviceTypeName);
+	UFUNCTION(BlueprintCallable, Category = "Agora|IAudioDeviceManager")
+	int SetRecordingDeviceVolume(int volume);
+	UFUNCTION(BlueprintCallable, Category = "Agora|IAudioDeviceManager")
+	int GetRecordingDeviceVolume(int& volume);
+
+	UFUNCTION(BlueprintCallable, Category = "Agora|IAudioDeviceManager")
+	int SetLoopbackDevice(const FString & deviceId);
+	
+	UFUNCTION(BlueprintCallable, Category = "Agora|IAudioDeviceManager")
+	int GetLoopbackDevice(FString & deviceId);
+
+	UFUNCTION(BlueprintCallable, Category = "Agora|IAudioDeviceManager")
+	int SetPlaybackDeviceMute(bool mute);
+	UFUNCTION(BlueprintCallable, Category = "Agora|IAudioDeviceManager")
+	int GetPlaybackDeviceMute(bool& mute);
+	UFUNCTION(BlueprintCallable, Category = "Agora|IAudioDeviceManager")
+	int SetRecordingDeviceMute(bool mute);
+	UFUNCTION(BlueprintCallable, Category = "Agora|IAudioDeviceManager")
+	int GetRecordingDeviceMute(bool& mute);
+	UFUNCTION(BlueprintCallable, Category = "Agora|IAudioDeviceManager")
+	int StartPlaybackDeviceTest(const FString & testAudioFilePath);
+	UFUNCTION(BlueprintCallable, Category = "Agora|IAudioDeviceManager")
+	int StopPlaybackDeviceTest();
+	UFUNCTION(BlueprintCallable, Category = "Agora|IAudioDeviceManager")
+	int StartRecordingDeviceTest(int indicationInterval);
+	UFUNCTION(BlueprintCallable, Category = "Agora|IAudioDeviceManager")
+	int StopRecordingDeviceTest();
+	UFUNCTION(BlueprintCallable, Category = "Agora|IAudioDeviceManager")
+	int StartAudioDeviceLoopbackTest(int indicationInterval);
+	UFUNCTION(BlueprintCallable, Category = "Agora|IAudioDeviceManager")
+	int StopAudioDeviceLoopbackTest();
+	UFUNCTION(BlueprintCallable, Category = "Agora|IAudioDeviceManager")
+	int FollowSystemPlaybackDevice(bool enable);
+	UFUNCTION(BlueprintCallable, Category = "Agora|IAudioDeviceManager")
+	int FollowSystemRecordingDevice(bool enable);
+	UFUNCTION(BlueprintCallable, Category = "Agora|IAudioDeviceManager")
+	int FollowSystemLoopbackDevice(bool enable);
 
 private:
 

@@ -479,6 +479,11 @@ public:
 	int SetRouteInCommunicationMode(int route);
 
 	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
+	bool IsCameraCenterStageSupported();
+	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
+	int EnableCameraCenterStage(bool enabled);
+
+	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
 	UIScreenCaptureSourceList* GetScreenCaptureSources(const FSIZE & thumbSize, const FSIZE & iconSize, bool includeScreen);
 	
 	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
@@ -766,6 +771,9 @@ public:
 	int SetHeadphoneEQPreset(FENUMWRAP_HEADPHONE_EQUALIZER_PRESET preset);
 	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
 	int SetHeadphoneEQParameters(int lowGain, int highGain);
+
+	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
+	int EnableVoiceAITuner(bool enabled, EVOICE_AI_TUNER_TYPE type);
 
 	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
 	int SetEarMonitoringAudioFrameParameters(int sampleRate, int channel, ERAW_AUDIO_FRAME_OP_MODE_TYPE mode, int samplesPerCall);

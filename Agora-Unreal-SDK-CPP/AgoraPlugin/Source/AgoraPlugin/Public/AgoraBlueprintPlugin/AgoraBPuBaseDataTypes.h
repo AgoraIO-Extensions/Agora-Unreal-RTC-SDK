@@ -84,6 +84,24 @@ enum class EVIDEO_SOURCE_TYPE : uint8 {
 	VIDEO_SOURCE_UNKNOWN = 100
 };
 
+
+UENUM(BlueprintType)
+enum class ETHREAD_PRIORITY_TYPE : uint8 {
+
+	LOWEST = 0,
+
+	LOW = 1,
+
+	NORMAL = 2,
+
+	HIGH = 3,
+
+	HIGHEST = 4,
+
+	CRITICAL = 5,
+};
+
+
 UENUM(BlueprintType)
 enum class EPROXY_TYPE : uint8 {
 
@@ -2454,53 +2472,213 @@ public:
 };
 
 
+UENUM(BlueprintType)
+enum class EAUDIO_PROFILE_TYPE : uint8 {
+	AUDIO_PROFILE_DEFAULT = 0,
+	AUDIO_PROFILE_SPEECH_STANDARD = 1,
+	AUDIO_PROFILE_MUSIC_STANDARD = 2,
+	AUDIO_PROFILE_MUSIC_STANDARD_STEREO = 3,
+	AUDIO_PROFILE_MUSIC_HIGH_QUALITY = 4,
+	AUDIO_PROFILE_MUSIC_HIGH_QUALITY_STEREO = 5,
+	AUDIO_PROFILE_IOT = 6,
+	AUDIO_PROFILE_NUM = 7,
+};
+
+UENUM(BlueprintType)
+enum class EAUDIO_SCENARIO_TYPE : uint8 {
+	AUDIO_SCENARIO_DEFAULT = 0,
+	AUDIO_SCENARIO_GAME_STREAMING = 3,
+	AUDIO_SCENARIO_CHATROOM = 5,
+	AUDIO_SCENARIO_CHORUS = 7,
+	AUDIO_SCENARIO_MEETING = 8,
+	AUDIO_SCENARIO_NUM = 9,
+};
+
+
+
+UENUM(BlueprintType)
+enum class ELOG_LEVEL : uint8 {
+	LOG_LEVEL_NONE = 0x0000,
+	LOG_LEVEL_INFO = 0x0001,
+	LOG_LEVEL_WARN = 0x0002,
+	LOG_LEVEL_ERROR = 0x0004,
+	LOG_LEVEL_FATAL = 0x0008,
+	LOG_LEVEL_API_CALL = 0x0010,
+	LOG_LEVEL_DEBUG = 0x0020,
+};
+
+
+
+
+USTRUCT(BlueprintType)
+struct FLogConfig {
+
+	GENERATED_BODY()
+
+public:
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LogConfig")
+	FString filePath = "";
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LogConfig")
+	int64 fileSizeInKB = 2048;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LogConfig")
+	ELOG_LEVEL level = ELOG_LEVEL::LOG_LEVEL_INFO;
+
+	FLogConfig() {}
+	FLogConfig(const agora::commons::LogConfig& AgoraData) {
+		filePath = UTF8_TO_TCHAR(AgoraData.filePath);
+		fileSizeInKB = AgoraData.fileSizeInKB;
+		level = (ELOG_LEVEL)AgoraData.level;
+	}
+
+	agora::commons::LogConfig CreateAgoraData() const {
+		agora::commons::LogConfig AgoraData;
+
+		SET_UABT_FSTRING_TO_CONST_CHAR___MEMALLOC(AgoraData.filePath, filePath)
+		AgoraData.fileSizeInKB = UABT::ToUInt32(fileSizeInKB);
+		AgoraData.level = (agora::commons::LOG_LEVEL)level;
+		return AgoraData;
+	}
+
+	void FreeAgoraData(agora::commons::LogConfig& AgoraData) const {
+		SET_UABT_FSTRING_TO_CONST_CHAR___MEMFREE(AgoraData.filePath)
+	}
+};
+
+
+UENUM(BlueprintType)
+enum class EENUMCUSTOM_AREA_CODE : uint8 {
+
+	INVALID_OPT_BPGEN_NULL = 0,
+
+	AREA_CODE_CN = 1,
+
+	AREA_CODE_NA = 2,
+
+	AREA_CODE_EU = 3,
+
+	AREA_CODE_AS = 4,
+
+	AREA_CODE_JP = 5,
+
+	AREA_CODE_IN = 6,
+
+	AREA_CODE_GLOB = 255,
+};
+
+
+USTRUCT(BlueprintType)
+struct FENUMWRAP_AREA_CODE
+{
+	GENERATED_BODY()
+
+public:
+	// require to call [GetRawValue] method to get the raw value
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|FENUMWRAP_AREA_CODE")
+	EENUMCUSTOM_AREA_CODE ValueWrapper = EENUMCUSTOM_AREA_CODE::AREA_CODE_GLOB;
+
+
+	AGORA_CREATE_UEENUM_CONVERT_STRUCT_INNER_7_ENTRIES(FENUMWRAP_AREA_CODE, agora::rtc::AREA_CODE, EENUMCUSTOM_AREA_CODE,
+		AREA_CODE_GLOB,
+		AREA_CODE_CN,
+		AREA_CODE_NA,
+		AREA_CODE_EU,
+		AREA_CODE_AS,
+		AREA_CODE_JP,
+		AREA_CODE_IN)
+
+};
+
 USTRUCT(BlueprintType)
 struct FRtcEngineContext
 {
 	GENERATED_BODY()
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RtcEngineContext")
-	FString appId = "";
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RtcEngineContext")
 	EAgoraBPuEventHandlerType EventHandlerCreationType = EAgoraBPuEventHandlerType::EventHandler;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RtcEngineContext")
+	FString appId = "";
+
 	//UIRtcEngineEventHandler* eventHandler = nullptr;
+
 	//UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RtcEngineContext")
 	//int64 context = 0;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RtcEngineContext")
+	ECHANNEL_PROFILE_TYPE channelProfile = ECHANNEL_PROFILE_TYPE::CHANNEL_PROFILE_LIVE_BROADCASTING;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RtcEngineContext")
 	FString license = "";
-	//UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RtcEngineContext")
-	//ECHANNEL_PROFILE_TYPE channelProfile = ECHANNEL_PROFILE_TYPE::CHANNEL_PROFILE_LIVE_BROADCASTING;
-	//UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RtcEngineContext")
-	//EAUDIO_SCENARIO_TYPE audioScenario = EAUDIO_SCENARIO_TYPE::AUDIO_SCENARIO_DEFAULT;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RtcEngineContext")
+	EAUDIO_SCENARIO_TYPE audioScenario = EAUDIO_SCENARIO_TYPE::AUDIO_SCENARIO_DEFAULT;
+	
+
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RtcEngineContext")
+	FENUMWRAP_AREA_CODE areaCode = EENUMCUSTOM_AREA_CODE::AREA_CODE_GLOB;
+
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RtcEngineContext")
+	FLogConfig logConfig;
+
+
 	//// If the box is unchecked, the value of the corresponding variable (named without _SetValue)  will be ignored.
-	//UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RtcEngineContext")
-	//bool threadPriority_SetValue = false;
-	//UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RtcEngineContext")
-	//ETHREAD_PRIORITY_TYPE threadPriority = ETHREAD_PRIORITY_TYPE::NORMAL;
-	//UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RtcEngineContext")
-	//FLogConfig logConfig = FLogConfig();
-	//UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RtcEngineContext")
-	//FENUMWRAP_AREA_CODE areaCode = EENUMCUSTOM_AREA_CODE::AREA_CODE_GLOB;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RtcEngineContext")
+	bool threadPriority_SetValue = false;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RtcEngineContext")
+	ETHREAD_PRIORITY_TYPE threadPriority = ETHREAD_PRIORITY_TYPE::NORMAL;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RtcEngineContext")
 	bool useExternalEglContext = false;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RtcEngineContext")
+	bool domainLimit = false;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RtcEngineContext")
+	bool autoRegisterAgoraExtensions = true;
+
+
+	FRtcEngineContext() {}
 
 	agora::rtc::RtcEngineContext CreateAgoraData() const {
+
 		agora::rtc::RtcEngineContext AgoraData;
 
-		char* AppIdCharPtr = new char[appId.Len() + 1];
-		FMemory::Memcpy(AppIdCharPtr, TCHAR_TO_UTF8(*appId), appId.Len());
-		AppIdCharPtr[appId.Len()] = '\0';
-		AgoraData.appId = AppIdCharPtr;
+		//AgoraData.eventHandler = static_cast<agora::rtc::IRtcEngineEventHandler*>(eventHandler);
+
+		SET_UABT_FSTRING_TO_CONST_CHAR___MEMALLOC(AgoraData.appId, this->appId)
+
+		//AgoraData.context = nullptr; // not supported
+
+		AgoraData.channelProfile = (agora::CHANNEL_PROFILE_TYPE)channelProfile;
+		
+		SET_UABT_FSTRING_TO_CONST_CHAR___MEMALLOC(AgoraData.license, this->license)
+
+		AgoraData.audioScenario = (agora::rtc::AUDIO_SCENARIO_TYPE)audioScenario;
+
+		AgoraData.areaCode = areaCode.GetRawValue();
+
+		AgoraData.logConfig = logConfig.CreateAgoraData();
+
+		SET_AGORA_OPTIONAL_VAL_ASSIGN_VAL(AgoraData.threadPriority, this->threadPriority, static_cast<agora::rtc::THREAD_PRIORITY_TYPE>(this->threadPriority))
+
+		AgoraData.useExternalEglContext = useExternalEglContext;
+
+		AgoraData.domainLimit = domainLimit;
+
+		AgoraData.autoRegisterAgoraExtensions = autoRegisterAgoraExtensions;
+		
 		return AgoraData;
 	}
 
 
 	void FreeAgoraData(agora::rtc::RtcEngineContext& AgoraData) const {
-		if (AgoraData.appId) {
-			delete[] AgoraData.appId;
-			AgoraData.appId = nullptr;
-		}
+
+		SET_UABT_FSTRING_TO_CONST_CHAR___MEMFREE(AgoraData.appId)
+		SET_UABT_FSTRING_TO_CONST_CHAR___MEMFREE(AgoraData.license)
+		logConfig.FreeAgoraData(AgoraData.logConfig);
 	}
 };
 
@@ -3648,31 +3826,6 @@ enum class EVIDEO_QOE_PREFERENCE_TYPE : uint8 {
 
 };
 
-
-
-UENUM(BlueprintType)
-enum class EAUDIO_PROFILE_TYPE : uint8 {
-	AUDIO_PROFILE_DEFAULT = 0,
-	AUDIO_PROFILE_SPEECH_STANDARD = 1,
-	AUDIO_PROFILE_MUSIC_STANDARD = 2,
-	AUDIO_PROFILE_MUSIC_STANDARD_STEREO = 3,
-	AUDIO_PROFILE_MUSIC_HIGH_QUALITY = 4,
-	AUDIO_PROFILE_MUSIC_HIGH_QUALITY_STEREO = 5,
-	AUDIO_PROFILE_IOT = 6,
-	AUDIO_PROFILE_NUM = 7,
-};
-
-UENUM(BlueprintType)
-enum class EAUDIO_SCENARIO_TYPE : uint8 {
-	AUDIO_SCENARIO_DEFAULT = 0,
-	AUDIO_SCENARIO_GAME_STREAMING = 3,
-	AUDIO_SCENARIO_CHATROOM = 5,
-	AUDIO_SCENARIO_CHORUS = 7,
-	AUDIO_SCENARIO_MEETING = 8,
-	AUDIO_SCENARIO_NUM = 9,
-};
-
-
 USTRUCT(BlueprintType)
 struct FVideoSubscriptionOptions
 {
@@ -4055,20 +4208,6 @@ enum class EAUDIO_REVERB_TYPE : uint8 {
 	AUDIO_REVERB_WET_DELAY = 3,
 	AUDIO_REVERB_STRENGTH = 4,
 };
-
-
-
-UENUM(BlueprintType)
-enum class ELOG_LEVEL : uint8 {
-	LOG_LEVEL_NONE = 0x0000,
-	LOG_LEVEL_INFO = 0x0001,
-	LOG_LEVEL_WARN = 0x0002,
-	LOG_LEVEL_ERROR = 0x0004,
-	LOG_LEVEL_FATAL = 0x0008,
-	LOG_LEVEL_API_CALL = 0x0010,
-	LOG_LEVEL_DEBUG = 0x0020,
-};
-
 
 USTRUCT(BlueprintType)
 struct FSimulcastStreamConfig
@@ -5683,7 +5822,7 @@ public:
 
 
 UENUM(BlueprintType)
-enum EFeatureType {
+enum class EFeatureType : uint8 {
 
 	INVALID_OPT_BPGEN_NULL UMETA(Hidden, DisplayName = "AGORA NULL VALUE"),
 	VIDEO_VIRTUAL_BACKGROUND = 1,
@@ -5797,6 +5936,21 @@ public:
 		SET_UABT_UECUSTOMDATA_TO_AGORA_PTR_1_ENTRY___MEMFREE(AgoraData.srcInfo, FChannelMediaInfo)
 		SET_UABT_TARRARY_CUSTOMDATA_TO_AGORA_ARRAY___MEMFREE(AgoraData.destInfos, destCount, FChannelMediaInfo)
 	}
+};
+
+
+UENUM(BlueprintType)
+enum class EVOICE_AI_TUNER_TYPE : uint8 {
+	VOICE_AI_TUNER_MATURE_MALE = 0,
+	VOICE_AI_TUNER_FRESH_MALE,
+	VOICE_AI_TUNER_ELEGANT_FEMALE,
+	VOICE_AI_TUNER_SWEET_FEMALE,
+	VOICE_AI_TUNER_WARM_MALE_SINGING,
+	VOICE_AI_TUNER_GENTLE_FEMALE_SINGING,
+	VOICE_AI_TUNER_HUSKY_MALE_SINGING,
+	VOICE_AI_TUNER_WARM_ELEGANT_FEMALE_SINGING,
+	VOICE_AI_TUNER_POWERFUL_MALE_SINGING,
+	VOICE_AI_TUNER_DREAMY_FEMALE_SINGING,
 };
 
 #pragma endregion Rtc Engine 3
