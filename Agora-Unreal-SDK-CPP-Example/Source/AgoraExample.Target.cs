@@ -20,10 +20,22 @@ public class AgoraExampleTarget : TargetRules
         if (Target.Platform == UnrealTargetPlatform.IOS || Target.Platform == UnrealTargetPlatform.Mac)
         {
             bOverrideBuildEnvironment = true;
-            // -Wno-unused-but-set-variable： fix error "variable 'layerNames' set but not used"
-            //  -Wno-gcc-compat: gcc does not allow an atrribute in this position on a function declaration
-            // -Wno-reorder-ctor: fix error "field 'eventHandler' will be initialized after field 'mccUid'"
-            AdditionalCompilerArguments = "-Wno-unused-but-set-variable -Wno-gcc-compat -Wno-reorder-ctor";
+
+            // [-Wno-unused-but-set-variable]: fix error "variable 'layerNames' set but not used"
+            // [-Wno-gcc-compat]: gcc does not allow an attribute in this position on a function declaration
+            // [-Wno-reorder-ctor]: fix error "field 'eventHandler' will be initialized after field 'mccUid'"
+
+            // For UE427:
+            // [-Wno-deprecated-builtins]: UE_4.27/Engine/Source/Runtime/Core/Public/Templates/IsTriviallyCopyConstructible.h:13:17: error: builtin __has_trivial_copy is deprecated; use __is_trivially_copyable instead
+            //  enum { Value = __has_trivial_copy(T) };
+
+            // [-Wno-bitwise-instead-of-logical]: UE_4.27/Engine/Source/Runtime/CoreUObject/Public/AssetRegistry/AssetDataTagMap.h:36:32: note: cast one or both operands to int to silence this warning
+            // bool IsEmpty() const { return Class.IsNone() & Package.IsNone() & Object.IsNone(); } //-V792\n
+
+            // [-Wno-single-bit-bitfield-constant-conversion]: UE_4.27/Engine/Source/Runtime/Engine/Public/MaterialShared.h:2304:30: error: implicit truncation from 'int' to a one-bit wide bit-field changes value from 1 to -1 
+            //  MarkedForGarbageCollection = 1;
+            AdditionalCompilerArguments = "-Wno-unused-but-set-variable -Wno-gcc-compat -Wno-reorder-ctor -Wno-deprecated-builtins -Wno-bitwise-instead-of-logical -Wno-single-bit-bitfield-constant-conversion";
+
         }
     }
 }
