@@ -1,4 +1,4 @@
-// Copyright(c) 2024 Agora.io.All rights reserved.
+// Copyright(c) 2024 Agora.io. All rights reserved.
 #include "UtilityAgoraBPuLogger.h"
 
 bool UAgoraBPuLogger::bDisablePrintToConsole = false;
