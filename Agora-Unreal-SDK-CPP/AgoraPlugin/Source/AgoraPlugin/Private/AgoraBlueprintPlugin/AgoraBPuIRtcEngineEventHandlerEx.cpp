@@ -1,4 +1,4 @@
-// Copyright(c) 2024 Agora.io.All rights reserved.
+// Copyright(c) 2024 Agora.io. All rights reserved.
 #include "AgoraBPuIRtcEngineEventHandlerEx.h"
 
 void UAgoraBPuIRtcEngineEventHandlerEx::AddBlueprintCallbackExecutorEx(UAgoraBPuIRtcEngineEventHandlerExCBExecutor* Executor)
