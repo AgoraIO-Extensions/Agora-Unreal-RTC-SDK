@@ -57,7 +57,7 @@ int UAgoraBPuRtcEngine::Initialize(const FRtcEngineContext& context)
 	EventHandlerType = EAgoraBPuEventHandlerType::None;
 
 
-	AgoraUERtcEngine::RtcEngineAppType = AgoraAppType::kAppTypeUnrealBlueprint;
+	AgoraUERtcEngine::RtcEngineAppType = AgoraAppType::kAppTypeUnreal;
 	agora::rtc::RtcEngineContext AgoraData_Context = context.CreateAgoraData();
 	
 	bool bCreateExHandler = true;
