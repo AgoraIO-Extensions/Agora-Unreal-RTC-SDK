@@ -17,6 +17,8 @@ void FAgoraPluginModule::StartupModule()
 
 void FAgoraPluginModule::ShutdownModule()
 {
+	//untested, so comment out the code for now
+	//AgoraUERtcEngine::Release();
 }
 
 #undef LOCTEXT_NAMESPACE
