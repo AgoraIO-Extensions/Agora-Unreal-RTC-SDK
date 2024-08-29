@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright(c) 2024 Agora.io. All rights reserved.
 
 
 #include "ProcessVideoRawDataWidget.h"
@@ -50,18 +50,16 @@ void UProcessVideoRawDataWidget::InitAgoraEngine(FString APP_ID, FString TOKEN, 
 	Token = TOKEN;
 	ChannelName = CHANNEL_NAME;
 
-	RtcEngineProxy = agora::rtc::ue::createAgoraRtcEngineEx();
-
 	int SDKBuild = 0;
-	const char* SDKVersionInfo = RtcEngineProxy->getVersion(&SDKBuild);
+	const char* SDKVersionInfo = AgoraUERtcEngine::Get()->getVersion(&SDKBuild);
 	FString SDKInfo = FString::Printf(TEXT("SDK Version: %s Build: %d"), UTF8_TO_TCHAR(SDKVersionInfo), SDKBuild);
 	UBFL_Logger::Print(FString::Printf(TEXT("SDK Info:  %s"), *SDKInfo), LogMsgViewPtr);
 
-	int ret = RtcEngineProxy->initialize(RtcEngineContext);
+	int ret = AgoraUERtcEngine::Get()->initialize(RtcEngineContext);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 
 
-	RtcEngineProxy->queryInterface(AGORA_IID_MEDIA_ENGINE, (void**)&MediaEngine);
+	AgoraUERtcEngine::Get()->queryInterface(AGORA_IID_MEDIA_ENGINE, (void**)&MediaEngine);
 	UserVideoFrameObserver = MakeShared<FUserVideoFrameObserver>(this);
 	MediaEngine->registerVideoFrameObserver(UserVideoFrameObserver.Get());
 }
@@ -85,10 +83,10 @@ void UProcessVideoRawDataWidget::OnBtnBackToHomeClicked()
 
 void UProcessVideoRawDataWidget::OnBtnJoinChannelClicked()
 {
-	RtcEngineProxy->enableAudio();
-	RtcEngineProxy->enableVideo();
-	RtcEngineProxy->setClientRole(CLIENT_ROLE_BROADCASTER);
-	int ret = RtcEngineProxy->joinChannel(TCHAR_TO_UTF8(*Token), TCHAR_TO_UTF8(*ChannelName), "", 0);
+	AgoraUERtcEngine::Get()->enableAudio();
+	AgoraUERtcEngine::Get()->enableVideo();
+	AgoraUERtcEngine::Get()->setClientRole(CLIENT_ROLE_BROADCASTER);
+	int ret = AgoraUERtcEngine::Get()->joinChannel(TCHAR_TO_UTF8(*Token), TCHAR_TO_UTF8(*ChannelName), "", 0);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 
 	MakeVideoViewForRawData();
@@ -97,7 +95,7 @@ void UProcessVideoRawDataWidget::OnBtnJoinChannelClicked()
 
 void UProcessVideoRawDataWidget::OnBtnLeaveChannelClicked()
 {
-	int ret = RtcEngineProxy->leaveChannel();
+	int ret = AgoraUERtcEngine::Get()->leaveChannel();
 	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 	ReleaseVideoViewForRawData();
 }
@@ -116,9 +114,9 @@ void UProcessVideoRawDataWidget::NativeDestruct()
 
 void UProcessVideoRawDataWidget::UnInitAgoraEngine()
 {
-	if (RtcEngineProxy != nullptr)
+	if (AgoraUERtcEngine::Get() != nullptr)
 	{
-		RtcEngineProxy->leaveChannel();
+		AgoraUERtcEngine::Get()->leaveChannel();
 		ReleaseVideoViewForRawData();
 
 		if (MediaEngine != nullptr)
@@ -126,9 +124,8 @@ void UProcessVideoRawDataWidget::UnInitAgoraEngine()
 			MediaEngine->registerVideoFrameObserver(nullptr);
 		}
 
-		RtcEngineProxy->unregisterEventHandler(UserRtcEventHandlerEx.Get());
-		RtcEngineProxy->release();
-		RtcEngineProxy = nullptr;
+		AgoraUERtcEngine::Get()->unregisterEventHandler(UserRtcEventHandlerEx.Get());
+		AgoraUERtcEngine::Release();
 
 		UBFL_Logger::Print(FString::Printf(TEXT("%s release agora engine"), *FString(FUNCTION_MACRO)), LogMsgViewPtr);
 	}
@@ -136,57 +133,57 @@ void UProcessVideoRawDataWidget::UnInitAgoraEngine()
 
 void UProcessVideoRawDataWidget::RenderRawData(agora::media::base::VideoFrame& videoFrame)
 {
-	TWeakObjectPtr<UProcessVideoRawDataWidget> SelfWeakPtr(this);
-	if (!SelfWeakPtr.IsValid())
-		return;
-
-	int Width = videoFrame.width;
-	int Height = videoFrame.height;
-	uint8* rawdata = new uint8[Width * Height * 4];
-	memcpy(rawdata, videoFrame.yBuffer, Width * Height * 4);
-
-
-#if  ((__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)) 
-	AsyncTask(ENamedThreads::GameThread, [=, this]()
-#else
-	AsyncTask(ENamedThreads::GameThread, [=]()
-#endif
-		{
-			if (!SelfWeakPtr.IsValid())
-				return;
-
-			TWeakObjectPtr<UDraggableVideoViewWidget> VideoRenderViewWeakPtr(VideoRenderView);
-			if (!VideoRenderViewWeakPtr.IsValid())
-				return;
-
-			if (RenderTexture == nullptr || !RenderTexture->IsValidLowLevel() || RenderTexture->GetSizeX() != Width || RenderTexture->GetSizeY() != Height)
-				RenderTexture = UTexture2D::CreateTransient(Width, Height, PF_R8G8B8A8);
-
-			uint8* raw = (uint8*)RenderTexture->PlatformData->Mips[0].BulkData.Lock(LOCK_READ_WRITE);
-			memcpy(raw, rawdata, Width * Height * 4);
-			delete[] rawdata;
-			RenderTexture->PlatformData->Mips[0].BulkData.Unlock();
-
-#ifdef UpdateResource
-#undef UpdateResource
-
-			// For PLATFORM Windows
-			RenderTexture->UpdateResource();
-
-#define UpdateResource UpdateResourceW
-
-#else
-			RenderTexture->UpdateResource();
-#endif
-			RenderBrush.SetResourceObject(RenderTexture);
-			RenderBrush.SetImageSize(FVector2D(Width, Height));
-
-			VideoRenderViewWeakPtr->View->SetBrush(RenderBrush);
-
-			UCanvasPanelSlot* CanvasPanelSlot = UWidgetLayoutLibrary::SlotAsCanvasSlot(VideoRenderViewWeakPtr.Get());
-			CanvasPanelSlot->SetSize(FVector2D(Width, Height));
-
-		});
+//	TWeakObjectPtr<UProcessVideoRawDataWidget> SelfWeakPtr(this);
+//	if (!SelfWeakPtr.IsValid())
+//		return;
+//
+//	int Width = videoFrame.width;
+//	int Height = videoFrame.height;
+//	uint8* rawdata = new uint8[Width * Height * 4];
+//	memcpy(rawdata, videoFrame.yBuffer, Width * Height * 4);
+//
+//
+//#if  ((__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)) 
+//	AsyncTask(ENamedThreads::GameThread, [=, this]()
+//#else
+//	AsyncTask(ENamedThreads::GameThread, [=]()
+//#endif
+//		{
+//			if (!SelfWeakPtr.IsValid())
+//				return;
+//
+//			TWeakObjectPtr<UDraggableVideoViewWidget> VideoRenderViewWeakPtr(VideoRenderView);
+//			if (!VideoRenderViewWeakPtr.IsValid())
+//				return;
+//
+//			if (RenderTexture == nullptr || !RenderTexture->IsValidLowLevel() || RenderTexture->GetSizeX() != Width || RenderTexture->GetSizeY() != Height)
+//				RenderTexture = UTexture2D::CreateTransient(Width, Height, PF_R8G8B8A8);
+//
+//			uint8* raw = (uint8*)RenderTexture->PlatformData->Mips[0].BulkData.Lock(LOCK_READ_WRITE);
+//			memcpy(raw, rawdata, Width * Height * 4);
+//			delete[] rawdata;
+//			RenderTexture->PlatformData->Mips[0].BulkData.Unlock();
+//
+//#ifdef UpdateResource
+//#undef UpdateResource
+//
+//			// For PLATFORM Windows
+//			RenderTexture->UpdateResource();
+//
+//#define UpdateResource UpdateResourceW
+//
+//#else
+//			RenderTexture->UpdateResource();
+//#endif
+//			RenderBrush.SetResourceObject(RenderTexture);
+//			RenderBrush.SetImageSize(FVector2D(Width, Height));
+//
+//			VideoRenderViewWeakPtr->View->SetBrush(RenderBrush);
+//
+//			UCanvasPanelSlot* CanvasPanelSlot = UWidgetLayoutLibrary::SlotAsCanvasSlot(VideoRenderViewWeakPtr.Get());
+//			CanvasPanelSlot->SetSize(FVector2D(Width, Height));
+//
+//		});
 }
 
 
@@ -228,10 +225,8 @@ int UProcessVideoRawDataWidget::MakeVideoView(uint32 uid, agora::rtc::VIDEO_SOUR
 		channelId will be set in [setupLocalVideo] / [setupRemoteVideo]
 	*/
 
-	int ret = -ERROR_NULLPTR;
+	int ret = 0;
 
-	if (RtcEngineProxy == nullptr)
-		return ret;
 
 	agora::rtc::VideoCanvas videoCanvas;
 	videoCanvas.uid = uid;
@@ -240,7 +235,7 @@ int UProcessVideoRawDataWidget::MakeVideoView(uint32 uid, agora::rtc::VIDEO_SOUR
 	if (uid == 0) {
 		FVideoViewIdentity VideoViewIdentity(uid, sourceType, "");
 		videoCanvas.view = UBFL_VideoViewManager::CreateOneVideoViewToCanvasPanel(VideoViewIdentity, CanvasPanel_VideoView, VideoViewMap, DraggableVideoViewTemplate);
-		ret = RtcEngineProxy->setupLocalVideo(videoCanvas);
+		ret = AgoraUERtcEngine::Get()->setupLocalVideo(videoCanvas);
 	}
 	else
 	{
@@ -249,13 +244,13 @@ int UProcessVideoRawDataWidget::MakeVideoView(uint32 uid, agora::rtc::VIDEO_SOUR
 		videoCanvas.view = UBFL_VideoViewManager::CreateOneVideoViewToCanvasPanel(VideoViewIdentity, CanvasPanel_VideoView, VideoViewMap, DraggableVideoViewTemplate);
 
 		if (channelId == "") {
-			ret = RtcEngineProxy->setupRemoteVideo(videoCanvas);
+			ret = AgoraUERtcEngine::Get()->setupRemoteVideo(videoCanvas);
 		}
 		else {
 			agora::rtc::RtcConnection connection;
 			std::string StdStrChannelId = TCHAR_TO_UTF8(*channelId);
 			connection.channelId = StdStrChannelId.c_str();
-			ret = ((agora::rtc::IRtcEngineEx*)RtcEngineProxy)->setupRemoteVideoEx(videoCanvas, connection);
+			ret = ((agora::rtc::IRtcEngineEx*)AgoraUERtcEngine::Get())->setupRemoteVideoEx(videoCanvas, connection);
 		}
 	}
 
@@ -264,10 +259,8 @@ int UProcessVideoRawDataWidget::MakeVideoView(uint32 uid, agora::rtc::VIDEO_SOUR
 
 int UProcessVideoRawDataWidget::ReleaseVideoView(uint32 uid, agora::rtc::VIDEO_SOURCE_TYPE sourceType /*= VIDEO_SOURCE_CAMERA_PRIMARY*/, FString channelId /*= ""*/)
 {
-	int ret = -ERROR_NULLPTR;
+	int ret = 0;
 
-	if (RtcEngineProxy == nullptr)
-		return ret;
 
 	agora::rtc::VideoCanvas videoCanvas;
 	videoCanvas.view = nullptr;
@@ -277,20 +270,20 @@ int UProcessVideoRawDataWidget::ReleaseVideoView(uint32 uid, agora::rtc::VIDEO_S
 	if (uid == 0) {
 		FVideoViewIdentity VideoViewIdentity(uid, sourceType, "");
 		UBFL_VideoViewManager::ReleaseOneVideoView(VideoViewIdentity, VideoViewMap);
-		ret = RtcEngineProxy->setupLocalVideo(videoCanvas);
+		ret = AgoraUERtcEngine::Get()->setupLocalVideo(videoCanvas);
 	}
 	else
 	{
 		FVideoViewIdentity VideoViewIdentity(uid, sourceType, channelId);
 		UBFL_VideoViewManager::ReleaseOneVideoView(VideoViewIdentity, VideoViewMap);
 		if (channelId == "") {
-			ret = RtcEngineProxy->setupRemoteVideo(videoCanvas);
+			ret = AgoraUERtcEngine::Get()->setupRemoteVideo(videoCanvas);
 		}
 		else {
 			agora::rtc::RtcConnection connection;
 			std::string StdStrChannelId = TCHAR_TO_UTF8(*channelId);
 			connection.channelId = StdStrChannelId.c_str();
-			ret = ((agora::rtc::IRtcEngineEx*)RtcEngineProxy)->setupRemoteVideoEx(videoCanvas, connection);
+			ret = ((agora::rtc::IRtcEngineEx*)AgoraUERtcEngine::Get())->setupRemoteVideoEx(videoCanvas, connection);
 		}
 	}
 	return ret;

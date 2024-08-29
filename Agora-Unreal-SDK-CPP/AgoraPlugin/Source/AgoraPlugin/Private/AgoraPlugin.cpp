@@ -4,42 +4,21 @@
 #include "Core.h"
 #include "Modules/ModuleManager.h"
 #include "Interfaces/IPluginManager.h"
-#include <string>
-#include "AgoraCppPlugin/include/AgoraHeaderBase.h"
+#include "AgoraPluginInterface.h"
 
 #define LOCTEXT_NAMESPACE "FAgoraPluginModule"
 
+DEFINE_LOG_CATEGORY(LogAgora);
+
 void FAgoraPluginModule::StartupModule()
 {
-	FString BaseDir = IPluginManager::Get().FindPlugin("AgoraPlugin")->GetBaseDir();
-
-	FString LibraryPath;
-#if PLATFORM_WINDOWS
-	LibraryPath = FPaths::Combine(*BaseDir, TEXT("Source/ThirdParty/AgoraPluginLibrary/Win/Release/x86_64/agora_rtc_sdk.dll"));
-
-	AgoraLibraryHandle = !LibraryPath.IsEmpty() ? FPlatformProcess::GetDllHandle(*LibraryPath) : nullptr;
-
-	if (AgoraLibraryHandle)
-	{
-		int build = 0;
-
-		getAgoraRtcEngineVersion(&build);
-
-		std::string buildVersion = std::to_string(build);
-		buildVersion = "Hello from Agora! buildVersion: " + buildVersion;
-
-		UE_LOG(LogTemp, Warning, TEXT("FAgoraPluginModule: %s"), ANSI_TO_TCHAR(buildVersion.c_str()));
-	}
-#endif
+	UE_LOG(LogAgora, Warning, TEXT("FAgoraPluginModule: %s"), *(AgoraUERtcEngine::GetSDKVersion()));
 }
 
 void FAgoraPluginModule::ShutdownModule()
 {
-	if (AgoraLibraryHandle)
-	{
-		FPlatformProcess::FreeDllHandle(AgoraLibraryHandle);
-		AgoraLibraryHandle = nullptr;
-	}
+	//untested, so comment out the code for now
+	//AgoraUERtcEngine::Release();
 }
 
 #undef LOCTEXT_NAMESPACE

@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright(c) 2024 Agora.io. All rights reserved.
 
 
 #include "MusicPlayerWidget.h"
@@ -27,14 +27,12 @@ void UMusicPlayerWidget::InitAgoraEngine(FString APP_ID, FString TOKEN, FString 
 	Token = TOKEN;
 	ChannelName = CHANNEL_NAME;
 
-	RtcEngineProxy = agora::rtc::ue::createAgoraRtcEngineEx();
-
 	int SDKBuild = 0;
-	const char* SDKVersionInfo = RtcEngineProxy->getVersion(&SDKBuild);
+	const char* SDKVersionInfo = AgoraUERtcEngine::Get()->getVersion(&SDKBuild);
 	FString SDKInfo = FString::Printf(TEXT("SDK Version: %s Build: %d"), UTF8_TO_TCHAR(SDKVersionInfo), SDKBuild);
 	UBFL_Logger::Print(FString::Printf(TEXT("SDK Info:  %s"), *SDKInfo), LogMsgViewPtr);
 
-	int ret = RtcEngineProxy->initialize(RtcEngineContext);
+	int ret = AgoraUERtcEngine::Get()->initialize(RtcEngineContext);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 }
 
@@ -64,8 +62,8 @@ void UMusicPlayerWidget::OnBtnJoinChannelClicked()
 		return;
 	}
 
-	RtcEngineProxy->enableAudio();
-	RtcEngineProxy->setClientRole(CLIENT_ROLE_TYPE::CLIENT_ROLE_BROADCASTER);
+	AgoraUERtcEngine::Get()->enableAudio();
+	AgoraUERtcEngine::Get()->setClientRole(CLIENT_ROLE_TYPE::CLIENT_ROLE_BROADCASTER);
 
 	agora::rtc::MusicContentCenterConfiguration Config;
 	std::string StdStrAppID = TCHAR_TO_UTF8(*ET_RTMAPPID->GetText().ToString());
@@ -75,7 +73,7 @@ void UMusicPlayerWidget::OnBtnJoinChannelClicked()
 	Config.mccUid = FCString::Atoi64(*ET_RTMUID->GetText().ToString());
 	Config.maxCacheSize = 10;
 
-	RtcEngineProxy->queryInterface(AGORA_IID_MUSIC_CONTENT_CENTER, (void**)&MusicContentCenterPtr);
+	AgoraUERtcEngine::Get()->queryInterface(AGORA_IID_MUSIC_CONTENT_CENTER, (void**)&MusicContentCenterPtr);
 	int ret = MusicContentCenterPtr->initialize(Config);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s MusicContentCenterPtr initialize ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 	if (ret != 0)
@@ -101,7 +99,7 @@ void UMusicPlayerWidget::OnBtnJoinChannelClicked()
 		UBFL_Logger::Print(FString::Printf(TEXT("%s MediaPlayer ID = %d"), *FString(FUNCTION_MACRO), MediaPlayerID), LogMsgViewPtr);
 	}
 
-	int ret2 = RtcEngineProxy->joinChannel(TCHAR_TO_UTF8(*Token), TCHAR_TO_UTF8(*ChannelName), 0, Options);
+	int ret2 = AgoraUERtcEngine::Get()->joinChannel(TCHAR_TO_UTF8(*Token), TCHAR_TO_UTF8(*ChannelName), 0, Options);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s JoinChannel ret %d"), *FString(FUNCTION_MACRO), ret2), LogMsgViewPtr);
 }
 
@@ -254,11 +252,11 @@ void UMusicPlayerWidget::NativeDestruct()
 
 void UMusicPlayerWidget::UnInitAgoraEngine()
 {
-	if (RtcEngineProxy != nullptr)
+	if (AgoraUERtcEngine::Get() != nullptr)
 	{
 		if (MusicPlayer) {
 			MusicPlayer->unregisterPlayerSourceObserver(UserIMediaPlayerSourceObserver.Get());
-			RtcEngineProxy->destroyMediaPlayer(MusicPlayer);
+			AgoraUERtcEngine::Get()->destroyMediaPlayer(MusicPlayer);
 		}
 
 		if (MusicContentCenterPtr != nullptr) {
@@ -267,11 +265,10 @@ void UMusicPlayerWidget::UnInitAgoraEngine()
 			MusicContentCenterPtr = nullptr;
 		}
 
-		RtcEngineProxy->leaveChannel();
-		RtcEngineProxy->unregisterEventHandler(UserRtcEventHandlerEx.Get());
+		AgoraUERtcEngine::Get()->leaveChannel();
+		AgoraUERtcEngine::Get()->unregisterEventHandler(UserRtcEventHandlerEx.Get());
 
-		RtcEngineProxy->release();
-		RtcEngineProxy = nullptr;
+		AgoraUERtcEngine::Release();
 
 		UBFL_Logger::Print(FString::Printf(TEXT("%s release agora engine"), *FString(FUNCTION_MACRO)), LogMsgViewPtr);
 	}
@@ -387,10 +384,8 @@ int UMusicPlayerWidget::MakeVideoView(uint32 uid, agora::rtc::VIDEO_SOURCE_TYPE 
 		channelId will be set in [setupLocalVideo] / [setupRemoteVideo]
 	*/
 
-	int ret = -ERROR_NULLPTR;
+	int ret = 0;
 
-	if (RtcEngineProxy == nullptr)
-		return ret;
 
 	agora::rtc::VideoCanvas videoCanvas;
 	videoCanvas.uid = uid;
@@ -399,7 +394,7 @@ int UMusicPlayerWidget::MakeVideoView(uint32 uid, agora::rtc::VIDEO_SOURCE_TYPE 
 	if (uid == 0) {
 		FVideoViewIdentity VideoViewIdentity(uid, sourceType, "");
 		videoCanvas.view = UBFL_VideoViewManager::CreateOneVideoViewToCanvasPanel(VideoViewIdentity, CanvasPanel_VideoView, VideoViewMap, DraggableVideoViewTemplate);
-		ret = RtcEngineProxy->setupLocalVideo(videoCanvas);
+		ret = AgoraUERtcEngine::Get()->setupLocalVideo(videoCanvas);
 	}
 	else
 	{
@@ -408,13 +403,13 @@ int UMusicPlayerWidget::MakeVideoView(uint32 uid, agora::rtc::VIDEO_SOURCE_TYPE 
 		videoCanvas.view = UBFL_VideoViewManager::CreateOneVideoViewToCanvasPanel(VideoViewIdentity, CanvasPanel_VideoView, VideoViewMap, DraggableVideoViewTemplate);
 
 		if (channelId == "") {
-			ret = RtcEngineProxy->setupRemoteVideo(videoCanvas);
+			ret = AgoraUERtcEngine::Get()->setupRemoteVideo(videoCanvas);
 		}
 		else {
 			agora::rtc::RtcConnection connection;
 			std::string StdStrChannelId = TCHAR_TO_UTF8(*channelId);
 			connection.channelId = StdStrChannelId.c_str();
-			ret = ((agora::rtc::IRtcEngineEx*)RtcEngineProxy)->setupRemoteVideoEx(videoCanvas, connection);
+			ret = ((agora::rtc::IRtcEngineEx*)AgoraUERtcEngine::Get())->setupRemoteVideoEx(videoCanvas, connection);
 		}
 	}
 
@@ -423,10 +418,8 @@ int UMusicPlayerWidget::MakeVideoView(uint32 uid, agora::rtc::VIDEO_SOURCE_TYPE 
 
 int UMusicPlayerWidget::ReleaseVideoView(uint32 uid, agora::rtc::VIDEO_SOURCE_TYPE sourceType /*= VIDEO_SOURCE_CAMERA_PRIMARY*/, FString channelId /*= ""*/)
 {
-	int ret = -ERROR_NULLPTR;
+	int ret = 0;
 
-	if (RtcEngineProxy == nullptr)
-		return ret;
 
 	agora::rtc::VideoCanvas videoCanvas;
 	videoCanvas.view = nullptr;
@@ -436,20 +429,20 @@ int UMusicPlayerWidget::ReleaseVideoView(uint32 uid, agora::rtc::VIDEO_SOURCE_TY
 	if (uid == 0) {
 		FVideoViewIdentity VideoViewIdentity(uid, sourceType, "");
 		UBFL_VideoViewManager::ReleaseOneVideoView(VideoViewIdentity, VideoViewMap);
-		ret = RtcEngineProxy->setupLocalVideo(videoCanvas);
+		ret = AgoraUERtcEngine::Get()->setupLocalVideo(videoCanvas);
 	}
 	else
 	{
 		FVideoViewIdentity VideoViewIdentity(uid, sourceType, channelId);
 		UBFL_VideoViewManager::ReleaseOneVideoView(VideoViewIdentity, VideoViewMap);
 		if (channelId == "") {
-			ret = RtcEngineProxy->setupRemoteVideo(videoCanvas);
+			ret = AgoraUERtcEngine::Get()->setupRemoteVideo(videoCanvas);
 		}
 		else {
 			agora::rtc::RtcConnection connection;
 			std::string StdStrChannelId = TCHAR_TO_UTF8(*channelId);
 			connection.channelId = StdStrChannelId.c_str();
-			ret = ((agora::rtc::IRtcEngineEx*)RtcEngineProxy)->setupRemoteVideoEx(videoCanvas, connection);
+			ret = ((agora::rtc::IRtcEngineEx*)AgoraUERtcEngine::Get())->setupRemoteVideoEx(videoCanvas, connection);
 		}
 	}
 	return ret;
@@ -556,13 +549,13 @@ void UMusicPlayerWidget::FUserRtcEventHandlerEx::onUserOffline(const agora::rtc:
 #pragma region AgoraCallback - IMediaPlayerSourceObserver
 
 
-void UMusicPlayerWidget::FUserIMediaPlayerSourceObserver::onPlayerSourceStateChanged(media::base::MEDIA_PLAYER_STATE state, media::base::MEDIA_PLAYER_ERROR ec)
+void UMusicPlayerWidget::FUserIMediaPlayerSourceObserver::onPlayerSourceStateChanged(media::base::MEDIA_PLAYER_STATE state, media::base::MEDIA_PLAYER_REASON reason)
 {
 	if (state == media::base::MEDIA_PLAYER_STATE::PLAYER_STATE_OPEN_COMPLETED)
 		WidgetPtr->GetMusicPlayer()->play();
 }
 
-void UMusicPlayerWidget::FUserIMediaPlayerSourceObserver::onPositionChanged(int64_t position_ms)
+void UMusicPlayerWidget::FUserIMediaPlayerSourceObserver::onPositionChanged(int64_t positionMs, int64_t timestampMs)
 {
 
 }
@@ -617,7 +610,7 @@ void UMusicPlayerWidget::FUserIMediaPlayerSourceObserver::onAudioVolumeIndicatio
 
 #pragma region AgoraCallback - IMusicContentCenterEventHandler
 
-void UMusicPlayerWidget::FUserMusicContentCenterEventHandler::onMusicChartsResult(const char* requestId, agora_refptr<MusicChartCollection> result, MusicContentCenterStatusCode error_code)
+void UMusicPlayerWidget::FUserMusicContentCenterEventHandler::onMusicChartsResult(const char* requestId, agora_refptr<MusicChartCollection> result, MusicContentCenterStateReason reason)
 {
 	if (!IsWidgetValid())
 		return;
@@ -643,7 +636,7 @@ void UMusicPlayerWidget::FUserMusicContentCenterEventHandler::onMusicChartsResul
 		});
 }
 
-void UMusicPlayerWidget::FUserMusicContentCenterEventHandler::onMusicCollectionResult(const char* requestId, agora_refptr<MusicCollection> result, MusicContentCenterStatusCode error_code)
+void UMusicPlayerWidget::FUserMusicContentCenterEventHandler::onMusicCollectionResult(const char* requestId, agora_refptr<MusicCollection> result, MusicContentCenterStateReason reason)
 {
 	if (!IsWidgetValid())
 		return;
@@ -670,9 +663,8 @@ void UMusicPlayerWidget::FUserMusicContentCenterEventHandler::onMusicCollectionR
 		});
 }
 
-void UMusicPlayerWidget::FUserMusicContentCenterEventHandler::onLyricResult(const char* requestId, const char* lyricUrl, MusicContentCenterStatusCode error_code)
+void UMusicPlayerWidget::FUserMusicContentCenterEventHandler::onLyricResult(const char* requestId, int64_t songCode, const char* lyricUrl, MusicContentCenterStateReason reason)
 {
-
 	if (!IsWidgetValid())
 		return;
 
@@ -692,12 +684,42 @@ void UMusicPlayerWidget::FUserMusicContentCenterEventHandler::onLyricResult(cons
 				UBFL_Logger::Print(FString::Printf(TEXT("%s bIsDestruct "), *FString(FUNCTION_MACRO)));
 				return;
 			}
-			UBFL_Logger::Print(FString::Printf(TEXT("%s LyricURL=%s RequestId=%s error_code=%d"), *FString(FUNCTION_MACRO), *URLLyric, *RequestId, error_code), WidgetPtr->GetLogMsgViewPtr());
+			UBFL_Logger::Print(FString::Printf(TEXT("%s LyricURL=%s RequestId=%s error_code=%d"), *FString(FUNCTION_MACRO), *URLLyric, *RequestId, reason), WidgetPtr->GetLogMsgViewPtr());
 		});
 }
 
-void UMusicPlayerWidget::FUserMusicContentCenterEventHandler::onPreLoadEvent(int64_t songCode, int percent, const char* lyricUrl, PreloadStatusCode status, MusicContentCenterStatusCode error_code)
+
+void UMusicPlayerWidget::FUserMusicContentCenterEventHandler::onSongSimpleInfoResult(const char* requestId, int64_t songCode, const char* simpleInfo, MusicContentCenterStateReason reason)
 {
+
+	if (!IsWidgetValid())
+		return;
+
+
+	FString RequestId = UTF8_TO_TCHAR(requestId);
+	FString SimpleInfo = UTF8_TO_TCHAR(simpleInfo);
+
+
+#if  ((__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)) 
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
+	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
+		{
+			if (!IsWidgetValid())
+			{
+				UBFL_Logger::Print(FString::Printf(TEXT("%s bIsDestruct "), *FString(FUNCTION_MACRO)));
+				return;
+			}
+			UBFL_Logger::Print(FString::Printf(TEXT("%s RequestId=%s SongCode=%lld SimpleInfo=%s error_code=%d"), *FString(FUNCTION_MACRO), *RequestId,songCode, *SimpleInfo, reason), WidgetPtr->GetLogMsgViewPtr());
+		});
+}
+
+
+void UMusicPlayerWidget::FUserMusicContentCenterEventHandler::onPreLoadEvent(const char* requestId, int64_t songCode, int percent, const char* lyricUrl, PreloadState state, MusicContentCenterStateReason reason)
+{
+
+
 	if (!IsWidgetValid())
 		return;
 
@@ -714,9 +736,10 @@ void UMusicPlayerWidget::FUserMusicContentCenterEventHandler::onPreLoadEvent(int
 				UBFL_Logger::Print(FString::Printf(TEXT("%s bIsDestruct "), *FString(FUNCTION_MACRO)));
 				return;
 			}
-			UBFL_Logger::Print(FString::Printf(TEXT("%s songcode=%d percent=%d LyricURL=%s status=%d errorcode=%d "), *FString(FUNCTION_MACRO), songCode, percent, *URLLyric, status, error_code), WidgetPtr->GetLogMsgViewPtr());
+			UBFL_Logger::Print(FString::Printf(TEXT("%s songcode=%d percent=%d LyricURL=%s status=%d errorcode=%d "), *FString(FUNCTION_MACRO), songCode, percent, *URLLyric, state, reason), WidgetPtr->GetLogMsgViewPtr());
 		});
 }
+
 
 #pragma endregion
 

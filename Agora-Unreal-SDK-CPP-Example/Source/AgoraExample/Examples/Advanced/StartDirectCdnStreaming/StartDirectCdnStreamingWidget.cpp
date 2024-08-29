@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright(c) 2024 Agora.io. All rights reserved.
 
 
 #include "StartDirectCdnStreamingWidget.h"
@@ -50,14 +50,13 @@ void UStartDirectCdnStreamingWidget::InitAgoraEngine(FString APP_ID, FString TOK
 	Token = TOKEN;
 	ChannelName = CHANNEL_NAME;
 
-	RtcEngineProxy = agora::rtc::ue::createAgoraRtcEngine();
 
 	int SDKBuild = 0;
-	const char* SDKVersionInfo = RtcEngineProxy->getVersion(&SDKBuild);
+	const char* SDKVersionInfo = AgoraUERtcEngine::Get()->getVersion(&SDKBuild);
 	FString SDKInfo = FString::Printf(TEXT("SDK Version: %s Build: %d"), UTF8_TO_TCHAR(SDKVersionInfo), SDKBuild);
 	UBFL_Logger::Print(FString::Printf(TEXT("SDK Info:  %s"), *SDKInfo), LogMsgViewPtr);
 
-	int ret = RtcEngineProxy->initialize(RtcEngineContext);
+	int ret = AgoraUERtcEngine::Get()->initialize(RtcEngineContext);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 }
 
@@ -74,10 +73,10 @@ void UStartDirectCdnStreamingWidget::ShowUserGuide()
 
 void UStartDirectCdnStreamingWidget::SetProfile()
 {
-	RtcEngineProxy->enableAudio();
-	RtcEngineProxy->enableVideo();
-	RtcEngineProxy->setChannelProfile(agora::CHANNEL_PROFILE_TYPE::CHANNEL_PROFILE_LIVE_BROADCASTING);
-	RtcEngineProxy->setClientRole(CLIENT_ROLE_BROADCASTER);
+	AgoraUERtcEngine::Get()->enableAudio();
+	AgoraUERtcEngine::Get()->enableVideo();
+	AgoraUERtcEngine::Get()->setChannelProfile(agora::CHANNEL_PROFILE_TYPE::CHANNEL_PROFILE_LIVE_BROADCASTING);
+	AgoraUERtcEngine::Get()->setClientRole(CLIENT_ROLE_BROADCASTER);
 }
 
 
@@ -104,19 +103,23 @@ void UStartDirectCdnStreamingWidget::OnBtnStartClicked()
 	videoEncoderConfiguration.codecType = VIDEO_CODEC_TYPE::VIDEO_CODEC_H264;
 	videoEncoderConfiguration.mirrorMode = VIDEO_MIRROR_MODE_TYPE::VIDEO_MIRROR_MODE_DISABLED;
 	videoEncoderConfiguration.orientationMode = ORIENTATION_MODE_FIXED_LANDSCAPE; // important to be set
-	int ret0 = RtcEngineProxy->setDirectCdnStreamingVideoConfiguration(videoEncoderConfiguration);
+	int ret0 = AgoraUERtcEngine::Get()->setDirectCdnStreamingVideoConfiguration(videoEncoderConfiguration);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s setDirectCdnStreamingVideoConfiguration ret %d"), *FString(FUNCTION_MACRO), ret0), LogMsgViewPtr);
 
-	DirectCdnStreamingEventHandlerWarper = MakeShared<FUserIDirectCdnStreamingEventHandler>(this);
-	int ret = RtcEngineProxy->startDirectCdnStreaming(DirectCdnStreamingEventHandlerWarper.Get(), TCHAR_TO_UTF8(*URL), options);
+	if (DirectCdnStreamingEventHandlerWarper == nullptr)
+	{
+		DirectCdnStreamingEventHandlerWarper = MakeShared<FUserIDirectCdnStreamingEventHandler>(this);
+	}
+
+	int ret = AgoraUERtcEngine::Get()->startDirectCdnStreaming(DirectCdnStreamingEventHandlerWarper.Get(), TCHAR_TO_UTF8(*URL), options);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s startDirectCdnStreaming ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
-	RtcEngineProxy->startPreview();
+	AgoraUERtcEngine::Get()->startPreview();
 	MakeVideoView(0, agora::rtc::VIDEO_SOURCE_TYPE::VIDEO_SOURCE_CAMERA);
 }
 
 void UStartDirectCdnStreamingWidget::OnBtnBtnStopClicked()
 {
-	int ret = RtcEngineProxy->stopDirectCdnStreaming();
+	int ret = AgoraUERtcEngine::Get()->stopDirectCdnStreaming();
 	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 }
 
@@ -137,13 +140,12 @@ void UStartDirectCdnStreamingWidget::NativeDestruct()
 
 void UStartDirectCdnStreamingWidget::UnInitAgoraEngine()
 {
-	if (RtcEngineProxy != nullptr)
+	if (AgoraUERtcEngine::Get() != nullptr)
 	{
-		RtcEngineProxy->stopPreview();
-		RtcEngineProxy->stopDirectCdnStreaming();
-		RtcEngineProxy->unregisterEventHandler(UserRtcEventHandlerEx.Get());
-		RtcEngineProxy->release();
-		RtcEngineProxy = nullptr;
+		AgoraUERtcEngine::Get()->stopPreview();
+		AgoraUERtcEngine::Get()->stopDirectCdnStreaming();
+		AgoraUERtcEngine::Get()->unregisterEventHandler(UserRtcEventHandlerEx.Get());
+		AgoraUERtcEngine::Release();
 
 		UBFL_Logger::Print(FString::Printf(TEXT("%s release agora engine"), *FString(FUNCTION_MACRO)), LogMsgViewPtr);
 	}
@@ -164,10 +166,8 @@ int UStartDirectCdnStreamingWidget::MakeVideoView(uint32 uid, agora::rtc::VIDEO_
 		channelId will be set in [setupLocalVideo] / [setupRemoteVideo]
 	*/
 
-	int ret = -ERROR_NULLPTR;
+	int ret = 0;
 
-	if (RtcEngineProxy == nullptr)
-		return ret;
 
 	agora::rtc::VideoCanvas videoCanvas;
 	videoCanvas.uid = uid;
@@ -176,7 +176,7 @@ int UStartDirectCdnStreamingWidget::MakeVideoView(uint32 uid, agora::rtc::VIDEO_
 	if (uid == 0) {
 		FVideoViewIdentity VideoViewIdentity(uid, sourceType, "");
 		videoCanvas.view = UBFL_VideoViewManager::CreateOneVideoViewToCanvasPanel(VideoViewIdentity, CanvasPanel_VideoView, VideoViewMap, DraggableVideoViewTemplate);
-		ret = RtcEngineProxy->setupLocalVideo(videoCanvas);
+		ret = AgoraUERtcEngine::Get()->setupLocalVideo(videoCanvas);
 	}
 	else
 	{
@@ -185,13 +185,13 @@ int UStartDirectCdnStreamingWidget::MakeVideoView(uint32 uid, agora::rtc::VIDEO_
 		videoCanvas.view = UBFL_VideoViewManager::CreateOneVideoViewToCanvasPanel(VideoViewIdentity, CanvasPanel_VideoView, VideoViewMap, DraggableVideoViewTemplate);
 
 		if (channelId == "") {
-			ret = RtcEngineProxy->setupRemoteVideo(videoCanvas);
+			ret = AgoraUERtcEngine::Get()->setupRemoteVideo(videoCanvas);
 		}
 		else {
 			agora::rtc::RtcConnection connection;
 			std::string StdStrChannelId = TCHAR_TO_UTF8(*channelId);
 			connection.channelId = StdStrChannelId.c_str();
-			ret = ((agora::rtc::IRtcEngineEx*)RtcEngineProxy)->setupRemoteVideoEx(videoCanvas, connection);
+			ret = ((agora::rtc::IRtcEngineEx*)AgoraUERtcEngine::Get())->setupRemoteVideoEx(videoCanvas, connection);
 		}
 	}
 
@@ -200,10 +200,8 @@ int UStartDirectCdnStreamingWidget::MakeVideoView(uint32 uid, agora::rtc::VIDEO_
 
 int UStartDirectCdnStreamingWidget::ReleaseVideoView(uint32 uid, agora::rtc::VIDEO_SOURCE_TYPE sourceType /*= VIDEO_SOURCE_CAMERA_PRIMARY*/, FString channelId /*= ""*/)
 {
-	int ret = -ERROR_NULLPTR;
+	int ret = 0;
 
-	if (RtcEngineProxy == nullptr)
-		return ret;
 
 	agora::rtc::VideoCanvas videoCanvas;
 	videoCanvas.view = nullptr;
@@ -213,20 +211,20 @@ int UStartDirectCdnStreamingWidget::ReleaseVideoView(uint32 uid, agora::rtc::VID
 	if (uid == 0) {
 		FVideoViewIdentity VideoViewIdentity(uid, sourceType, "");
 		UBFL_VideoViewManager::ReleaseOneVideoView(VideoViewIdentity, VideoViewMap);
-		ret = RtcEngineProxy->setupLocalVideo(videoCanvas);
+		ret = AgoraUERtcEngine::Get()->setupLocalVideo(videoCanvas);
 	}
 	else
 	{
 		FVideoViewIdentity VideoViewIdentity(uid, sourceType, channelId);
 		UBFL_VideoViewManager::ReleaseOneVideoView(VideoViewIdentity, VideoViewMap);
 		if (channelId == "") {
-			ret = RtcEngineProxy->setupRemoteVideo(videoCanvas);
+			ret = AgoraUERtcEngine::Get()->setupRemoteVideo(videoCanvas);
 		}
 		else {
 			agora::rtc::RtcConnection connection;
 			std::string StdStrChannelId = TCHAR_TO_UTF8(*channelId);
 			connection.channelId = StdStrChannelId.c_str();
-			ret = ((agora::rtc::IRtcEngineEx*)RtcEngineProxy)->setupRemoteVideoEx(videoCanvas, connection);
+			ret = ((agora::rtc::IRtcEngineEx*)AgoraUERtcEngine::Get())->setupRemoteVideoEx(videoCanvas, connection);
 		}
 	}
 	return ret;
@@ -331,8 +329,7 @@ void UStartDirectCdnStreamingWidget::FUserRtcEventHandlerEx::onUserOffline(const
 
 #pragma region AgoraCallback - IDirectCdnStreamingEventHandler
 
-
-void UStartDirectCdnStreamingWidget::FUserIDirectCdnStreamingEventHandler::onDirectCdnStreamingStateChanged(DIRECT_CDN_STREAMING_STATE state, DIRECT_CDN_STREAMING_ERROR error, const char* message)
+void UStartDirectCdnStreamingWidget::FUserIDirectCdnStreamingEventHandler::onDirectCdnStreamingStateChanged(DIRECT_CDN_STREAMING_STATE state, DIRECT_CDN_STREAMING_REASON reason, const char* message)
 {
 
 }

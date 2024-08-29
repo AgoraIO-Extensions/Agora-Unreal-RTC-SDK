@@ -1,7 +1,8 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright(c) 2024 Agora.io. All rights reserved.
 
 
 #include "MainAgoraUserWidget.h"
+#include "AgoraPluginInterface.h"
 #include "GameFramework/GameUserSettings.h"
 
 #pragma region CustomTileView
@@ -57,6 +58,9 @@ void UMainAgoraUserWidget::NativeConstruct()
 		LevelTileView->AddItem(temp);
 	}
 
+	if(Txt_SDKVer){
+		Txt_SDKVer->SetText(FText::FromString(AgoraUERtcEngine::GetSDKVersion()));
+	}
 }
 
 void UMainAgoraUserWidget::NativeDestruct()
@@ -146,7 +150,7 @@ void UMainAgoraUserWidget::InitLevelArray()
 	LevelArray.Add(FString("VirtualBackground"));
 	LevelArray.Add(FString("VoiceChanger"));
 	LevelArray.Add(FString("MusicPlayer"));
-	LevelArray.Add(FString("RenderWithYUV"));
+	//LevelArray.Add(FString("RenderWithYUV"));
 	LevelArray.Add(FString("MediaPlayerWithCustomDataProvide"));
 	LevelArray.Add(FString("WriteBackVideoRawData"));
 

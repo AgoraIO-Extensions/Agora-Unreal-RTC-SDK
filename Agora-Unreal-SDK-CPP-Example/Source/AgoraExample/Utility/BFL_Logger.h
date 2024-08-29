@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright(c) 2024 Agora.io. All rights reserved.
 
 #pragma once
 
@@ -13,7 +13,7 @@
 
 
 #if defined(_MSC_VER)
-//#define FUNCTION_MACRO __FUNCSIG__ // °üº¬Ç©Ãû
+//#define FUNCTION_MACRO __FUNCSIG__ // ï¿½ï¿½ï¿½ï¿½Ç©ï¿½ï¿½
 #define FUNCTION_MACRO __FUNCTION__
 #else
 #define FUNCTION_MACRO __PRETTY_FUNCTION__

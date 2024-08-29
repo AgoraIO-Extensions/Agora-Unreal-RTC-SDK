@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright(c) 2024 Agora.io. All rights reserved.
 
 
 #include "DualCameraWidget.h"
@@ -65,14 +65,12 @@ void UDualCameraWidget::InitAgoraEngine(FString APP_ID, FString TOKEN, FString C
 	Token = TOKEN;
 	ChannelName = CHANNEL_NAME;
 
-	RtcEngineProxy = agora::rtc::ue::createAgoraRtcEngineEx();
-
 	int SDKBuild = 0;
-	const char* SDKVersionInfo = RtcEngineProxy->getVersion(&SDKBuild);
+	const char* SDKVersionInfo = AgoraUERtcEngine::Get()->getVersion(&SDKBuild);
 	FString SDKInfo = FString::Printf(TEXT("SDK Version: %s Build: %d"), UTF8_TO_TCHAR(SDKVersionInfo), SDKBuild);
 	UBFL_Logger::Print(FString::Printf(TEXT("SDK Info:  %s"), *SDKInfo), LogMsgViewPtr);
 
-	int ret = RtcEngineProxy->initialize(RtcEngineContext);
+	int ret = AgoraUERtcEngine::Get()->initialize(RtcEngineContext);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 }
 
@@ -98,23 +96,19 @@ void UDualCameraWidget::GetVideoDeviceManager()
 	// Windows || Mac
 
 	agora::rtc::IVideoDeviceManager* VideoDeviceManager = nullptr;
-	RtcEngineProxy->queryInterface(AGORA_IID_VIDEO_DEVICE_MANAGER, (void**)&VideoDeviceManager);
+	AgoraUERtcEngine::Get()->queryInterface(AGORA_IID_VIDEO_DEVICE_MANAGER, (void**)&VideoDeviceManager);
 	IVideoDeviceCollection* VideoDeviceInfos = VideoDeviceManager->enumerateVideoDevices();
 
 	if (VideoDeviceInfos->getCount() >= 1) {
-		char deviceId[512] = { 0 };
-		char deviceName[512] = { 0 };
 		// Get camera information
-		VideoDeviceInfos->getDevice(0, deviceName, deviceId);
-		FMemory::Memcpy(MainCameraConfig.deviceId, deviceId, 512);
+		VideoDeviceInfos->getDevice(0, MainCameraDeviceName, MainCameraDeviceId);
+		MainCameraConfig.deviceId = MainCameraDeviceId;
 	}
 
 	if (VideoDeviceInfos->getCount() >= 2) {
-		char deviceId[512] = { 0 };
-		char deviceName[512] = { 0 };
 		// Get camera information
-		VideoDeviceInfos->getDevice(1, deviceName, deviceId);
-		FMemory::Memcpy(SecondCameraConfig.deviceId, deviceId, 512);
+		VideoDeviceInfos->getDevice(1, SecondCameraDeviceName, SecondCameraDeviceId);
+		SecondCameraConfig.deviceId = SecondCameraDeviceId;
 	}
 
 #endif
@@ -131,13 +125,13 @@ void UDualCameraWidget::OnBtnBackToHomeClicked()
 
 void UDualCameraWidget::OnBtn_MainCameraJoinClicked()
 {
-	RtcEngineProxy->startPreview();
-	RtcEngineProxy->enableAudio();
-	RtcEngineProxy->enableVideo();
-	RtcEngineProxy->setClientRole(CLIENT_ROLE_BROADCASTER);
+	AgoraUERtcEngine::Get()->startPreview();
+	AgoraUERtcEngine::Get()->enableAudio();
+	AgoraUERtcEngine::Get()->enableVideo();
+	AgoraUERtcEngine::Get()->setClientRole(CLIENT_ROLE_BROADCASTER);
 
 
-	int ret = RtcEngineProxy->startCameraCapture(VIDEO_SOURCE_CAMERA_PRIMARY, MainCameraConfig);
+	int ret = AgoraUERtcEngine::Get()->startCameraCapture(VIDEO_SOURCE_CAMERA_PRIMARY, MainCameraConfig);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s startCameraCapture ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 	agora::rtc::ChannelMediaOptions options1;
 	options1.publishCameraTrack = true;
@@ -154,16 +148,16 @@ void UDualCameraWidget::OnBtn_MainCameraJoinClicked()
 
 	std::string StdStrChannelName = TCHAR_TO_UTF8(*ChannelName);
 	agora::rtc::RtcConnection connection(StdStrChannelName.c_str(), UID1);
-	int ret2 = RtcEngineProxy->joinChannelEx(TCHAR_TO_UTF8(*Token), connection, options1, nullptr);
+	int ret2 = AgoraUERtcEngine::Get()->joinChannelEx(TCHAR_TO_UTF8(*Token), connection, options1, nullptr);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s joinChannel ret %d"), *FString(FUNCTION_MACRO), ret2), LogMsgViewPtr);
 }
 
 void UDualCameraWidget::OnBtn_MainCameraLeaveClicked()
 {
-	RtcEngineProxy->stopCameraCapture(VIDEO_SOURCE_CAMERA_PRIMARY);
+	AgoraUERtcEngine::Get()->stopCameraCapture(VIDEO_SOURCE_CAMERA_PRIMARY);
 	std::string StdStrChannelName = TCHAR_TO_UTF8(*ChannelName);
 	agora::rtc::RtcConnection connection(StdStrChannelName.c_str(), UID1);
-	int ret = RtcEngineProxy->leaveChannelEx(connection);
+	int ret = AgoraUERtcEngine::Get()->leaveChannelEx(connection);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s leaveChannel ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 }
 
@@ -173,12 +167,12 @@ void UDualCameraWidget::OnBtn_SecondCameraJoinClicked()
 	// iPhone is only support in iPhone XR or better. iOS version is support in 13.0 or better
 	CameraCapturerConfiguration CameraCaptureConfig;
 	CameraCaptureConfig.cameraDirection = CAMERA_DIRECTION::CAMERA_REAR;
-	int ret0 = RtcEngineProxy->enableMultiCamera(true, CameraCaptureConfig);
+	int ret0 = AgoraUERtcEngine::Get()->enableMultiCamera(true, CameraCaptureConfig);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s enableMultiCamera ret0 %d"), *FString(FUNCTION_MACRO), ret0), LogMsgViewPtr);
 #endif 
 
 
-	int ret = RtcEngineProxy->startCameraCapture(VIDEO_SOURCE_CAMERA_SECONDARY, SecondCameraConfig);
+	int ret = AgoraUERtcEngine::Get()->startCameraCapture(VIDEO_SOURCE_CAMERA_SECONDARY, SecondCameraConfig);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s startCameraCapture ret1 %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 	agora::rtc::ChannelMediaOptions options2;
 	/*
@@ -195,16 +189,16 @@ void UDualCameraWidget::OnBtn_SecondCameraJoinClicked()
 	options2.clientRoleType = CLIENT_ROLE_TYPE::CLIENT_ROLE_BROADCASTER;
 	std::string StdStrChannelName = TCHAR_TO_UTF8(*ChannelName);
 	agora::rtc::RtcConnection connection(StdStrChannelName.c_str(), UID2);
-	int ret2 = RtcEngineProxy->joinChannelEx(TCHAR_TO_UTF8(*Token), connection, options2, nullptr);
+	int ret2 = AgoraUERtcEngine::Get()->joinChannelEx(TCHAR_TO_UTF8(*Token), connection, options2, nullptr);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s joinChannelEx ret2 %d"), *FString(FUNCTION_MACRO), ret2), LogMsgViewPtr);
 }
 
 void UDualCameraWidget::OnBtn_SecondCameraLeaveClicked()
 {
-	RtcEngineProxy->stopCameraCapture(VIDEO_SOURCE_CAMERA_SECONDARY);
+	AgoraUERtcEngine::Get()->stopCameraCapture(VIDEO_SOURCE_CAMERA_SECONDARY);
 	std::string StdStrChannelName = TCHAR_TO_UTF8(*ChannelName);
 	agora::rtc::RtcConnection connection(StdStrChannelName.c_str(), UID2);
-	int ret = RtcEngineProxy->leaveChannelEx(connection);
+	int ret = AgoraUERtcEngine::Get()->leaveChannelEx(connection);
 	UE_LOG(LogTemp, Warning, TEXT(" UDualCameraWidget::OnBtn_SecondCameraLeaveClicked  ret: %u"), ret);
 }
 
@@ -217,7 +211,7 @@ void UDualCameraWidget::OnBtn_PublishMainCameraClicked()
 	std::string StdStrChannelName = TCHAR_TO_UTF8(*ChannelName);
 	connection.channelId = StdStrChannelName.c_str();
 	connection.localUid = UID1;
-	int ret = RtcEngineProxy->updateChannelMediaOptionsEx(options1, connection);
+	int ret = AgoraUERtcEngine::Get()->updateChannelMediaOptionsEx(options1, connection);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 }
 
@@ -230,7 +224,7 @@ void UDualCameraWidget::OnBtn_UnPublishMainCamClicked()
 	std::string StdStrChannelName = TCHAR_TO_UTF8(*ChannelName);
 	connection.channelId = StdStrChannelName.c_str();
 	connection.localUid = UID1;
-	int ret = RtcEngineProxy->updateChannelMediaOptionsEx(options1, connection);
+	int ret = AgoraUERtcEngine::Get()->updateChannelMediaOptionsEx(options1, connection);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 }
 
@@ -243,7 +237,7 @@ void UDualCameraWidget::OnBtn_PublishSecondCamClicked()
 	std::string StdStrChannelName = TCHAR_TO_UTF8(*ChannelName);
 	connection.channelId = StdStrChannelName.c_str();
 	connection.localUid = UID2;
-	int ret = RtcEngineProxy->updateChannelMediaOptionsEx(options2, connection);
+	int ret = AgoraUERtcEngine::Get()->updateChannelMediaOptionsEx(options2, connection);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 }
 
@@ -256,7 +250,7 @@ void UDualCameraWidget::OnBtn_UnPublishSecondCamClicked()
 	std::string StdStrChannelName = TCHAR_TO_UTF8(*ChannelName);
 	connection.channelId = StdStrChannelName.c_str();
 	connection.localUid = UID2;
-	int ret = RtcEngineProxy->updateChannelMediaOptionsEx(options2, connection);
+	int ret = AgoraUERtcEngine::Get()->updateChannelMediaOptionsEx(options2, connection);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 }
 
@@ -270,13 +264,12 @@ void UDualCameraWidget::NativeDestruct()
 
 void UDualCameraWidget::UnInitAgoraEngine()
 {
-	if (RtcEngineProxy != nullptr)
+	if (AgoraUERtcEngine::Get() != nullptr)
 	{
-		RtcEngineProxy->leaveChannel();
-		RtcEngineProxy->leaveChannelEx(RtcConnection(TCHAR_TO_UTF8(*ChannelName), UID2));
-		RtcEngineProxy->unregisterEventHandler(UserRtcEventHandlerEx.Get());
-		RtcEngineProxy->release();
-		RtcEngineProxy = nullptr;
+		AgoraUERtcEngine::Get()->leaveChannel();
+		AgoraUERtcEngine::Get()->leaveChannelEx(RtcConnection(TCHAR_TO_UTF8(*ChannelName), UID2));
+		AgoraUERtcEngine::Get()->unregisterEventHandler(UserRtcEventHandlerEx.Get());
+		AgoraUERtcEngine::Release();
 
 		UBFL_Logger::Print(FString::Printf(TEXT("%s release agora engine"), *FString(FUNCTION_MACRO)), LogMsgViewPtr);
 	}
@@ -296,10 +289,8 @@ int UDualCameraWidget::MakeVideoView(uint32 uid, agora::rtc::VIDEO_SOURCE_TYPE s
 		channelId will be set in [setupLocalVideo] / [setupRemoteVideo]
 	*/
 
-	int ret = -ERROR_NULLPTR;
+	int ret = 0;
 
-	if (RtcEngineProxy == nullptr)
-		return ret;
 
 	agora::rtc::VideoCanvas videoCanvas;
 	videoCanvas.uid = uid;
@@ -308,7 +299,7 @@ int UDualCameraWidget::MakeVideoView(uint32 uid, agora::rtc::VIDEO_SOURCE_TYPE s
 	if (uid == 0) {
 		FVideoViewIdentity VideoViewIdentity(uid, sourceType, "");
 		videoCanvas.view = UBFL_VideoViewManager::CreateOneVideoViewToCanvasPanel(VideoViewIdentity, CanvasPanel_VideoView, VideoViewMap, DraggableVideoViewTemplate);
-		ret = RtcEngineProxy->setupLocalVideo(videoCanvas);
+		ret = AgoraUERtcEngine::Get()->setupLocalVideo(videoCanvas);
 	}
 	else
 	{
@@ -317,13 +308,13 @@ int UDualCameraWidget::MakeVideoView(uint32 uid, agora::rtc::VIDEO_SOURCE_TYPE s
 		videoCanvas.view = UBFL_VideoViewManager::CreateOneVideoViewToCanvasPanel(VideoViewIdentity, CanvasPanel_VideoView, VideoViewMap, DraggableVideoViewTemplate);
 
 		if (channelId == "") {
-			ret = RtcEngineProxy->setupRemoteVideo(videoCanvas);
+			ret = AgoraUERtcEngine::Get()->setupRemoteVideo(videoCanvas);
 		}
 		else {
 			agora::rtc::RtcConnection connection;
 			std::string StdStrChannelId = TCHAR_TO_UTF8(*channelId);
 			connection.channelId = StdStrChannelId.c_str();
-			ret = ((agora::rtc::IRtcEngineEx*)RtcEngineProxy)->setupRemoteVideoEx(videoCanvas, connection);
+			ret = ((agora::rtc::IRtcEngineEx*)AgoraUERtcEngine::Get())->setupRemoteVideoEx(videoCanvas, connection);
 		}
 	}
 
@@ -332,10 +323,8 @@ int UDualCameraWidget::MakeVideoView(uint32 uid, agora::rtc::VIDEO_SOURCE_TYPE s
 
 int UDualCameraWidget::ReleaseVideoView(uint32 uid, agora::rtc::VIDEO_SOURCE_TYPE sourceType /*= VIDEO_SOURCE_CAMERA_PRIMARY*/, FString channelId /*= ""*/)
 {
-	int ret = -ERROR_NULLPTR;
+	int ret = 0;
 
-	if (RtcEngineProxy == nullptr)
-		return ret;
 
 	agora::rtc::VideoCanvas videoCanvas;
 	videoCanvas.view = nullptr;
@@ -345,20 +334,20 @@ int UDualCameraWidget::ReleaseVideoView(uint32 uid, agora::rtc::VIDEO_SOURCE_TYP
 	if (uid == 0) {
 		FVideoViewIdentity VideoViewIdentity(uid, sourceType, "");
 		UBFL_VideoViewManager::ReleaseOneVideoView(VideoViewIdentity, VideoViewMap);
-		ret = RtcEngineProxy->setupLocalVideo(videoCanvas);
+		ret = AgoraUERtcEngine::Get()->setupLocalVideo(videoCanvas);
 	}
 	else
 	{
 		FVideoViewIdentity VideoViewIdentity(uid, sourceType, channelId);
 		UBFL_VideoViewManager::ReleaseOneVideoView(VideoViewIdentity, VideoViewMap);
 		if (channelId == "") {
-			ret = RtcEngineProxy->setupRemoteVideo(videoCanvas);
+			ret = AgoraUERtcEngine::Get()->setupRemoteVideo(videoCanvas);
 		}
 		else {
 			agora::rtc::RtcConnection connection;
 			std::string StdStrChannelId = TCHAR_TO_UTF8(*channelId);
 			connection.channelId = StdStrChannelId.c_str();
-			ret = ((agora::rtc::IRtcEngineEx*)RtcEngineProxy)->setupRemoteVideoEx(videoCanvas, connection);
+			ret = ((agora::rtc::IRtcEngineEx*)AgoraUERtcEngine::Get())->setupRemoteVideoEx(videoCanvas, connection);
 		}
 	}
 	return ret;

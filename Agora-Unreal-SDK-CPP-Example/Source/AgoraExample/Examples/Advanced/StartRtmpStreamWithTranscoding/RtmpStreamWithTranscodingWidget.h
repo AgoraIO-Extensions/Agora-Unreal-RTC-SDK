@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright(c) 2024 Agora.io. All rights reserved.
 
 #pragma once
 
@@ -54,7 +54,7 @@ public:
 
 		void onTranscodingUpdated() override;
 
-		void onRtmpStreamingStateChanged(const char* url, RTMP_STREAM_PUBLISH_STATE state, RTMP_STREAM_PUBLISH_ERROR_TYPE errCode) override;
+		void onRtmpStreamingStateChanged(const char* url, RTMP_STREAM_PUBLISH_STATE state, RTMP_STREAM_PUBLISH_REASON reason) override;
 
 #pragma endregion
 
@@ -157,7 +157,6 @@ protected:
 
 	uint32 UID = 0;
 
-	IRtcEngine* RtcEngineProxy;
 
 
 

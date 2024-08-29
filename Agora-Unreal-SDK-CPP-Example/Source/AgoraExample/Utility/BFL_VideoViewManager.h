@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright(c) 2024 Agora.io. All rights reserved.
 
 #pragma once
 
@@ -65,7 +65,8 @@ public:
 		UCanvasPanel* CanvasPanel,
 		TMap<int64, UDraggableVideoViewWidget*>& VideoViewMap,
 		UImage* VideoView,
-		TSubclassOf<UUserWidget> Template
+		TSubclassOf<UUserWidget> Template,
+		bool bAutoSize = false
 	);
 
 	static void ReleaseOneVideoView(int64 uid, TMap<int64, UDraggableVideoViewWidget*>& VideoViewMap);
@@ -78,7 +79,8 @@ public:
 		const FVideoViewIdentity& Key,
 		UCanvasPanel* CanvasPanel,
 		TMap<FVideoViewIdentity, UDraggableVideoViewWidget*>& VideoViewMap,
-		TSubclassOf<UUserWidget> Template
+		TSubclassOf<UUserWidget> Template,
+		bool bAutoSize = false
 	);
 
 	static void ReleaseOneVideoView(const FVideoViewIdentity& Key, TMap<FVideoViewIdentity, UDraggableVideoViewWidget*>& VideoViewMap);

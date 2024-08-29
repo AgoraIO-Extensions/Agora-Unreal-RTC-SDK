@@ -1,4 +1,4 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
+// Copyright(c) 2024 Agora.io. All rights reserved.
 
 using System.IO;
 using System;
@@ -20,6 +20,7 @@ public class AgoraExample : ModuleRules
             "RHI", 
             "HTTP", 
             "AudioMixer",
+            //"MyShaderLibrary",
 
             // For JoinChannelWithToken
             "HTTP",
@@ -34,11 +35,20 @@ public class AgoraExample : ModuleRules
         if (Target.Platform == UnrealTargetPlatform.Android)
         {
             PrivateDependencyModuleNames.AddRange(new string[] { "AndroidPermission" });
-            string UPLFilePath = Path.Combine(ModuleDirectory, "UPL","AgoraExample_UPL.xml");
+            string UPLFilePath = Path.Combine(ModuleDirectory, "UPL","AgoraExample_UPL_Android.xml");
             Console.WriteLine("AgoraExample UPL Path: " + UPLFilePath);
             // Modify AndroidMenifest.xml
             AdditionalPropertiesForReceipt.Add("AndroidPlugin", UPLFilePath);
         }
+
+        if (Target.Platform == UnrealTargetPlatform.IOS)
+        {
+            string UPLFilePath = Path.Combine(ModuleDirectory, "UPL","AgoraExample_UPL_IOS.xml");
+            Console.WriteLine("AgoraExample IOS UPL Path: " + UPLFilePath);
+            // Modify info.plist
+            AdditionalPropertiesForReceipt.Add("IOSPlugin", UPLFilePath);
+        }
+        
         //Uncomment if you are using Slate UI
 
         PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });

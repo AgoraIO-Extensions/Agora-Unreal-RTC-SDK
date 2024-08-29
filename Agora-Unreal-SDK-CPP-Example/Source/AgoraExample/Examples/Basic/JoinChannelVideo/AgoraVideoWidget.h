@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright(c) 2024 Agora.io. All rights reserved.
 
 #pragma once
 
@@ -23,6 +23,7 @@
 #include "../../../Utility/BFL_Logger.h"
 
 #include "AgoraVideoWidget.generated.h"
+
 
 using namespace agora::rtc;
 using namespace agora;
@@ -55,7 +56,9 @@ public:
 
 		void onUserOffline(agora::rtc::uid_t uid, agora::rtc::USER_OFFLINE_REASON_TYPE reason) override;
 
-		void onVideoSizeChanged(VIDEO_SOURCE_TYPE sourceType, uid_t uid, int width, int height, int rotation) override;
+		//void onVideoSizeChanged(VIDEO_SOURCE_TYPE sourceType, uid_t uid, int width, int height, int rotation) override;
+
+		void onVideoDeviceStateChanged(const char* deviceId, int deviceType, int deviceState) override;
 
 #pragma endregion
 
@@ -128,7 +131,7 @@ public:
 
 	void InitAgoraWidget(FString APP_ID, FString TOKEN, FString CHANNEL_NAME) override;
 
-
+	//virtual void NativeTick(const FGeometry& MyGeometry, float DeltaTime) override;
 
 #pragma region UI Utility - Log Msg View
 public:
@@ -169,8 +172,6 @@ public:
 
 
 protected:
-
-	IRtcEngine* RtcEngineProxy;
 
 	FString AppId;
 	FString Token;

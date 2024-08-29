@@ -1,11 +1,11 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright(c) 2024 Agora.io. All rights reserved.
 
 
 #include "BFL_VideoViewManager.h"
 #include "Components/CanvasPanelSlot.h"
 #include "Blueprint/WidgetLayoutLibrary.h"
 
-UImage* UBFL_VideoViewManager::CreateOneVideoViewToCanvasPanel(int64 uid, UCanvasPanel* CanvasPanel, TMap<int64, UDraggableVideoViewWidget*>& VideoViewMap, UImage* VideoView, TSubclassOf<UUserWidget> Template)
+UImage* UBFL_VideoViewManager::CreateOneVideoViewToCanvasPanel(int64 uid, UCanvasPanel* CanvasPanel, TMap<int64, UDraggableVideoViewWidget*>& VideoViewMap, UImage* VideoView, TSubclassOf<UUserWidget> Template, bool bAutoSize /* = false */)
 {
 	if (VideoViewMap.Contains(uid))
 	{
@@ -18,14 +18,21 @@ UImage* UBFL_VideoViewManager::CreateOneVideoViewToCanvasPanel(int64 uid, UCanva
 		UDraggableVideoViewWidget* VideoViewWidget = CreateWidget<UDraggableVideoViewWidget>(world, Template);
 		VideoViewMap.Add(uid, VideoViewWidget);
 		UPanelSlot* PanelSlot = CanvasPanel->AddChild(VideoViewWidget);
+
+		// set the whole UDraggableVideoViewWidget widget size
 		UCanvasPanelSlot* CanvasPanelSlot = UWidgetLayoutLibrary::SlotAsCanvasSlot(VideoViewWidget);
 		CanvasPanelSlot->SetSize(FVector2D(640, 360));
+
+		// make the image auto-sized, the same as its brush size
+		UCanvasPanelSlot* ViewCanvasPanelSlot = UWidgetLayoutLibrary::SlotAsCanvasSlot(VideoViewWidget->View);
+		ViewCanvasPanelSlot->SetAutoSize(bAutoSize);
+
 		return  VideoViewWidget->View;
 	}
 }
 
 
-UImage* UBFL_VideoViewManager::CreateOneVideoViewToCanvasPanel(const FVideoViewIdentity& Key, UCanvasPanel* CanvasPanel, TMap<FVideoViewIdentity, UDraggableVideoViewWidget*>& VideoViewMap, TSubclassOf<UUserWidget> Template)
+UImage* UBFL_VideoViewManager::CreateOneVideoViewToCanvasPanel(const FVideoViewIdentity& Key, UCanvasPanel* CanvasPanel, TMap<FVideoViewIdentity, UDraggableVideoViewWidget*>& VideoViewMap, TSubclassOf<UUserWidget> Template, bool bAutoSize /* = false */)
 {
 	if (VideoViewMap.Contains(Key))
 	{
@@ -48,8 +55,14 @@ UImage* UBFL_VideoViewManager::CreateOneVideoViewToCanvasPanel(const FVideoViewI
 
 		VideoViewMap.Add(Key, VideoViewWidget);
 		UPanelSlot* PanelSlot = CanvasPanel->AddChild(VideoViewWidget);
+
+		// set the whole UDraggableVideoViewWidget widget size
 		UCanvasPanelSlot* CanvasPanelSlot = UWidgetLayoutLibrary::SlotAsCanvasSlot(VideoViewWidget);
 		CanvasPanelSlot->SetSize(FVector2D(640, 360));
+
+		// make the image auto-sized, the same as its brush size
+		UCanvasPanelSlot* ViewCanvasPanelSlot = UWidgetLayoutLibrary::SlotAsCanvasSlot(VideoViewWidget->View);
+		ViewCanvasPanelSlot->SetAutoSize(bAutoSize);
 		return  VideoViewWidget->View;
 	}
 }
@@ -117,23 +130,23 @@ void UBFL_VideoViewManager::ResizeTheRotationAppliedImage(const FVideoViewIdenti
 	{
 		/*
 			Rotate Matrix:
-			| cos(¦È)  -sin(¦È) |
-			| sin(¦È)   cos(¦È) |
+			| cos(ï¿½ï¿½)  -sin(ï¿½ï¿½) |
+			| sin(ï¿½ï¿½)   cos(ï¿½ï¿½) |
 
 			For Each Points: (x,y) -> (x',y')
 
-			x' = x * cos(¦È) - y * sin(¦È)
-			y' = x * sin(¦È) + y * cos(¦È)
+			x' = x * cos(ï¿½ï¿½) - y * sin(ï¿½ï¿½)
+			y' = x * sin(ï¿½ï¿½) + y * cos(ï¿½ï¿½)
 		*/
 
 		/*
 			RotatedWidth = max(x'1, x'2, x'3, x'4) - min(x'1, x'2, x'3, x'4)
 			RotatedHeight = max(y'1, y'2, y'3, y'4) - min(y'1, y'2, y'3, y'4)
 
-			RotatedWidth = max((Width * cos(¦È) - Height * sin(¦È)), (Width * cos(¦È)), 0) - min((0), (0), (Width * cos(¦È) - Height * sin(¦È)))
-			RotatedHeight = max((Width * sin(¦È) + Height * cos(¦È)), (Height * cos(¦È)), 0) - min((0), (0), (Width * sin(¦È) + Height * cos(¦È)))
-			RotatedWidth = Width * cos(¦È) - Height * sin(¦È)
-			RotatedHeight = Width * sin(¦È) + Height * cos(¦È)
+			RotatedWidth = max((Width * cos(ï¿½ï¿½) - Height * sin(ï¿½ï¿½)), (Width * cos(ï¿½ï¿½)), 0) - min((0), (0), (Width * cos(ï¿½ï¿½) - Height * sin(ï¿½ï¿½)))
+			RotatedHeight = max((Width * sin(ï¿½ï¿½) + Height * cos(ï¿½ï¿½)), (Height * cos(ï¿½ï¿½)), 0) - min((0), (0), (Width * sin(ï¿½ï¿½) + Height * cos(ï¿½ï¿½)))
+			RotatedWidth = Width * cos(ï¿½ï¿½) - Height * sin(ï¿½ï¿½)
+			RotatedHeight = Width * sin(ï¿½ï¿½) + Height * cos(ï¿½ï¿½)
 		*/
 
 		float Radians = FMath::DegreesToRadians(rotation);

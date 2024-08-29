@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright(c) 2024 Agora.io. All rights reserved.
 
 
 #include "AudioSpectrumWidget.h"
@@ -60,14 +60,13 @@ void UAudioSpectrumWidget::InitAgoraEngine(FString APP_ID, FString TOKEN, FStrin
 	Token = TOKEN;
 	ChannelName = CHANNEL_NAME;
 
-	RtcEngineProxy = agora::rtc::ue::createAgoraRtcEngine();
 
 	int SDKBuild = 0;
-	const char* SDKVersionInfo = RtcEngineProxy->getVersion(&SDKBuild);
+	const char* SDKVersionInfo = AgoraUERtcEngine::Get()->getVersion(&SDKBuild);
 	FString SDKInfo = FString::Printf(TEXT("SDK Version: %s Build: %d"), UTF8_TO_TCHAR(SDKVersionInfo), SDKBuild);
 	UBFL_Logger::Print(FString::Printf(TEXT("SDK Info:  %s"), *SDKInfo), LogMsgViewPtr);
 
-	int ret = RtcEngineProxy->initialize(RtcEngineContext);
+	int ret = AgoraUERtcEngine::Get()->initialize(RtcEngineContext);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 }
 
@@ -86,7 +85,7 @@ void UAudioSpectrumWidget::ShowUserGuide()
 
 void UAudioSpectrumWidget::InitAgoraMediaPlayer()
 {
-	MediaPlayer = RtcEngineProxy->createMediaPlayer();
+	MediaPlayer = AgoraUERtcEngine::Get()->createMediaPlayer();
 	UserIMediaPlayerSourceObserver = MakeShared<FUserIMediaPlayerSourceObserver>(this);
 	MediaPlayer->registerPlayerSourceObserver(UserIMediaPlayerSourceObserver.Get());
 	UBFL_Logger::Print(FString::Printf(TEXT("%s PlayerID=%d"), *FString(FUNCTION_MACRO), MediaPlayer->getMediaPlayerId()), LogMsgViewPtr);
@@ -98,9 +97,9 @@ void UAudioSpectrumWidget::InitAgoraMediaPlayer()
 void UAudioSpectrumWidget::JoinChannelWithMPK()
 {
 
-	RtcEngineProxy->enableAudio();
-	RtcEngineProxy->enableVideo();
-	RtcEngineProxy->setClientRole(CLIENT_ROLE_BROADCASTER);
+	AgoraUERtcEngine::Get()->enableAudio();
+	AgoraUERtcEngine::Get()->enableVideo();
+	AgoraUERtcEngine::Get()->setClientRole(CLIENT_ROLE_BROADCASTER);
 
 	ChannelMediaOptions Options;
 	Options.autoSubscribeAudio = true;
@@ -113,7 +112,7 @@ void UAudioSpectrumWidget::JoinChannelWithMPK()
 	Options.enableAudioRecordingOrPlayout = true;
 	Options.clientRoleType = CLIENT_ROLE_TYPE::CLIENT_ROLE_BROADCASTER;
 
-	int ret = RtcEngineProxy->joinChannel(TCHAR_TO_UTF8(*Token), TCHAR_TO_UTF8(*ChannelName), 0, Options);
+	int ret = AgoraUERtcEngine::Get()->joinChannel(TCHAR_TO_UTF8(*Token), TCHAR_TO_UTF8(*ChannelName), 0, Options);
 	UBFL_Logger::Print(FString::Printf(TEXT("%s ret %d"), *FString(FUNCTION_MACRO), ret), LogMsgViewPtr);
 
 }
@@ -232,7 +231,7 @@ void UAudioSpectrumWidget::OnBtnOpenClicked()
 
 void UAudioSpectrumWidget::OnBtnPlayClicked()
 {
-	if (CB_Loop->CheckedState == ECheckBoxState::Checked) {
+	if (CB_Loop->GetCheckedState() == ECheckBoxState::Checked) {
 		MediaPlayer->setLoopCount(-1);
 	}
 	else
@@ -272,7 +271,7 @@ void UAudioSpectrumWidget::NativeDestruct()
 
 void UAudioSpectrumWidget::UnInitAgoraEngine()
 {
-	if (RtcEngineProxy != nullptr)
+	if (AgoraUERtcEngine::Get() != nullptr)
 	{
 		if (MediaPlayer)
 		{
@@ -280,12 +279,11 @@ void UAudioSpectrumWidget::UnInitAgoraEngine()
 			MediaPlayer->unregisterPlayerSourceObserver(UserIMediaPlayerSourceObserver.Get());
 		}
 
-		RtcEngineProxy->destroyMediaPlayer(MediaPlayer);
+		AgoraUERtcEngine::Get()->destroyMediaPlayer(MediaPlayer);
 
-		RtcEngineProxy->leaveChannel();
-		RtcEngineProxy->unregisterEventHandler(UserRtcEventHandler.Get());
-		RtcEngineProxy->release();
-		RtcEngineProxy = nullptr;
+		AgoraUERtcEngine::Get()->leaveChannel();
+		AgoraUERtcEngine::Get()->unregisterEventHandler(UserRtcEventHandler.Get());
+		AgoraUERtcEngine::Release();
 
 		UBFL_Logger::Print(FString::Printf(TEXT("%s release agora engine"), *FString(FUNCTION_MACRO)), LogMsgViewPtr);
 	}
@@ -305,10 +303,8 @@ int UAudioSpectrumWidget::MakeVideoView(uint32 uid, agora::rtc::VIDEO_SOURCE_TYP
 		channelId will be set in [setupLocalVideo] / [setupRemoteVideo]
 	*/
 
-	int ret = -ERROR_NULLPTR;
+	int ret = 0;
 
-	if (RtcEngineProxy == nullptr)
-		return ret;
 
 	agora::rtc::VideoCanvas videoCanvas;
 	videoCanvas.uid = uid;
@@ -317,7 +313,7 @@ int UAudioSpectrumWidget::MakeVideoView(uint32 uid, agora::rtc::VIDEO_SOURCE_TYP
 	if (uid == 0) {
 		FVideoViewIdentity VideoViewIdentity(uid, sourceType, "");
 		videoCanvas.view = UBFL_VideoViewManager::CreateOneVideoViewToCanvasPanel(VideoViewIdentity, CanvasPanel_VideoView, VideoViewMap, DraggableVideoViewTemplate);
-		ret = RtcEngineProxy->setupLocalVideo(videoCanvas);
+		ret = AgoraUERtcEngine::Get()->setupLocalVideo(videoCanvas);
 	}
 	else
 	{
@@ -326,13 +322,13 @@ int UAudioSpectrumWidget::MakeVideoView(uint32 uid, agora::rtc::VIDEO_SOURCE_TYP
 		videoCanvas.view = UBFL_VideoViewManager::CreateOneVideoViewToCanvasPanel(VideoViewIdentity, CanvasPanel_VideoView, VideoViewMap, DraggableVideoViewTemplate);
 
 		if (channelId == "") {
-			ret = RtcEngineProxy->setupRemoteVideo(videoCanvas);
+			ret = AgoraUERtcEngine::Get()->setupRemoteVideo(videoCanvas);
 		}
 		else {
 			agora::rtc::RtcConnection connection;
 			std::string StdStrChannelId = TCHAR_TO_UTF8(*channelId);
 			connection.channelId = StdStrChannelId.c_str();
-			ret = ((agora::rtc::IRtcEngineEx*)RtcEngineProxy)->setupRemoteVideoEx(videoCanvas, connection);
+			ret = ((agora::rtc::IRtcEngineEx*)AgoraUERtcEngine::Get())->setupRemoteVideoEx(videoCanvas, connection);
 		}
 	}
 
@@ -341,10 +337,8 @@ int UAudioSpectrumWidget::MakeVideoView(uint32 uid, agora::rtc::VIDEO_SOURCE_TYP
 
 int UAudioSpectrumWidget::ReleaseVideoView(uint32 uid, agora::rtc::VIDEO_SOURCE_TYPE sourceType /*= VIDEO_SOURCE_CAMERA_PRIMARY*/, FString channelId /*= ""*/)
 {
-	int ret = -ERROR_NULLPTR;
+	int ret = 0;
 
-	if (RtcEngineProxy == nullptr)
-		return ret;
 
 	agora::rtc::VideoCanvas videoCanvas;
 	videoCanvas.view = nullptr;
@@ -354,20 +348,20 @@ int UAudioSpectrumWidget::ReleaseVideoView(uint32 uid, agora::rtc::VIDEO_SOURCE_
 	if (uid == 0) {
 		FVideoViewIdentity VideoViewIdentity(uid, sourceType, "");
 		UBFL_VideoViewManager::ReleaseOneVideoView(VideoViewIdentity, VideoViewMap);
-		ret = RtcEngineProxy->setupLocalVideo(videoCanvas);
+		ret = AgoraUERtcEngine::Get()->setupLocalVideo(videoCanvas);
 	}
 	else
 	{
 		FVideoViewIdentity VideoViewIdentity(uid, sourceType, channelId);
 		UBFL_VideoViewManager::ReleaseOneVideoView(VideoViewIdentity, VideoViewMap);
 		if (channelId == "") {
-			ret = RtcEngineProxy->setupRemoteVideo(videoCanvas);
+			ret = AgoraUERtcEngine::Get()->setupRemoteVideo(videoCanvas);
 		}
 		else {
 			agora::rtc::RtcConnection connection;
 			std::string StdStrChannelId = TCHAR_TO_UTF8(*channelId);
 			connection.channelId = StdStrChannelId.c_str();
-			ret = ((agora::rtc::IRtcEngineEx*)RtcEngineProxy)->setupRemoteVideoEx(videoCanvas, connection);
+			ret = ((agora::rtc::IRtcEngineEx*)AgoraUERtcEngine::Get())->setupRemoteVideoEx(videoCanvas, connection);
 		}
 	}
 	return ret;
@@ -469,7 +463,7 @@ void UAudioSpectrumWidget::FUserRtcEventHandler::onLeaveChannel(const agora::rtc
 
 #pragma region AgoraCallback - IMediaPlayerSourceObserver
 
-void UAudioSpectrumWidget::FUserIMediaPlayerSourceObserver::onPlayerSourceStateChanged(media::base::MEDIA_PLAYER_STATE state, media::base::MEDIA_PLAYER_ERROR ec)
+void UAudioSpectrumWidget::FUserIMediaPlayerSourceObserver::onPlayerSourceStateChanged(media::base::MEDIA_PLAYER_STATE state, media::base::MEDIA_PLAYER_REASON reason)
 {
 	if (!IsWidgetValid())
 		return;
@@ -502,7 +496,7 @@ void UAudioSpectrumWidget::FUserIMediaPlayerSourceObserver::onPlayerSourceStateC
 		});
 }
 
-void UAudioSpectrumWidget::FUserIMediaPlayerSourceObserver::onPositionChanged(int64_t position_ms)
+void UAudioSpectrumWidget::FUserIMediaPlayerSourceObserver::onPositionChanged(int64_t position_ms, int64_t timestampMs)
 {
 
 }

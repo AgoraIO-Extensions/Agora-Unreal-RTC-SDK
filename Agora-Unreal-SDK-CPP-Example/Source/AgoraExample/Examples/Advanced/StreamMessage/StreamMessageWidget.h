@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright(c) 2024 Agora.io. All rights reserved.
 
 #pragma once
 
@@ -132,7 +132,6 @@ protected:
 
 	int StreamId = -1;
 
-	IRtcEngine* RtcEngineProxy;
 
 
 

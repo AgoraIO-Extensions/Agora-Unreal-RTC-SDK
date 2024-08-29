@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright(c) 2024 Agora.io. All rights reserved.
 
 #pragma once
 
@@ -75,10 +75,11 @@ public:
 
 		FUserIMediaPlayerSourceObserver(USpatialAudioWithMPWidget* Widget) : WidgetPtr(Widget) {}
 
-		void onPlayerSourceStateChanged(media::base::MEDIA_PLAYER_STATE state, media::base::MEDIA_PLAYER_ERROR ec) override;
+		void onPlayerSourceStateChanged(media::base::MEDIA_PLAYER_STATE state,
+			media::base::MEDIA_PLAYER_REASON reason) override;
 
 
-		void onPositionChanged(int64_t position_ms) override;
+		void onPositionChanged(int64_t positionMs, int64_t timestampMs) override;
 
 
 		void onPlayerEvent(media::base::MEDIA_PLAYER_EVENT eventCode, int64_t elapsedTime, const char* message) override;
@@ -182,7 +183,7 @@ private:
 
 
 public:
-	inline IRtcEngineEx* GetRtcEngine() { return RtcEngineProxy; }
+	inline IRtcEngineEx* GetRtcEngine() { return AgoraUERtcEngine::Get(); }
 	inline agora::agora_refptr<agora::rtc::IMediaPlayer> GetMediaPlayer() { return MediaPlayer; }
 	inline FString GetChannelName() { return ChannelName; }
 	inline ILocalSpatialAudioEngine* GetLocalSpatialAudioEngine() { return LocalSpatialAudioEngine; }
@@ -207,7 +208,7 @@ protected:
 
 	uint32 UID = 123;
 	uint32 UID_UsedInMPK = 67890;
-	IRtcEngineEx* RtcEngineProxy;
+
 	agora::agora_refptr<agora::rtc::IMediaPlayer> MediaPlayer;
 	ILocalSpatialAudioEngine* LocalSpatialAudioEngine;
 

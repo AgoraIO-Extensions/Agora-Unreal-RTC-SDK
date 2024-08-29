@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright(c) 2024 Agora.io. All rights reserved.
 
 #pragma once
 
@@ -75,10 +75,11 @@ public:
 
 		FUserIMediaPlayerSourceObserver(UStartLocalVideoTranscoderWidget* Widget) : WidgetPtr(Widget) {}
 
-		void onPlayerSourceStateChanged(media::base::MEDIA_PLAYER_STATE state, media::base::MEDIA_PLAYER_ERROR ec) override;
+		void onPlayerSourceStateChanged(media::base::MEDIA_PLAYER_STATE state,
+			media::base::MEDIA_PLAYER_REASON reason) override;
 
 
-		void onPositionChanged(int64_t position_ms) override;
+		void onPositionChanged(int64_t positionMs, int64_t timestampMs) override;
 
 
 		void onPlayerEvent(media::base::MEDIA_PLAYER_EVENT eventCode, int64_t elapsedTime, const char* message) override;
@@ -203,7 +204,7 @@ public:
 	inline FString GetAppId() { return AppId; };
 	inline FString GetToken() { return Token; };
 	inline FString GetChannelName() { return ChannelName; };
-	inline IRtcEngine* GetRtcEngine() { return RtcEngineProxy; }
+	inline IRtcEngine* GetRtcEngine() { return AgoraUERtcEngine::Get(); }
 	inline agora::agora_refptr<agora::rtc::IMediaPlayer> GetMediaPlayer() { return MediaPlayer; }
 
 
@@ -226,9 +227,13 @@ protected:
 	FString Token;
 	FString ChannelName;
 
-	IRtcEngine* RtcEngineProxy;
 	agora::agora_refptr<agora::rtc::IMediaPlayer> MediaPlayer;
 
+
+	char MainCameraDeviceName[MAX_DEVICE_ID_LENGTH] = {};
+	char MainCameraDeviceId[MAX_DEVICE_ID_LENGTH] = {};
+	char SecondCameraDeviceId[MAX_DEVICE_ID_LENGTH] = {};
+	char SecondCameraDeviceName[MAX_DEVICE_ID_LENGTH] = {};
 
 	TSharedPtr<FUserIMediaPlayerSourceObserver> MediaPlayerSourceObserverWarpper;
 	TSharedPtr<FUserRtcEventHandlerEx> UserRtcEventHandlerEx;
