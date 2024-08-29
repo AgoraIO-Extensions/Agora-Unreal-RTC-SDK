@@ -17,7 +17,7 @@ Contains the demo project of Agora Unreal CPP SDK.
 
 SDK Source Files
 
-[![DownLoad](https://img.shields.io/badge/Download-4.2.1-000?style=for-the-badge&logoColor=white)](https://github.com/AgoraIO-Extensions/Agora-Unreal-RTC-SDK-NG/releases)
+[![DownLoad](https://img.shields.io/badge/Download-4.4.0-000?style=for-the-badge&logoColor=white)](https://github.com/AgoraIO-Extensions/Agora-Unreal-RTC-SDK-NG/releases)
 
 ## Frequently Asked Questions
 
