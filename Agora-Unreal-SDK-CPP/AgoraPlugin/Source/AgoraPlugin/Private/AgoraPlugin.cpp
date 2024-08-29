@@ -1,4 +1,4 @@
-//  Copyright (c) 2024 Agora.io. All rights reserved.
+//  Copyright (c) 2023 Agora.io. All rights reserved.
 
 #include "AgoraPlugin.h"
 #include "Core.h"
@@ -17,6 +17,8 @@ void FAgoraPluginModule::StartupModule()
 
 void FAgoraPluginModule::ShutdownModule()
 {
+	//untested, so comment out the code for now
+	//AgoraUERtcEngine::Release();
 }
 
 #undef LOCTEXT_NAMESPACE
