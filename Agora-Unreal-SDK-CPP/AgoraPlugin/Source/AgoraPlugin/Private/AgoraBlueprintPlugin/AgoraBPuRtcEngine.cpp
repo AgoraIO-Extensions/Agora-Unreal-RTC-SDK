@@ -1282,7 +1282,7 @@ int UAgoraBPuRtcEngine::EnableCameraCenterStage(bool enabled)
 #endif
 }
 
-int UAgoraBPuRtcEngine::QueryCameraFocalLengthCapability(const TArray<FFocalLengthInfo>& focalLengthInfos)
+int UAgoraBPuRtcEngine::QueryCameraFocalLengthCapability(const TArray<FAGFocalLengthInfo>& focalLengthInfos)
 {
 #if defined(__ANDROID__) || (defined(__APPLE__) && TARGET_OS_IOS)
 
@@ -1290,7 +1290,7 @@ int UAgoraBPuRtcEngine::QueryCameraFocalLengthCapability(const TArray<FFocalLeng
 	agora::rtc::FocalLengthInfo* focalLengthInfo = nullptr;
 	SET_UABT_TARRARY_CUSTOMDATA_TO_AGORA_ARRAY___MEMALLOC(focalLengthInfo, agora::rtc::FocalLengthInfo, TotalSize, focalLengthInfos)
 		auto ret = AgoraUERtcEngine::Get()->queryCameraFocalLengthCapability(focalLengthInfo, TotalSize);
-	SET_UABT_TARRARY_CUSTOMDATA_TO_AGORA_ARRAY___MEMFREE(focalLengthInfo, TotalSize, FFocalLengthInfo)
+	SET_UABT_TARRARY_CUSTOMDATA_TO_AGORA_ARRAY___MEMFREE(focalLengthInfo, TotalSize, FAGFocalLengthInfo)
 		return ret;
 #else
 	return AGORA_UE_ERR_CODE(ERROR_NOT_SUPPORT_PLATFORM);

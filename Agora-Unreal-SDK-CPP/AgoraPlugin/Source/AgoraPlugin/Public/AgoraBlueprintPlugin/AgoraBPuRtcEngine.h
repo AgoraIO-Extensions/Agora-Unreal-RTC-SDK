@@ -508,7 +508,7 @@ public:
 	int QueryScreenCaptureCapability();
 
 	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
-	int QueryCameraFocalLengthCapability(const TArray<FFocalLengthInfo> & focalLengthInfos);
+	int QueryCameraFocalLengthCapability(const TArray<FAGFocalLengthInfo> & focalLengthInfos);
 	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
 	int SetScreenCaptureScenario(ESCREEN_SCENARIO_TYPE screenScenario);
 	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")

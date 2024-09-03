@@ -7,6 +7,8 @@
 #include "UtilityUABTTypeHelper.h"
 #include "UtilityAgoraBPuLogger.h"
 #include "Components/Image.h"
+#include "Engine/Texture2D.h"
+#include "TextureResource.h"
 #include "AgoraBPuBaseDataTypes.generated.h"
 
 using UABT = agora::rtc::ue::UABT;
@@ -4859,20 +4861,20 @@ enum class EAUDIO_SESSION_OPERATION_RESTRICTION : uint8 {
 
 
 USTRUCT(BlueprintType)
-struct FFocalLengthInfo {
+struct FAGFocalLengthInfo {
 
 	GENERATED_BODY()
 
 public:
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|FFocalLengthInfo")
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|FAGFocalLengthInfo")
 	int cameraDirection = 0;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|FFocalLengthInfo")
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|FAGFocalLengthInfo")
 	ECAMERA_FOCAL_LENGTH_TYPE focalLengthType = ECAMERA_FOCAL_LENGTH_TYPE::CAMERA_FOCAL_LENGTH_DEFAULT;
 
-	FFocalLengthInfo(){}
-	FFocalLengthInfo(const agora::rtc::FocalLengthInfo & AgoraData){
+	FAGFocalLengthInfo(){}
+	FAGFocalLengthInfo(const agora::rtc::FocalLengthInfo & AgoraData){
 		cameraDirection = AgoraData.cameraDirection;
 		focalLengthType = static_cast<ECAMERA_FOCAL_LENGTH_TYPE>(AgoraData.focalLengthType);
 	}

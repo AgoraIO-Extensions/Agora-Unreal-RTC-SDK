@@ -1,5 +1,6 @@
 // Copyright(c) 2024 Agora.io. All rights reserved.
 #include "AgoraBPuIRtcEngineEventHandlerEx.h"
+#include "Async/Async.h"
 
 void UAgoraBPuIRtcEngineEventHandlerEx::AddBlueprintCallbackExecutorEx(UAgoraBPuIRtcEngineEventHandlerExCBExecutor* Executor)
 {
