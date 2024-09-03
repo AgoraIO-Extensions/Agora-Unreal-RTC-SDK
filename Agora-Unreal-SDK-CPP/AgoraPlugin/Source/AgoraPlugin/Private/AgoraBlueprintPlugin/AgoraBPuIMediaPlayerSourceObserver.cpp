@@ -1,6 +1,7 @@
 // Copyright(c) 2024 Agora.io. All rights reserved.
 
 #include "AgoraBPuIMediaPlayerSourceObserver.h"
+#include "Async/Async.h"
 
 #pragma region IMediaPlayerSourceObserver
 
