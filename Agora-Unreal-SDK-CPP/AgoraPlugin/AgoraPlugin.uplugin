@@ -21,17 +21,29 @@
         "IOS",
         "Android"
     ],
-    "Modules": [
-        {
-            "Name": "AgoraPlugin",
-            "Type": "Runtime",
-            "LoadingPhase": "Default",
-            "PlatformAllowList": [
-                "Win64",
-                "Mac",
-                "IOS",
-                "Android"
-            ]
-        }
-    ]
+  "Modules": [
+    {
+      "Name": "AgoraUtilityHelper",
+      "Type": "Runtime",
+      "LoadingPhase": "Default",
+      "PlatformAllowList": [
+        "Win64",
+        "Mac",
+        "IOS",
+        "Android"
+      ]
+    },
+
+    {
+      "Name": "AgoraPlugin",
+      "Type": "Runtime",
+      "LoadingPhase": "Default",
+      "PlatformAllowList": [
+        "Win64",
+        "Mac",
+        "IOS",
+        "Android"
+      ]
+    }
+  ]
 }
