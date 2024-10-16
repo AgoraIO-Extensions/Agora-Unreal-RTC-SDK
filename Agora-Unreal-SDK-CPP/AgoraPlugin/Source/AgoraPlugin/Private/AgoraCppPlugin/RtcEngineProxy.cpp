@@ -79,7 +79,22 @@ namespace agora
 #if AGORA_UESDK_ENABLE_VIDEO
 					VideoRenderMgr = nullptr;
 #endif
+
+#if PLATFORM_WINDOWS
+
+				for (auto& Extension : ExtensionHandles) {
+					if(Extension.Value){
+						FPlatformProcess::FreeDllHandle(Extension.Value);
+						UE_LOG(LogTemp, Display, TEXT("Agora Unload Extension: %s"), *Extension.Key);
+					}
+					else{
+						UE_LOG(LogTemp, Display, TEXT("Agora Unload Empty Extension: %s"), *Extension.Key);
+					}
+				}
+				ExtensionHandles.Empty();
 				
+#endif
+
 				}
 			}
 
