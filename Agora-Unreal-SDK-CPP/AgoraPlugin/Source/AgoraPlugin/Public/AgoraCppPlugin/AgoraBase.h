@@ -83,6 +83,14 @@
 #define INVALID_DISPLAY_ID 0xffff
 
 namespace agora {
+namespace commons {
+namespace cjson {
+class JsonWrapper;
+}  // namespace cjson
+}  // namespace commons
+
+typedef commons::cjson::JsonWrapper any_document_t;
+
 namespace util {
 
 template <class T>
@@ -147,7 +155,7 @@ class CopyableAutoPtr : public AutoPtr<T> {
 
  public:
   explicit CopyableAutoPtr(pointer_type p = 0) : AutoPtr<T>(p) {}
-  CopyableAutoPtr(const CopyableAutoPtr& rhs) { this->reset(rhs.clone()); }
+  explicit CopyableAutoPtr(const CopyableAutoPtr& rhs) { this->reset(rhs.clone()); }
   CopyableAutoPtr& operator=(const CopyableAutoPtr& rhs) {
     if (this != &rhs) this->reset(rhs.clone());
     return *this;
@@ -417,6 +425,10 @@ enum WARN_CODE_TYPE {
    */
   WARN_ADM_IMPROPER_SETTINGS = 1053,
   /**
+   * 1060: Audio Device Module: Could not register phone state listener.
+   */
+  WARN_ADM_REG_PHONE_LISTENNER_FAILED = 1060,
+  /**
    * 1322: No recording device.
    */
   WARN_ADM_WIN_CORE_NO_RECORDING_DEVICE = 1322,
@@ -659,6 +671,10 @@ enum ERROR_CODE_TYPE {
    * 134: The user account is invalid, usually because the data format of the user account is incorrect.
    */
   ERR_INVALID_USER_ACCOUNT = 134,
+  /**
+   * 135: When encryption enabled, a failure occurs when verifying the server's certification.
+   */
+  ERR_CERT_VERIFY_FAILURE = 135,
 
   /** 157: The necessary dynamical library is not integrated. For example, if you call
    * the \ref agora::rtc::IRtcEngine::enableDeepLearningDenoise "enableDeepLearningDenoise" but do not integrate the dynamical
@@ -852,10 +868,10 @@ enum INTERFACE_ID_TYPE {
   AGORA_IID_MEDIA_ENGINE_REGULATOR = 9,
   AGORA_IID_CLOUD_SPATIAL_AUDIO = 10,
   AGORA_IID_LOCAL_SPATIAL_AUDIO = 11,
+  AGORA_IID_MEDIA_RECORDER = 12,
   AGORA_IID_STATE_SYNC = 13,
   AGORA_IID_METACHAT_SERVICE = 14,
   AGORA_IID_MUSIC_CONTENT_CENTER = 15,
-  AGORA_IID_H265_TRANSCODER = 16,
 };
 
 /**
@@ -1114,10 +1130,10 @@ const int DEFAULT_MIN_BITRATE_EQUAL_TO_TARGET_BITRATE = -2;
 /**
  * screen sharing supported capability level.
  */
-enum SCREEN_CAPTURE_FRAMERATE_CAPABILITY {
-  SCREEN_CAPTURE_FRAMERATE_CAPABILITY_15_FPS = 0,
-  SCREEN_CAPTURE_FRAMERATE_CAPABILITY_30_FPS = 1,
-  SCREEN_CAPTURE_FRAMERATE_CAPABILITY_60_FPS = 2,
+enum SCREEN_CAPTURE_CAPABILITY_LEVEL {
+  SCREEN_CAPTURE_CAPABILITY_LEVEL_15_FPS = 0,
+  SCREEN_CAPTURE_CAPABILITY_LEVEL_30_FPS = 1,
+  SCREEN_CAPTURE_CAPABILITY_LEVEL_60_FPS = 2,
 };
 
 /**
@@ -1683,7 +1699,7 @@ struct AdvanceOptions {
  */
 enum VIDEO_MIRROR_MODE_TYPE {
   /**
-   * 0: The mirror mode determined by the SDK.
+   * (Default) 0: The mirror mode determined by the SDK.
    */
   VIDEO_MIRROR_MODE_AUTO = 0,
   /**
@@ -1696,6 +1712,17 @@ enum VIDEO_MIRROR_MODE_TYPE {
   VIDEO_MIRROR_MODE_DISABLED = 2,
 };
 
+#if defined(__APPLE__) && TARGET_OS_IOS
+/**
+ * Camera capturer configuration for format type.
+ */
+enum CAMERA_FORMAT_TYPE {
+  /** 0: (Default) NV12. */
+  CAMERA_FORMAT_NV12,
+  /** 1: BGRA. */
+  CAMERA_FORMAT_BGRA,
+};
+#endif
 
 /** Supported codec type bit mask. */
 enum CODEC_CAP_MASK {
@@ -1718,9 +1745,9 @@ enum CODEC_CAP_MASK {
 /** The codec support information. */
 struct CodecCapInfo {
   /** The codec type: #VIDEO_CODEC_TYPE. */
-  VIDEO_CODEC_TYPE codecType;
+  VIDEO_CODEC_TYPE codec_type;
   /** The codec support flag. */
-  int codecCapMask;
+  int codec_cap_mask;
 };
 
 /**
@@ -1823,7 +1850,6 @@ struct VideoEncoderConfiguration {
   DEGRADATION_PREFERENCE degradationPreference;
 
   /**
-   * The mirror mode is disabled by default
    * If mirror_type is set to VIDEO_MIRROR_MODE_ENABLED, then the video frame would be mirrored before encoding.
    */
   VIDEO_MIRROR_MODE_TYPE mirrorMode;
@@ -2210,6 +2236,10 @@ struct RtcStats {
    * The packet loss rate of receiver(audience).
    */
   int rxPacketLossRate;
+  /**
+   * The audio playout device glitch count.
+   */
+  int playoutDeviceGlitch;
   RtcStats()
     : duration(0),
       txBytes(0),
@@ -2243,7 +2273,8 @@ struct RtcStats {
       firstVideoKeyFrameDecodedDurationAfterUnmute(0),
       firstVideoKeyFrameRenderedDurationAfterUnmute(0),
       txPacketLossRate(0),
-      rxPacketLossRate(0) {}
+      rxPacketLossRate(0),
+      playoutDeviceGlitch(0) {}
 };
 
 /**
@@ -2343,24 +2374,6 @@ enum EXPERIENCE_POOR_REASON {
    * As a result, audio transmission quality is undermined.
    */
   WIFI_BLUETOOTH_COEXIST = 8,
-};
-
-/**
- * Audio AINS mode
- */
-enum AUDIO_AINS_MODE {
-    /**
-     * AINS mode with soft suppression level.
-     */
-    AINS_MODE_BALANCED = 0,
-    /**
-     * AINS mode with high suppression level.
-     */
-    AINS_MODE_AGGRESSIVE = 1,
-    /**
-     * AINS mode with high suppression level and ultra-low-latency
-     */
-    AINS_MODE_ULTRALOWLATENCY = 2
 };
 
 /**
@@ -2539,21 +2552,6 @@ enum SCREEN_SCENARIO_TYPE {
   SCREEN_SCENARIO_RDC = 4,
 };
 
-
-/**
- * The video application scenario type.
- */
-enum VIDEO_APPLICATION_SCENARIO_TYPE {
-  /**
-   * 0: Default Scenario.
-   */
-  APPLICATION_SCENARIO_GENERAL = 0,
-  /**
-   * 1: Meeting Scenario. This scenario is the best QoE practice of meeting application.
-   */
-  APPLICATION_SCENARIO_MEETING = 1,
-};
-
 /**
  * The brightness level of the video image captured by the local camera.
  */
@@ -2697,7 +2695,7 @@ enum LOCAL_VIDEO_STREAM_ERROR {
   /**
    * 5: The local video encoder is not supported.
    */
-  LOCAL_VIDEO_STREAM_ERROR_ENCODE_FAILURE = 5,
+  LOCAL_VIDEO_STREAM_ERROR_CODEC_NOT_SUPPORT = 5,
   /**
    * 6: (iOS only) The app is in the background. Remind the user that video capture cannot be
    * performed normally when the app is in the background.
@@ -2726,6 +2724,16 @@ enum LOCAL_VIDEO_STREAM_ERROR {
    * Check whether the ID of the video device is valid.
    */
   LOCAL_VIDEO_STREAM_ERROR_DEVICE_INVALID_ID = 10,
+  /**
+   * 14: (Android only) Video capture was interrupted, possibly due to the camera being occupied
+   * or some policy reasons such as background termination.
+   */
+  LOCAL_VIDEO_STREAM_ERROR_DEVICE_INTERRUPT = 14,
+  /**
+   * 15: (Android only) The device may need to be shut down and restarted to restore camera function, 
+   * or there may be a persistent hardware problem.
+   */
+  LOCAL_VIDEO_STREAM_ERROR_DEVICE_FATAL_ERROR = 15,
   /**
    * 101: The current video capture device is unavailable due to excessive system pressure.
    */
@@ -2759,6 +2767,10 @@ enum LOCAL_VIDEO_STREAM_ERROR {
   LOCAL_VIDEO_STREAM_ERROR_SCREEN_CAPTURE_FAILURE = 21,
   /** 22: No permision to capture screen. */
   LOCAL_VIDEO_STREAM_ERROR_SCREEN_CAPTURE_NO_PERMISSION = 22,
+  /** 25: (Windows only) The local screen capture window is currently hidden and not visible on the desktop. */
+  LOCAL_VIDEO_STREAM_ERROR_SCREEN_CAPTURE_WINDOW_HIDDEN = 25,
+  /** 26: (Windows only) The local screen capture window is recovered from its hidden state. */
+  LOCAL_VIDEO_STREAM_ERROR_SCREEN_CAPTURE_WINDOW_RECOVER_FROM_HIDDEN = 26,
 };
 
 /**
@@ -3233,6 +3245,18 @@ struct LocalAudioStats
    * The audio delay of the device, contains record and playout delay
    */
   int audioDeviceDelay;
+  /**
+   * The playout delay of the device
+   */
+  int audioPlayoutDelay;
+  /**
+   * The estimated delay of audio in-ear monitoring
+   */
+  int earMonitorDelay;
+  /**
+   * The estimated signal delay (ms) from AEC nearin and farin
+   */
+  int aecEstimatedDelay;
 };
 
 
@@ -3710,6 +3734,7 @@ struct TranscodingVideoStream {
     : sourceType(VIDEO_SOURCE_CAMERA_PRIMARY),
       remoteUserUid(0),
       imageUrl(NULL),
+      mediaPlayerId(0),
       x(0),
       y(0),
       width(0),
@@ -3973,6 +3998,10 @@ enum CONNECTION_CHANGED_REASON_TYPE
    * 21: The connection is failed due to license validation failure.
    */
   CONNECTION_CHANGED_LICENSE_VALIDATION_FAILURE = 21,
+  /**
+   * 22: The connection is failed due to certification verify failure.
+   */
+  CONNECTION_CHANGED_CERTIFICATION_VERYFY_FAILURE = 22,
 };
 
 /**
@@ -4083,6 +4112,10 @@ enum NETWORK_TYPE {
    * 5: The network type is mobile 4G.
    */
   NETWORK_TYPE_MOBILE_4G = 5,
+  /**
+   * 6: The network type is mobile 5G.
+   */
+  NETWORK_TYPE_MOBILE_5G = 6,
 };
 
 /**
@@ -4115,6 +4148,8 @@ struct VideoCanvas {
    * The user id of local video.
    */
   uid_t uid;
+
+  uid_t subviewUid;
   /**
    * The video render mode. See \ref agora::media::base::RENDER_MODE_TYPE "RENDER_MODE_TYPE".
    * The default value is RENDER_MODE_HIDDEN.
@@ -4153,23 +4188,25 @@ struct VideoCanvas {
    */
   Rectangle cropArea;
 
-  /**
-  * Whether to apply alpha mask to the video frame if exsit:
-  * true: Apply alpha mask to video frame.
-  * false: (Default) Do not apply alpha mask to video frame.
-  */
+   /**
+   * default false. if set to true, the video will apply alpha mask if exist.(Mac only)
+   */
   bool enableAlphaMask;
-  
+
   VideoCanvas()
-    : view(NULL), uid(0), renderMode(media::base::RENDER_MODE_HIDDEN), mirrorMode(VIDEO_MIRROR_MODE_AUTO),
+    : view(NULL), uid(0),subviewUid(0),renderMode(media::base::RENDER_MODE_HIDDEN), mirrorMode(VIDEO_MIRROR_MODE_AUTO),
       setupMode(VIDEO_VIEW_SETUP_REPLACE), sourceType(VIDEO_SOURCE_CAMERA_PRIMARY), mediaPlayerId(-ERR_NOT_READY), cropArea(0, 0, 0, 0), enableAlphaMask(false) {}
   
   VideoCanvas(view_t v, media::base::RENDER_MODE_TYPE m, VIDEO_MIRROR_MODE_TYPE mt, uid_t u)
-    : view(v), uid(u), renderMode(m), mirrorMode(mt), setupMode(VIDEO_VIEW_SETUP_REPLACE),
+    : view(v), uid(u),subviewUid(0), renderMode(m), mirrorMode(mt), setupMode(VIDEO_VIEW_SETUP_REPLACE),
+      sourceType(VIDEO_SOURCE_CAMERA_PRIMARY), mediaPlayerId(-ERR_NOT_READY), cropArea(0, 0, 0, 0), enableAlphaMask(false) {}
+  
+  VideoCanvas(view_t v, media::base::RENDER_MODE_TYPE m, VIDEO_MIRROR_MODE_TYPE mt, uid_t u,uid_t subu)
+    : view(v), uid(u),subviewUid(subu), renderMode(m), mirrorMode(mt), setupMode(VIDEO_VIEW_SETUP_REPLACE),
       sourceType(VIDEO_SOURCE_CAMERA_PRIMARY), mediaPlayerId(-ERR_NOT_READY), cropArea(0, 0, 0, 0), enableAlphaMask(false) {}
   
   VideoCanvas(view_t v, media::base::RENDER_MODE_TYPE m, VIDEO_MIRROR_MODE_TYPE mt, user_id_t)
-    : view(v), uid(0), renderMode(m), mirrorMode(mt), setupMode(VIDEO_VIEW_SETUP_REPLACE),
+    : view(v), uid(0),subviewUid(0),renderMode(m), mirrorMode(mt), setupMode(VIDEO_VIEW_SETUP_REPLACE),
       sourceType(VIDEO_SOURCE_CAMERA_PRIMARY), mediaPlayerId(-ERR_NOT_READY), cropArea(0, 0, 0, 0), enableAlphaMask(false) {}
 };
 
@@ -4319,32 +4356,22 @@ struct ColorEnhanceOptions {
  * The custom background image.
  */
 struct VirtualBackgroundSource {
-  /** The type of the custom background source.
+  /** The type of the custom background image.
    */
   enum BACKGROUND_SOURCE_TYPE {
     /**
-     * 0: Enable segementation with the captured video frame without replacing the background.
-     */
-    BACKGROUND_NONE = 0,
-    /**
-     * 1: (Default) The background source is a solid color.
+     * 1: (Default) The background image is a solid color.
      */
     BACKGROUND_COLOR = 1,
     /**
-     * The background source is a file in PNG or JPG format.
+     * The background image is a file in PNG or JPG format.
      */
     BACKGROUND_IMG = 2,
-    /** 
-     * The background source is the blurred original video frame.
-     * */
+    /** The background image is the blurred background. */
     BACKGROUND_BLUR = 3,
-    /** 
-     * The background source is a file in MP4, AVI, MKV, FLV format. 
-     * */
-    BACKGROUND_VIDEO = 4,
   };
 
-  /** The degree of blurring applied to the background source.
+  /** The degree of blurring applied to the custom background image..
    */
   enum BACKGROUND_BLUR_DEGREE {
     /** 1: The degree of blurring applied to the custom background image is low. The user can almost see the background clearly. */
@@ -4529,11 +4556,17 @@ enum VOICE_BEAUTIFIER_PRESET {
  * For better voice effects, Agora recommends setting the `profile` parameter of `setAudioProfile` to `AUDIO_PROFILE_MUSIC_HIGH_QUALITY` or `AUDIO_PROFILE_MUSIC_HIGH_QUALITY_STEREO` before using the following presets:
  *
  * - `ROOM_ACOUSTICS_KTV`
+ * - `AUDIO_EFFECT_OFF_HARMONY`
+ * - `ROOM_ACOUSTICS_KTV_HARMONY`
  * - `ROOM_ACOUSTICS_VOCAL_CONCERT`
+ * - `ROOM_ACOUSTICS_VOCAL_CONCERT_HARMONY`
  * - `ROOM_ACOUSTICS_STUDIO`
+ * - `ROOM_ACOUSTICS_STUDIO_HARMONY`
  * - `ROOM_ACOUSTICS_PHONOGRAPH`
+ * - `ROOM_ACOUSTICS_PHONOGRAPH_HARMONY`
  * - `ROOM_ACOUSTICS_SPACIAL`
  * - `ROOM_ACOUSTICS_ETHEREAL`
+ * - `ROOM_ACOUSTICS_CHORUS`
  * - `VOICE_CHANGER_EFFECT_UNCLE`
  * - `VOICE_CHANGER_EFFECT_OLDMAN`
  * - `VOICE_CHANGER_EFFECT_BOY`
@@ -4547,18 +4580,38 @@ enum AUDIO_EFFECT_PRESET {
   /** Turn off voice effects, that is, use the original voice.
    */
   AUDIO_EFFECT_OFF = 0x00000000,
+  /** The voice effect for backing vocals when the lead vocal turns off audio effect.
+  * @note: When this effect is used, the voice of the backing vocals will be softer.
+  */
+  AUDIO_EFFECT_OFF_HARMONY = 0x02010120,
   /** The voice effect typical of a KTV venue.
    */
   ROOM_ACOUSTICS_KTV = 0x02010100,
+  /** The voice effect typical of a KTV venue for backing vocals.
+  * @note: This effect is used for backing vocals when KTV venue is chosen for the lead vocal.
+  */
+  ROOM_ACOUSTICS_KTV_HARMONY = 0x02010110,
   /** The voice effect typical of a concert hall.
    */
   ROOM_ACOUSTICS_VOCAL_CONCERT = 0x02010200,
+  /** The voice effect typical of a concert hall for backing vocals.
+  * @note: This effect is used for backing vocals when concert hall is chosen for the lead vocal.
+  */
+  ROOM_ACOUSTICS_VOCAL_CONCERT_HARMONY = 0x02010210,
   /** The voice effect typical of a recording studio.
    */
   ROOM_ACOUSTICS_STUDIO = 0x02010300,
+  /** The voice effect typical of a studio venue for backing vocals.
+  * @note: This effect is used for backing vocals when studio venue is chosen for the lead vocal.
+  */
+  ROOM_ACOUSTICS_STUDIO_HARMONY = 0x02010310,
   /** The voice effect typical of a vintage phonograph.
    */
   ROOM_ACOUSTICS_PHONOGRAPH = 0x02010400,
+  /** The voice effect typical of a phonograph venue for backing vocals.
+  * @note: This effect is used for backing vocals when phonograph venue is chosen for the lead vocal.
+  */
+  ROOM_ACOUSTICS_PHONOGRAPH_HARMONY = 0x02010410,
   /** The virtual stereo effect, which renders monophonic audio as stereo audio.
    *
    * @note Before using this preset, set the `profile` parameter of `setAudioProfile`
@@ -4595,6 +4648,13 @@ enum AUDIO_EFFECT_PRESET {
    * setting this enumerator.
    */
   ROOM_ACOUSTICS_VIRTUAL_SURROUND_SOUND = 0x02010900,
+  /** The voice effect for chorus.
+   * @note To achieve better audio effect quality, Agora recommends calling \ref
+   * IRtcEngine::setAudioProfile "setAudioProfile" and setting the `profile` parameter to
+   * `AUDIO_PROFILE_MUSIC_HIGH_QUALITY(4)` or `AUDIO_PROFILE_MUSIC_HIGH_QUALITY_STEREO(5)` before
+   * setting this enumerator.
+   */
+  ROOM_ACOUSTICS_CHORUS     = 0x02010D00,
   /** A middle-aged man's voice.
    *
    * @note
@@ -4676,41 +4736,7 @@ enum VOICE_CONVERSION_PRESET {
   VOICE_CHANGER_SOLID = 0x03010300,
   /** A deep voice. To avoid audio distortion, ensure that you use this enumerator to process a male-sounding voice.
    */
-  VOICE_CHANGER_BASS = 0x03010400,
-  /** A voice like a cartoon character.
-   */
-  VOICE_CHANGER_CARTOON = 0x03010500,
-  /** A voice like a child.
-   */
-  VOICE_CHANGER_CHILDLIKE = 0x03010600,
-  /** A voice like a phone operator.
-   */
-  VOICE_CHANGER_PHONE_OPERATOR = 0x03010700,
-  /** A monster voice.
-   */
-  VOICE_CHANGER_MONSTER = 0x03010800,
-  /** A voice like Transformers.
-   */
-  VOICE_CHANGER_TRANSFORMERS = 0x03010900,
-  /** A voice like Groot.
-   */
-  VOICE_CHANGER_GROOT = 0x03010A00,
-  /** A voice like Darth Vader.
-   */
-  VOICE_CHANGER_DARTH_VADER = 0x03010B00,
-  /** A rough female voice.
-   */
-  VOICE_CHANGER_IRON_LADY = 0x03010C00,
-  /** A voice like Crayon Shin-chan.
-   */
-  VOICE_CHANGER_SHIN_CHAN = 0x03010D00,
-  /** A voice like a castrato.
-   */
-  VOICE_CHANGER_GIRLISH_MAN = 0x03010E00,
-  /** A voice like chipmunk.
-   */
-  VOICE_CHANGER_CHIPMUNK = 0x03010F00,
-
+  VOICE_CHANGER_BASS = 0x03010400
 };
 
 /** The options for SDK preset headphone equalizer.
@@ -4849,6 +4875,10 @@ enum AUDIO_FILE_RECORDING_TYPE {
    * 3: Records the mixed audio of the local and all remote users.
    */
   AUDIO_FILE_RECORDING_MIXED = 3,
+  /**
+   * 4: publish audio file recording.
+   */
+  AUDIO_FILE_RECORDING_PUBLISH = 4,
 };
 
 /**
@@ -4977,7 +5007,7 @@ public:
 * @param length The data length (byte) of the audio frame.
 * @param audioEncodedFrameInfo Audio information after encoding. For details, see `EncodedAudioFrameInfo`.
 */
-virtual void onRecordAudioEncodedFrame(const uint8_t* frameBuffer,  int length, const EncodedAudioFrameInfo& audioEncodedFrameInfo) = 0;
+virtual void OnRecordAudioEncodedFrame(const uint8_t* frameBuffer,  int length, const EncodedAudioFrameInfo& audioEncodedFrameInfo) = 0;
 
 /**
 * Gets the encoded audio data of all remote users.
@@ -4989,7 +5019,7 @@ virtual void onRecordAudioEncodedFrame(const uint8_t* frameBuffer,  int length, 
 * @param length The data length (byte) of the audio frame.
 * @param audioEncodedFrameInfo Audio information after encoding. For details, see `EncodedAudioFrameInfo`.
 */
-virtual void onPlaybackAudioEncodedFrame(const uint8_t* frameBuffer,  int length, const EncodedAudioFrameInfo& audioEncodedFrameInfo) = 0;
+virtual void OnPlaybackAudioEncodedFrame(const uint8_t* frameBuffer,  int length, const EncodedAudioFrameInfo& audioEncodedFrameInfo) = 0;
 
 /**
 * Gets the mixed and encoded audio data of the local and all remote users.
@@ -5001,7 +5031,16 @@ virtual void onPlaybackAudioEncodedFrame(const uint8_t* frameBuffer,  int length
 * @param length The data length (byte) of the audio frame.
 * @param audioEncodedFrameInfo Audio information after encoding. For details, see `EncodedAudioFrameInfo`.
 */
-virtual void onMixedAudioEncodedFrame(const uint8_t* frameBuffer,  int length, const EncodedAudioFrameInfo& audioEncodedFrameInfo) = 0;
+virtual void OnMixedAudioEncodedFrame(const uint8_t* frameBuffer,  int length, const EncodedAudioFrameInfo& audioEncodedFrameInfo) = 0;
+
+/**
+* Occurs each time the SDK receives an encoded before-publish audio frame.
+* @param frameBuffer The pointer to the audio frame buffer.
+* @param length The data length of the audio frame.
+* @param audioEncodedFrameInfo The information of the encoded audio frame: EncodedAudioFrameInfo.
+
+*/
+virtual void OnPublishAudioEncodedFrame(const uint8_t* frameBuffer,  int length, const EncodedAudioFrameInfo& audioEncodedFrameInfo) = 0;
 
 virtual ~IAudioEncodedFrameObserver () {}
 };
@@ -5064,6 +5103,10 @@ enum AREA_CODE_EX {
      * United States
      */
     AREA_CODE_US = 0x00000800,
+    /**
+     * Russia
+     */
+    AREA_CODE_RU = 0x00001000,
     /**
      * The global area (except China)
      */
@@ -5577,13 +5620,12 @@ struct EchoTestConfiguration {
   bool enableVideo;
   const char* token;
   const char* channelId;
-  int intervalInSeconds;
 
-  EchoTestConfiguration(view_t v, bool ea, bool ev, const char* t, const char* c, const int is)
-   : view(v), enableAudio(ea), enableVideo(ev), token(t), channelId(c), intervalInSeconds(is) {}
+  EchoTestConfiguration(view_t v, bool ea, bool ev, const char* t, const char* c)
+   : view(v), enableAudio(ea), enableVideo(ev), token(t), channelId(c) {}
 
   EchoTestConfiguration()
-   : view(OPTIONAL_NULLPTR), enableAudio(true), enableVideo(true), token(OPTIONAL_NULLPTR), channelId(OPTIONAL_NULLPTR), intervalInSeconds(2) {}
+   : view(OPTIONAL_NULLPTR), enableAudio(true), enableVideo(true), token(OPTIONAL_NULLPTR), channelId(OPTIONAL_NULLPTR) {}
 };
 
 /**
@@ -5710,9 +5752,9 @@ struct ScreenVideoParameters {
  */
 struct ScreenAudioParameters {
   /**
-   * The audio sample rate (Hz). The default value is `16000`.
+   * The audio sample rate (Hz). The default value is `48000`.
    */
-  int sampleRate = 16000;
+  int sampleRate = 48000;
   /**
    * The number of audio channels. The default value is `2`, indicating dual channels.
    */
@@ -5828,32 +5870,6 @@ struct VideoRenderingTracingInfo {
   int remoteJoined2PacketReceived;
 };
 
-enum CONFIG_FETCH_TYPE {
-  /**
-   * 1: Fetch config when initializing RtcEngine, without channel info.
-   */
-  CONFIG_FETCH_TYPE_INITIALIZE = 1,
-  /**
-   * 2: Fetch config when joining channel with channel info, such as channel name and uid.
-   */
-  CONFIG_FETCH_TYPE_JOIN_CHANNEL = 2,
-};
-
-/**
- * media recorder source stream information
- */
-struct RecorderStreamInfo {
-    /**
-     * The channel ID of the video track.
-     */
-    const char* channelId;
-    /**
-     * The user ID.
-     */
-    uid_t uid;
-    RecorderStreamInfo() : channelId(NULL), uid(0) {}
-};
-
 }  // namespace rtc
 
 namespace base {
@@ -5927,6 +5943,17 @@ struct SpatialAudioParams {
   Optional<bool> enable_doppler;
 };
 
+struct VideoLayout
+{
+  const char* channelId;
+  uint32_t uid;
+  const char* strUid;
+  uint32_t x;
+  uint32_t y;
+  uint32_t width;
+  uint32_t height;
+  uint32_t videoState; 
+};
 }  // namespace agora
 
 /**

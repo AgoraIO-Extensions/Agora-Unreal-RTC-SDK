@@ -21,7 +21,6 @@
 	<gameActivityImportAdditions>
 		<insert>
 			import io.agora.rtc2.internal.RtcEngineImpl;
-			import io.agora.rtc2.internal.CommonUtility;
 		</insert>
 	</gameActivityImportAdditions>
 
@@ -30,6 +29,7 @@
 			-keep class io.agora.** { *; }
 		</insert>
 	</proguardAdditions>
+	
 
 	<gameActivityClassAdditions>
 		<insert>
@@ -39,25 +39,35 @@
 					boolean init = RtcEngineImpl.initializeNativeLibs();
 					System.out.println("Call LoadLibrary Result is " + init);
 				}
-				public void LoadAndroidScreenCaptureSo()
-				{
-					System.out.println("Call LoadAndroidScreenCaptureSo Result");
-				}
 			]]>
 		</insert>
 	</gameActivityClassAdditions>
 	<!-- optional files or directories to copy to Intermediate/Android/APK -->
 	<resourceCopies>
 		<log text="PluginDir: $S(PluginDir)"/>
-<!-- AgoraInsert -->
+		<copyFile src="$S(PluginDir)/$S(Architecture)/libagora-rtc-sdk.so" dst="$S(BuildDir)/libs/$S(Architecture)/libagora-rtc-sdk.so"/>
+		<copyFile src="$S(PluginDir)/$S(Architecture)/libagora-soundtouch.so" dst="$S(BuildDir)/libs/$S(Architecture)/libagora-soundtouch.so"/>
+		<copyFile src="$S(PluginDir)/$S(Architecture)/libagora_ai_noise_suppression_extension.so" dst="$S(BuildDir)/libs/$S(Architecture)/libagora_ai_noise_suppression_extension.so"/>
+		<copyFile src="$S(PluginDir)/agora-rtc-sdk.jar" dst="$S(BuildDir)/libs/agora-rtc-sdk.jar" />
+		<copyFile src="$S(PluginDir)/agora-rtc-sdk-javadoc.jar" dst="$S(BuildDir)/libs/agora-rtc-sdk-javadoc.jar" />
+		<copyFile src="$S(PluginDir)/AgoraScreenShareExtension.aar" dst="$S(BuildDir)/libs/AgoraScreenShareExtension.aar" />
 	</resourceCopies>
 	<androidManifestUpdates>
 		<addPermission android:name="android.permission.INTERNET"/>
 		<addPermission android:name="android.permission.RECORD_AUDIO"/>
+		<addPermission android:name="android.permission.CAMERA"/>
 		<addPermission android:name="android.permission.READ_PHONE_STATE"/>
 		<addPermission android:name="android.permission.MODIFY_AUDIO_SETTINGS"/>
 		<addPermission android:name="android.permission.ACCESS_NETWORK_STATE"/>
 		<addPermission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 		<addPermission android:name="android.permission.BLUETOOTH"/>
 	</androidManifestUpdates>
+	<buildGradleAdditions>
+		<insert>
+dependencies {
+	implementation fileTree(dir: 'libs', include: ['*.aar'])
+	implementation fileTree(dir: 'src/main/libs', include: ['*.aar'])
+}
+		</insert>
+	</buildGradleAdditions>
 </root>

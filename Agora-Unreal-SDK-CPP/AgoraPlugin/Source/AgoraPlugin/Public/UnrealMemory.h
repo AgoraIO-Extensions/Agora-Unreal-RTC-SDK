@@ -4,7 +4,7 @@
 
 #include "Runtime/Launch/Resources/Version.h"
 
-#define AG_UE_5_3_OR_LATER (ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >= 3)
+//#define AG_UE_5_3_OR_LATER (ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >= 3)
 
 #if USE_ANSI_ALLOCATOR && AG_UE_5_3_OR_LATER
 #include <stdio.h>

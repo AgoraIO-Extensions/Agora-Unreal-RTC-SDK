@@ -84,6 +84,10 @@ class IMediaEngine {
    * - < 0: Failure.
    */
   virtual int pushAudioFrame(IAudioFrameObserver::AudioFrame* frame, rtc::track_id_t trackId = 0) = 0;
+  
+  virtual int pushCaptureAudioFrame(IAudioFrameObserver::AudioFrame* frame) = 0;
+
+  virtual int pushReverseAudioFrame(IAudioFrameObserver::AudioFrame* frame) = 0;
 
   /**
    * Pulls the remote audio data.
@@ -153,7 +157,7 @@ class IMediaEngine {
    * - 0: Success.
    * - < 0: Failure.
    */
-  virtual int setExternalAudioSource(bool enabled, int sampleRate, int channels, bool localPlayback = false, bool publish = true) __deprecated = 0;
+  virtual int setExternalAudioSource(bool enabled, int sampleRate, int channels, bool localPlayback = false, bool publish = true) = 0;
 
   /**
    * Create a custom audio track and get the audio track id.
@@ -251,16 +255,6 @@ class IMediaEngine {
   virtual int pushEncodedVideoImage(const uint8_t* imageBuffer, size_t length,
                                     const agora::rtc::EncodedVideoFrameInfo& videoEncodedFrameInfo,
                                     unsigned int videoTrackId = 0) = 0;
-
-  /**
-   * @hide For internal usage only
-   */
-  virtual int addVideoFrameRenderer(IVideoFrameObserver *renderer) = 0;
-
-  /**
-   * @hide For internal usage only
-   */
-  virtual int removeVideoFrameRenderer(IVideoFrameObserver *renderer) = 0;
 
   virtual void release() = 0;
 

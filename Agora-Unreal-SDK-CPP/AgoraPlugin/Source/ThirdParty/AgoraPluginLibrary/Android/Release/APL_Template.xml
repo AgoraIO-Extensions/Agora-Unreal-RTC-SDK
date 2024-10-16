@@ -21,9 +21,15 @@
 	<gameActivityImportAdditions>
 		<insert>
 			import io.agora.rtc2.internal.RtcEngineImpl;
-			import io.agora.rtc2.internal.CommonUtility;
 		</insert>
 	</gameActivityImportAdditions>
+
+	<proguardAdditions>
+		<insert>
+			-keep class io.agora.** { *; }
+		</insert>
+	</proguardAdditions>
+	
 
 	<gameActivityClassAdditions>
 		<insert>
@@ -32,12 +38,6 @@
 				{
 					boolean init = RtcEngineImpl.initializeNativeLibs();
 					System.out.println("Call LoadLibrary Result is " + init);
-				}
-				
-				public void LoadAndroidScreenCaptureSo()
-				{
-					int init = CommonUtility.safeLoadLibrary("agora_screen_capture_extension");
-					System.out.println("Call LoadScreenCaptureSo Result is " + init);
 				}
 			]]>
 		</insert>

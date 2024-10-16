@@ -6,6 +6,8 @@
 #include "AgoraCppPlugin/include/AgoraHeaderBase.h"
 #include "AgoraCppPlugin/include/RtcEngineProxy.h"
 #include "AgoraCppPlugin/include/VideoObserverInternal.h"
+
+
 namespace agora {
 	namespace rtc {
 		namespace ue {
@@ -46,10 +48,17 @@ namespace agora {
 				else
 				{
 					UTexture2D* tex = (UTexture2D*)RenderTexture;
-
+#if AG_UE5_OR_LATER
+					uint8* raw = (uint8*)tex->GetPlatformData()->Mips[0].BulkData.Lock(LOCK_READ_WRITE);
+#else
 					uint8* raw = (uint8*)tex->PlatformData->Mips[0].BulkData.Lock(LOCK_READ_WRITE);
-					memcpy(raw, RenderVideoFrame->yBuffer, RenderVideoFrame->height * RenderVideoFrame->width * 4);
-					tex->PlatformData->Mips[0].BulkData.Unlock();
+#endif
+				memcpy(raw, RenderVideoFrame->yBuffer, RenderVideoFrame->height * RenderVideoFrame->width * 4);
+#if AG_UE5_OR_LATER
+					tex->GetPlatformData()->Mips[0].BulkData.Unlock();
+#else
+				tex->PlatformData->Mips[0].BulkData.Unlock();
+#endif
 					tex->UpdateResource();
 					RenderBrush.SetResourceObject(tex);
 					if (RenderImage != nullptr) {
