@@ -2,6 +2,14 @@
 
 #pragma once
 
+
+#include "Runtime/Launch/Resources/Version.h"
+#define AG_UE_5_4_OR_LATER   (ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >= 4) 
+#define AG_UE_5_3_OR_LATER   (ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >= 3)
+#define AG_UE_5_2_OR_LATER   (ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >= 2) 
+#define AG_UE_5_1_OR_LATER   (ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >= 1)
+#define AG_UE5_OR_LATER   (ENGINE_MAJOR_VERSION == 5)
+
 // For compiling the plugin independently using UAT's BuildPlugin command
 #if PLATFORM_WINDOWS
 #include "Windows/WindowsHWrapper.h"
@@ -17,12 +25,7 @@
 #include <AgoraCppPlugin/IAudioDeviceManager.h>
 #include <AgoraCppPlugin/IAgoraMediaRecorder.h>
 
-// additional
-#include <AgoraCppPlugin/IAgoraMusicContentCenter.h>
 
-
-// #include "Runtime/Launch/Resources/Version.h"
-// #define UE_5_3_OR_LATER   (ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >= 3) 
 
 enum AGORA_UNREAL_PLUGIN_ERROR_CODE
 {

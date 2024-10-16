@@ -4,6 +4,8 @@
 
 #include "../Private/AgoraCppPlugin/include/AgoraHeaderBase.h"
 
+#include <functional>
+#include <string>
 namespace agora
 {
 	namespace rtc
