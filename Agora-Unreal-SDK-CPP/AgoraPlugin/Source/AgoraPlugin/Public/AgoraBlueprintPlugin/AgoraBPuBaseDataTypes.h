@@ -3405,12 +3405,28 @@ public:
 };
 
 UENUM(BlueprintType)
-enum class ECOMPRESSION_PREFERENCE : uint8 {
-
-	PREFER_LOW_LATENCY = 0,
-
-	PREFER_QUALITY = 1,
+enum class EENUMCUSTOM_COMPRESSION_PREFERENCE :uint8 {
+	PREFER_COMPRESSION_AUTO = 0,
+	PREFER_LOW_LATENCY = 1,
+	PREFER_QUALITY = 2,
 };
+
+USTRUCT(BlueprintType)
+struct FENUMWRAP_COMPRESSION_PREFERENCE {
+	
+	GENERATED_BODY()
+
+public:
+	// require to call [GetRawValue] method to get the raw value
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|EENUMCUSTOM_COMPRESSION_PREFERENCE")
+	EENUMCUSTOM_COMPRESSION_PREFERENCE ValueWrapper = EENUMCUSTOM_COMPRESSION_PREFERENCE::PREFER_COMPRESSION_AUTO;
+
+	AGORA_CREATE_UEENUM_CONVERT_STRUCT_INNER_3_ENTRIES(FENUMWRAP_COMPRESSION_PREFERENCE,agora::rtc::COMPRESSION_PREFERENCE, EENUMCUSTOM_COMPRESSION_PREFERENCE,
+		PREFER_COMPRESSION_AUTO,
+		PREFER_LOW_LATENCY,
+		PREFER_QUALITY)
+};
+
 
 USTRUCT(BlueprintType)
 struct FAdvanceOptions {
@@ -3421,7 +3437,7 @@ struct FAdvanceOptions {
 	FENUMWRAP_ENCODING_PREFERENCE encodingPreference = EENUMCUSTOM_ENCODING_PREFERENCE::PREFER_AUTO;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|AdvanceOptions")
-	ECOMPRESSION_PREFERENCE compressionPreference = ECOMPRESSION_PREFERENCE::PREFER_QUALITY;
+	FENUMWRAP_COMPRESSION_PREFERENCE compressionPreference = EENUMCUSTOM_COMPRESSION_PREFERENCE::PREFER_QUALITY;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|AdvanceOptions")
 	bool encodeAlpha = false;
@@ -3431,14 +3447,14 @@ struct FAdvanceOptions {
 
 	FAdvanceOptions(const agora::rtc::AdvanceOptions & AgoraData){
 		encodingPreference = AgoraData.encodingPreference;
-		compressionPreference = static_cast<ECOMPRESSION_PREFERENCE>(AgoraData.compressionPreference);
+		compressionPreference = static_cast<FENUMWRAP_COMPRESSION_PREFERENCE>(AgoraData.compressionPreference);
 		encodeAlpha = AgoraData.encodeAlpha;
 	}
 
 	agora::rtc::AdvanceOptions CreateAgoraData() const{
 		agora::rtc::AdvanceOptions AgoraData;
 		AgoraData.encodingPreference = encodingPreference.GetRawValue();
-		AgoraData.compressionPreference =static_cast<agora::rtc::COMPRESSION_PREFERENCE>(compressionPreference);
+		AgoraData.compressionPreference =static_cast<agora::rtc::COMPRESSION_PREFERENCE>(compressionPreference.GetRawValue());
 		AgoraData.encodeAlpha = encodeAlpha;
 		return AgoraData;
 	}
@@ -4521,7 +4537,7 @@ public:
 
 		type = AgoraData.type;
 
-		sourceId = UABT::FromViewToInt(AgoraData.sourceId);
+		sourceId = AgoraData.sourceId;
 		sourceName = UTF8_TO_TCHAR(AgoraData.sourceName);
 		thumbImage = FThumbImageBuffer(AgoraData.thumbImage);
 		iconImage = FThumbImageBuffer(AgoraData.iconImage);
@@ -4532,14 +4548,14 @@ public:
 		position = FRectangle(AgoraData.position);
 #if defined(_WIN32)
 		minimizeWindow = AgoraData.minimizeWindow;
-		sourceDisplayId = UABT::FromViewToInt(AgoraData.sourceDisplayId);
+		sourceDisplayId = AgoraData.sourceDisplayId;
 #endif
 	}
 
 	agora::rtc::ScreenCaptureSourceInfo CreateAgoraData() const {
 		agora::rtc::ScreenCaptureSourceInfo AgoraData;
 		AgoraData.type = static_cast<agora::rtc::ScreenCaptureSourceType>(type.GetRawValue());
-		AgoraData.sourceId = UABT::ToView(sourceId);
+		AgoraData.sourceId = sourceId;
 		SET_UABT_FSTRING_TO_CONST_CHAR___MEMALLOC(AgoraData.sourceName, sourceName)
 		AgoraData.thumbImage = thumbImage.CreateAgoraData();
 		AgoraData.iconImage = iconImage.CreateAgoraData();
@@ -4550,7 +4566,7 @@ public:
 		AgoraData.position = position.CreateAgoraData();
 #if defined(_WIN32)
 		AgoraData.minimizeWindow = minimizeWindow;
-		AgoraData.sourceDisplayId = UABT::ToView(sourceDisplayId);
+		AgoraData.sourceDisplayId = sourceDisplayId;
 #endif
 		return AgoraData;
 	}

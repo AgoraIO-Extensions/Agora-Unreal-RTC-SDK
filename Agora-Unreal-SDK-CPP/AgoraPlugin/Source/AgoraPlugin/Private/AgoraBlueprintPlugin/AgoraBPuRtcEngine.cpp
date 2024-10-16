@@ -2439,7 +2439,7 @@ int UAgoraBPuRtcEngine::StartScreenCaptureByWindowId(int64 windowId, const FRect
 #if defined(_WIN32) || (defined(__APPLE__) && TARGET_OS_MAC && !TARGET_OS_IPHONE)
 	agora::rtc::Rectangle rectangle = regionRect.CreateAgoraData();
 	agora::rtc::ScreenCaptureParameters screenCaptureParameters = captureParams.CreateAgoraData();
-	auto ret = AgoraUERtcEngine::Get()->startScreenCaptureByWindowId(UABT::ToView(windowId), rectangle, screenCaptureParameters);
+	auto ret = AgoraUERtcEngine::Get()->startScreenCaptureByWindowId(windowId, rectangle, screenCaptureParameters);
 	regionRect.FreeAgoraData(rectangle);
 	captureParams.FreeAgoraData(screenCaptureParameters);
 
