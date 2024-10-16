@@ -1887,7 +1887,7 @@ namespace agora {
 			int  AgoraUERtcEngine::setExternalMediaProjection(void* mediaProjection)
 			{
 				if (RtcEngine != nullptr) {
-					return RtcEngine->queryCameraFocalLengthCapability(mediaProjection);
+					return RtcEngine->setExternalMediaProjection(mediaProjection);
 				}
 				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
 			}
@@ -2821,7 +2821,7 @@ namespace agora {
 			int AgoraUERtcEngine::pauseAllChannelMediaRelayEx(const RtcConnection& connection)
 			{
 				if (RtcEngine != nullptr) {
-					return ((IRtcEngineEx*)RtcEngine)->stopChannelMediaRelayEx(connection);
+					return ((IRtcEngineEx*)RtcEngine)->pauseAllChannelMediaRelayEx(connection);
 				}
 				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
 			}

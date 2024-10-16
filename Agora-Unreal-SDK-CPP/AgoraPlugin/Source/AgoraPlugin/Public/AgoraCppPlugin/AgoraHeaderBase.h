@@ -75,7 +75,7 @@ enum class AgoraAppType {
 	kAppTypeCSharp = 12,
 	kAppTypeCef = 13,
 	kAppTypeUniApp = 14,
-	//kAppTypeUnrealBlueprint = 15, // Unreal Engine Blueprint Version
+	kAppTypeUnrealBlueprint = 15, // Unreal Engine Blueprint Version
 };
 
 
