@@ -144,6 +144,10 @@ enum AudioRoute
    * The AIRPLAY
    */
   ROUTE_AIRPLAY = 9,
+  /**
+   * The BLUETOOTH Speaker via a2dp
+   */
+  ROUTE_BLUETOOTH_SPEAKER = 10,
 };
 
 /**
@@ -261,13 +265,18 @@ enum CONTENT_INSPECT_TYPE {
  */
 CONTENT_INSPECT_INVALID = 0,
 /**
+ * @deprecated
  * Content inspect type moderation
  */
-CONTENT_INSPECT_MODERATION = 1,
+CONTENT_INSPECT_MODERATION __deprecated = 1,
 /**
  * Content inspect type supervise
  */
-CONTENT_INSPECT_SUPERVISION = 2
+CONTENT_INSPECT_SUPERVISION = 2,
+/**
+ * Content inspect type image moderation
+ */
+CONTENT_INSPECT_IMAGE_MODERATION = 3
 };
 
 struct ContentInspectModule {
@@ -443,6 +452,22 @@ enum AUDIO_DUAL_MONO_MODE {
   /**< ChanLout=ChanRout=(ChanLin+ChanRin)/2 */
   AUDIO_DUAL_MONO_MIX = 3
 };
+/**
+ * The audio frame observer.
+ */
+class IAudioFrameObserver {
+ public:
+  /**
+   * Occurs when each time the player receives an audio frame.
+   *
+   * After registering the audio frame observer,
+   * the callback occurs when each time the player receives an audio frame,
+   * reporting the detailed information of the audio frame.
+   * @param frame The detailed information of the audio frame. See {@link AudioPcmFrame}.
+   */
+  virtual void onFrame(AudioPcmFrame* frame) = 0;
+  virtual ~IAudioFrameObserver() {}
+};
 
 /**
  * Video pixel formats.
@@ -559,7 +584,8 @@ struct ExternalVideoFrame {
         textureId(0),
         metadata_buffer(NULL),
         metadata_size(0),
-        alphaBuffer(NULL){}
+        alphaBuffer(NULL),
+        fillAlphaBuffer(false){}
 
    /**
    * The EGL context type.
@@ -676,11 +702,16 @@ struct ExternalVideoFrame {
    */
   int metadata_size;
   /**
-   *  Indicates the output data of the portrait segmentation algorithm, which is consistent with the size of the video frame.
-   *  The value range of each pixel is [0,255], where 0 represents the background; 255 represents the foreground (portrait).
-   *  The default value is NULL
+   *  Indicates the alpha channel of current frame, which is consistent with the dimension of the video frame.
+   *  The value range of each pixel is [0,255], where 0 represents the background; 255 represents the foreground.
+   *  The default value is NULL.
    */
   uint8_t* alphaBuffer;
+  /**
+   * Extract alphaBuffer from bgra or rgba data. Set it true if you do not explicitly specify the alphabuffer.
+   * The default value is false
+   */
+  bool fillAlphaBuffer;
 };
 
 /**
@@ -705,9 +736,7 @@ struct VideoFrame {
   sharedContext(0),
   textureId(0),
   alphaBuffer(NULL),
-  pixelBuffer(NULL){
-    memset(matrix, 0, sizeof(matrix));
-  }
+  pixelBuffer(NULL){}
   /**
    * The video pixel format: #VIDEO_PIXEL_FORMAT.
    */
@@ -782,9 +811,9 @@ struct VideoFrame {
    */
   float matrix[16];
   /**
-   *  Indicates the output data of the portrait segmentation algorithm, which is consistent with the size of the video frame.
-   *  The value range of each pixel is [0,255], where 0 represents the background; 255 represents the foreground (portrait).
-   *  The default value is NULL
+   *  Indicates the alpha channel of current frame, which is consistent with the dimension of the video frame.
+   *  The value range of each pixel is [0,255], where 0 represents the background; 255 represents the foreground.
+   *  The default value is NULL.
    */
   uint8_t* alphaBuffer;
   /**
@@ -838,23 +867,6 @@ enum VIDEO_MODULE_POSITION {
 };
 
 }  // namespace base
-
-/**
- * The audio frame observer.
- */
-class IAudioPcmFrameSink {
- public:
-  /**
-   * Occurs when each time the player receives an audio frame.
-   *
-   * After registering the audio frame observer,
-   * the callback occurs when each time the player receives an audio frame,
-   * reporting the detailed information of the audio frame.
-   * @param frame The detailed information of the audio frame. See {@link AudioPcmFrame}.
-   */
-  virtual void onFrame(agora::media::base::AudioPcmFrame* frame) = 0;
-  virtual ~IAudioPcmFrameSink() {}
-};
 
 /**
  * The IAudioFrameObserverBase class.
@@ -913,6 +925,10 @@ class IAudioFrameObserverBase {
      */
     int64_t renderTimeMs;
     /**
+     * The number of the audio track.
+     */
+    int audioTrackNumber;
+    /**
      * A reserved parameter.
      */
     int avsync_type;
@@ -924,6 +940,7 @@ class IAudioFrameObserverBase {
                    samplesPerSec(0),
                    buffer(NULL),
                    renderTimeMs(0),
+                   audioTrackNumber(0),
                    avsync_type(0) {}
   };
 
@@ -944,6 +961,9 @@ class IAudioFrameObserverBase {
     /** The position for observing the ear monitoring audio of the local user
      */
     AUDIO_FRAME_POSITION_EAR_MONITORING = 0x0010,
+    /** The position for observing the before-publish audio of the local user
+     */
+    AUDIO_FRAME_POSITION_BEFORE_PUBLISH = 0x0020,
   };
 
   struct AudioParams {
@@ -989,6 +1009,19 @@ class IAudioFrameObserverBase {
    * - false: The recorded audio frame is invalid and is not encoded or sent.
    */
   virtual bool onRecordAudioFrame(const char* channelId, AudioFrame& audioFrame) = 0;
+  /**
+   * Occurs when the before-publishing audio frame is received.
+   * @param channelId The channel name
+   * @param audioFrame The reference to the audio frame: AudioFrame.
+   * @return
+   * - true: The recorded audio frame is valid and is encoded and sent.
+   * - false: The recorded audio frame is invalid and is not encoded or sent.
+   */
+  virtual bool onPublishAudioFrame(const char* channelId, AudioFrame& audioFrame)  {
+    (void) channelId;
+    (void) audioFrame;
+    return true;
+  }
   /**
    * Occurs when the playback audio frame is received.
    * @param channelId The channel name
@@ -1060,6 +1093,8 @@ class IAudioFrameObserverBase {
    @return Sets the audio format. See AgoraAudioParams.
    */
   virtual AudioParams getPlaybackAudioParams() = 0;
+
+  virtual AudioParams getPublishAudioParams() {return AudioParams();}
 
   /** Sets the audio recording format
    **Note**:
@@ -1250,12 +1285,12 @@ class IVideoFrameObserver {
    * - The video data that this callback gets has not been pre-processed, such as watermarking, cropping content, rotating, or image enhancement.
    *
    * @param videoFrame A pointer to the video frame: VideoFrame
-   * @param sourceType source type of video frame. See #VIDEO_SOURCE_TYPE.
+   * @param type source type of video frame. See #VIDEO_SOURCE_TYPE.
    * @return Determines whether to ignore the current video frame if the pre-processing fails:
    * - true: Do not ignore.
    * - false: Ignore, in which case this method does not sent the current video frame to the SDK.
   */
-  virtual bool onCaptureVideoFrame(agora::rtc::VIDEO_SOURCE_TYPE sourceType, VideoFrame& videoFrame) = 0;
+  virtual bool onCaptureVideoFrame(agora::rtc::VIDEO_SOURCE_TYPE type, VideoFrame& videoFrame) = 0;
 
   /**
    * Occurs each time the SDK receives a video frame before encoding.
@@ -1273,12 +1308,12 @@ class IVideoFrameObserver {
    * - This callback does not support sending processed RGBA video data back to the SDK.
    *
    * @param videoFrame A pointer to the video frame: VideoFrame
-   * @param sourceType source type of video frame. See #VIDEO_SOURCE_TYPE.
+   * @param type source type of video frame. See #VIDEO_SOURCE_TYPE.
    * @return Determines whether to ignore the current video frame if the pre-processing fails:
    * - true: Do not ignore.
    * - false: Ignore, in which case this method does not sent the current video frame to the SDK.
    */
-  virtual bool onPreEncodeVideoFrame(agora::rtc::VIDEO_SOURCE_TYPE sourceType, VideoFrame& videoFrame) = 0;
+  virtual bool onPreEncodeVideoFrame(agora::rtc::VIDEO_SOURCE_TYPE type, VideoFrame& videoFrame) = 0;
 
   /**
    * Occurs each time the SDK receives a video frame decoded by the MediaPlayer.
@@ -1291,8 +1326,8 @@ class IVideoFrameObserver {
    * `videoFrame` parameter in this callback.
    * 
    * @note
-   * - This callback will not be affected by the return values of \ref getVideoFrameProcessMode "getVideoFrameProcessMode", \ref getRotationApplied "getRotationApplied", \ref getMirrorApplied "getMirrorApplied", \ref getObservedFramePosition "getObservedFramePosition".
-   * - On Android, this callback is not affected by the return value of \ref getVideoFormatPreference "getVideoFormatPreference"
+   * If the returned agora::media::base::VIDEO_PIXEL_DEFAULT format is specified by getVideoFormatPreference, 
+   * the video frame you get through onMediaPlayerVideoFrame is in agora::media::base::VIDEO_PIXEL_I420 format.
    *
    * @param videoFrame A pointer to the video frame: VideoFrame
    * @param mediaPlayerId ID of the mediaPlayer.
@@ -1572,32 +1607,28 @@ class IMediaRecorderObserver {
   /**
    * Occurs when the recording state changes.
    *
-   * @since v4.0.0
+   * @since v3.5.2
    *
    * When the local audio and video recording state changes, the SDK triggers this callback to report the current
    * recording state and the reason for the change.
    *
-   * @param channelId The channel name.
-   * @param uid ID of the user.
-   * @param state The current recording state. See \ref agora::media::RecorderState "RecorderState".
-   * @param error The reason for the state change. See \ref agora::media::RecorderErrorCode "RecorderErrorCode".
+   * @param state The current recording state. See \ref agora::rtc::RecorderState "RecorderState".
+   * @param error The reason for the state change. See \ref agora::rtc::RecorderErrorCode "RecorderErrorCode".
    */
-  virtual void onRecorderStateChanged(const char* channelId, rtc::uid_t uid, RecorderState state, RecorderErrorCode error) = 0;
+  virtual void onRecorderStateChanged(RecorderState state, RecorderErrorCode error) = 0;
   /**
    * Occurs when the recording information is updated.
    *
-   * @since v4.0.0
+   * @since v3.5.2
    *
    * After you successfully register this callback and enable the local audio and video recording, the SDK periodically triggers
    * the `onRecorderInfoUpdated` callback based on the set value of `recorderInfoUpdateInterval`. This callback reports the
    * filename, duration, and size of the current recording file.
    *
-   * @param channelId The channel name.
-   * @param uid ID of the user.
-   * @param info Information about the recording file. See \ref agora::media::RecorderInfo "RecorderInfo".
+   * @param info Information for the recording file. See RecorderInfo.
    *
    */
-  virtual void onRecorderInfoUpdated(const char* channelId, rtc::uid_t uid, const RecorderInfo& info) = 0;
+  virtual void onRecorderInfoUpdated(const RecorderInfo& info) = 0;
   virtual ~IMediaRecorderObserver() {}
 };
 }  // namespace media
