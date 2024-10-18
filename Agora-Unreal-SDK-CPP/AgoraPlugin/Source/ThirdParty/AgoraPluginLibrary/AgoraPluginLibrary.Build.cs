@@ -11,19 +11,11 @@ public class AgoraPluginLibrary : ModuleRules
 
     private string soFormatStr = "		<copyFile src=\"$S(PluginDir)/$S(Architecture)/{0}\" dst=\"$S(BuildDir)/libs/$S(Architecture)/{0}\"/>";
 
-    // bool bUE427OrLater = false;
-
     public AgoraPluginLibrary(ReadOnlyTargetRules Target) : base(Target)
     {
-        // if(Target.Version.MajorVersion >= 4 && Target.Version.MinorVersion >= 27)
-        // {
-        //     bUE427OrLater = true;
+        // if(Target.Version.MajorVersion >= 4 && Target.Version.MinorVersion >= 27){
+        //
         // }
-        // else
-        // {
-        //     bUE427OrLater = false;
-        // }
-
 
         Type = ModuleType.External;
         if (Target.Platform == UnrealTargetPlatform.Win64)
