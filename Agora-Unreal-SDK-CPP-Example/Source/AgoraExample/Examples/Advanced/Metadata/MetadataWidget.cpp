@@ -325,9 +325,16 @@ bool UMetadataWidget::FUserMetadataObserver::onReadyToSendMetadata(Metadata& met
 		bool SendingStatus = WidgetPtr->GetSendingStatus();
 		if (SendingStatus) {
 			tick++;
-			FString Str = "[MetaData]: TickInfo" + FString::FromInt(tick);
-			FMemory::Memcpy(metadata.buffer, TCHAR_TO_UTF8(*Str), Str.Len() * sizeof(unsigned char));
-			metadata.size = Str.Len() * sizeof(unsigned char);
+			FString Str = TEXT("[MetaData]: TickInfo") + FString::FromInt(tick);
+
+			// convert 
+			std::string stdString(TCHAR_TO_UTF8(*Str));
+
+			// copy the data to the buffer
+			FMemory::Memcpy(metadata.buffer, stdString.c_str(), stdString.size());
+			metadata.buffer[stdString.size()] = '\0';
+			metadata.size = stdString.size() + 1;
+
 #if  ((__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)) 
 			AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else

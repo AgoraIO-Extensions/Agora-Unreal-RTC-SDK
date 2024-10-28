@@ -142,7 +142,7 @@ void UMainAgoraUserWidget::InitLevelArray()
 	LevelArray.Add(FString("JoinChannelWithToken"));
 	LevelArray.Add(FString("JoinChannelWithUserAccount"));
 	LevelArray.Add(FString("JoinMultipleChannels"));
-	LevelArray.Add(FString("PushEncodedVideoImage"));
+	//LevelArray.Add(FString("PushEncodedVideoImage"));
 	LevelArray.Add(FString("SpatialAudioWithMediaPlayer"));
 	LevelArray.Add(FString("StartDirectCdnStreaming"));
 	LevelArray.Add(FString("Metadata"));
