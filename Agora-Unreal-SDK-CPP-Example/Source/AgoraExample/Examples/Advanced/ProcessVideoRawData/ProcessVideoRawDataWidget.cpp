@@ -133,57 +133,66 @@ void UProcessVideoRawDataWidget::UnInitAgoraEngine()
 
 void UProcessVideoRawDataWidget::RenderRawData(agora::media::base::VideoFrame& videoFrame)
 {
-//	TWeakObjectPtr<UProcessVideoRawDataWidget> SelfWeakPtr(this);
-//	if (!SelfWeakPtr.IsValid())
-//		return;
-//
-//	int Width = videoFrame.width;
-//	int Height = videoFrame.height;
-//	uint8* rawdata = new uint8[Width * Height * 4];
-//	memcpy(rawdata, videoFrame.yBuffer, Width * Height * 4);
-//
-//
-//#if  ((__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)) 
-//	AsyncTask(ENamedThreads::GameThread, [=, this]()
-//#else
-//	AsyncTask(ENamedThreads::GameThread, [=]()
-//#endif
-//		{
-//			if (!SelfWeakPtr.IsValid())
-//				return;
-//
-//			TWeakObjectPtr<UDraggableVideoViewWidget> VideoRenderViewWeakPtr(VideoRenderView);
-//			if (!VideoRenderViewWeakPtr.IsValid())
-//				return;
-//
-//			if (RenderTexture == nullptr || !RenderTexture->IsValidLowLevel() || RenderTexture->GetSizeX() != Width || RenderTexture->GetSizeY() != Height)
-//				RenderTexture = UTexture2D::CreateTransient(Width, Height, PF_R8G8B8A8);
-//
-//			uint8* raw = (uint8*)RenderTexture->PlatformData->Mips[0].BulkData.Lock(LOCK_READ_WRITE);
-//			memcpy(raw, rawdata, Width * Height * 4);
-//			delete[] rawdata;
-//			RenderTexture->PlatformData->Mips[0].BulkData.Unlock();
-//
-//#ifdef UpdateResource
-//#undef UpdateResource
-//
-//			// For PLATFORM Windows
-//			RenderTexture->UpdateResource();
-//
-//#define UpdateResource UpdateResourceW
-//
-//#else
-//			RenderTexture->UpdateResource();
-//#endif
-//			RenderBrush.SetResourceObject(RenderTexture);
-//			RenderBrush.SetImageSize(FVector2D(Width, Height));
-//
-//			VideoRenderViewWeakPtr->View->SetBrush(RenderBrush);
-//
-//			UCanvasPanelSlot* CanvasPanelSlot = UWidgetLayoutLibrary::SlotAsCanvasSlot(VideoRenderViewWeakPtr.Get());
-//			CanvasPanelSlot->SetSize(FVector2D(Width, Height));
-//
-//		});
+	TWeakObjectPtr<UProcessVideoRawDataWidget> SelfWeakPtr(this);
+	if (!SelfWeakPtr.IsValid())
+		return;
+
+	int Width = videoFrame.width;
+	int Height = videoFrame.height;
+	uint8* rawdata = new uint8[Width * Height * 4];
+	memcpy(rawdata, videoFrame.yBuffer, Width * Height * 4);
+
+
+#if  ((__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)) 
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
+	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
+		{
+			if (!SelfWeakPtr.IsValid())
+				return;
+
+			TWeakObjectPtr<UDraggableVideoViewWidget> VideoRenderViewWeakPtr(VideoRenderView);
+			if (!VideoRenderViewWeakPtr.IsValid())
+				return;
+
+			if (RenderTexture == nullptr || !RenderTexture->IsValidLowLevel() || RenderTexture->GetSizeX() != Width || RenderTexture->GetSizeY() != Height)
+				RenderTexture = UTexture2D::CreateTransient(Width, Height, PF_R8G8B8A8);
+#if AG_UE5_OR_LATER
+			uint8* raw = (uint8*)RenderTexture->GetPlatformData()->Mips[0].BulkData.Lock(LOCK_READ_WRITE);
+			memcpy(raw, rawdata, Width * Height * 4);
+			delete[] rawdata;
+			RenderTexture->GetPlatformData()->Mips[0].BulkData.Unlock();
+#else
+			uint8* raw = (uint8*)RenderTexture->PlatformData->Mips[0].BulkData.Lock(LOCK_READ_WRITE);
+			memcpy(raw, rawdata, Width * Height * 4);
+			delete[] rawdata;
+			RenderTexture->PlatformData->Mips[0].BulkData.Unlock();
+
+#endif
+
+
+#ifdef UpdateResource
+#undef UpdateResource
+
+			// For PLATFORM Windows
+			RenderTexture->UpdateResource();
+
+#define UpdateResource UpdateResourceW
+
+#else
+			RenderTexture->UpdateResource();
+#endif
+
+			RenderBrush.SetResourceObject(RenderTexture);
+			RenderBrush.SetImageSize(FVector2D(Width, Height));
+
+			VideoRenderViewWeakPtr->View->SetBrush(RenderBrush);
+
+			UCanvasPanelSlot* CanvasPanelSlot = UWidgetLayoutLibrary::SlotAsCanvasSlot(VideoRenderViewWeakPtr.Get());
+			CanvasPanelSlot->SetSize(FVector2D(Width, Height));
+
+		});
 }
 
 

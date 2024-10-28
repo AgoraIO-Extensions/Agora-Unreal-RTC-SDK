@@ -319,7 +319,7 @@ void UAgoraAudioWidget::FUserRtcEventHandler::onAudioVolumeIndication(const agor
 
 			for (unsigned int i = 0; i < speakerNumber; i++)
 			{
-				UBFL_Logger::Print(FString::Printf(TEXT("%s uid:%u,vad:%d,voicepatch:%d,volume %d,totalvolume:%d"), *FString(FUNCTION_MACRO), speakers[i].uid, speakers[i].vad, speakers[i].voicePitch, speakers[i].volume, totalVolume), WidgetPtr->GetLogMsgViewPtr());
+				UBFL_Logger::Print(FString::Printf(TEXT("%s uid:%u,vad:%u,voicepatch:%f,volume %u,totalvolume:%d"), *FString(FUNCTION_MACRO), speakers[i].uid, speakers[i].vad, speakers[i].voicePitch, speakers[i].volume, totalVolume), WidgetPtr->GetLogMsgViewPtr());
 			}
 
 		});
