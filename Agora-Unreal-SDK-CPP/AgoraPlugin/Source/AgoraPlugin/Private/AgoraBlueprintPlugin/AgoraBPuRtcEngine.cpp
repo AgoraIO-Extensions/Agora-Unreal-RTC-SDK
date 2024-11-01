@@ -49,7 +49,7 @@ void UAgoraBPuRtcEngine::GetEventHandler(EAgoraBPuEventHandlerType& HandlerType,
 	}
 }
 
-int UAgoraBPuRtcEngine::Initialize(const FRtcEngineContext& context)
+int UAgoraBPuRtcEngine::Initialize(const FUABT_RtcEngineContext& context)
 {
 	//Instance->AddToRoot();
 	UserRtcEventHandler.Reset();
@@ -100,7 +100,7 @@ int UAgoraBPuRtcEngine::JoinChannel(const FString& token, const FString& channel
 	return AgoraUERtcEngine::Get()->joinChannel(TCHAR_TO_UTF8(*token), TCHAR_TO_UTF8(*channelId),"", UABT::ToUID(uid));
 }
 
-int UAgoraBPuRtcEngine::JoinChannelWithOptions(const FString& token, const FString& channelId, int64 uid, const FChannelMediaOptions& options)
+int UAgoraBPuRtcEngine::JoinChannelWithOptions(const FString& token, const FString& channelId, int64 uid, const FUABT_ChannelMediaOptions& options)
 {
 	agora::rtc::ChannelMediaOptions channelMediaOptions = options.CreateAgoraData();
 
@@ -116,7 +116,7 @@ int UAgoraBPuRtcEngine::LeaveChannel()
 	return AgoraUERtcEngine::Get()->leaveChannel();
 }	
 
-int UAgoraBPuRtcEngine::LeaveChannelWithOptions(const FLeaveChannelOptions& options)
+int UAgoraBPuRtcEngine::LeaveChannelWithOptions(const FUABT_LeaveChannelOptions& options)
 {
 	agora::rtc::LeaveChannelOptions leaveChannelOptions = options.CreateAgoraData();
 
@@ -148,7 +148,7 @@ int UAgoraBPuRtcEngine::DisableAudio()
 	return AgoraUERtcEngine::Get()->disableAudio();
 }
 
-int UAgoraBPuRtcEngine::SetClientRole(FClientRoleOptions options, ECLIENT_ROLE_TYPE clientroletype)
+int UAgoraBPuRtcEngine::SetClientRole(FUABT_ClientRoleOptions options, EUABT_CLIENT_ROLE_TYPE clientroletype)
 {
 	agora::rtc::ClientRoleOptions clientRoleOptions;
 	clientRoleOptions.audienceLatencyLevel = (agora::rtc::AUDIENCE_LATENCY_LEVEL_TYPE)options.audienceLatencyLevel;
@@ -157,7 +157,7 @@ int UAgoraBPuRtcEngine::SetClientRole(FClientRoleOptions options, ECLIENT_ROLE_T
 	return ret;
 }
 
-int UAgoraBPuRtcEngine::SetupLocalVideo(const FVideoCanvas& canvas)
+int UAgoraBPuRtcEngine::SetupLocalVideo(const FUABT_VideoCanvas& canvas)
 {
 	agora::rtc::VideoCanvas videoCanvas;
 	videoCanvas.view = (agora::view_t)canvas.view;
@@ -167,7 +167,7 @@ int UAgoraBPuRtcEngine::SetupLocalVideo(const FVideoCanvas& canvas)
 	return ret;
 }
 
-int UAgoraBPuRtcEngine::SetupRemoteVideo(const FVideoCanvas& canvas)
+int UAgoraBPuRtcEngine::SetupRemoteVideo(const FUABT_VideoCanvas& canvas)
 {
 	agora::rtc::VideoCanvas videoCanvas;
 	videoCanvas.view = (agora::view_t)canvas.view;
@@ -182,7 +182,7 @@ int UAgoraBPuRtcEngine::SetupRemoteVideo(const FVideoCanvas& canvas)
 	return ret;
 }
 
-int UAgoraBPuRtcEngine::SetupRemoteVideoEx(const FVideoCanvas& canvas, const FRtcConnection& connection)
+int UAgoraBPuRtcEngine::SetupRemoteVideoEx(const FUABT_VideoCanvas& canvas, const FUABT_RtcConnection& connection)
 {
 	agora::rtc::VideoCanvas videoCanvas;
 	videoCanvas.view = (agora::view_t)canvas.view;
@@ -222,7 +222,7 @@ FString UAgoraBPuRtcEngine::GetErrorDescription(int code)
 	return AgoraUERtcEngine::Get()->getErrorDescription(code);
 }
 
-int UAgoraBPuRtcEngine::QueryCodecCapability(TArray<FCodecCapInfo>& codecInfo, int QuerySize /*= 10*/)
+int UAgoraBPuRtcEngine::QueryCodecCapability(TArray<FUABT_CodecCapInfo>& codecInfo, int QuerySize /*= 10*/)
 {
 	agora::rtc::CodecCapInfo* codecCapInfo = new agora::rtc::CodecCapInfo[QuerySize];
 	int ret = AgoraUERtcEngine::Get()->queryCodecCapability(codecCapInfo, QuerySize);
@@ -257,7 +257,7 @@ int UAgoraBPuRtcEngine::UpdatePreloadChannelToken(const FString& token)
 	return AgoraUERtcEngine::Get()->updatePreloadChannelToken(TCHAR_TO_UTF8(*token));
 }
 
-int UAgoraBPuRtcEngine::UpdateChannelMediaOptions(const FChannelMediaOptions& options)
+int UAgoraBPuRtcEngine::UpdateChannelMediaOptions(const FUABT_ChannelMediaOptions& options)
 {
 	agora::rtc::ChannelMediaOptions channelMediaOptions = options.CreateAgoraData();
 
@@ -273,12 +273,12 @@ int UAgoraBPuRtcEngine::RenewToken(const FString& token)
 	return AgoraUERtcEngine::Get()->renewToken(TCHAR_TO_UTF8(*token));
 }
 
-int UAgoraBPuRtcEngine::SetChannelProfile(ECHANNEL_PROFILE_TYPE profile)
+int UAgoraBPuRtcEngine::SetChannelProfile(EUABT_CHANNEL_PROFILE_TYPE profile)
 {
 	return AgoraUERtcEngine::Get()->setChannelProfile((agora::CHANNEL_PROFILE_TYPE)profile);
 }
 
-int UAgoraBPuRtcEngine::StartEchoTest(const FEchoTestConfiguration& config)
+int UAgoraBPuRtcEngine::StartEchoTest(const FUABT_EchoTestConfiguration& config)
 {
 	agora::rtc::EchoTestConfiguration echoTestConfiguration = config.CreateAgoraData();
 
@@ -294,7 +294,7 @@ int UAgoraBPuRtcEngine::StopEchoTest()
 	return AgoraUERtcEngine::Get()->stopEchoTest();
 }
 
-int UAgoraBPuRtcEngine::EnableMultiCamera(bool enabled, const FCameraCapturerConfiguration& config)
+int UAgoraBPuRtcEngine::EnableMultiCamera(bool enabled, const FUABT_CameraCapturerConfiguration& config)
 {
 	int ret = AGORA_UE_ERR_CODE(ERROR_NOT_SUPPORT_PLATFORM);
 
@@ -310,17 +310,17 @@ int UAgoraBPuRtcEngine::EnableMultiCamera(bool enabled, const FCameraCapturerCon
 	return ret;
 }
 
-int UAgoraBPuRtcEngine::StartPreview(EVIDEO_SOURCE_TYPE sourceType /*= EVIDEO_SOURCE_TYPE::VIDEO_SOURCE_CAMERA_PRIMARY*/)
+int UAgoraBPuRtcEngine::StartPreview(EUABT_VIDEO_SOURCE_TYPE sourceType /*= EUABT_VIDEO_SOURCE_TYPE::VIDEO_SOURCE_CAMERA_PRIMARY*/)
 {
 	return AgoraUERtcEngine::Get()->startPreview((agora::rtc::VIDEO_SOURCE_TYPE)sourceType);
 }
 
-int UAgoraBPuRtcEngine::StopPreview(EVIDEO_SOURCE_TYPE sourceType /*= EVIDEO_SOURCE_TYPE::VIDEO_SOURCE_CAMERA_PRIMARY*/)
+int UAgoraBPuRtcEngine::StopPreview(EUABT_VIDEO_SOURCE_TYPE sourceType /*= EUABT_VIDEO_SOURCE_TYPE::VIDEO_SOURCE_CAMERA_PRIMARY*/)
 {
 	return AgoraUERtcEngine::Get()->stopPreview((agora::rtc::VIDEO_SOURCE_TYPE)sourceType);
 }
 
-int UAgoraBPuRtcEngine::StartLastmileProbeTest(const FLastmileProbeConfig& config)
+int UAgoraBPuRtcEngine::StartLastmileProbeTest(const FUABT_LastmileProbeConfig& config)
 {
 	agora::rtc::LastmileProbeConfig lastmileProbeConfig = config.CreateAgoraData();
 
@@ -336,7 +336,7 @@ int UAgoraBPuRtcEngine::StopLastmileProbeTest()
 	return AgoraUERtcEngine::Get()->stopLastmileProbeTest();
 }
 
-int UAgoraBPuRtcEngine::SetVideoEncoderConfiguration(const FVideoEncoderConfiguration& config)
+int UAgoraBPuRtcEngine::SetVideoEncoderConfiguration(const FUABT_VideoEncoderConfiguration& config)
 {
 	agora::rtc::VideoEncoderConfiguration videoEncoderConfiguration = config.CreateAgoraData();
 
@@ -347,7 +347,7 @@ int UAgoraBPuRtcEngine::SetVideoEncoderConfiguration(const FVideoEncoderConfigur
 	return ret;
 }
 
-int UAgoraBPuRtcEngine::SetBeautyEffectOptions(bool enabled, const FBeautyOptions& options, EMEDIA_SOURCE_TYPE type)
+int UAgoraBPuRtcEngine::SetBeautyEffectOptions(bool enabled, const FUABT_BeautyOptions& options, EUABT_MEDIA_SOURCE_TYPE type)
 {
 	agora::rtc::BeautyOptions beautyOptions = options.CreateAgoraData();
 
@@ -358,7 +358,7 @@ int UAgoraBPuRtcEngine::SetBeautyEffectOptions(bool enabled, const FBeautyOption
 	return ret;
 }
 
-int UAgoraBPuRtcEngine::SetLowlightEnhanceOptions(bool enabled, const FLowlightEnhanceOptions& options, EMEDIA_SOURCE_TYPE type)
+int UAgoraBPuRtcEngine::SetLowlightEnhanceOptions(bool enabled, const FUABT_LowlightEnhanceOptions& options, EUABT_MEDIA_SOURCE_TYPE type)
 {
 	agora::rtc::LowlightEnhanceOptions lowlightEnhanceOptions = options.CreateAgoraData();
 
@@ -369,7 +369,7 @@ int UAgoraBPuRtcEngine::SetLowlightEnhanceOptions(bool enabled, const FLowlightE
 	return ret;
 }
 
-int UAgoraBPuRtcEngine::SetVideoDenoiserOptions(bool enabled, const FVideoDenoiserOptions& options, EMEDIA_SOURCE_TYPE type)
+int UAgoraBPuRtcEngine::SetVideoDenoiserOptions(bool enabled, const FUABT_VideoDenoiserOptions& options, EUABT_MEDIA_SOURCE_TYPE type)
 {
 	agora::rtc::VideoDenoiserOptions videoDenoiserOptions = options.CreateAgoraData();
 
@@ -380,7 +380,7 @@ int UAgoraBPuRtcEngine::SetVideoDenoiserOptions(bool enabled, const FVideoDenois
 	return ret;
 }
 
-int UAgoraBPuRtcEngine::SetColorEnhanceOptions(bool enabled, const FColorEnhanceOptions& options, EMEDIA_SOURCE_TYPE type)
+int UAgoraBPuRtcEngine::SetColorEnhanceOptions(bool enabled, const FUABT_ColorEnhanceOptions& options, EUABT_MEDIA_SOURCE_TYPE type)
 {
 	agora::rtc::ColorEnhanceOptions colorEnhanceOptions = options.CreateAgoraData();
 
@@ -391,7 +391,7 @@ int UAgoraBPuRtcEngine::SetColorEnhanceOptions(bool enabled, const FColorEnhance
 	return ret;
 }
 
-int UAgoraBPuRtcEngine::EnableVirtualBackground(bool enabled, FVirtualBackgroundSource backgroundSource, FSegmentationProperty segproperty, EMEDIA_SOURCE_TYPE type)
+int UAgoraBPuRtcEngine::EnableVirtualBackground(bool enabled, FUABT_VirtualBackgroundSource backgroundSource, FUABT_SegmentationProperty segproperty, EUABT_MEDIA_SOURCE_TYPE type)
 {
 	agora::rtc::VirtualBackgroundSource virtualBackgroundSource = backgroundSource.CreateAgoraData();
 	agora::rtc::SegmentationProperty segmentationProperty = segproperty.CreateAgoraData();
@@ -404,27 +404,27 @@ int UAgoraBPuRtcEngine::EnableVirtualBackground(bool enabled, FVirtualBackground
 	return ret;
 }
 
-int UAgoraBPuRtcEngine::SetVideoScenario(EVIDEO_APPLICATION_SCENARIO_TYPE scenarioType)
+int UAgoraBPuRtcEngine::SetVideoScenario(EUABT_VIDEO_APPLICATION_SCENARIO_TYPE scenarioType)
 {
 	return AgoraUERtcEngine::Get()->setVideoScenario((agora::rtc::VIDEO_APPLICATION_SCENARIO_TYPE)scenarioType);
 }
 
-int UAgoraBPuRtcEngine::SetVideoQoEPreference(EVIDEO_QOE_PREFERENCE_TYPE qoePreference)
+int UAgoraBPuRtcEngine::SetVideoQoEPreference(EUABT_VIDEO_QOE_PREFERENCE_TYPE qoePreference)
 {
 	return AgoraUERtcEngine::Get()->setVideoQoEPreference((agora::rtc::VIDEO_QOE_PREFERENCE_TYPE)qoePreference);
 }
 
-int UAgoraBPuRtcEngine::SetAudioProfileAndScenario(EAUDIO_PROFILE_TYPE profile /*= EAUDIO_PROFILE_TYPE::AUDIO_PROFILE_DEFAULT*/, EAUDIO_SCENARIO_TYPE scenario /*= EAUDIO_SCENARIO_TYPE::AUDIO_SCENARIO_DEFAULT*/)
+int UAgoraBPuRtcEngine::SetAudioProfileAndScenario(EUABT_AUDIO_PROFILE_TYPE profile /*= EUABT_AUDIO_PROFILE_TYPE::AUDIO_PROFILE_DEFAULT*/, EUABT_AUDIO_SCENARIO_TYPE scenario /*= EUABT_AUDIO_SCENARIO_TYPE::AUDIO_SCENARIO_DEFAULT*/)
 {
 	return AgoraUERtcEngine::Get()->setAudioProfile((agora::rtc::AUDIO_PROFILE_TYPE)profile, (agora::rtc::AUDIO_SCENARIO_TYPE)scenario);
 }
 
-int UAgoraBPuRtcEngine::SetAudioProfile(EAUDIO_PROFILE_TYPE profile /*= EAUDIO_PROFILE_TYPE::AUDIO_PROFILE_DEFAULT*/)
+int UAgoraBPuRtcEngine::SetAudioProfile(EUABT_AUDIO_PROFILE_TYPE profile /*= EUABT_AUDIO_PROFILE_TYPE::AUDIO_PROFILE_DEFAULT*/)
 {
 	return AgoraUERtcEngine::Get()->setAudioProfile((agora::rtc::AUDIO_PROFILE_TYPE)profile);
 }
 
-int UAgoraBPuRtcEngine::SetAudioScenario(EAUDIO_SCENARIO_TYPE scenario /*= EAUDIO_SCENARIO_TYPE::AUDIO_SCENARIO_DEFAULT*/)
+int UAgoraBPuRtcEngine::SetAudioScenario(EUABT_AUDIO_SCENARIO_TYPE scenario /*= EUABT_AUDIO_SCENARIO_TYPE::AUDIO_SCENARIO_DEFAULT*/)
 {
 	return AgoraUERtcEngine::Get()->setAudioScenario((agora::rtc::AUDIO_SCENARIO_TYPE)scenario);
 }
@@ -444,7 +444,7 @@ int UAgoraBPuRtcEngine::MuteAllRemoteAudioStreams(bool mute)
 	return AgoraUERtcEngine::Get()->muteAllRemoteAudioStreams(mute);
 }
 
-int UAgoraBPuRtcEngine::SetRemoteDefaultVideoStreamType(EVIDEO_STREAM_TYPE streamType)
+int UAgoraBPuRtcEngine::SetRemoteDefaultVideoStreamType(EUABT_VIDEO_STREAM_TYPE streamType)
 {
 	return AgoraUERtcEngine::Get()->setRemoteDefaultVideoStreamType((agora::rtc::VIDEO_STREAM_TYPE)streamType);
 }
@@ -474,12 +474,12 @@ int UAgoraBPuRtcEngine::MuteRemoteVideoStream(int64 uid, bool mute)
 	return AgoraUERtcEngine::Get()->muteRemoteVideoStream(UABT::ToUID(uid), mute);
 }
 
-int UAgoraBPuRtcEngine::SetRemoteVideoStreamType(int64 uid, EVIDEO_STREAM_TYPE streamType)
+int UAgoraBPuRtcEngine::SetRemoteVideoStreamType(int64 uid, EUABT_VIDEO_STREAM_TYPE streamType)
 {
 	return AgoraUERtcEngine::Get()->setRemoteVideoStreamType(UABT::ToUID(uid), (agora::rtc::VIDEO_STREAM_TYPE)streamType);
 }
 
-int UAgoraBPuRtcEngine::SetRemoteVideoSubscriptionOptions(int64 uid, const FVideoSubscriptionOptions& options)
+int UAgoraBPuRtcEngine::SetRemoteVideoSubscriptionOptions(int64 uid, const FUABT_VideoSubscriptionOptions& options)
 {
 	agora::rtc::VideoSubscriptionOptions videoSubscriptionOptions = options.CreateAgoraData();
 
@@ -495,7 +495,7 @@ int UAgoraBPuRtcEngine::EnableAudioVolumeIndication(int interval, int smooth, bo
 	return AgoraUERtcEngine::Get()->enableAudioVolumeIndication(interval, smooth, reportVad);
 }
 
-int UAgoraBPuRtcEngine::StartAudioRecording(const FAudioRecordingConfiguration& config)
+int UAgoraBPuRtcEngine::StartAudioRecording(const FUABT_AudioRecordingConfiguration& config)
 {
 	agora::rtc::AudioRecordingConfiguration audioRecordingConfiguration = config.CreateAgoraData();
 
@@ -581,7 +581,7 @@ int UAgoraBPuRtcEngine::SetAudioMixingPosition(int pos)
 	return AgoraUERtcEngine::Get()->setAudioMixingPosition(pos);
 }
 
-int UAgoraBPuRtcEngine::SetAudioMixingDualMonoMode(EAUDIO_MIXING_DUAL_MONO_MODE mode)
+int UAgoraBPuRtcEngine::SetAudioMixingDualMonoMode(EUABT_AUDIO_MIXING_DUAL_MONO_MODE mode)
 {
 	return AgoraUERtcEngine::Get()->setAudioMixingDualMonoMode((agora::media::AUDIO_MIXING_DUAL_MONO_MODE)mode);
 }
@@ -701,7 +701,7 @@ int UAgoraBPuRtcEngine::EnableSpatialAudio(bool enabled)
 	return AgoraUERtcEngine::Get()->enableSpatialAudio(enabled);
 }
 
-int UAgoraBPuRtcEngine::SetRemoteUserSpatialAudioParams(int64 uid, const FSpatialAudioParams& params)
+int UAgoraBPuRtcEngine::SetRemoteUserSpatialAudioParams(int64 uid, const FUABT_SpatialAudioParams& params)
 {
 	agora::SpatialAudioParams spatialAudioParams = params.CreateAgoraData();
 
@@ -712,34 +712,34 @@ int UAgoraBPuRtcEngine::SetRemoteUserSpatialAudioParams(int64 uid, const FSpatia
 	return ret;
 }
 
-int UAgoraBPuRtcEngine::SetVoiceBeautifierPreset(FENUMWRAP_VOICE_BEAUTIFIER_PRESET preset)
+int UAgoraBPuRtcEngine::SetVoiceBeautifierPreset(EUABT_VOICE_BEAUTIFIER_PRESET preset)
 {
-	return AgoraUERtcEngine::Get()->setVoiceBeautifierPreset(preset.GetRawValue());
+	return AgoraUERtcEngine::Get()->setVoiceBeautifierPreset(UABTEnum::ToRawValue(preset));
 }
 
-int UAgoraBPuRtcEngine::SetAudioEffectPreset(FENUMWRAP_AUDIO_EFFECT_PRESET preset)
+int UAgoraBPuRtcEngine::SetAudioEffectPreset(EUABT_AUDIO_EFFECT_PRESET preset)
 {
-	return AgoraUERtcEngine::Get()->setAudioEffectPreset(preset.GetRawValue());
+	return AgoraUERtcEngine::Get()->setAudioEffectPreset(UABTEnum::ToRawValue(preset));
 }
 
-int UAgoraBPuRtcEngine::SetVoiceConversionPreset(FENUMWRAP_VOICE_CONVERSION_PRESET preset)
+int UAgoraBPuRtcEngine::SetVoiceConversionPreset(EUABT_VOICE_CONVERSION_PRESET preset)
 {
-	return AgoraUERtcEngine::Get()->setVoiceConversionPreset(preset.GetRawValue());
+	return AgoraUERtcEngine::Get()->setVoiceConversionPreset(UABTEnum::ToRawValue(preset));
 }
 
-int UAgoraBPuRtcEngine::SetAudioEffectParameters(FENUMWRAP_AUDIO_EFFECT_PRESET preset, int param1, int param2)
+int UAgoraBPuRtcEngine::SetAudioEffectParameters(EUABT_AUDIO_EFFECT_PRESET preset, int param1, int param2)
 {
-	return AgoraUERtcEngine::Get()->setAudioEffectParameters(preset.GetRawValue(), param1, param2);
+	return AgoraUERtcEngine::Get()->setAudioEffectParameters(UABTEnum::ToRawValue(preset), param1, param2);
 }
 
-int UAgoraBPuRtcEngine::SetVoiceBeautifierParameters(FENUMWRAP_VOICE_BEAUTIFIER_PRESET preset, int param1, int param2)
+int UAgoraBPuRtcEngine::SetVoiceBeautifierParameters(EUABT_VOICE_BEAUTIFIER_PRESET preset, int param1, int param2)
 {
-	return AgoraUERtcEngine::Get()->setVoiceBeautifierParameters(preset.GetRawValue(), param1, param2);
+	return AgoraUERtcEngine::Get()->setVoiceBeautifierParameters(UABTEnum::ToRawValue(preset), param1, param2);
 }
 
-int UAgoraBPuRtcEngine::SetVoiceConversionParameters(FENUMWRAP_VOICE_CONVERSION_PRESET preset, int param1, int param2)
+int UAgoraBPuRtcEngine::SetVoiceConversionParameters(EUABT_VOICE_CONVERSION_PRESET preset, int param1, int param2)
 {
-	return AgoraUERtcEngine::Get()->setVoiceConversionParameters(preset.GetRawValue(), param1, param2);
+	return AgoraUERtcEngine::Get()->setVoiceConversionParameters(UABTEnum::ToRawValue(preset), param1, param2);
 }
 
 int UAgoraBPuRtcEngine::SetLocalVoicePitch(float pitch)
@@ -752,12 +752,12 @@ int UAgoraBPuRtcEngine::SetLocalVoiceFormant(const FString& formantRatio /*= "0.
 	return AgoraUERtcEngine::Get()->setLocalVoiceFormant(UABT::ToDouble(formantRatio));
 }
 
-int UAgoraBPuRtcEngine::SetLocalVoiceEqualization(EAUDIO_EQUALIZATION_BAND_FREQUENCY bandFrequency, int bandGain)
+int UAgoraBPuRtcEngine::SetLocalVoiceEqualization(EUABT_AUDIO_EQUALIZATION_BAND_FREQUENCY bandFrequency, int bandGain)
 {
 	return AgoraUERtcEngine::Get()->setLocalVoiceEqualization((agora::rtc::AUDIO_EQUALIZATION_BAND_FREQUENCY)bandFrequency, bandGain);
 }
 
-int UAgoraBPuRtcEngine::SetLocalVoiceReverb(EAUDIO_REVERB_TYPE reverbKey, int value)
+int UAgoraBPuRtcEngine::SetLocalVoiceReverb(EUABT_AUDIO_REVERB_TYPE reverbKey, int value)
 {
 	return AgoraUERtcEngine::Get()->setLocalVoiceReverb((agora::rtc::AUDIO_REVERB_TYPE)reverbKey, value);
 }
@@ -772,7 +772,7 @@ int UAgoraBPuRtcEngine::SetLogFilter(int filter)
 	return AgoraUERtcEngine::Get()->setLogFilter(filter);
 }
 
-int UAgoraBPuRtcEngine::SetLogLevel(ELOG_LEVEL level)
+int UAgoraBPuRtcEngine::SetLogLevel(EUABT_LOG_LEVEL level)
 {
 	return AgoraUERtcEngine::Get()->setLogLevel((agora::commons::LOG_LEVEL)level);
 }
@@ -790,27 +790,27 @@ int UAgoraBPuRtcEngine::UploadLogFile(FString& requestId)
 	return ret;
 }
 
-int UAgoraBPuRtcEngine::WriteLog(ELOG_LEVEL level, const FString& Content)
+int UAgoraBPuRtcEngine::WriteLog(EUABT_LOG_LEVEL level, const FString& Content)
 {
 	return AgoraUERtcEngine::Get()->writeLog((agora::commons::LOG_LEVEL)level, TCHAR_TO_UTF8(*Content));
 }
 
-int UAgoraBPuRtcEngine::SetLocalRenderMode(ERENDER_MODE_TYPE renderMode, EVIDEO_MIRROR_MODE_TYPE mirrorMode /*= EVIDEO_MIRROR_MODE_TYPE::VIDEO_MIRROR_MODE_AUTO*/)
+int UAgoraBPuRtcEngine::SetLocalRenderMode(EUABT_RENDER_MODE_TYPE renderMode, EUABT_VIDEO_MIRROR_MODE_TYPE mirrorMode /*= EUABT_VIDEO_MIRROR_MODE_TYPE::VIDEO_MIRROR_MODE_AUTO*/)
 {
 	return AgoraUERtcEngine::Get()->setLocalRenderMode((agora::media::base::RENDER_MODE_TYPE)renderMode, (agora::rtc::VIDEO_MIRROR_MODE_TYPE)mirrorMode);
 }
 
-int UAgoraBPuRtcEngine::SetRemoteRenderMode(int64 uid, ERENDER_MODE_TYPE renderMode, EVIDEO_MIRROR_MODE_TYPE mirrorMode)
+int UAgoraBPuRtcEngine::SetRemoteRenderMode(int64 uid, EUABT_RENDER_MODE_TYPE renderMode, EUABT_VIDEO_MIRROR_MODE_TYPE mirrorMode)
 {
 	return AgoraUERtcEngine::Get()->setRemoteRenderMode(UABT::ToUID(uid), (agora::media::base::RENDER_MODE_TYPE)renderMode, (agora::rtc::VIDEO_MIRROR_MODE_TYPE)mirrorMode);
 }
 
-int UAgoraBPuRtcEngine::SetLocalVideoMirrorMode(EVIDEO_MIRROR_MODE_TYPE mirrorMode)
+int UAgoraBPuRtcEngine::SetLocalVideoMirrorMode(EUABT_VIDEO_MIRROR_MODE_TYPE mirrorMode)
 {
 	return AgoraUERtcEngine::Get()->setLocalVideoMirrorMode((agora::rtc::VIDEO_MIRROR_MODE_TYPE)mirrorMode);
 }
 
-int UAgoraBPuRtcEngine::EnableDualStreamMode(bool enabled, const FSimulcastStreamConfig& streamConfig)
+int UAgoraBPuRtcEngine::EnableDualStreamMode(bool enabled, const FUABT_SimulcastStreamConfig& streamConfig)
 {
 	agora::rtc::SimulcastStreamConfig simulcastStreamConfig = streamConfig.CreateAgoraData();
 
@@ -821,11 +821,11 @@ int UAgoraBPuRtcEngine::EnableDualStreamMode(bool enabled, const FSimulcastStrea
 	return ret;
 }
 
-int UAgoraBPuRtcEngine::SetDualStreamMode(FENUMWRAP_SIMULCAST_STREAM_MODE mode, const FSimulcastStreamConfig& streamConfig)
+int UAgoraBPuRtcEngine::SetDualStreamMode(EUABT_SIMULCAST_STREAM_MODE mode, const FUABT_SimulcastStreamConfig& streamConfig)
 {
 	agora::rtc::SimulcastStreamConfig simulcastStreamConfig = streamConfig.CreateAgoraData();
 
-	int ret = AgoraUERtcEngine::Get()->setDualStreamMode(mode.GetRawValue(), simulcastStreamConfig);
+	int ret = AgoraUERtcEngine::Get()->setDualStreamMode(UABTEnum::ToRawValue(mode), simulcastStreamConfig);
 
 	streamConfig.FreeAgoraData(simulcastStreamConfig);
 
@@ -837,12 +837,12 @@ int UAgoraBPuRtcEngine::EnableCustomAudioLocalPlayback(int64 trackId, bool enabl
 	return AgoraUERtcEngine::Get()->enableCustomAudioLocalPlayback(UABT::ToUID(trackId), enabled);
 }
 
-int UAgoraBPuRtcEngine::SetRecordingAudioFrameParameters(int sampleRate, int channel, ERAW_AUDIO_FRAME_OP_MODE_TYPE mode, int samplesPerCall)
+int UAgoraBPuRtcEngine::SetRecordingAudioFrameParameters(int sampleRate, int channel, EUABT_RAW_AUDIO_FRAME_OP_MODE_TYPE mode, int samplesPerCall)
 {
 	return AgoraUERtcEngine::Get()->setRecordingAudioFrameParameters(sampleRate, channel, (agora::rtc::RAW_AUDIO_FRAME_OP_MODE_TYPE)mode, samplesPerCall);
 }
 
-int UAgoraBPuRtcEngine::SetPlaybackAudioFrameParameters(int sampleRate, int channel, ERAW_AUDIO_FRAME_OP_MODE_TYPE mode, int samplesPerCall)
+int UAgoraBPuRtcEngine::SetPlaybackAudioFrameParameters(int sampleRate, int channel, EUABT_RAW_AUDIO_FRAME_OP_MODE_TYPE mode, int samplesPerCall)
 {
 	return AgoraUERtcEngine::Get()->setPlaybackAudioFrameParameters(sampleRate, channel, (agora::rtc::RAW_AUDIO_FRAME_OP_MODE_TYPE)mode, samplesPerCall);
 }
@@ -887,17 +887,17 @@ int UAgoraBPuRtcEngine::AdjustUserPlaybackSignalVolume(int64 uid, int volume)
 	return AgoraUERtcEngine::Get()->adjustUserPlaybackSignalVolume(UABT::ToUID(uid), volume);
 }
 
-int UAgoraBPuRtcEngine::SetLocalPublishFallbackOption(ESTREAM_FALLBACK_OPTIONS option)
+int UAgoraBPuRtcEngine::SetLocalPublishFallbackOption(EUABT_STREAM_FALLBACK_OPTIONS option)
 {
 	return AgoraUERtcEngine::Get()->setLocalPublishFallbackOption((agora::rtc::STREAM_FALLBACK_OPTIONS)option);
 }
 
-int UAgoraBPuRtcEngine::SetRemoteSubscribeFallbackOption(ESTREAM_FALLBACK_OPTIONS option)
+int UAgoraBPuRtcEngine::SetRemoteSubscribeFallbackOption(EUABT_STREAM_FALLBACK_OPTIONS option)
 {
 	return AgoraUERtcEngine::Get()->setRemoteSubscribeFallbackOption((agora::rtc::STREAM_FALLBACK_OPTIONS)option);
 }
 
-int UAgoraBPuRtcEngine::SetHighPriorityUserList(const TArray<int64>& uidList, ESTREAM_FALLBACK_OPTIONS option)
+int UAgoraBPuRtcEngine::SetHighPriorityUserList(const TArray<int64>& uidList, EUABT_STREAM_FALLBACK_OPTIONS option)
 {
 	int vNum = uidList.Num();
 	agora::rtc::uid_t* uidListVec = new agora::rtc::uid_t[vNum];
@@ -956,7 +956,7 @@ int UAgoraBPuRtcEngine::SetExtensionProviderProperty(const FString& provider, co
 	return ret;
 }
 
-int UAgoraBPuRtcEngine::EnableExtension(const FString& provider, const FString& extension, bool enable /*= true*/, EMEDIA_SOURCE_TYPE type /*= EMEDIA_SOURCE_TYPE::UNKNOWN_MEDIA_SOURCE*/)
+int UAgoraBPuRtcEngine::EnableExtension(const FString& provider, const FString& extension, bool enable /*= true*/, EUABT_MEDIA_SOURCE_TYPE type /*= EUABT_MEDIA_SOURCE_TYPE::UNKNOWN_MEDIA_SOURCE*/)
 {
 	std::string Provider = TCHAR_TO_UTF8(*provider);
 	std::string Extension = TCHAR_TO_UTF8(*extension);
@@ -964,7 +964,7 @@ int UAgoraBPuRtcEngine::EnableExtension(const FString& provider, const FString& 
 	return ret;
 }
 
-int UAgoraBPuRtcEngine::SetExtensionProperty(const FString& provider, const FString& extension, const FString& key, const FString& value, EMEDIA_SOURCE_TYPE type /*= EMEDIA_SOURCE_TYPE::UNKNOWN_MEDIA_SOURCE*/)
+int UAgoraBPuRtcEngine::SetExtensionProperty(const FString& provider, const FString& extension, const FString& key, const FString& value, EUABT_MEDIA_SOURCE_TYPE type /*= EUABT_MEDIA_SOURCE_TYPE::UNKNOWN_MEDIA_SOURCE*/)
 {
 	std::string Provider = TCHAR_TO_UTF8(*provider);
 	std::string Extension = TCHAR_TO_UTF8(*extension);
@@ -974,7 +974,7 @@ int UAgoraBPuRtcEngine::SetExtensionProperty(const FString& provider, const FStr
 	return ret;
 }
 
-int UAgoraBPuRtcEngine::GetExtensionProperty(const FString& provider, const FString& extension, const FExtensionInfo& ExtensionInfo, const FString& key, FString& value)
+int UAgoraBPuRtcEngine::GetExtensionProperty(const FString& provider, const FString& extension, const FUABT_ExtensionInfo& ExtensionInfo, const FString& key, FString& value)
 {
 	std::string Provider = TCHAR_TO_UTF8(*provider);
 	std::string Extension = TCHAR_TO_UTF8(*extension);
@@ -995,7 +995,7 @@ int UAgoraBPuRtcEngine::GetExtensionProperty(const FString& provider, const FStr
 	return ret;
 }
 
-int UAgoraBPuRtcEngine::SetCameraCapturerConfiguration(const FCameraCapturerConfiguration& config)
+int UAgoraBPuRtcEngine::SetCameraCapturerConfiguration(const FUABT_CameraCapturerConfiguration& config)
 {
 	agora::rtc::CameraCapturerConfiguration cameraCapturerConfiguration = config.CreateAgoraData();
 
@@ -1011,7 +1011,7 @@ int64 UAgoraBPuRtcEngine::CreateCustomVideoTrack()
 	return AgoraUERtcEngine::Get()->createCustomVideoTrack();
 }
 
-int64 UAgoraBPuRtcEngine::CreateCustomEncodedVideoTrack(const FSenderOptions& sender_option)
+int64 UAgoraBPuRtcEngine::CreateCustomEncodedVideoTrack(const FUABT_SenderOptions& sender_option)
 {
 	agora::rtc::SenderOptions senderOptions = sender_option.CreateAgoraData();
 
@@ -1210,11 +1210,11 @@ int UAgoraBPuRtcEngine::SetCameraAutoExposureFaceModeEnabled(bool enabled)
 	return AGORA_UE_ERR_CODE(ERROR_NOT_SUPPORT_PLATFORM);
 }
 
-int UAgoraBPuRtcEngine::SetCameraStabilizationMode(FENUMWRAP_CAMERA_STABILIZATION_MODE mode)
+int UAgoraBPuRtcEngine::SetCameraStabilizationMode(EUABT_CAMERA_STABILIZATION_MODE mode)
 {
 #if defined(__ANDROID__) || (defined(__APPLE__) && TARGET_OS_IOS)
 #if defined(__APPLE__)
-	auto ret =  AgoraUERtcEngine::Get()->setCameraStabilizationMode(mode.GetRawValue());
+	auto ret =  AgoraUERtcEngine::Get()->setCameraStabilizationMode(UABTEnum::ToRawValue(mode));
 	return ret;
 #else
 	return AGORA_UE_ERR_CODE(ERROR_NOT_SUPPORT_PLATFORM);
@@ -1282,7 +1282,7 @@ int UAgoraBPuRtcEngine::EnableCameraCenterStage(bool enabled)
 #endif
 }
 
-int UAgoraBPuRtcEngine::QueryCameraFocalLengthCapability(const TArray<FAGFocalLengthInfo>& focalLengthInfos)
+int UAgoraBPuRtcEngine::QueryCameraFocalLengthCapability(const TArray<FUABT_FocalLengthInfo>& focalLengthInfos)
 {
 #if defined(__ANDROID__) || (defined(__APPLE__) && TARGET_OS_IOS)
 
@@ -1290,14 +1290,14 @@ int UAgoraBPuRtcEngine::QueryCameraFocalLengthCapability(const TArray<FAGFocalLe
 	agora::rtc::FocalLengthInfo* focalLengthInfo = nullptr;
 	SET_UABT_TARRARY_CUSTOMDATA_TO_AGORA_ARRAY___MEMALLOC(focalLengthInfo, agora::rtc::FocalLengthInfo, TotalSize, focalLengthInfos)
 		auto ret = AgoraUERtcEngine::Get()->queryCameraFocalLengthCapability(focalLengthInfo, TotalSize);
-	SET_UABT_TARRARY_CUSTOMDATA_TO_AGORA_ARRAY___MEMFREE(focalLengthInfo, TotalSize, FAGFocalLengthInfo)
+	SET_UABT_TARRARY_CUSTOMDATA_TO_AGORA_ARRAY___MEMFREE(focalLengthInfo, TotalSize, FUABT_FocalLengthInfo)
 		return ret;
 #else
 	return AGORA_UE_ERR_CODE(ERROR_NOT_SUPPORT_PLATFORM);
 #endif
 }
 
-int UAgoraBPuRtcEngine::SetScreenCaptureScenario(ESCREEN_SCENARIO_TYPE screenScenario)
+int UAgoraBPuRtcEngine::SetScreenCaptureScenario(EUABT_SCREEN_SCENARIO_TYPE screenScenario)
 {
 #if defined(_WIN32) || defined(__APPLE__) || defined(__ANDROID__)
 	auto ret = AgoraUERtcEngine::Get()->setScreenCaptureScenario((agora::rtc::SCREEN_SCENARIO_TYPE)screenScenario);
@@ -1307,7 +1307,7 @@ int UAgoraBPuRtcEngine::SetScreenCaptureScenario(ESCREEN_SCENARIO_TYPE screenSce
 #endif
 }
 
-int UAgoraBPuRtcEngine::UpdateScreenCapture(const FScreenCaptureParameters2& captureParams)
+int UAgoraBPuRtcEngine::UpdateScreenCapture(const FUABT_ScreenCaptureParameters2& captureParams)
 {
 #if defined(__ANDROID__) || (defined(__APPLE__) && TARGET_OS_IOS) 
 	agora::rtc::ScreenCaptureParameters2 screenCaptureParameters2 = captureParams.CreateAgoraData();
@@ -1358,7 +1358,7 @@ int UAgoraBPuRtcEngine::StartRtmpStreamWithoutTranscoding(const FString& url)
 	auto ret = AgoraUERtcEngine::Get()->startRtmpStreamWithoutTranscoding(Url.c_str());
 	return ret;
 }
-int UAgoraBPuRtcEngine::StartRtmpStreamWithTranscoding(const FString& url, const FLiveTranscoding& transcoding)
+int UAgoraBPuRtcEngine::StartRtmpStreamWithTranscoding(const FString& url, const FUABT_LiveTranscoding& transcoding)
 {
 	agora::rtc::LiveTranscoding liveTranscoding = transcoding.CreateAgoraData();
 	std::string TempUrl = TCHAR_TO_UTF8(*url);
@@ -1366,7 +1366,7 @@ int UAgoraBPuRtcEngine::StartRtmpStreamWithTranscoding(const FString& url, const
 	transcoding.FreeAgoraData(liveTranscoding);
 	return ret;
 }
-int UAgoraBPuRtcEngine::UpdateRtmpTranscoding(const FLiveTranscoding& transcoding)
+int UAgoraBPuRtcEngine::UpdateRtmpTranscoding(const FUABT_LiveTranscoding& transcoding)
 {
 	agora::rtc::LiveTranscoding liveTranscoding = transcoding.CreateAgoraData();
 	auto ret = AgoraUERtcEngine::Get()->updateRtmpTranscoding(liveTranscoding);
@@ -1380,7 +1380,7 @@ int UAgoraBPuRtcEngine::StopRtmpStream(const FString& url)
 	return ret;
 }
 
-int UAgoraBPuRtcEngine::StartCameraCapture(EVIDEO_SOURCE_TYPE sourceType, const FCameraCapturerConfiguration& config)
+int UAgoraBPuRtcEngine::StartCameraCapture(EUABT_VIDEO_SOURCE_TYPE sourceType, const FUABT_CameraCapturerConfiguration& config)
 {
 	agora::rtc::CameraCapturerConfiguration cameraCapturerConfiguration = config.CreateAgoraData();
 	auto ret = AgoraUERtcEngine::Get()->startCameraCapture((agora::rtc::VIDEO_SOURCE_TYPE)sourceType, cameraCapturerConfiguration);
@@ -1390,20 +1390,20 @@ int UAgoraBPuRtcEngine::StartCameraCapture(EVIDEO_SOURCE_TYPE sourceType, const 
 }
 
 
-int UAgoraBPuRtcEngine::StopCameraCapture(EVIDEO_SOURCE_TYPE sourceType)
+int UAgoraBPuRtcEngine::StopCameraCapture(EUABT_VIDEO_SOURCE_TYPE sourceType)
 {
 	auto ret = AgoraUERtcEngine::Get()->stopCameraCapture((agora::rtc::VIDEO_SOURCE_TYPE)sourceType);
 	return ret;
 }
 
-int UAgoraBPuRtcEngine::StartLocalVideoTranscoder(const FLocalTranscoderConfiguration& config)
+int UAgoraBPuRtcEngine::StartLocalVideoTranscoder(const FUABT_LocalTranscoderConfiguration& config)
 {
 	agora::rtc::LocalTranscoderConfiguration AgoraLocalTranscoderConfiguration = config.CreateAgoraData();
 	auto ret = AgoraUERtcEngine::Get()->startLocalVideoTranscoder(AgoraLocalTranscoderConfiguration);
 	config.FreeAgoraData(AgoraLocalTranscoderConfiguration);
 	return ret;
 }
-int UAgoraBPuRtcEngine::UpdateLocalTranscoderConfiguration(const FLocalTranscoderConfiguration& config)
+int UAgoraBPuRtcEngine::UpdateLocalTranscoderConfiguration(const FUABT_LocalTranscoderConfiguration& config)
 {
 	agora::rtc::LocalTranscoderConfiguration AgoraLocalTranscoderConfiguration = config.CreateAgoraData();
 	auto ret = AgoraUERtcEngine::Get()->updateLocalTranscoderConfiguration(AgoraLocalTranscoderConfiguration);
@@ -1416,37 +1416,37 @@ int UAgoraBPuRtcEngine::StopLocalVideoTranscoder()
 	return ret;
 }
 
-int UAgoraBPuRtcEngine::SetCameraDeviceOrientation(EVIDEO_SOURCE_TYPE type, FENUMWRAP_VIDEO_ORIENTATION orientation)
+int UAgoraBPuRtcEngine::SetCameraDeviceOrientation(EUABT_VIDEO_SOURCE_TYPE type, EUABT_VIDEO_ORIENTATION orientation)
 {
-	auto ret = AgoraUERtcEngine::Get()->setCameraDeviceOrientation((agora::rtc::VIDEO_SOURCE_TYPE)type, orientation.GetRawValue());
+	auto ret = AgoraUERtcEngine::Get()->setCameraDeviceOrientation((agora::rtc::VIDEO_SOURCE_TYPE)type, UABTEnum::ToRawValue(orientation));
 	return ret;
 }
-int UAgoraBPuRtcEngine::SetScreenCaptureOrientation(EVIDEO_SOURCE_TYPE type, FENUMWRAP_VIDEO_ORIENTATION orientation)
+int UAgoraBPuRtcEngine::SetScreenCaptureOrientation(EUABT_VIDEO_SOURCE_TYPE type, EUABT_VIDEO_ORIENTATION orientation)
 {
-	auto ret = AgoraUERtcEngine::Get()->setScreenCaptureOrientation((agora::rtc::VIDEO_SOURCE_TYPE)type, orientation.GetRawValue());
+	auto ret = AgoraUERtcEngine::Get()->setScreenCaptureOrientation((agora::rtc::VIDEO_SOURCE_TYPE)type, UABTEnum::ToRawValue(orientation));
 	return ret;
 }
 
-ECONNECTION_STATE_TYPE UAgoraBPuRtcEngine::GetConnectionState()
+EUABT_CONNECTION_STATE_TYPE UAgoraBPuRtcEngine::GetConnectionState()
 {
-	return (ECONNECTION_STATE_TYPE)AgoraUERtcEngine::Get()->getConnectionState();
+	return (EUABT_CONNECTION_STATE_TYPE)AgoraUERtcEngine::Get()->getConnectionState();
 }
 
 
-int UAgoraBPuRtcEngine::SetRemoteUserPriority(int64 uid, EPRIORITY_TYPE userPriority)
+int UAgoraBPuRtcEngine::SetRemoteUserPriority(int64 uid, EUABT_PRIORITY_TYPE userPriority)
 {
 	auto ret = AgoraUERtcEngine::Get()->setRemoteUserPriority(uid, (agora::rtc::PRIORITY_TYPE)userPriority);
 	return ret;
 }
 
-int UAgoraBPuRtcEngine::EnableEncryption(bool enabled, const FEncryptionConfig& config)
+int UAgoraBPuRtcEngine::EnableEncryption(bool enabled, const FUABT_EncryptionConfig& config)
 {
 	agora::rtc::EncryptionConfig AgoraEncryptionConfig = config.CreateAgoraData();
 	auto ret = AgoraUERtcEngine::Get()->enableEncryption(enabled, AgoraEncryptionConfig);
 	config.FreeAgoraData(AgoraEncryptionConfig);
 	return ret;
 }
-int UAgoraBPuRtcEngine::CreateDataStream(int& streamId, const FDataStreamConfig& config)
+int UAgoraBPuRtcEngine::CreateDataStream(int& streamId, const FUABT_DataStreamConfig& config)
 {
 	agora::rtc::DataStreamConfig dataStreamConfig = config.CreateAgoraData();
 	auto ret = AgoraUERtcEngine::Get()->createDataStream(&streamId, dataStreamConfig);
@@ -1461,7 +1461,7 @@ int UAgoraBPuRtcEngine::SendStreamMessage(int streamId, const FString& data)
 	auto ret = AgoraUERtcEngine::Get()->sendStreamMessage(streamId, Data, strlen(Data) + 1);
 	return ret;
 }
-int UAgoraBPuRtcEngine::AddVideoWatermark(const FString& watermarkUrl, const FWatermarkOptions& options)
+int UAgoraBPuRtcEngine::AddVideoWatermark(const FString& watermarkUrl, const FUABT_WatermarkOptions& options)
 {
 	std::string STDWatermarkUrl = TCHAR_TO_UTF8(*watermarkUrl);
 	agora::rtc::WatermarkOptions watermarkOptions = options.CreateAgoraData();
@@ -1520,7 +1520,7 @@ int UAgoraBPuRtcEngine::StopAudioFrameDump(const FString& channel_id, int64 uid,
 	return ret;
 }
 
-int UAgoraBPuRtcEngine::SetAINSMode(bool enabled, EAUDIO_AINS_MODE mode)
+int UAgoraBPuRtcEngine::SetAINSMode(bool enabled, EUABT_AUDIO_AINS_MODE mode)
 {
 	auto ret = AgoraUERtcEngine::Get()->setAINSMode(enabled, (agora::rtc::AUDIO_AINS_MODE)mode);
 	return ret;
@@ -1533,7 +1533,7 @@ int UAgoraBPuRtcEngine::RegisterLocalUserAccount(const FString& appId, const FSt
 	auto ret = AgoraUERtcEngine::Get()->registerLocalUserAccount(AppId.c_str(), UserAccount.c_str());
 	return ret;
 }
-int UAgoraBPuRtcEngine::JoinChannelWithUserAccount(const FString& token, const FString& channelId, const FString& userAccount, const FChannelMediaOptions& options)
+int UAgoraBPuRtcEngine::JoinChannelWithUserAccount(const FString& token, const FString& channelId, const FString& userAccount, const FUABT_ChannelMediaOptions& options)
 {
 	agora::rtc::ChannelMediaOptions channelMediaOptions = options.CreateAgoraData();
 	std::string Token = TCHAR_TO_UTF8(*token);
@@ -1544,7 +1544,7 @@ int UAgoraBPuRtcEngine::JoinChannelWithUserAccount(const FString& token, const F
 	return ret;
 }
 
-int UAgoraBPuRtcEngine::JoinChannelWithUserAccountEx(const FString& token, const FString& channelId, const FString& userAccount, const FChannelMediaOptions& options)
+int UAgoraBPuRtcEngine::JoinChannelWithUserAccountEx(const FString& token, const FString& channelId, const FString& userAccount, const FUABT_ChannelMediaOptions& options)
 {
 	agora::rtc::ChannelMediaOptions channelMediaOptions = options.CreateAgoraData();
 	std::string Token = TCHAR_TO_UTF8(*token);
@@ -1554,7 +1554,7 @@ int UAgoraBPuRtcEngine::JoinChannelWithUserAccountEx(const FString& token, const
 	options.FreeAgoraData(channelMediaOptions);
 	return ret;
 }
-int UAgoraBPuRtcEngine::GetUserInfoByUserAccount(const FString& userAccount,FUserInfo& userInfo)
+int UAgoraBPuRtcEngine::GetUserInfoByUserAccount(const FString& userAccount,FUABT_UserInfo& userInfo)
 {
 	agora::rtc::UserInfo info;
 	std::string UserAccount = TCHAR_TO_UTF8(*userAccount);
@@ -1562,7 +1562,7 @@ int UAgoraBPuRtcEngine::GetUserInfoByUserAccount(const FString& userAccount,FUse
 	userInfo = info;
 	return ret;
 }
-int UAgoraBPuRtcEngine::GetUserInfoByUid(int64 uid, FUserInfo& userInfo)
+int UAgoraBPuRtcEngine::GetUserInfoByUid(int64 uid, FUABT_UserInfo& userInfo)
 {
 	agora::rtc::UserInfo info;
 	auto ret = AgoraUERtcEngine::Get()->getUserInfoByUid(uid, &info);
@@ -1571,7 +1571,7 @@ int UAgoraBPuRtcEngine::GetUserInfoByUid(int64 uid, FUserInfo& userInfo)
 }
 
 
-int UAgoraBPuRtcEngine::StartOrUpdateChannelMediaRelay(const FChannelMediaRelayConfiguration& configuration)
+int UAgoraBPuRtcEngine::StartOrUpdateChannelMediaRelay(const FUABT_ChannelMediaRelayConfiguration& configuration)
 {
 	agora::rtc::ChannelMediaRelayConfiguration channelMediaRelayConfiguration = configuration.CreateAgoraData();
 	auto ret = AgoraUERtcEngine::Get()->startOrUpdateChannelMediaRelay(channelMediaRelayConfiguration);
@@ -1580,7 +1580,7 @@ int UAgoraBPuRtcEngine::StartOrUpdateChannelMediaRelay(const FChannelMediaRelayC
 }
 
 
-int UAgoraBPuRtcEngine::StartOrUpdateChannelMediaRelayEx(const FChannelMediaRelayConfiguration& configuration, const FRtcConnection& connection)
+int UAgoraBPuRtcEngine::StartOrUpdateChannelMediaRelayEx(const FUABT_ChannelMediaRelayConfiguration& configuration, const FUABT_RtcConnection& connection)
 {
 	agora::rtc::ChannelMediaRelayConfiguration channelMediaRelayConfiguration = configuration.CreateAgoraData();
 	agora::rtc::RtcConnection rtcConnection = connection.CreateAgoraData();
@@ -1605,12 +1605,12 @@ int UAgoraBPuRtcEngine::ResumeAllChannelMediaRelay()
 	auto ret = AgoraUERtcEngine::Get()->resumeAllChannelMediaRelay();
 	return ret;
 }
-int UAgoraBPuRtcEngine::SetDirectCdnStreamingAudioConfiguration(EAUDIO_PROFILE_TYPE profile)
+int UAgoraBPuRtcEngine::SetDirectCdnStreamingAudioConfiguration(EUABT_AUDIO_PROFILE_TYPE profile)
 {
 	auto ret = AgoraUERtcEngine::Get()->setDirectCdnStreamingAudioConfiguration((agora::rtc::AUDIO_PROFILE_TYPE)profile);
 	return ret;
 }
-int UAgoraBPuRtcEngine::SetDirectCdnStreamingVideoConfiguration(const FVideoEncoderConfiguration& config)
+int UAgoraBPuRtcEngine::SetDirectCdnStreamingVideoConfiguration(const FUABT_VideoEncoderConfiguration& config)
 {
 	agora::rtc::VideoEncoderConfiguration videoEncoderConfiguration = config.CreateAgoraData();
 	auto ret = AgoraUERtcEngine::Get()->setDirectCdnStreamingVideoConfiguration(videoEncoderConfiguration);
@@ -1618,7 +1618,7 @@ int UAgoraBPuRtcEngine::SetDirectCdnStreamingVideoConfiguration(const FVideoEnco
 	return ret;
 }
 
-int UAgoraBPuRtcEngine::StartRhythmPlayer(const FString& sound1, const FString& sound2, const FAgoraRhythmPlayerConfig& config)
+int UAgoraBPuRtcEngine::StartRhythmPlayer(const FString& sound1, const FString& sound2, const FUABT_AgoraRhythmPlayerConfig& config)
 {
 	agora::rtc::AgoraRhythmPlayerConfig agoraRhythmPlayerConfig = config.CreateAgoraData();
 	std::string Sound1 = TCHAR_TO_UTF8(*sound1);
@@ -1632,7 +1632,7 @@ int UAgoraBPuRtcEngine::StopRhythmPlayer()
 	auto ret = AgoraUERtcEngine::Get()->stopRhythmPlayer();
 	return ret;
 }
-int UAgoraBPuRtcEngine::ConfigRhythmPlayer(const FAgoraRhythmPlayerConfig& config)
+int UAgoraBPuRtcEngine::ConfigRhythmPlayer(const FUABT_AgoraRhythmPlayerConfig& config)
 {
 	agora::rtc::AgoraRhythmPlayerConfig agoraRhythmPlayerConfig = config.CreateAgoraData();
 	auto ret = AgoraUERtcEngine::Get()->configRhythmPlayer(agoraRhythmPlayerConfig);
@@ -1646,7 +1646,7 @@ int UAgoraBPuRtcEngine::TakeSnapshot(int64 uid, const FString& filePath)
 	auto ret = AgoraUERtcEngine::Get()->takeSnapshot(uid, Filepath.c_str());
 	return ret;
 }
-int UAgoraBPuRtcEngine::EnableContentInspect(bool enabled, const FContentInspectConfig& config)
+int UAgoraBPuRtcEngine::EnableContentInspect(bool enabled, const FUABT_ContentInspectConfig& config)
 {
 	agora::media::ContentInspectConfig contentInspectConfig = config.CreateAgoraData();
 	auto ret = AgoraUERtcEngine::Get()->enableContentInspect(enabled, contentInspectConfig);
@@ -1667,19 +1667,19 @@ int UAgoraBPuRtcEngine::AdjustCustomAudioPlayoutVolume(int64 trackId, int volume
 	return ret;
 }
 
-int UAgoraBPuRtcEngine::SetCloudProxy(ECLOUD_PROXY_TYPE proxyType)
+int UAgoraBPuRtcEngine::SetCloudProxy(EUABT_CLOUD_PROXY_TYPE proxyType)
 {
 	auto ret = AgoraUERtcEngine::Get()->setCloudProxy((agora::rtc::CLOUD_PROXY_TYPE)proxyType);
 	return ret;
 }
-int UAgoraBPuRtcEngine::SetLocalAccessPoint(const FLocalAccessPointConfiguration& config)
+int UAgoraBPuRtcEngine::SetLocalAccessPoint(const FUABT_LocalAccessPointConfiguration& config)
 {
 	agora::rtc::LocalAccessPointConfiguration AgoraLocalAccessPointConfiguration = config.CreateAgoraData();
 	auto ret = AgoraUERtcEngine::Get()->setLocalAccessPoint(AgoraLocalAccessPointConfiguration);
 	config.FreeAgoraData(AgoraLocalAccessPointConfiguration);
 	return ret;
 }
-int UAgoraBPuRtcEngine::SetAdvancedAudioOptions(const FAdvancedAudioOptions& options)
+int UAgoraBPuRtcEngine::SetAdvancedAudioOptions(const FUABT_AdvancedAudioOptions& options)
 {
 	agora::rtc::AdvancedAudioOptions advancedAudioOptions = options.CreateAgoraData();
 	auto ret = AgoraUERtcEngine::Get()->setAdvancedAudioOptions(advancedAudioOptions);
@@ -1692,14 +1692,14 @@ int UAgoraBPuRtcEngine::SetAVSyncSource(const FString& channelId, int64 uid)
 	auto ret = AgoraUERtcEngine::Get()->setAVSyncSource(ChannelId.c_str(), uid);
 	return ret;
 }
-int UAgoraBPuRtcEngine::EnableVideoImageSource(bool enable, const FImageTrackOptions& options)
+int UAgoraBPuRtcEngine::EnableVideoImageSource(bool enable, const FUABT_ImageTrackOptions& options)
 {
 	agora::rtc::ImageTrackOptions imageTrackOptions = options.CreateAgoraData();
 	auto ret = AgoraUERtcEngine::Get()->enableVideoImageSource(enable, imageTrackOptions);
 	options.FreeAgoraData(imageTrackOptions);
 	return ret;
 }
-int UAgoraBPuRtcEngine::JoinChannelEx(const FString& token, const FRtcConnection& connection, const FChannelMediaOptions& options)
+int UAgoraBPuRtcEngine::JoinChannelEx(const FString& token, const FUABT_RtcConnection& connection, const FUABT_ChannelMediaOptions& options)
 {
 	agora::rtc::RtcConnection rtcConnection = connection.CreateAgoraData();
 	agora::rtc::ChannelMediaOptions channelMediaOptions = options.CreateAgoraData();
@@ -1713,7 +1713,7 @@ int UAgoraBPuRtcEngine::JoinChannelEx(const FString& token, const FRtcConnection
 }
 
 
-int UAgoraBPuRtcEngine::LeaveChannelEx(const FRtcConnection& connection, const FLeaveChannelOptions& options)
+int UAgoraBPuRtcEngine::LeaveChannelEx(const FUABT_RtcConnection& connection, const FUABT_LeaveChannelOptions& options)
 {
 	agora::rtc::RtcConnection rtcConnection = connection.CreateAgoraData();
 
@@ -1724,7 +1724,7 @@ int UAgoraBPuRtcEngine::LeaveChannelEx(const FRtcConnection& connection, const F
 	return ret;
 }
 
-int UAgoraBPuRtcEngine::UpdateChannelMediaOptionsEx(const FChannelMediaOptions& options, const FRtcConnection& connection)
+int UAgoraBPuRtcEngine::UpdateChannelMediaOptionsEx(const FUABT_ChannelMediaOptions& options, const FUABT_RtcConnection& connection)
 {
 	agora::rtc::ChannelMediaOptions channelMediaOptions = options.CreateAgoraData();
 	agora::rtc::RtcConnection rtcConnection = connection.CreateAgoraData();
@@ -1735,7 +1735,7 @@ int UAgoraBPuRtcEngine::UpdateChannelMediaOptionsEx(const FChannelMediaOptions& 
 
 	return ret;
 }
-int UAgoraBPuRtcEngine::SetVideoEncoderConfigurationEx(const FVideoEncoderConfiguration& config, const FRtcConnection& connection)
+int UAgoraBPuRtcEngine::SetVideoEncoderConfigurationEx(const FUABT_VideoEncoderConfiguration& config, const FUABT_RtcConnection& connection)
 {
 	agora::rtc::VideoEncoderConfiguration videoEncoderConfiguration = config.CreateAgoraData();
 
@@ -1747,21 +1747,21 @@ int UAgoraBPuRtcEngine::SetVideoEncoderConfigurationEx(const FVideoEncoderConfig
 	return ret;
 }
 
-int UAgoraBPuRtcEngine::MuteRemoteAudioStreamEx(int64 uid, bool mute, const FRtcConnection& connection)
+int UAgoraBPuRtcEngine::MuteRemoteAudioStreamEx(int64 uid, bool mute, const FUABT_RtcConnection& connection)
 {
 	agora::rtc::RtcConnection rtcConnection = connection.CreateAgoraData();
 	auto ret = AgoraUERtcEngine::Get()->muteRemoteAudioStreamEx(uid, mute, rtcConnection);
 	connection.FreeAgoraData(rtcConnection);
 	return ret;
 }
-int UAgoraBPuRtcEngine::MuteRemoteVideoStreamEx(int64 uid, bool mute, const FRtcConnection& connection)
+int UAgoraBPuRtcEngine::MuteRemoteVideoStreamEx(int64 uid, bool mute, const FUABT_RtcConnection& connection)
 {
 	agora::rtc::RtcConnection rtcConnection = connection.CreateAgoraData();
 	auto ret = AgoraUERtcEngine::Get()->muteRemoteVideoStreamEx(uid, mute, rtcConnection);
 	connection.FreeAgoraData(rtcConnection);
 	return ret;
 }
-int UAgoraBPuRtcEngine::SetRemoteVideoStreamTypeEx(int64 uid, EVIDEO_STREAM_TYPE streamType, const FRtcConnection& connection)
+int UAgoraBPuRtcEngine::SetRemoteVideoStreamTypeEx(int64 uid, EUABT_VIDEO_STREAM_TYPE streamType, const FUABT_RtcConnection& connection)
 {
 	agora::rtc::RtcConnection rtcConnection = connection.CreateAgoraData();
 	auto ret = AgoraUERtcEngine::Get()->setRemoteVideoStreamTypeEx(uid, (agora::rtc::VIDEO_STREAM_TYPE)streamType, rtcConnection);
@@ -1769,7 +1769,7 @@ int UAgoraBPuRtcEngine::SetRemoteVideoStreamTypeEx(int64 uid, EVIDEO_STREAM_TYPE
 	return ret;
 }
 
-int UAgoraBPuRtcEngine::SetRemoteVideoSubscriptionOptionsEx(int64 uid, const FVideoSubscriptionOptions& options, const FRtcConnection& connection)
+int UAgoraBPuRtcEngine::SetRemoteVideoSubscriptionOptionsEx(int64 uid, const FUABT_VideoSubscriptionOptions& options, const FUABT_RtcConnection& connection)
 {
 	agora::rtc::VideoSubscriptionOptions videoSubscriptionOptions = options.CreateAgoraData();
 	agora::rtc::RtcConnection rtcConnection = connection.CreateAgoraData();
@@ -1778,14 +1778,14 @@ int UAgoraBPuRtcEngine::SetRemoteVideoSubscriptionOptionsEx(int64 uid, const FVi
 	connection.FreeAgoraData(rtcConnection);
 	return ret;
 }
-int UAgoraBPuRtcEngine::SetRemoteVoicePositionEx(int64 uid, float pan, float gain, const FRtcConnection& connection)
+int UAgoraBPuRtcEngine::SetRemoteVoicePositionEx(int64 uid, float pan, float gain, const FUABT_RtcConnection& connection)
 {
 	agora::rtc::RtcConnection rtcConnection = connection.CreateAgoraData();
 	auto ret = AgoraUERtcEngine::Get()->setRemoteVoicePositionEx(uid, pan, gain, rtcConnection);
 	connection.FreeAgoraData(rtcConnection);
 	return ret;
 }
-int UAgoraBPuRtcEngine::SetRemoteUserSpatialAudioParamsEx(int64 uid, const FSpatialAudioParams& params, const FRtcConnection& connection)
+int UAgoraBPuRtcEngine::SetRemoteUserSpatialAudioParamsEx(int64 uid, const FUABT_SpatialAudioParams& params, const FUABT_RtcConnection& connection)
 {
 	agora::SpatialAudioParams spatialAudioParams = params.CreateAgoraData();
 	agora::rtc::RtcConnection rtcConnection = connection.CreateAgoraData();
@@ -1794,14 +1794,14 @@ int UAgoraBPuRtcEngine::SetRemoteUserSpatialAudioParamsEx(int64 uid, const FSpat
 	connection.FreeAgoraData(rtcConnection);
 	return ret;
 }
-int UAgoraBPuRtcEngine::SetRemoteRenderModeEx(int64 uid, ERENDER_MODE_TYPE renderMode, EVIDEO_MIRROR_MODE_TYPE mirrorMode, const FRtcConnection& connection)
+int UAgoraBPuRtcEngine::SetRemoteRenderModeEx(int64 uid, EUABT_RENDER_MODE_TYPE renderMode, EUABT_VIDEO_MIRROR_MODE_TYPE mirrorMode, const FUABT_RtcConnection& connection)
 {
 	agora::rtc::RtcConnection rtcConnection = connection.CreateAgoraData();
 	auto ret = AgoraUERtcEngine::Get()->setRemoteRenderModeEx(uid, (agora::media::base::RENDER_MODE_TYPE)renderMode, (agora::rtc::VIDEO_MIRROR_MODE_TYPE)mirrorMode, rtcConnection);
 	connection.FreeAgoraData(rtcConnection);
 	return ret;
 }
-int UAgoraBPuRtcEngine::EnableLoopbackRecordingEx(const FRtcConnection& connection, bool enabled, const FString& deviceName)
+int UAgoraBPuRtcEngine::EnableLoopbackRecordingEx(const FUABT_RtcConnection& connection, bool enabled, const FString& deviceName)
 {
 	std::string STDDeviceName = TCHAR_TO_UTF8(*deviceName);
 	agora::rtc::RtcConnection rtcConnection = connection.CreateAgoraData();
@@ -1809,14 +1809,14 @@ int UAgoraBPuRtcEngine::EnableLoopbackRecordingEx(const FRtcConnection& connecti
 	connection.FreeAgoraData(rtcConnection);
 	return ret;
 }
-ECONNECTION_STATE_TYPE UAgoraBPuRtcEngine::GetConnectionStateEx(const FRtcConnection& connection)
+EUABT_CONNECTION_STATE_TYPE UAgoraBPuRtcEngine::GetConnectionStateEx(const FUABT_RtcConnection& connection)
 {
 	agora::rtc::RtcConnection rtcConnection = connection.CreateAgoraData();
-	auto ret = (ECONNECTION_STATE_TYPE)AgoraUERtcEngine::Get()->getConnectionStateEx(rtcConnection);
+	auto ret = (EUABT_CONNECTION_STATE_TYPE)AgoraUERtcEngine::Get()->getConnectionStateEx(rtcConnection);
 	connection.FreeAgoraData(rtcConnection);
 	return ret;
 }
-int UAgoraBPuRtcEngine::EnableEncryptionEx(const FRtcConnection& connection, bool enabled, const FEncryptionConfig& config)
+int UAgoraBPuRtcEngine::EnableEncryptionEx(const FUABT_RtcConnection& connection, bool enabled, const FUABT_EncryptionConfig& config)
 {
 	agora::rtc::RtcConnection rtcConnection = connection.CreateAgoraData();
 	agora::rtc::EncryptionConfig AgoraEncryptionConfig = config.CreateAgoraData();
@@ -1829,7 +1829,7 @@ int UAgoraBPuRtcEngine::EnableEncryptionEx(const FRtcConnection& connection, boo
 	return ret;
 }
 
-int UAgoraBPuRtcEngine::CreateDataStreamEx(int& streamId, const FDataStreamConfig& config, const FRtcConnection& connection)
+int UAgoraBPuRtcEngine::CreateDataStreamEx(int& streamId, const FUABT_DataStreamConfig& config, const FUABT_RtcConnection& connection)
 {
 	agora::rtc::DataStreamConfig dataStreamConfig = config.CreateAgoraData();
 	agora::rtc::RtcConnection rtcConnection = connection.CreateAgoraData();
@@ -1838,7 +1838,7 @@ int UAgoraBPuRtcEngine::CreateDataStreamEx(int& streamId, const FDataStreamConfi
 	connection.FreeAgoraData(rtcConnection);
 	return ret;
 }
-int UAgoraBPuRtcEngine::SendStreamMessageEx(int streamId, const FString& data, const FRtcConnection& connection)
+int UAgoraBPuRtcEngine::SendStreamMessageEx(int streamId, const FString& data, const FUABT_RtcConnection& connection)
 {
 	agora::rtc::RtcConnection rtcConnection = connection.CreateAgoraData();
 	std::string StdStrData = TCHAR_TO_UTF8(*data);
@@ -1846,7 +1846,7 @@ int UAgoraBPuRtcEngine::SendStreamMessageEx(int streamId, const FString& data, c
 	connection.FreeAgoraData(rtcConnection);
 	return ret;
 }
-int UAgoraBPuRtcEngine::AddVideoWatermarkEx(const FString& watermarkUrl, const FWatermarkOptions& options, const FRtcConnection& connection)
+int UAgoraBPuRtcEngine::AddVideoWatermarkEx(const FString& watermarkUrl, const FUABT_WatermarkOptions& options, const FUABT_RtcConnection& connection)
 {
 	agora::rtc::WatermarkOptions watermarkOptions = options.CreateAgoraData();
 	agora::rtc::RtcConnection rtcConnection = connection.CreateAgoraData();
@@ -1856,14 +1856,14 @@ int UAgoraBPuRtcEngine::AddVideoWatermarkEx(const FString& watermarkUrl, const F
 	connection.FreeAgoraData(rtcConnection);
 	return ret;
 }
-int UAgoraBPuRtcEngine::ClearVideoWatermarkEx(const FRtcConnection& connection)
+int UAgoraBPuRtcEngine::ClearVideoWatermarkEx(const FUABT_RtcConnection& connection)
 {
 	agora::rtc::RtcConnection rtcConnection = connection.CreateAgoraData();
 	auto ret = AgoraUERtcEngine::Get()->clearVideoWatermarkEx(rtcConnection);
 	connection.FreeAgoraData(rtcConnection);
 	return ret;
 }
-int UAgoraBPuRtcEngine::SendCustomReportMessageEx(const FString& id, const FString& category, const FString& event, const FString& label, int value, const FRtcConnection& connection)
+int UAgoraBPuRtcEngine::SendCustomReportMessageEx(const FString& id, const FString& category, const FString& event, const FString& label, int value, const FUABT_RtcConnection& connection)
 {
 	agora::rtc::RtcConnection rtcConnection = connection.CreateAgoraData();
 	std::string STDID = TCHAR_TO_UTF8(*id);
@@ -1874,14 +1874,14 @@ int UAgoraBPuRtcEngine::SendCustomReportMessageEx(const FString& id, const FStri
 	connection.FreeAgoraData(rtcConnection);
 	return ret;
 }
-int UAgoraBPuRtcEngine::EnableAudioVolumeIndicationEx(int interval, int smooth, bool reportVad, const FRtcConnection& connection)
+int UAgoraBPuRtcEngine::EnableAudioVolumeIndicationEx(int interval, int smooth, bool reportVad, const FUABT_RtcConnection& connection)
 {
 	agora::rtc::RtcConnection rtcConnection = connection.CreateAgoraData();
 	auto ret = AgoraUERtcEngine::Get()->enableAudioVolumeIndicationEx(interval, smooth, reportVad, rtcConnection);
 	connection.FreeAgoraData(rtcConnection);
 	return ret;
 }
-int UAgoraBPuRtcEngine::GetUserInfoByUserAccountEx(const FString& userAccount, FUserInfo& userInfo, const FRtcConnection& connection)
+int UAgoraBPuRtcEngine::GetUserInfoByUserAccountEx(const FString& userAccount, FUABT_UserInfo& userInfo, const FUABT_RtcConnection& connection)
 {
 	agora::rtc::UserInfo info;
 
@@ -1894,7 +1894,7 @@ int UAgoraBPuRtcEngine::GetUserInfoByUserAccountEx(const FString& userAccount, F
 
 	return ret;
 }
-int UAgoraBPuRtcEngine::GetUserInfoByUidEx(int64 uid, FUserInfo& userInfo, const FRtcConnection& connection)
+int UAgoraBPuRtcEngine::GetUserInfoByUidEx(int64 uid, FUABT_UserInfo& userInfo, const FUABT_RtcConnection& connection)
 {
 	agora::rtc::UserInfo info;
 	agora::rtc::RtcConnection rtcConnection = connection.CreateAgoraData();
@@ -1907,7 +1907,7 @@ int UAgoraBPuRtcEngine::GetUserInfoByUidEx(int64 uid, FUserInfo& userInfo, const
 	return ret;
 }
 
-int UAgoraBPuRtcEngine::EnableDualStreamModeEx(bool enabled, const FSimulcastStreamConfig& streamConfig, const FRtcConnection& connection)
+int UAgoraBPuRtcEngine::EnableDualStreamModeEx(bool enabled, const FUABT_SimulcastStreamConfig& streamConfig, const FUABT_RtcConnection& connection)
 {
 	agora::rtc::SimulcastStreamConfig simulcastStreamConfig = streamConfig.CreateAgoraData();
 	agora::rtc::RtcConnection rtcConnection = connection.CreateAgoraData();
@@ -1916,11 +1916,11 @@ int UAgoraBPuRtcEngine::EnableDualStreamModeEx(bool enabled, const FSimulcastStr
 	connection.FreeAgoraData(rtcConnection);
 	return ret;
 }
-int UAgoraBPuRtcEngine::SetDualStreamModeEx(FENUMWRAP_SIMULCAST_STREAM_MODE mode, const FSimulcastStreamConfig& streamConfig, const FRtcConnection& connection)
+int UAgoraBPuRtcEngine::SetDualStreamModeEx(EUABT_SIMULCAST_STREAM_MODE mode, const FUABT_SimulcastStreamConfig& streamConfig, const FUABT_RtcConnection& connection)
 {
 	agora::rtc::SimulcastStreamConfig AgoraSimulcastStreamConfig = streamConfig.CreateAgoraData();
 	agora::rtc::RtcConnection rtcConnection = connection.CreateAgoraData();
-	auto ret = AgoraUERtcEngine::Get()->setDualStreamModeEx(mode.GetRawValue(), AgoraSimulcastStreamConfig, rtcConnection);
+	auto ret = AgoraUERtcEngine::Get()->setDualStreamModeEx(UABTEnum::ToRawValue(mode), AgoraSimulcastStreamConfig, rtcConnection);
 	streamConfig.FreeAgoraData(AgoraSimulcastStreamConfig);
 	connection.FreeAgoraData(rtcConnection);
 	return ret;
@@ -1930,7 +1930,7 @@ int UAgoraBPuRtcEngine::EnableWirelessAccelerate(bool enabled)
 	auto ret = AgoraUERtcEngine::Get()->enableWirelessAccelerate(enabled);
 	return ret;
 }
-int UAgoraBPuRtcEngine::TakeSnapshotEx(const FRtcConnection& connection, int64 uid, const FString& filePath)
+int UAgoraBPuRtcEngine::TakeSnapshotEx(const FUABT_RtcConnection& connection, int64 uid, const FString& filePath)
 {
 	agora::rtc::RtcConnection rtcConnection = connection.CreateAgoraData();
 	std::string FilePath = TCHAR_TO_UTF8(*filePath);
@@ -1940,7 +1940,7 @@ int UAgoraBPuRtcEngine::TakeSnapshotEx(const FRtcConnection& connection, int64 u
 }
 
 
-int UAgoraBPuRtcEngine::EnableContentInspectEx(bool enabled, const FContentInspectConfig& config, const FRtcConnection& connection)
+int UAgoraBPuRtcEngine::EnableContentInspectEx(bool enabled, const FUABT_ContentInspectConfig& config, const FUABT_RtcConnection& connection)
 {
 	agora::media::ContentInspectConfig contentInspectConfig = config.CreateAgoraData();
 	agora::rtc::RtcConnection rtcConnection = connection.CreateAgoraData();
@@ -1950,7 +1950,7 @@ int UAgoraBPuRtcEngine::EnableContentInspectEx(bool enabled, const FContentInspe
 	return ret;
 }
 
-int UAgoraBPuRtcEngine::MuteLocalAudioStreamEx(bool mute, const FRtcConnection& connection)
+int UAgoraBPuRtcEngine::MuteLocalAudioStreamEx(bool mute, const FUABT_RtcConnection& connection)
 {
 	agora::rtc::RtcConnection rtcConnection = connection.CreateAgoraData();
 	auto ret = AgoraUERtcEngine::Get()->muteLocalAudioStreamEx(mute, rtcConnection);
@@ -1958,7 +1958,7 @@ int UAgoraBPuRtcEngine::MuteLocalAudioStreamEx(bool mute, const FRtcConnection& 
 	return ret;
 }
 
-int UAgoraBPuRtcEngine::MuteLocalVideoStreamEx(bool mute, const FRtcConnection& connection)
+int UAgoraBPuRtcEngine::MuteLocalVideoStreamEx(bool mute, const FUABT_RtcConnection& connection)
 {
 	agora::rtc::RtcConnection rtcConnection = connection.CreateAgoraData();
 	auto ret = AgoraUERtcEngine::Get()->muteLocalVideoStreamEx(mute, rtcConnection);
@@ -1966,7 +1966,7 @@ int UAgoraBPuRtcEngine::MuteLocalVideoStreamEx(bool mute, const FRtcConnection& 
 	return ret;
 }
 
-int UAgoraBPuRtcEngine::MuteAllRemoteAudioStreamsEx(bool mute, const FRtcConnection& connection)
+int UAgoraBPuRtcEngine::MuteAllRemoteAudioStreamsEx(bool mute, const FUABT_RtcConnection& connection)
 {
 	agora::rtc::RtcConnection rtcConnection = connection.CreateAgoraData();
 	auto ret = AgoraUERtcEngine::Get()->muteAllRemoteAudioStreamsEx(mute, rtcConnection);
@@ -1974,7 +1974,7 @@ int UAgoraBPuRtcEngine::MuteAllRemoteAudioStreamsEx(bool mute, const FRtcConnect
 	return ret;
 }
 
-int UAgoraBPuRtcEngine::MuteAllRemoteVideoStreamsEx(bool mute, const FRtcConnection& connection)
+int UAgoraBPuRtcEngine::MuteAllRemoteVideoStreamsEx(bool mute, const FUABT_RtcConnection& connection)
 {
 	agora::rtc::RtcConnection rtcConnection = connection.CreateAgoraData();
 	auto ret = AgoraUERtcEngine::Get()->muteAllRemoteVideoStreamsEx(mute, rtcConnection);
@@ -1993,7 +1993,7 @@ int UAgoraBPuRtcEngine::SetSubscribeAudioBlocklist(TArray<int64> uidList, int ui
 		return ret;
 }
 
-int UAgoraBPuRtcEngine::SetSubscribeAudioBlocklistEx(TArray<int64> uidList, int uidNumber, const FRtcConnection& connection)
+int UAgoraBPuRtcEngine::SetSubscribeAudioBlocklistEx(TArray<int64> uidList, int uidNumber, const FUABT_RtcConnection& connection)
 {
 	agora::rtc::RtcConnection rtcConnection = connection.CreateAgoraData();
 	int UEuidNumber = uidList.Num();
@@ -2016,7 +2016,7 @@ int UAgoraBPuRtcEngine::SetSubscribeAudioAllowlist(TArray<int64> uidList, int ui
 		return ret;
 }
 
-int UAgoraBPuRtcEngine::SetSubscribeAudioAllowlistEx(TArray<int64> uidList, int uidNumber, const FRtcConnection& connection)
+int UAgoraBPuRtcEngine::SetSubscribeAudioAllowlistEx(TArray<int64> uidList, int uidNumber, const FUABT_RtcConnection& connection)
 {
 	agora::rtc::RtcConnection rtcConnection = connection.CreateAgoraData();
 	int UEuidNumber = uidList.Num();
@@ -2039,7 +2039,7 @@ int UAgoraBPuRtcEngine::SetSubscribeVideoBlocklist(TArray<int64> uidList, int ui
 		return ret;
 }
 
-int UAgoraBPuRtcEngine::SetSubscribeVideoBlocklistEx(TArray<int64> uidList, int uidNumber, const FRtcConnection& connection)
+int UAgoraBPuRtcEngine::SetSubscribeVideoBlocklistEx(TArray<int64> uidList, int uidNumber, const FUABT_RtcConnection& connection)
 {
 	agora::rtc::RtcConnection rtcConnection = connection.CreateAgoraData();
 	agora::rtc::uid_t* data = nullptr;
@@ -2062,7 +2062,7 @@ int UAgoraBPuRtcEngine::SetSubscribeVideoAllowlist(TArray<int64> uidList, int ui
 		return ret;
 }
 
-int UAgoraBPuRtcEngine::SetSubscribeVideoAllowlistEx(TArray<int64> uidList, int uidNumber, const FRtcConnection& connection)
+int UAgoraBPuRtcEngine::SetSubscribeVideoAllowlistEx(TArray<int64> uidList, int uidNumber, const FUABT_RtcConnection& connection)
 {
 	agora::rtc::RtcConnection rtcConnection = connection.CreateAgoraData();
 	agora::rtc::uid_t* data = nullptr;
@@ -2074,7 +2074,7 @@ int UAgoraBPuRtcEngine::SetSubscribeVideoAllowlistEx(TArray<int64> uidList, int 
 	return ret;
 }
 
-int UAgoraBPuRtcEngine::AdjustUserPlaybackSignalVolumeEx(int64 uid, int volume, const FRtcConnection& connection)
+int UAgoraBPuRtcEngine::AdjustUserPlaybackSignalVolumeEx(int64 uid, int volume, const FUABT_RtcConnection& connection)
 {
 	agora::rtc::RtcConnection rtcConnection = connection.CreateAgoraData();
 	auto ret = AgoraUERtcEngine::Get()->adjustUserPlaybackSignalVolumeEx(uid, volume, rtcConnection);
@@ -2082,7 +2082,7 @@ int UAgoraBPuRtcEngine::AdjustUserPlaybackSignalVolumeEx(int64 uid, int volume, 
 	return ret;
 }
 
-int UAgoraBPuRtcEngine::StartRtmpStreamWithoutTranscodingEx(const FString& url, const FRtcConnection& connection)
+int UAgoraBPuRtcEngine::StartRtmpStreamWithoutTranscodingEx(const FString& url, const FUABT_RtcConnection& connection)
 {
 	agora::rtc::RtcConnection rtcConnection = connection.CreateAgoraData();
 	std::string Url = TCHAR_TO_UTF8(*url);
@@ -2091,7 +2091,7 @@ int UAgoraBPuRtcEngine::StartRtmpStreamWithoutTranscodingEx(const FString& url, 
 	return ret;
 }
 
-int UAgoraBPuRtcEngine::StartRtmpStreamWithTranscodingEx(const FString& url, const FLiveTranscoding& transcoding, const FRtcConnection& connection)
+int UAgoraBPuRtcEngine::StartRtmpStreamWithTranscodingEx(const FString& url, const FUABT_LiveTranscoding& transcoding, const FUABT_RtcConnection& connection)
 {
 	agora::rtc::RtcConnection rtcConnection = connection.CreateAgoraData();
 	std::string streamUrl = TCHAR_TO_UTF8(*url);
@@ -2106,7 +2106,7 @@ int UAgoraBPuRtcEngine::StartRtmpStreamWithTranscodingEx(const FString& url, con
 	return ret;
 }
 
-int UAgoraBPuRtcEngine::UpdateRtmpTranscodingEx(const FLiveTranscoding& transcoding, const FRtcConnection& connection)
+int UAgoraBPuRtcEngine::UpdateRtmpTranscodingEx(const FUABT_LiveTranscoding& transcoding, const FUABT_RtcConnection& connection)
 {
 	agora::rtc::LiveTranscoding liveTranscoding = transcoding.CreateAgoraData();
 	agora::rtc::RtcConnection rtcConnection = connection.CreateAgoraData();
@@ -2119,7 +2119,7 @@ int UAgoraBPuRtcEngine::UpdateRtmpTranscodingEx(const FLiveTranscoding& transcod
 	return ret;
 }
 
-int UAgoraBPuRtcEngine::StopRtmpStreamEx(const FString& url, const FRtcConnection& connection)
+int UAgoraBPuRtcEngine::StopRtmpStreamEx(const FString& url, const FUABT_RtcConnection& connection)
 {
 	agora::rtc::RtcConnection rtcConnection = connection.CreateAgoraData();
 	std::string Url = TCHAR_TO_UTF8(*url);
@@ -2128,7 +2128,7 @@ int UAgoraBPuRtcEngine::StopRtmpStreamEx(const FString& url, const FRtcConnectio
 	return ret;
 }
 
-int UAgoraBPuRtcEngine::StopChannelMediaRelayEx(const FRtcConnection& connection)
+int UAgoraBPuRtcEngine::StopChannelMediaRelayEx(const FUABT_RtcConnection& connection)
 {
 	agora::rtc::RtcConnection rtcConnection = connection.CreateAgoraData();
 	auto ret = AgoraUERtcEngine::Get()->stopChannelMediaRelayEx(rtcConnection);
@@ -2136,7 +2136,7 @@ int UAgoraBPuRtcEngine::StopChannelMediaRelayEx(const FRtcConnection& connection
 	return ret;
 }
 
-int UAgoraBPuRtcEngine::PauseAllChannelMediaRelayEx(const FRtcConnection& connection)
+int UAgoraBPuRtcEngine::PauseAllChannelMediaRelayEx(const FUABT_RtcConnection& connection)
 {
 	agora::rtc::RtcConnection rtcConnection = connection.CreateAgoraData();
 	auto ret = AgoraUERtcEngine::Get()->pauseAllChannelMediaRelayEx(rtcConnection);
@@ -2144,7 +2144,7 @@ int UAgoraBPuRtcEngine::PauseAllChannelMediaRelayEx(const FRtcConnection& connec
 	return ret;
 }
 
-int UAgoraBPuRtcEngine::ResumeAllChannelMediaRelayEx(const FRtcConnection& connection)
+int UAgoraBPuRtcEngine::ResumeAllChannelMediaRelayEx(const FUABT_RtcConnection& connection)
 {
 	agora::rtc::RtcConnection rtcConnection = connection.CreateAgoraData();
 	auto ret = AgoraUERtcEngine::Get()->resumeAllChannelMediaRelayEx(rtcConnection);
@@ -2161,7 +2161,7 @@ int UAgoraBPuRtcEngine::SetParameters(const FString& parameters)
 }
 
 
-int UAgoraBPuRtcEngine::SetParametersEx(const FRtcConnection& connection, const FString& parameters)
+int UAgoraBPuRtcEngine::SetParametersEx(const FUABT_RtcConnection& connection, const FString& parameters)
 {
 	agora::rtc::RtcConnection rtcConnection = connection.CreateAgoraData();
 	std::string STDParameters = TCHAR_TO_UTF8(*parameters);
@@ -2171,7 +2171,7 @@ int UAgoraBPuRtcEngine::SetParametersEx(const FRtcConnection& connection, const 
 }
 
 
-int UAgoraBPuRtcEngine::GetCallIdEx(FString& callId, const FRtcConnection& connection)
+int UAgoraBPuRtcEngine::GetCallIdEx(FString& callId, const FUABT_RtcConnection& connection)
 {
 	agora::util::AString CallId;
 	agora::rtc::RtcConnection rtcConnection = connection.CreateAgoraData();
@@ -2191,7 +2191,7 @@ int UAgoraBPuRtcEngine::SendAudioMetadata(const FString& metadata, const FString
 	return ret;
 }
 
-int UAgoraBPuRtcEngine::SendAudioMetadataEx(const FRtcConnection& connection, const FString& metadata, const FString& length)
+int UAgoraBPuRtcEngine::SendAudioMetadataEx(const FUABT_RtcConnection& connection, const FString& metadata, const FString& length)
 {
 	agora::rtc::RtcConnection rtcConnection = connection.CreateAgoraData();
 	std::string AgoraMetadata = TCHAR_TO_UTF8(*metadata);
@@ -2208,7 +2208,7 @@ int UAgoraBPuRtcEngine::StartMediaRenderingTracing()
 }
 
 
-int UAgoraBPuRtcEngine::StartMediaRenderingTracingEx(const FRtcConnection& connection)
+int UAgoraBPuRtcEngine::StartMediaRenderingTracingEx(const FUABT_RtcConnection& connection)
 {
 	agora::rtc::RtcConnection rtcConnection = connection.CreateAgoraData();
 	auto ret = AgoraUERtcEngine::Get()->startMediaRenderingTracingEx(rtcConnection);
@@ -2230,9 +2230,10 @@ FString UAgoraBPuRtcEngine::GetNtpWallTimeInMs()
 }
 
 
-int UAgoraBPuRtcEngine::SetHeadphoneEQPreset(FENUMWRAP_HEADPHONE_EQUALIZER_PRESET preset)
+int UAgoraBPuRtcEngine::SetHeadphoneEQPreset(EUABT_HEADPHONE_EQUALIZER_PRESET preset)
 {
-	auto ret = AgoraUERtcEngine::Get()->setHeadphoneEQPreset(preset.GetRawValue());
+	//auto ret = AgoraUERtcEngine::Get()->setHeadphoneEQPreset(UABTEnum::ToRawValue(preset));
+	auto ret = AgoraUERtcEngine::Get()->setHeadphoneEQPreset(UABTEnum::ToRawValue(preset));
 	return ret;
 }
 
@@ -2244,13 +2245,13 @@ int UAgoraBPuRtcEngine::SetHeadphoneEQParameters(int lowGain, int highGain)
 }
 
 
-int UAgoraBPuRtcEngine::EnableVoiceAITuner(bool enabled, EVOICE_AI_TUNER_TYPE type)
+int UAgoraBPuRtcEngine::EnableVoiceAITuner(bool enabled, EUABT_VOICE_AI_TUNER_TYPE type)
 {
 	auto ret = AgoraUERtcEngine::Get()->enableVoiceAITuner(enabled, (agora::rtc::VOICE_AI_TUNER_TYPE)type);
 	return ret;
 }
 
-int UAgoraBPuRtcEngine::SetEarMonitoringAudioFrameParameters(int sampleRate, int channel, ERAW_AUDIO_FRAME_OP_MODE_TYPE mode, int samplesPerCall)
+int UAgoraBPuRtcEngine::SetEarMonitoringAudioFrameParameters(int sampleRate, int channel, EUABT_RAW_AUDIO_FRAME_OP_MODE_TYPE mode, int samplesPerCall)
 {
 	auto ret = AgoraUERtcEngine::Get()->setEarMonitoringAudioFrameParameters(sampleRate, channel, (agora::rtc::RAW_AUDIO_FRAME_OP_MODE_TYPE)((int)mode), samplesPerCall);
 	return ret;
@@ -2265,7 +2266,7 @@ int64 UAgoraBPuRtcEngine::GetCurrentMonotonicTimeInMs()
 
 
 
-int UAgoraBPuRtcEngine::RegisterExtension(const FString& provider, const FString& extension, EMEDIA_SOURCE_TYPE type)
+int UAgoraBPuRtcEngine::RegisterExtension(const FString& provider, const FString& extension, EUABT_MEDIA_SOURCE_TYPE type)
 {
 	std::string Provider = TCHAR_TO_UTF8(*provider);
 	std::string Extension = TCHAR_TO_UTF8(*extension);
@@ -2281,7 +2282,7 @@ int UAgoraBPuRtcEngine::GetNetworkType()
 }
 
 
-bool UAgoraBPuRtcEngine::IsFeatureAvailableOnDevice(EFeatureType type)
+bool UAgoraBPuRtcEngine::IsFeatureAvailableOnDevice(EUABT_FeatureType type)
 {
 	auto ret = AgoraUERtcEngine::Get()->isFeatureAvailableOnDevice(static_cast<agora::rtc::FeatureType>(type));
 	return ret;
@@ -2304,9 +2305,9 @@ int UIScreenCaptureSourceList::GetCount()
 	return 0;
 }
 
-FScreenCaptureSourceInfo UIScreenCaptureSourceList::GetSourceInfo(int index)
+FUABT_ScreenCaptureSourceInfo UIScreenCaptureSourceList::GetSourceInfo(int index)
 {
-	FScreenCaptureSourceInfo sourceInfo;
+	FUABT_ScreenCaptureSourceInfo sourceInfo;
 #if defined(_WIN32) || (defined(__APPLE__) && TARGET_OS_MAC && !TARGET_OS_IPHONE)
 	if (sourceListNative != nullptr)
 	{
@@ -2337,7 +2338,7 @@ void UIScreenCaptureSourceList::SetScreenCaptureList(agora::rtc::IScreenCaptureS
 #endif
 
 
-UIScreenCaptureSourceList* UAgoraBPuRtcEngine::GetScreenCaptureSources(const FSIZE& thumbSize, const FSIZE& iconSize, bool includeScreen)
+UIScreenCaptureSourceList* UAgoraBPuRtcEngine::GetScreenCaptureSources(const FUABT_SIZE& thumbSize, const FUABT_SIZE& iconSize, bool includeScreen)
 {
 	if (!UserScreenCaptureSourceList.IsValid()) {
 		UserScreenCaptureSourceList = TStrongObjectPtr<UIScreenCaptureSourceList>(NewObject<UIScreenCaptureSourceList>());
@@ -2378,7 +2379,7 @@ UIScreenCaptureSourceList* UAgoraBPuRtcEngine::GetScreenCaptureSources(const FSI
 }
 
 
-int UAgoraBPuRtcEngine::SetAudioSessionOperationRestriction(EAUDIO_SESSION_OPERATION_RESTRICTION restriction)
+int UAgoraBPuRtcEngine::SetAudioSessionOperationRestriction(EUABT_AUDIO_SESSION_OPERATION_RESTRICTION restriction)
 {
 #if (defined(__APPLE__) && TARGET_OS_IOS)
 	return AgoraUERtcEngine::Get()->setAudioSessionOperationRestriction((agora::AUDIO_SESSION_OPERATION_RESTRICTION)restriction);
@@ -2387,7 +2388,7 @@ int UAgoraBPuRtcEngine::SetAudioSessionOperationRestriction(EAUDIO_SESSION_OPERA
 #endif
 }
 
-int UAgoraBPuRtcEngine::StartScreenCaptureByDisplayId(int64 displayId, const FRectangle& regionRect, const FScreenCaptureParameters& captureParams)
+int UAgoraBPuRtcEngine::StartScreenCaptureByDisplayId(int64 displayId, const FUABT_Rectangle& regionRect, const FUABT_ScreenCaptureParameters& captureParams)
 {
 #if defined(_WIN32) || (defined(__APPLE__) && TARGET_OS_MAC && !TARGET_OS_IPHONE)
 	agora::rtc::Rectangle region = regionRect.CreateAgoraData();
@@ -2405,7 +2406,7 @@ int UAgoraBPuRtcEngine::StartScreenCaptureByDisplayId(int64 displayId, const FRe
 #endif
 }
 
-int UAgoraBPuRtcEngine::StartScreenCaptureByScreenRect(const FRectangle& screenRect, const FRectangle& regionRect, const FScreenCaptureParameters& captureParams) __deprecated
+int UAgoraBPuRtcEngine::StartScreenCaptureByScreenRect(const FUABT_Rectangle& screenRect, const FUABT_Rectangle& regionRect, const FUABT_ScreenCaptureParameters& captureParams) __deprecated
 {
 #if defined(_WIN32)
 	agora::rtc::Rectangle AgoraScreenRect = screenRect.CreateAgoraData();
@@ -2422,7 +2423,7 @@ int UAgoraBPuRtcEngine::StartScreenCaptureByScreenRect(const FRectangle& screenR
 #endif
 }
 
-int UAgoraBPuRtcEngine::GetAudioDeviceInfo(FDeviceInfo& deviceInfo)
+int UAgoraBPuRtcEngine::GetAudioDeviceInfo(FUABT_DeviceInfo& deviceInfo)
 {
 #if defined(__ANDROID__)
 	agora::rtc::DeviceInfo Info;
@@ -2434,7 +2435,7 @@ int UAgoraBPuRtcEngine::GetAudioDeviceInfo(FDeviceInfo& deviceInfo)
 #endif
 }
 
-int UAgoraBPuRtcEngine::StartScreenCaptureByWindowId(int64 windowId, const FRectangle& regionRect, const FScreenCaptureParameters& captureParams)
+int UAgoraBPuRtcEngine::StartScreenCaptureByWindowId(int64 windowId, const FUABT_Rectangle& regionRect, const FUABT_ScreenCaptureParameters& captureParams)
 {
 #if defined(_WIN32) || (defined(__APPLE__) && TARGET_OS_MAC && !TARGET_OS_IPHONE)
 	agora::rtc::Rectangle rectangle = regionRect.CreateAgoraData();
@@ -2449,7 +2450,7 @@ int UAgoraBPuRtcEngine::StartScreenCaptureByWindowId(int64 windowId, const FRect
 #endif
 }
 
-int UAgoraBPuRtcEngine::SetScreenCaptureContentHint(EVIDEO_CONTENT_HINT contentHint)
+int UAgoraBPuRtcEngine::SetScreenCaptureContentHint(EUABT_VIDEO_CONTENT_HINT contentHint)
 {
 #if defined(_WIN32) || (defined(__APPLE__) && TARGET_OS_MAC && !TARGET_OS_IPHONE)
 	auto ret = AgoraUERtcEngine::Get()->setScreenCaptureContentHint((agora::rtc::VIDEO_CONTENT_HINT)contentHint);
@@ -2459,7 +2460,7 @@ int UAgoraBPuRtcEngine::SetScreenCaptureContentHint(EVIDEO_CONTENT_HINT contentH
 #endif
 }
 
-int UAgoraBPuRtcEngine::UpdateScreenCaptureRegion(const FRectangle& regionRect)
+int UAgoraBPuRtcEngine::UpdateScreenCaptureRegion(const FUABT_Rectangle& regionRect)
 {
 #if defined(_WIN32) || (defined(__APPLE__) && TARGET_OS_MAC && !TARGET_OS_IPHONE)
 	agora::rtc::Rectangle rectangle = regionRect.CreateAgoraData();
@@ -2470,7 +2471,7 @@ int UAgoraBPuRtcEngine::UpdateScreenCaptureRegion(const FRectangle& regionRect)
 	return AGORA_UE_ERR_CODE(ERROR_NOT_SUPPORT_PLATFORM);
 #endif
 }
-int UAgoraBPuRtcEngine::UpdateScreenCaptureParameters(const FScreenCaptureParameters& captureParams)
+int UAgoraBPuRtcEngine::UpdateScreenCaptureParameters(const FUABT_ScreenCaptureParameters& captureParams)
 {
 #if defined(_WIN32) || (defined(__APPLE__) && TARGET_OS_MAC && !TARGET_OS_IPHONE)
 	agora::rtc::ScreenCaptureParameters screenCaptureParameters = captureParams.CreateAgoraData();
@@ -2481,7 +2482,7 @@ int UAgoraBPuRtcEngine::UpdateScreenCaptureParameters(const FScreenCaptureParame
 	return AGORA_UE_ERR_CODE(ERROR_NOT_SUPPORT_PLATFORM);
 #endif
 }
-int UAgoraBPuRtcEngine::StartScreenCapture(const FScreenCaptureParameters2& captureParams)
+int UAgoraBPuRtcEngine::StartScreenCapture(const FUABT_ScreenCaptureParameters2& captureParams)
 {
 #if defined(__ANDROID__) || (defined(__APPLE__) && TARGET_OS_IOS) 
 	agora::rtc::ScreenCaptureParameters2 screenCaptureParameters2 = captureParams.CreateAgoraData();
@@ -2495,7 +2496,7 @@ int UAgoraBPuRtcEngine::StartScreenCapture(const FScreenCaptureParameters2& capt
 }
 
 
-int UAgoraBPuRtcEngine::StartScreenCaptureBySourceType(EVIDEO_SOURCE_TYPE sourceType, const FScreenCaptureConfiguration& config)
+int UAgoraBPuRtcEngine::StartScreenCaptureBySourceType(EUABT_VIDEO_SOURCE_TYPE sourceType, const FUABT_ScreenCaptureConfiguration& config)
 {
 
 	agora::rtc::ScreenCaptureConfiguration screenCaptureConfiguration = config.CreateAgoraData();
@@ -2504,7 +2505,7 @@ int UAgoraBPuRtcEngine::StartScreenCaptureBySourceType(EVIDEO_SOURCE_TYPE source
 	return ret;
 }
 
-int UAgoraBPuRtcEngine::StopScreenCaptureBySourceType(EVIDEO_SOURCE_TYPE sourceType)
+int UAgoraBPuRtcEngine::StopScreenCaptureBySourceType(EUABT_VIDEO_SOURCE_TYPE sourceType)
 {
 	auto ret = AgoraUERtcEngine::Get()->stopScreenCapture((agora::rtc::VIDEO_SOURCE_TYPE)sourceType);
 	return ret;

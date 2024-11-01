@@ -3,7 +3,7 @@
 
 #include "CoreMinimal.h"
 #include "AgoraPluginInterface.h"
-#include "AgoraBPuBaseDataTypes.h"
+#include "AgoraBPuDataTypes.h"
 #include "AgoraBPuIMediaPlayerSourceObserver.generated.h"
 
 #pragma region Data Types
@@ -293,7 +293,7 @@ public:
 #pragma endregion Data Types
 
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnPlayerSourceStateChanged, EMEDIA_PLAYER_STATE, state, FENUMWRAP_MEDIA_PLAYER_REASON, ec);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnPlayerSourceStateChanged, EUABT_MEDIA_PLAYER_STATE, state, FENUMWRAP_MEDIA_PLAYER_REASON, ec);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnPositionChanged, int64, position_ms, int64, timestampMs);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnPlayerEvent, EMEDIA_PLAYER_EVENT, eventCode, int64, elapsedTime, const FString &, message);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnMetaDataSource,const FString &,Data);
@@ -400,7 +400,7 @@ class AGORAPLUGIN_API UAgoraBPuIMediaPlayerSourceObserverCBExecutor : public UOb
 public:
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Agora|Event")
-	void OnPlayerSourceStateChanged(EMEDIA_PLAYER_STATE state, FENUMWRAP_MEDIA_PLAYER_REASON ec);
+	void OnPlayerSourceStateChanged(EUABT_MEDIA_PLAYER_STATE state, FENUMWRAP_MEDIA_PLAYER_REASON ec);
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Agora|Event")
 	void OnPositionChanged(int64 position_ms, int64 timestampMs);
