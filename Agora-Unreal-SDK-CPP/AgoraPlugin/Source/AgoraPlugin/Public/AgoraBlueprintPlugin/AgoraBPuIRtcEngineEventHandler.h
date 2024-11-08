@@ -3,21 +3,21 @@
 
 #include "CoreMinimal.h"
 #include "AgoraPluginInterface.h"
-#include "AgoraBPuBaseDataTypes.h"
+#include "AgoraBPuDataTypes.h"
 #include "AgoraBPuIRtcEngineEventHandler.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnJoinChannelSuccess, const FString&, channel, int64, uid, int, elapsed);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnLeaveChannel, const FRtcStats&, stats);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnLeaveChannel, const FUABT_RtcStats&, stats);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnUserJoined, int64, uid, int, elapsed);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnUserOffline, int64, uid, EUSER_OFFLINE_REASON_TYPE, reason);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnUserOffline, int64, uid, EUABT_USER_OFFLINE_REASON_TYPE, reason);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnRejoinChannelSuccess, const FString&, channel, int64, uid, int, elapsed);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_FiveParams(FOnProxyConnected, const FString&, channel, int64, uid, EPROXY_TYPE, proxyType, const FString&, localProxyIp, int, elapsed);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_FiveParams(FOnProxyConnected, const FString&, channel, int64, uid, EUABT_PROXY_TYPE, proxyType, const FString&, localProxyIp, int, elapsed);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnError, int, err, const FString&, msg);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnAudioQuality, int64, uid, int, quality, int, delay, int, lost);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnLastmileProbeResult, const FLastmileProbeResult&, result);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnAudioVolumeIndication, const TArray<FAudioVolumeInfo>&,speakers, int, totalVolume);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnRtcStats, const FRtcStats&, stats);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnLastmileProbeResult, const FUABT_LastmileProbeResult&, result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnAudioVolumeIndication, const TArray<FUABT_AudioVolumeInfo>&,speakers, int, totalVolume);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnRtcStats, const FUABT_RtcStats&, stats);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnAudioDeviceStateChanged, const FString&, deviceId, int, deviceType, int, deviceState);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAudioMixingPositionChanged, int64, position);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnAudioMixingFinished);
@@ -25,32 +25,32 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAudioEffectFinished, int, soundId
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnVideoDeviceStateChanged, const FString&, deviceId, int, deviceType, int, deviceState);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnNetworkQuality, int64, uid, int, txQuality, int, rxQuality);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnIntraRequestReceived);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnUplinkNetworkInfoUpdated, const FUplinkNetworkInfo&, info);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnDownlinkNetworkInfoUpdated, const FDownlinkNetworkInfo&, info);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnUplinkNetworkInfoUpdated, const FUABT_UplinkNetworkInfo&, info);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnDownlinkNetworkInfoUpdated, const FUABT_DownlinkNetworkInfo&, info);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnLastmileQuality, int, quality);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnFirstLocalVideoFrame, EVIDEO_SOURCE_TYPE, source, int, width, int, height, int, elapsed);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnFirstLocalVideoFramePublished, EVIDEO_SOURCE_TYPE, source, int, elapsed);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnFirstLocalVideoFrame, EUABT_VIDEO_SOURCE_TYPE, source, int, width, int, height, int, elapsed);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnFirstLocalVideoFramePublished, EUABT_VIDEO_SOURCE_TYPE, source, int, elapsed);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnFirstRemoteVideoDecoded, int64, uid, int, width, int, height, int, elapsed);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_FiveParams(FOnVideoSizeChanged, EVIDEO_SOURCE_TYPE, sourceType, int64, uid, int, width, int, height, int, rotation);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnLocalVideoStateChanged, EVIDEO_SOURCE_TYPE, source, ELOCAL_VIDEO_STREAM_STATE, state, ELOCAL_VIDEO_STREAM_REASON, reason);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnRemoteVideoStateChanged, int64, uid, EREMOTE_VIDEO_STATE, state, EREMOTE_VIDEO_STATE_REASON, reason, int, elapsed);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_FiveParams(FOnVideoSizeChanged, EUABT_VIDEO_SOURCE_TYPE, sourceType, int64, uid, int, width, int, height, int, rotation);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnLocalVideoStateChanged, EUABT_VIDEO_SOURCE_TYPE, source, EUABT_LOCAL_VIDEO_STREAM_STATE, state, EUABT_LOCAL_VIDEO_STREAM_REASON, reason);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnRemoteVideoStateChanged, int64, uid, EUABT_REMOTE_VIDEO_STATE, state, EUABT_REMOTE_VIDEO_STATE_REASON, reason, int, elapsed);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnFirstRemoteVideoFrame, int64, userId, int, width, int, height, int, elapsed);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnUserMuteAudio, int64, uid, bool, muted);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnUserMuteVideo, int64, userId, bool, muted);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnUserEnableVideo, int64, uid, bool, enabled);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnUserStateChanged, int64, uid, FENUMWRAP_REMOTE_USER_STATE, state);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnUserStateChanged, int64, uid, EUABT_REMOTE_USER_STATE, state);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnUserEnableLocalVideo, int64, uid, bool, enabled);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnLocalAudioStats, const FLocalAudioStats&, stats);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnRemoteAudioStats, const FRemoteAudioStats&, stats);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnLocalVideoStats, EVIDEO_SOURCE_TYPE, source, const FLocalVideoStats&, stats);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnRemoteVideoStats, const FRemoteVideoStats&, stats);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnLocalAudioStats, const FUABT_LocalAudioStats&, stats);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnRemoteAudioStats, const FUABT_RemoteAudioStats&, stats);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnLocalVideoStats, EUABT_VIDEO_SOURCE_TYPE, source, const FUABT_LocalVideoStats&, stats);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnRemoteVideoStats, const FUABT_RemoteVideoStats&, stats);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnCameraReady);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnCameraFocusAreaChanged, int, x, int, y, int, width, int, height);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnCameraExposureAreaChanged, int, x, int, y, int, width, int, height);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_FiveParams(FOnFacePositionChanged, int,imageWidth, int,imageHeight, const TArray<FRectangle>&, vecRectangle, const TArray<int>& ,vecDistance, int,numFaces);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_FiveParams(FOnFacePositionChanged, int,imageWidth, int,imageHeight, const TArray<FUABT_Rectangle>&, vecRectangle, const TArray<int>& ,vecDistance, int,numFaces);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnVideoStopped);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnAudioMixingStateChanged, FENUMWRAP_AUDIO_MIXING_STATE_TYPE, state, FENUMWRAP_AUDIO_MIXING_REASON_TYPE, reason);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnRhythmPlayerStateChanged, FENUMWRAP_RHYTHM_PLAYER_STATE_TYPE, state, FENUMWRAP_RHYTHM_PLAYER_REASON, reason);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnAudioMixingStateChanged, EUABT_AUDIO_MIXING_STATE_TYPE, state, EUABT_AUDIO_MIXING_REASON_TYPE, reason);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnRhythmPlayerStateChanged, EUABT_RHYTHM_PLAYER_STATE_TYPE, state, EUABT_RHYTHM_PLAYER_REASON, reason);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnConnectionLost);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnConnectionInterrupted);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnConnectionBanned);
@@ -58,20 +58,20 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_FiveParams(FOnStreamMessage, int64,uid, int ,
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_FiveParams(FOnStreamMessageError, int64, uid, int, streamId, int, code, int, missed, int, cached);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnRequestToken);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnTokenPrivilegeWillExpire, const FString&, token);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnLicenseValidationFailure, ELICENSE_ERROR_TYPE, error);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnLicenseValidationFailure, EUABT_LICENSE_ERROR_TYPE, error);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnFirstLocalAudioFramePublished, int, elapsed);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnFirstRemoteAudioFrame, int64, uid, int, elapsed);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnFirstRemoteAudioDecoded, int64, uid, int, elapsed);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnLocalAudioStateChanged, ELOCAL_AUDIO_STREAM_STATE, state, ELOCAL_AUDIO_STREAM_REASON, reason);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnRemoteAudioStateChanged, int64, uid, EREMOTE_AUDIO_STATE, state, EREMOTE_AUDIO_STATE_REASON, reason, int, elapsed);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnLocalAudioStateChanged, EUABT_LOCAL_AUDIO_STREAM_STATE, state, EUABT_LOCAL_AUDIO_STREAM_REASON, reason);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnRemoteAudioStateChanged, int64, uid, EUABT_REMOTE_AUDIO_STATE, state, EUABT_REMOTE_AUDIO_STATE_REASON, reason, int, elapsed);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnActiveSpeaker, int64, userId);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnContentInspectResult, ECONTENT_INSPECT_RESULT, result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnContentInspectResult, EUABT_CONTENT_INSPECT_RESULT, result);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_FiveParams(FOnSnapshotTaken, int64, uid, const FString&, filePath, int, width, int, height, int, errCode);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnClientRoleChanged, ECLIENT_ROLE_TYPE,oldRole, ECLIENT_ROLE_TYPE, newRole, const FClientRoleOptions& ,newRoleOptions);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnClientRoleChangeFailed, ECLIENT_ROLE_CHANGE_FAILED_REASON, reason, ECLIENT_ROLE_TYPE, currentRole);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnAudioDeviceVolumeChanged, FENUMWRAP_MEDIA_DEVICE_TYPE, deviceType, int, volume, bool, muted);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnRtmpStreamingStateChanged, const FString&, url, ERTMP_STREAM_PUBLISH_STATE, state, ERTMP_STREAM_PUBLISH_REASON, reason);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnRtmpStreamingEvent, const FString&, url, ERTMP_STREAMING_EVENT, eventCode);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnClientRoleChanged, EUABT_CLIENT_ROLE_TYPE,oldRole, EUABT_CLIENT_ROLE_TYPE, newRole, const FUABT_ClientRoleOptions& ,newRoleOptions);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnClientRoleChangeFailed, EUABT_CLIENT_ROLE_CHANGE_FAILED_REASON, reason, EUABT_CLIENT_ROLE_TYPE, currentRole);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnAudioDeviceVolumeChanged, EUABT_MEDIA_DEVICE_TYPE, deviceType, int, volume, bool, muted);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnRtmpStreamingStateChanged, const FString&, url, EUABT_RTMP_STREAM_PUBLISH_STATE, state, EUABT_RTMP_STREAM_PUBLISH_REASON, reason);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnRtmpStreamingEvent, const FString&, url, EUABT_RTMP_STREAMING_EVENT, eventCode);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnTranscodingUpdated);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAudioRoutingChanged, int, routing);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnChannelMediaRelayStateChanged, int, state, int, code);
@@ -79,37 +79,37 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnLocalPublishFallbackToAudioOnly, 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnRemoteSubscribeFallbackToAudioOnly, int64, uid, bool, isFallbackOrRecover);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnRemoteAudioTransportStats, int64, uid, int, delay, int, lost, int, rxKBitRate);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnRemoteVideoTransportStats, int64, uid, int, delay, int, lost, int, rxKBitRate);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnConnectionStateChanged, ECONNECTION_STATE_TYPE, state, ECONNECTION_CHANGED_REASON_TYPE, reason);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnWlAccMessage, EWLACC_MESSAGE_REASON, reason, EWLACC_SUGGEST_ACTION, action, const FString&, wlAccMsg);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnWlAccStats, const FWlAccStats&, currentStats, const FWlAccStats&, averageStats);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNetworkTypeChanged, FENUMWRAP_NETWORK_TYPE, type);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnEncryptionError, EENCRYPTION_ERROR_TYPE, errorType);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPermissionError, EPERMISSION_TYPE, permissionType);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnConnectionStateChanged, EUABT_CONNECTION_STATE_TYPE, state, EUABT_CONNECTION_CHANGED_REASON_TYPE, reason);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnWlAccMessage, EUABT_WLACC_MESSAGE_REASON, reason, EUABT_WLACC_SUGGEST_ACTION, action, const FString&, wlAccMsg);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnWlAccStats, const FUABT_WlAccStats&, currentStats, const FUABT_WlAccStats&, averageStats);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNetworkTypeChanged, EUABT_NETWORK_TYPE, type);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnEncryptionError, EUABT_ENCRYPTION_ERROR_TYPE, errorType);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPermissionError, EUABT_PERMISSION_TYPE, permissionType);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnLocalUserRegistered, int64, uid, const FString&, userAccount);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnUserInfoUpdated, int64, uid, const FUserInfo&, info);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnUserInfoUpdated, int64, uid, const FUABT_UserInfo&, info);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnUserAccountUpdated, int64, uid, const FString&, userAccount);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnVideoRenderingTracingResult, int64, uid, EMEDIA_TRACE_EVENT, currentEvent, const FVideoRenderingTracingInfo &, tracingInfo);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnVideoRenderingTracingResult, int64, uid, EUABT_MEDIA_TRACE_EVENT, currentEvent, const FUABT_VideoRenderingTracingInfo &, tracingInfo);
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnLocalVideoTranscoderError, const FTranscodingVideoStream&, stream, EVIDEO_TRANSCODER_ERROR, error);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnLocalVideoTranscoderError, const FUABT_TranscodingVideoStream&, stream, EUABT_VIDEO_TRANSCODER_ERROR, error);
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnUploadLogResult, const FString&, requestId, bool, success, EUPLOAD_ERROR_REASON, reason);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_FiveParams(FOnAudioSubscribeStateChanged, const FString&, channel, int64, uid, ESTREAM_SUBSCRIBE_STATE, oldState, ESTREAM_SUBSCRIBE_STATE, newState, int, elapseSinceLastState);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_FiveParams(FOnVideoSubscribeStateChanged, const FString&, channel, int64, uid, ESTREAM_SUBSCRIBE_STATE, oldState, ESTREAM_SUBSCRIBE_STATE, newState, int, elapseSinceLastState);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnAudioPublishStateChanged, const FString&, channel, ESTREAM_PUBLISH_STATE, oldState, ESTREAM_PUBLISH_STATE, newState, int, elapseSinceLastState);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_FiveParams(FOnVideoPublishStateChanged, EVIDEO_SOURCE_TYPE, source, const FString&, channel, ESTREAM_PUBLISH_STATE, oldState, ESTREAM_PUBLISH_STATE, newState, int, elapseSinceLastState);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnUploadLogResult, const FString&, requestId, bool, success, EUABT_UPLOAD_ERROR_REASON, reason);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_FiveParams(FOnAudioSubscribeStateChanged, const FString&, channel, int64, uid, EUABT_STREAM_SUBSCRIBE_STATE, oldState, EUABT_STREAM_SUBSCRIBE_STATE, newState, int, elapseSinceLastState);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_FiveParams(FOnVideoSubscribeStateChanged, const FString&, channel, int64, uid, EUABT_STREAM_SUBSCRIBE_STATE, oldState, EUABT_STREAM_SUBSCRIBE_STATE, newState, int, elapseSinceLastState);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnAudioPublishStateChanged, const FString&, channel, EUABT_STREAM_PUBLISH_STATE, oldState, EUABT_STREAM_PUBLISH_STATE, newState, int, elapseSinceLastState);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_FiveParams(FOnVideoPublishStateChanged, EUABT_VIDEO_SOURCE_TYPE, source, const FString&, channel, EUABT_STREAM_PUBLISH_STATE, oldState, EUABT_STREAM_PUBLISH_STATE, newState, int, elapseSinceLastState);
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_FiveParams(FOnTranscodedStreamLayoutInfo, int64, uid, int, width, int, height, int, layoutCount,const TArray<FVideoLayout> &, layoutlist);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_FiveParams(FOnTranscodedStreamLayoutInfo, int64, uid, int, width, int, height, int, layoutCount,const TArray<FUABT_VideoLayout> &, layoutlist);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnAudioMetadataReceived, int64, uid, const FString&, metadata, const FString&, length);
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnExtensionEventWithContext, const FExtensionContext&, context, const FString &, key, const FString &, value);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnExtensionEventWithContext, const FUABT_ExtensionContext&, context, const FString &, key, const FString &, value);
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnExtensionStartedWithContext, const FExtensionContext& ,context);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnExtensionStartedWithContext, const FUABT_ExtensionContext& ,context);
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnExtensionStoppedWithContext, const FExtensionContext&, context);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnExtensionStoppedWithContext, const FUABT_ExtensionContext&, context);
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnExtensionErrorWithContext, const FExtensionContext&, context, int, error , const FString&, message);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnExtensionErrorWithContext, const FUABT_ExtensionContext&, context, int, error , const FString&, message);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSetRtmFlagResult, int, code);
 
@@ -657,7 +657,7 @@ public:
 	void OnJoinChannelSuccess(const FString& Channel, int64 Uid, int Elapsed);
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Agora|Event")
-	void OnLeaveChannel(const FRtcStats& stats);
+	void OnLeaveChannel(const FUABT_RtcStats& stats);
 
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Agora|Event")
@@ -665,13 +665,13 @@ public:
 
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Agora|Event")
-	void OnUserOffline(int64 uid, EUSER_OFFLINE_REASON_TYPE reason);
+	void OnUserOffline(int64 uid, EUABT_USER_OFFLINE_REASON_TYPE reason);
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Agora|Event")
 	void OnRejoinChannelSuccess(const FString& channel, int64 uid, int elapsed);
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Agora|Event")
-	void OnProxyConnected(const FString& channel, int64 uid, EPROXY_TYPE proxyType, const FString& localProxyIp, int elapsed);
+	void OnProxyConnected(const FString& channel, int64 uid, EUABT_PROXY_TYPE proxyType, const FString& localProxyIp, int elapsed);
 
 	
 	UFUNCTION(BlueprintNativeEvent, Category = "Agora|Event")
@@ -683,15 +683,15 @@ public:
 
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Agora|Event")
-	void OnLastmileProbeResult(const FLastmileProbeResult& result);
+	void OnLastmileProbeResult(const FUABT_LastmileProbeResult& result);
 
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Agora|Event")
-	void OnAudioVolumeIndication(const TArray<FAudioVolumeInfo>& speakers, int totalVolume);
+	void OnAudioVolumeIndication(const TArray<FUABT_AudioVolumeInfo>& speakers, int totalVolume);
 
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Agora|Event")
-	void OnRtcStats(const FRtcStats& stats);
+	void OnRtcStats(const FUABT_RtcStats& stats);
 
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Agora|Event")
@@ -723,11 +723,11 @@ public:
 
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Agora|Event")
-	void OnUplinkNetworkInfoUpdated(const FUplinkNetworkInfo& info);
+	void OnUplinkNetworkInfoUpdated(const FUABT_UplinkNetworkInfo& info);
 
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Agora|Event")
-	void OnDownlinkNetworkInfoUpdated(const FDownlinkNetworkInfo& info);
+	void OnDownlinkNetworkInfoUpdated(const FUABT_DownlinkNetworkInfo& info);
 
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Agora|Event")
@@ -735,11 +735,11 @@ public:
 
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Agora|Event")
-	void OnFirstLocalVideoFrame(EVIDEO_SOURCE_TYPE source, int width, int height, int elapsed);
+	void OnFirstLocalVideoFrame(EUABT_VIDEO_SOURCE_TYPE source, int width, int height, int elapsed);
 
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Agora|Event")
-	void OnFirstLocalVideoFramePublished(EVIDEO_SOURCE_TYPE source, int elapsed);
+	void OnFirstLocalVideoFramePublished(EUABT_VIDEO_SOURCE_TYPE source, int elapsed);
 
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Agora|Event")
@@ -747,15 +747,15 @@ public:
 
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Agora|Event")
-	void OnVideoSizeChanged(EVIDEO_SOURCE_TYPE sourceType, int64 uid, int width, int height, int rotation);
+	void OnVideoSizeChanged(EUABT_VIDEO_SOURCE_TYPE sourceType, int64 uid, int width, int height, int rotation);
 
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Agora|Event")
-	void OnLocalVideoStateChanged(EVIDEO_SOURCE_TYPE source, ELOCAL_VIDEO_STREAM_STATE state, ELOCAL_VIDEO_STREAM_REASON reason);
+	void OnLocalVideoStateChanged(EUABT_VIDEO_SOURCE_TYPE source, EUABT_LOCAL_VIDEO_STREAM_STATE state, EUABT_LOCAL_VIDEO_STREAM_REASON reason);
 
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Agora|Event")
-	void OnRemoteVideoStateChanged(int64 uid, EREMOTE_VIDEO_STATE state, EREMOTE_VIDEO_STATE_REASON reason, int elapsed);
+	void OnRemoteVideoStateChanged(int64 uid, EUABT_REMOTE_VIDEO_STATE state, EUABT_REMOTE_VIDEO_STATE_REASON reason, int elapsed);
 
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Agora|Event")
@@ -775,7 +775,7 @@ public:
 
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Agora|Event")
-	void OnUserStateChanged(int64 uid, FENUMWRAP_REMOTE_USER_STATE state);
+	void OnUserStateChanged(int64 uid, EUABT_REMOTE_USER_STATE state);
 
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Agora|Event")
@@ -783,19 +783,19 @@ public:
 
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Agora|Event")
-	void OnRemoteAudioStats(const FRemoteAudioStats& stats);
+	void OnRemoteAudioStats(const FUABT_RemoteAudioStats& stats);
 	
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Agora|Event")
-	void OnLocalAudioStats(const FLocalAudioStats& stats);
+	void OnLocalAudioStats(const FUABT_LocalAudioStats& stats);
 
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Agora|Event")
-	void OnLocalVideoStats(EVIDEO_SOURCE_TYPE source, const FLocalVideoStats& stats);
+	void OnLocalVideoStats(EUABT_VIDEO_SOURCE_TYPE source, const FUABT_LocalVideoStats& stats);
 
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Agora|Event")
-	void OnRemoteVideoStats(const FRemoteVideoStats& stats);
+	void OnRemoteVideoStats(const FUABT_RemoteVideoStats& stats);
 
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Agora|Event")
@@ -811,7 +811,7 @@ public:
 
 	
 	UFUNCTION(BlueprintNativeEvent, Category = "Agora|Event")
-	void OnFacePositionChanged(int imageWidth, int imageHeight, const TArray<FRectangle>& vecRectangle, const TArray<int>& vecDistance, int numFaces);
+	void OnFacePositionChanged(int imageWidth, int imageHeight, const TArray<FUABT_Rectangle>& vecRectangle, const TArray<int>& vecDistance, int numFaces);
 
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Agora|Event")
@@ -819,11 +819,11 @@ public:
 
 	
 	UFUNCTION(BlueprintNativeEvent, Category = "Agora|Event")
-	void OnAudioMixingStateChanged(FENUMWRAP_AUDIO_MIXING_STATE_TYPE state, FENUMWRAP_AUDIO_MIXING_REASON_TYPE reason);
+	void OnAudioMixingStateChanged(EUABT_AUDIO_MIXING_STATE_TYPE state, EUABT_AUDIO_MIXING_REASON_TYPE reason);
 
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Agora|Event")
-	void OnRhythmPlayerStateChanged(FENUMWRAP_RHYTHM_PLAYER_STATE_TYPE state, FENUMWRAP_RHYTHM_PLAYER_REASON reason);
+	void OnRhythmPlayerStateChanged(EUABT_RHYTHM_PLAYER_STATE_TYPE state, EUABT_RHYTHM_PLAYER_REASON reason);
 
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Agora|Event")
@@ -855,7 +855,7 @@ public:
 
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Agora|Event")
-	void OnLicenseValidationFailure(ELICENSE_ERROR_TYPE error);
+	void OnLicenseValidationFailure(EUABT_LICENSE_ERROR_TYPE error);
 
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Agora|Event")
@@ -870,11 +870,11 @@ public:
 
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Agora|Event")
-	void OnLocalAudioStateChanged(ELOCAL_AUDIO_STREAM_STATE state, ELOCAL_AUDIO_STREAM_REASON reason);
+	void OnLocalAudioStateChanged(EUABT_LOCAL_AUDIO_STREAM_STATE state, EUABT_LOCAL_AUDIO_STREAM_REASON reason);
 
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Agora|Event")
-	void OnRemoteAudioStateChanged(int64 uid, EREMOTE_AUDIO_STATE state, EREMOTE_AUDIO_STATE_REASON reason, int elapsed);
+	void OnRemoteAudioStateChanged(int64 uid, EUABT_REMOTE_AUDIO_STATE state, EUABT_REMOTE_AUDIO_STATE_REASON reason, int elapsed);
 
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Agora|Event")
@@ -882,7 +882,7 @@ public:
 
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Agora|Event")
-	void OnContentInspectResult(ECONTENT_INSPECT_RESULT result);
+	void OnContentInspectResult(EUABT_CONTENT_INSPECT_RESULT result);
 
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Agora|Event")
@@ -890,23 +890,23 @@ public:
 
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Agora|Event")
-	void OnClientRoleChanged(ECLIENT_ROLE_TYPE oldRole, ECLIENT_ROLE_TYPE newRole, const FClientRoleOptions& newRoleOptions);
+	void OnClientRoleChanged(EUABT_CLIENT_ROLE_TYPE oldRole, EUABT_CLIENT_ROLE_TYPE newRole, const FUABT_ClientRoleOptions& newRoleOptions);
 
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Agora|Event")
-	void OnClientRoleChangeFailed(ECLIENT_ROLE_CHANGE_FAILED_REASON reason, ECLIENT_ROLE_TYPE currentRole);
+	void OnClientRoleChangeFailed(EUABT_CLIENT_ROLE_CHANGE_FAILED_REASON reason, EUABT_CLIENT_ROLE_TYPE currentRole);
 
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Agora|Event")
-	void OnAudioDeviceVolumeChanged(FENUMWRAP_MEDIA_DEVICE_TYPE deviceType, int volume, bool muted);
+	void OnAudioDeviceVolumeChanged(EUABT_MEDIA_DEVICE_TYPE deviceType, int volume, bool muted);
 
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Agora|Event")
-	void OnRtmpStreamingStateChanged(const FString& url, ERTMP_STREAM_PUBLISH_STATE state, ERTMP_STREAM_PUBLISH_REASON reason);
+	void OnRtmpStreamingStateChanged(const FString& url, EUABT_RTMP_STREAM_PUBLISH_STATE state, EUABT_RTMP_STREAM_PUBLISH_REASON reason);
 
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Agora|Event")
-	void OnRtmpStreamingEvent(const FString& url, ERTMP_STREAMING_EVENT eventCode);
+	void OnRtmpStreamingEvent(const FString& url, EUABT_RTMP_STREAMING_EVENT eventCode);
 
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Agora|Event")
@@ -936,27 +936,27 @@ public:
 
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Agora|Event")
-	void OnConnectionStateChanged(ECONNECTION_STATE_TYPE state, ECONNECTION_CHANGED_REASON_TYPE reason);
+	void OnConnectionStateChanged(EUABT_CONNECTION_STATE_TYPE state, EUABT_CONNECTION_CHANGED_REASON_TYPE reason);
 
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Agora|Event")
-	void OnWlAccMessage(EWLACC_MESSAGE_REASON reason, EWLACC_SUGGEST_ACTION action, const FString& wlAccMsg);
+	void OnWlAccMessage(EUABT_WLACC_MESSAGE_REASON reason, EUABT_WLACC_SUGGEST_ACTION action, const FString& wlAccMsg);
 
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Agora|Event")
-	void OnWlAccStats(const FWlAccStats& currentStats, const FWlAccStats& averageStats);
+	void OnWlAccStats(const FUABT_WlAccStats& currentStats, const FUABT_WlAccStats& averageStats);
 
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Agora|Event")
-	void OnNetworkTypeChanged(FENUMWRAP_NETWORK_TYPE type);
+	void OnNetworkTypeChanged(EUABT_NETWORK_TYPE type);
 
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Agora|Event")
-	void OnEncryptionError(EENCRYPTION_ERROR_TYPE errorType);
+	void OnEncryptionError(EUABT_ENCRYPTION_ERROR_TYPE errorType);
 
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Agora|Event")
-	void OnPermissionError(EPERMISSION_TYPE permissionType);
+	void OnPermissionError(EUABT_PERMISSION_TYPE permissionType);
 
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Agora|Event")
@@ -964,7 +964,7 @@ public:
 	
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Agora|Event")
-	void OnUserInfoUpdated(int64 uid, const FUserInfo& info);
+	void OnUserInfoUpdated(int64 uid, const FUABT_UserInfo& info);
 
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Agora|Event")
@@ -972,35 +972,35 @@ public:
 
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Agora|Event")
-	void OnVideoRenderingTracingResult(int64 uid, EMEDIA_TRACE_EVENT currentEvent, const FVideoRenderingTracingInfo& tracingInfo);
+	void OnVideoRenderingTracingResult(int64 uid, EUABT_MEDIA_TRACE_EVENT currentEvent, const FUABT_VideoRenderingTracingInfo& tracingInfo);
 
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Agora|Event")
-	void OnLocalVideoTranscoderError(const FTranscodingVideoStream& stream, EVIDEO_TRANSCODER_ERROR error);
+	void OnLocalVideoTranscoderError(const FUABT_TranscodingVideoStream& stream, EUABT_VIDEO_TRANSCODER_ERROR error);
 
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Agora|Event")
-	void OnUploadLogResult(const FString& requestId, bool success, EUPLOAD_ERROR_REASON reason);
+	void OnUploadLogResult(const FString& requestId, bool success, EUABT_UPLOAD_ERROR_REASON reason);
 
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Agora|Event")
-	void OnAudioSubscribeStateChanged(const FString& channel, int64 uid, ESTREAM_SUBSCRIBE_STATE oldState, ESTREAM_SUBSCRIBE_STATE newState, int elapseSinceLastState);
+	void OnAudioSubscribeStateChanged(const FString& channel, int64 uid, EUABT_STREAM_SUBSCRIBE_STATE oldState, EUABT_STREAM_SUBSCRIBE_STATE newState, int elapseSinceLastState);
 
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Agora|Event")
-	void OnVideoSubscribeStateChanged(const FString& channel, int64 uid, ESTREAM_SUBSCRIBE_STATE oldState, ESTREAM_SUBSCRIBE_STATE newState, int elapseSinceLastState);
+	void OnVideoSubscribeStateChanged(const FString& channel, int64 uid, EUABT_STREAM_SUBSCRIBE_STATE oldState, EUABT_STREAM_SUBSCRIBE_STATE newState, int elapseSinceLastState);
 
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Agora|Event")
-	void OnAudioPublishStateChanged(const FString& channel, ESTREAM_PUBLISH_STATE oldState, ESTREAM_PUBLISH_STATE newState, int elapseSinceLastState);
+	void OnAudioPublishStateChanged(const FString& channel, EUABT_STREAM_PUBLISH_STATE oldState, EUABT_STREAM_PUBLISH_STATE newState, int elapseSinceLastState);
 
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Agora|Event")
-	void OnVideoPublishStateChanged(EVIDEO_SOURCE_TYPE source, const FString& channel, ESTREAM_PUBLISH_STATE oldState, ESTREAM_PUBLISH_STATE newState, int elapseSinceLastState);
+	void OnVideoPublishStateChanged(EUABT_VIDEO_SOURCE_TYPE source, const FString& channel, EUABT_STREAM_PUBLISH_STATE oldState, EUABT_STREAM_PUBLISH_STATE newState, int elapseSinceLastState);
 
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Agora|Event")
-	void OnTranscodedStreamLayoutInfo(int64 uid, int width, int height, int layoutCount, const TArray<FVideoLayout>& layoutlist);
+	void OnTranscodedStreamLayoutInfo(int64 uid, int width, int height, int layoutCount, const TArray<FUABT_VideoLayout>& layoutlist);
 
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Agora|Event")
@@ -1008,20 +1008,20 @@ public:
 
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Agora|Event")
-	void OnExtensionEventWithContext(const FExtensionContext& context, const FString& key, const FString& value);
+	void OnExtensionEventWithContext(const FUABT_ExtensionContext& context, const FString& key, const FString& value);
 
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Agora|Event")
-	void OnExtensionStartedWithContext(const FExtensionContext& context);
+	void OnExtensionStartedWithContext(const FUABT_ExtensionContext& context);
 
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Agora|Event")
-	void OnExtensionStoppedWithContext(const FExtensionContext& context);
+	void OnExtensionStoppedWithContext(const FUABT_ExtensionContext& context);
 
 
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Agora|Event")
-	void OnExtensionErrorWithContext(const FExtensionContext& context, int error, const FString& message);
+	void OnExtensionErrorWithContext(const FUABT_ExtensionContext& context, int error, const FString& message);
 
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Agora|Event")

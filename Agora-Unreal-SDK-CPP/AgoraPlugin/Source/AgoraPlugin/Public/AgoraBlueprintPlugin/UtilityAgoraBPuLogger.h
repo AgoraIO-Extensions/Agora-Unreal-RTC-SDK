@@ -19,7 +19,8 @@
 static TMap<AGORA_UE_ERROR_CODE,FString> AGORA_UEBP_ERR_STR =
 {
 	{AGORA_UE_ERROR_CODE::ERROR_BP_RTC_ENGINE_NOT_INITIALIZED," Agora Rtc Engine may not be initialized, please check if it has been initialized. "},
-	{AGORA_UE_ERROR_CODE::ERROR_NULLPTR," Agora pointer Is nullptr, please check if it has been created successfully."},
+	{AGORA_UE_ERROR_CODE::ERROR_NULLPTR," Agora pointer is nullptr, please check if it has been created successfully."},
+	{AGORA_UE_ERROR_CODE::ERROR_INVALID_ENUM_CONVERSION," Enum conversion failed: UE enum has an invalid option that has no mapping in Agora."},
 };
 
 /**
@@ -41,4 +42,8 @@ public:
 	static void Print(FString LogMsg, bool bToConsole = true,bool bOnScreen = true);
 	static void PrintWarn(FString LogMsg, bool bToConsole = true, bool bOnScreen = true);
 	static void PrintError(FString LogMsg, bool bToConsole = true, bool bOnScreen = true);
+
+
+	static void PrintErrorEnum();
+
 };

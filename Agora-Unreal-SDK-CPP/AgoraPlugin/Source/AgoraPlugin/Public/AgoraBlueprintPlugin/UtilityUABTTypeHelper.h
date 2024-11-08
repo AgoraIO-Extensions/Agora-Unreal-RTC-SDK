@@ -62,7 +62,7 @@ namespace agora {
 					return static_cast<agora::rtc::track_id_t>(ID);
 				}
 
-
+				// Convert: From FString to double
 				static inline double ToDouble(const FString& str) {
 					return FCString::Atod(*str);
 				}
@@ -82,6 +82,7 @@ namespace agora {
 					// For now, Windows doesn't support 32 bit
 					return (view_t)(view);
 				}
+
 #pragma endregion To
 
 
@@ -94,7 +95,78 @@ namespace agora {
 				static inline int64 FromViewToInt(agora::view_t view) {
 					return (int64)view;
 				}
+
+				// Convert: From double to FString (The precision is 6 decimal places.)
+				static inline FString FromDouble(double num){
+					return FString::SanitizeFloat(num);
+				}
 #pragma endregion From
+
+
+#pragma region New
+
+				static inline char* New_CharPtr(const FString& Str) {
+					FTCHARToUTF8 TempUTF8String(*(Str));
+					char* TempCharPtr = new char[TempUTF8String.Length() + 1];
+					FMemory::Memcpy(TempCharPtr, TempUTF8String.Get(), TempUTF8String.Length());
+					TempCharPtr[TempUTF8String.Length()] = '\0';
+					return TempCharPtr;
+				}
+
+				static inline unsigned char* New_UnsignedCharPtr(const FString& Str) {
+					FTCHARToUTF8 TempUTF8String(*(Str));
+					unsigned char* TempCharPtr = new unsigned char[TempUTF8String.Length() + 1];
+					FMemory::Memcpy(TempCharPtr, TempUTF8String.Get(), TempUTF8String.Length());
+					TempCharPtr[TempUTF8String.Length()] = '\0';
+					return TempCharPtr;
+				}
+
+#pragma endregion New
+
+
+
+#pragma region Free
+
+				static inline void Free_Ptr(const void * & Ptr){
+					if (Ptr) {
+						delete[] Ptr;
+						Ptr = nullptr;
+					}
+				}
+				static inline void Free_CharPtr(const char* & Ptr){
+					Free_Ptr(reinterpret_cast<const void*&>(Ptr));
+				}
+				static inline void Free_UnsignedCharPtr(unsigned char*& Ptr) {
+					//Free_Ptr(reinterpret_cast<void*&>(Ptr));
+				}
+
+#pragma endregion Free
+
+
+
+#pragma region Eum Original
+
+				template <typename ST_UEEnum, typename DT_AgoraEnum>
+				static inline DT_AgoraEnum ToAgoraEnum(const ST_UEEnum& value) {
+					return static_cast<DT_AgoraEnum>(value);
+				}
+
+
+				template <typename ST_AgoraEnum, typename DT_UEEnum >
+				static inline DT_UEEnum ToUEEnum(const ST_AgoraEnum& value) {
+					return static_cast<DT_UEEnum>(value);
+				}
+
+#pragma endregion Eum Original
+
+
+
+
+#pragma region Enum Wrapper
+
+
+
+#pragma endregion Enum Wrapper
 
 			};
 
@@ -146,19 +218,6 @@ namespace agora {
 			DST_AGORA_PTR = nullptr;\
 		}\
 	}
-
-// Convert: From double to FString (The precision is 6 decimal places.)
-#define SET_UABT_DOUBLE_TO_FSTRING(DST_UEBP_VAR_FSTR,SRC_AGORA_VAR_DOUBLE)\
-	{\
-		(DST_UEBP_VAR_FSTR) = FString::SanitizeFloat((SRC_AGORA_VAR_DOUBLE)); \
-	}
-
-// Convert: From FString to double
-#define SET_UABT_FSTRING_TO_DOUBLE(DST_AGORA_VAR_DOUBLE,SRC_UEBP_VAR_FSTR)\
-	{\
-		(DST_AGORA_VAR_DOUBLE) =  static_cast<double>(FCString::Atod(*(SRC_UEBP_VAR_FSTR)));\
-	}
-
 
 // Convert: From FString to const char*
 #define SET_UABT_FSTRING_TO_CONST_CHAR___MEMALLOC(DST_AGORA_CHARPTR,SRC_UE_FSTR)\

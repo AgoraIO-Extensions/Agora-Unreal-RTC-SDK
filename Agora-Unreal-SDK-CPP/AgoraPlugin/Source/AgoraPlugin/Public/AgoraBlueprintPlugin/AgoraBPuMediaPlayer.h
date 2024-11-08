@@ -6,7 +6,7 @@
 
 #include "AgoraPluginInterface.h"
 #include "IAgoraMediaPlayer.h" // because UE has a IMediaPlayer class
-#include "AgoraBPuBaseDataTypes.h"
+#include "AgoraBPuDataTypes.h"
 #include "AgoraBPuIMediaPlayerSourceObserver.h"
 #include "UObject/StrongObjectPtr.h"
 
@@ -247,7 +247,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Agora|IMediaPlayer")
 	int SetExternalSubtitle(const FString& url);
 	UFUNCTION(BlueprintCallable, Category = "Agora|IMediaPlayer")
-	EMEDIA_PLAYER_STATE GetState();
+	EUABT_MEDIA_PLAYER_STATE GetState();
 	UFUNCTION(BlueprintCallable, Category = "Agora|IMediaPlayer")
 	int Mute(bool muted);
 	UFUNCTION(BlueprintCallable, Category = "Agora|IMediaPlayer")
@@ -263,13 +263,13 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Agora|IMediaPlayer")
 	int SetView(int64 view);
 	UFUNCTION(BlueprintCallable, Category = "Agora|IMediaPlayer")
-	int SetRenderMode(ERENDER_MODE_TYPE renderMode);
+	int SetRenderMode(EUABT_RENDER_MODE_TYPE renderMode);
 	//UFUNCTION(BlueprintCallable, Category = "Agora|IMediaPlayer")
 	//int RegisterPlayerSourceObserver(UIMediaPlayerSourceObserver* observer);
 	//UFUNCTION(BlueprintCallable, Category = "Agora|IMediaPlayer")
 	//int UnregisterPlayerSourceObserver(UIMediaPlayerSourceObserver* observer);
 	//UFUNCTION(BlueprintCallable, Category = "Agora|IMediaPlayer")
-	//int RegisterAudioFrameObserver(UIAudioPcmFrameSink* observer, ERAW_AUDIO_FRAME_OP_MODE_TYPE mode = ERAW_AUDIO_FRAME_OP_MODE_TYPE::RAW_AUDIO_FRAME_OP_MODE_READ_ONLY);
+	//int RegisterAudioFrameObserver(UIAudioPcmFrameSink* observer, EUABT_RAW_AUDIO_FRAME_OP_MODE_TYPE mode = EUABT_RAW_AUDIO_FRAME_OP_MODE_TYPE::RAW_AUDIO_FRAME_OP_MODE_READ_ONLY);
 	//UFUNCTION(BlueprintCallable, Category = "Agora|IMediaPlayer")
 	//int UnregisterAudioFrameObserver(UIAudioPcmFrameSink* observer);
 	//UFUNCTION(BlueprintCallable, Category = "Agora|IMediaPlayer")
@@ -309,7 +309,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Agora|IMediaPlayer")
 	int UnloadSrc(const FString& src);
 	UFUNCTION(BlueprintCallable, Category = "Agora|IMediaPlayer")
-	int SetSpatialAudioParams(const FSpatialAudioParams& params);
+	int SetSpatialAudioParams(const FUABT_SpatialAudioParams& params);
 	UFUNCTION(BlueprintCallable, Category = "Agora|IMediaPlayer")
 	int SetSoundPositionParams(float pan, float gain);
 
