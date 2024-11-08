@@ -126,7 +126,7 @@ int UAgoraBPuVideoDeviceManager::NumberOfCapabilities(const FString& deviceIdUTF
 #endif 
 }
 
-int UAgoraBPuVideoDeviceManager::GetCapability(const FString& deviceIdUTF8, int deviceCapabilityNumber, FUABT_VideoFormat& capability)
+int UAgoraBPuVideoDeviceManager::GetCapability(const FString& deviceIdUTF8, int deviceCapabilityNumber, FVideoFormat& capability)
 {
 #if defined(_WIN32) || (defined(__linux__) && !defined(__ANDROID__)) || \
     (defined(__APPLE__) && TARGET_OS_MAC && !TARGET_OS_IPHONE)

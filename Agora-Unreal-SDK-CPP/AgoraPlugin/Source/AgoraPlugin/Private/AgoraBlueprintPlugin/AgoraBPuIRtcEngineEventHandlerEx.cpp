@@ -131,7 +131,7 @@ void UAgoraBPuIRtcEngineEventHandlerEx::RemoveAllBlueprintCallbackExecutorExs()
 void UAgoraBPuIRtcEngineEventHandlerEx::onJoinChannelSuccess(const agora::rtc::RtcConnection& connection, int elapsed)
 {
 
-	FUABT_RtcConnection UERtcConnection = connection;
+	FRtcConnection UERtcConnection = connection;
 
 	TWeakObjectPtr<UAgoraBPuIRtcEngineEventHandlerEx> SelfWeakPtr(this);
 	if (!SelfWeakPtr.IsValid())
@@ -152,9 +152,9 @@ void UAgoraBPuIRtcEngineEventHandlerEx::onJoinChannelSuccess(const agora::rtc::R
 
 void UAgoraBPuIRtcEngineEventHandlerEx::onLeaveChannel(const agora::rtc::RtcConnection& connection, const agora::rtc::RtcStats& stats)
 {
-	FUABT_RtcConnection UERtcConnection = connection;
+	FRtcConnection UERtcConnection = connection;
 
-	FUABT_RtcStats UERtcStats = stats;
+	FRtcStats UERtcStats = stats;
 
 	TWeakObjectPtr<UAgoraBPuIRtcEngineEventHandlerEx> SelfWeakPtr(this);
 	if (!SelfWeakPtr.IsValid())
@@ -175,7 +175,7 @@ void UAgoraBPuIRtcEngineEventHandlerEx::onLeaveChannel(const agora::rtc::RtcConn
 
 void UAgoraBPuIRtcEngineEventHandlerEx::onUserJoined(const agora::rtc::RtcConnection& connection, agora::rtc::uid_t remoteUid, int elapsed)
 {
-	FUABT_RtcConnection UERtcConnection = connection;
+	FRtcConnection UERtcConnection = connection;
 
 	TWeakObjectPtr<UAgoraBPuIRtcEngineEventHandlerEx> SelfWeakPtr(this);
 	if (!SelfWeakPtr.IsValid())
@@ -197,7 +197,7 @@ void UAgoraBPuIRtcEngineEventHandlerEx::onUserJoined(const agora::rtc::RtcConnec
 void UAgoraBPuIRtcEngineEventHandlerEx::onUserOffline(const agora::rtc::RtcConnection& connection, agora::rtc::uid_t remoteUid, agora::rtc::USER_OFFLINE_REASON_TYPE reason)
 {
 
-	FUABT_RtcConnection UERtcConnection = connection;
+	FRtcConnection UERtcConnection = connection;
 
 	TWeakObjectPtr<UAgoraBPuIRtcEngineEventHandlerEx> SelfWeakPtr(this);
 	if (!SelfWeakPtr.IsValid())
@@ -212,14 +212,14 @@ void UAgoraBPuIRtcEngineEventHandlerEx::onUserOffline(const agora::rtc::RtcConne
 			if (!SelfWeakPtr.IsValid())
 				return;
 
-			OnUserOfflineEx.Broadcast(UERtcConnection, (int64)remoteUid, (EUABT_USER_OFFLINE_REASON_TYPE) reason);
+			OnUserOfflineEx.Broadcast(UERtcConnection, (int64)remoteUid, (EUSER_OFFLINE_REASON_TYPE) reason);
 		});
 }
 
 
 void UAgoraBPuIRtcEngineEventHandlerEx::onRejoinChannelSuccess(const RtcConnection& connection, int elapsed)
 {
-	FUABT_RtcConnection UERtcConnection = connection;
+	FRtcConnection UERtcConnection = connection;
 
 	TWeakObjectPtr<UAgoraBPuIRtcEngineEventHandlerEx> SelfWeakPtr(this);
 	if (!SelfWeakPtr.IsValid())
@@ -242,7 +242,7 @@ void UAgoraBPuIRtcEngineEventHandlerEx::onRejoinChannelSuccess(const RtcConnecti
 
 void UAgoraBPuIRtcEngineEventHandlerEx::onAudioQuality(const RtcConnection& connection, uid_t remoteUid, int quality, unsigned short delay, unsigned short lost) __deprecated
 {
-	FUABT_RtcConnection UERtcConnection = connection;
+	FRtcConnection UERtcConnection = connection;
 
 	TWeakObjectPtr<UAgoraBPuIRtcEngineEventHandlerEx> SelfWeakPtr(this);
 	if (!SelfWeakPtr.IsValid())
@@ -263,9 +263,9 @@ void UAgoraBPuIRtcEngineEventHandlerEx::onAudioQuality(const RtcConnection& conn
 
 void UAgoraBPuIRtcEngineEventHandlerEx::onAudioVolumeIndication(const RtcConnection& connection, const AudioVolumeInfo* speakers, unsigned int speakerNumber, int totalVolume)
 {
-	FUABT_RtcConnection UERtcConnection = connection;
+	FRtcConnection UERtcConnection = connection;
 
-	TArray<FUABT_AudioVolumeInfo> UESpeakers;
+	TArray<FAudioVolumeInfo> UESpeakers;
 	for (unsigned int i = 0; i < speakerNumber; i++)
 	{
 		UESpeakers.Add(speakers[i]);
@@ -290,9 +290,9 @@ void UAgoraBPuIRtcEngineEventHandlerEx::onAudioVolumeIndication(const RtcConnect
 
 void UAgoraBPuIRtcEngineEventHandlerEx::onRtcStats(const RtcConnection& connection, const RtcStats& stats)
 {
-	FUABT_RtcConnection UERtcConnection = connection;
+	FRtcConnection UERtcConnection = connection;
 
-	FUABT_RtcStats UERtcStats = stats;
+	FRtcStats UERtcStats = stats;
 
 	TWeakObjectPtr<UAgoraBPuIRtcEngineEventHandlerEx> SelfWeakPtr(this);
 	if (!SelfWeakPtr.IsValid())
@@ -314,7 +314,7 @@ void UAgoraBPuIRtcEngineEventHandlerEx::onRtcStats(const RtcConnection& connecti
 
 void UAgoraBPuIRtcEngineEventHandlerEx::onNetworkQuality(const RtcConnection& connection, uid_t remoteUid, int txQuality, int rxQuality)
 {
-	FUABT_RtcConnection UERtcConnection = connection;
+	FRtcConnection UERtcConnection = connection;
 
 	TWeakObjectPtr<UAgoraBPuIRtcEngineEventHandlerEx> SelfWeakPtr(this);
 	if (!SelfWeakPtr.IsValid())
@@ -339,7 +339,7 @@ void UAgoraBPuIRtcEngineEventHandlerEx::onNetworkQuality(const RtcConnection& co
 void UAgoraBPuIRtcEngineEventHandlerEx::onIntraRequestReceived(const RtcConnection& connection)
 {
 	
-	FUABT_RtcConnection UERtcConnection = connection;
+	FRtcConnection UERtcConnection = connection;
 
 	TWeakObjectPtr<UAgoraBPuIRtcEngineEventHandlerEx> SelfWeakPtr(this);
 	if (!SelfWeakPtr.IsValid())
@@ -362,7 +362,7 @@ void UAgoraBPuIRtcEngineEventHandlerEx::onIntraRequestReceived(const RtcConnecti
 
 void UAgoraBPuIRtcEngineEventHandlerEx::onFirstLocalVideoFramePublished(const RtcConnection& connection, int elapsed)
 {
-	FUABT_RtcConnection UERtcConnection = connection;
+	FRtcConnection UERtcConnection = connection;
 
 	TWeakObjectPtr<UAgoraBPuIRtcEngineEventHandlerEx> SelfWeakPtr(this);
 	if (!SelfWeakPtr.IsValid())
@@ -384,7 +384,7 @@ void UAgoraBPuIRtcEngineEventHandlerEx::onFirstLocalVideoFramePublished(const Rt
 
 void UAgoraBPuIRtcEngineEventHandlerEx::onFirstRemoteVideoDecoded(const RtcConnection& connection, uid_t remoteUid, int width, int height, int elapsed)
 {
-	FUABT_RtcConnection UERtcConnection = connection;
+	FRtcConnection UERtcConnection = connection;
 
 	TWeakObjectPtr<UAgoraBPuIRtcEngineEventHandlerEx> SelfWeakPtr(this);
 	if (!SelfWeakPtr.IsValid())
@@ -406,9 +406,9 @@ void UAgoraBPuIRtcEngineEventHandlerEx::onFirstRemoteVideoDecoded(const RtcConne
 
 void UAgoraBPuIRtcEngineEventHandlerEx::onVideoSizeChanged(const RtcConnection& connection, VIDEO_SOURCE_TYPE sourceType, uid_t uid, int width, int height, int rotation)
 {
-	FUABT_RtcConnection UERtcConnection = connection;
+	FRtcConnection UERtcConnection = connection;
 
-	EUABT_VIDEO_SOURCE_TYPE UEVideoSourceType = (EUABT_VIDEO_SOURCE_TYPE)sourceType;
+	EVIDEO_SOURCE_TYPE UEVideoSourceType = (EVIDEO_SOURCE_TYPE)sourceType;
 
 	TWeakObjectPtr<UAgoraBPuIRtcEngineEventHandlerEx> SelfWeakPtr(this);
 	if (!SelfWeakPtr.IsValid())
@@ -431,10 +431,10 @@ void UAgoraBPuIRtcEngineEventHandlerEx::onVideoSizeChanged(const RtcConnection& 
 
 void UAgoraBPuIRtcEngineEventHandlerEx::onRemoteVideoStateChanged(const RtcConnection& connection, uid_t remoteUid, REMOTE_VIDEO_STATE state, REMOTE_VIDEO_STATE_REASON reason, int elapsed)
 {
-	FUABT_RtcConnection UERtcConnection = connection;
+	FRtcConnection UERtcConnection = connection;
 
-	EUABT_REMOTE_VIDEO_STATE UERemoteVideoState = (EUABT_REMOTE_VIDEO_STATE)state;
-	EUABT_REMOTE_VIDEO_STATE_REASON UERemoteVideoStateReason = (EUABT_REMOTE_VIDEO_STATE_REASON)reason;
+	EREMOTE_VIDEO_STATE UERemoteVideoState = (EREMOTE_VIDEO_STATE)state;
+	EREMOTE_VIDEO_STATE_REASON UERemoteVideoStateReason = (EREMOTE_VIDEO_STATE_REASON)reason;
 
 	TWeakObjectPtr<UAgoraBPuIRtcEngineEventHandlerEx> SelfWeakPtr(this);
 	if (!SelfWeakPtr.IsValid())
@@ -456,7 +456,7 @@ void UAgoraBPuIRtcEngineEventHandlerEx::onRemoteVideoStateChanged(const RtcConne
 
 void UAgoraBPuIRtcEngineEventHandlerEx::onFirstRemoteVideoFrame(const RtcConnection& connection, uid_t remoteUid, int width, int height, int elapsed)
 {
-	FUABT_RtcConnection UERtcConnection = connection;
+	FRtcConnection UERtcConnection = connection;
 
 	TWeakObjectPtr<UAgoraBPuIRtcEngineEventHandlerEx> SelfWeakPtr(this);
 	if (!SelfWeakPtr.IsValid())
@@ -478,7 +478,7 @@ void UAgoraBPuIRtcEngineEventHandlerEx::onFirstRemoteVideoFrame(const RtcConnect
 
 void UAgoraBPuIRtcEngineEventHandlerEx::onUserMuteAudio(const RtcConnection& connection, uid_t remoteUid, bool muted) __deprecated
 {
-	FUABT_RtcConnection UERtcConnection = connection;
+	FRtcConnection UERtcConnection = connection;
 
 	TWeakObjectPtr<UAgoraBPuIRtcEngineEventHandlerEx> SelfWeakPtr(this);
 	if (!SelfWeakPtr.IsValid())
@@ -500,7 +500,7 @@ void UAgoraBPuIRtcEngineEventHandlerEx::onUserMuteAudio(const RtcConnection& con
 
 void UAgoraBPuIRtcEngineEventHandlerEx::onUserMuteVideo(const RtcConnection& connection, uid_t remoteUid, bool muted)
 {
-	FUABT_RtcConnection UERtcConnection = connection;
+	FRtcConnection UERtcConnection = connection;
 
 	TWeakObjectPtr<UAgoraBPuIRtcEngineEventHandlerEx> SelfWeakPtr(this);
 	if (!SelfWeakPtr.IsValid())
@@ -522,7 +522,7 @@ void UAgoraBPuIRtcEngineEventHandlerEx::onUserMuteVideo(const RtcConnection& con
 
 void UAgoraBPuIRtcEngineEventHandlerEx::onUserEnableVideo(const RtcConnection& connection, uid_t remoteUid, bool enabled)
 {
-	FUABT_RtcConnection UERtcConnection = connection;
+	FRtcConnection UERtcConnection = connection;
 
 	TWeakObjectPtr<UAgoraBPuIRtcEngineEventHandlerEx> SelfWeakPtr(this);
 	if (!SelfWeakPtr.IsValid())
@@ -544,7 +544,7 @@ void UAgoraBPuIRtcEngineEventHandlerEx::onUserEnableVideo(const RtcConnection& c
 
 void UAgoraBPuIRtcEngineEventHandlerEx::onUserEnableLocalVideo(const RtcConnection& connection, uid_t remoteUid, bool enabled) __deprecated
 {
-	FUABT_RtcConnection UERtcConnection = connection;
+	FRtcConnection UERtcConnection = connection;
 
 	TWeakObjectPtr<UAgoraBPuIRtcEngineEventHandlerEx> SelfWeakPtr(this);
 	if (!SelfWeakPtr.IsValid())
@@ -566,7 +566,7 @@ void UAgoraBPuIRtcEngineEventHandlerEx::onUserEnableLocalVideo(const RtcConnecti
 
 void UAgoraBPuIRtcEngineEventHandlerEx::onUserStateChanged(const RtcConnection& connection, uid_t remoteUid, uint32_t state)
 {
-	FUABT_RtcConnection UERtcConnection = connection;
+	FRtcConnection UERtcConnection = connection;
 
 	TWeakObjectPtr<UAgoraBPuIRtcEngineEventHandlerEx> SelfWeakPtr(this);
 	if (!SelfWeakPtr.IsValid())
@@ -588,9 +588,9 @@ void UAgoraBPuIRtcEngineEventHandlerEx::onUserStateChanged(const RtcConnection& 
 
 void UAgoraBPuIRtcEngineEventHandlerEx::onLocalAudioStats(const RtcConnection& connection, const LocalAudioStats& stats)
 {
-	FUABT_RtcConnection UERtcConnection = connection;
+	FRtcConnection UERtcConnection = connection;
 
-	FUABT_LocalAudioStats UELocalAudioStats = stats;
+	FLocalAudioStats UELocalAudioStats = stats;
 
 	TWeakObjectPtr<UAgoraBPuIRtcEngineEventHandlerEx> SelfWeakPtr(this);
 	if (!SelfWeakPtr.IsValid())
@@ -613,9 +613,9 @@ void UAgoraBPuIRtcEngineEventHandlerEx::onLocalAudioStats(const RtcConnection& c
 void UAgoraBPuIRtcEngineEventHandlerEx::onRemoteAudioStats(const RtcConnection& connection, const RemoteAudioStats& stats)
 {
 	
-	FUABT_RtcConnection UERtcConnection = connection;
+	FRtcConnection UERtcConnection = connection;
 
-	FUABT_RemoteAudioStats UERemoteAudioStats = stats;
+	FRemoteAudioStats UERemoteAudioStats = stats;
 
 	TWeakObjectPtr<UAgoraBPuIRtcEngineEventHandlerEx> SelfWeakPtr(this);
 	if (!SelfWeakPtr.IsValid())
@@ -637,9 +637,9 @@ void UAgoraBPuIRtcEngineEventHandlerEx::onRemoteAudioStats(const RtcConnection& 
 
 void UAgoraBPuIRtcEngineEventHandlerEx::onLocalVideoStats(const RtcConnection& connection, const LocalVideoStats& stats)
 {
-	FUABT_RtcConnection UERtcConnection = connection;
+	FRtcConnection UERtcConnection = connection;
 
-	FUABT_LocalVideoStats UELocalVideoStats = stats;
+	FLocalVideoStats UELocalVideoStats = stats;
 
 	TWeakObjectPtr<UAgoraBPuIRtcEngineEventHandlerEx> SelfWeakPtr(this);
 	if (!SelfWeakPtr.IsValid())
@@ -661,9 +661,9 @@ void UAgoraBPuIRtcEngineEventHandlerEx::onLocalVideoStats(const RtcConnection& c
 
 void UAgoraBPuIRtcEngineEventHandlerEx::onRemoteVideoStats(const RtcConnection& connection, const RemoteVideoStats& stats)
 {
-	FUABT_RtcConnection UERtcConnection = connection;
+	FRtcConnection UERtcConnection = connection;
 
-	FUABT_RemoteVideoStats UERemoteVideoStats = stats;
+	FRemoteVideoStats UERemoteVideoStats = stats;
 
 	TWeakObjectPtr<UAgoraBPuIRtcEngineEventHandlerEx> SelfWeakPtr(this);
 	if (!SelfWeakPtr.IsValid())
@@ -685,7 +685,7 @@ void UAgoraBPuIRtcEngineEventHandlerEx::onRemoteVideoStats(const RtcConnection& 
 
 void UAgoraBPuIRtcEngineEventHandlerEx::onConnectionLost(const RtcConnection& connection)
 {
-	FUABT_RtcConnection UERtcConnection = connection;
+	FRtcConnection UERtcConnection = connection;
 
 	TWeakObjectPtr<UAgoraBPuIRtcEngineEventHandlerEx> SelfWeakPtr(this);
 	if (!SelfWeakPtr.IsValid())
@@ -707,7 +707,7 @@ void UAgoraBPuIRtcEngineEventHandlerEx::onConnectionLost(const RtcConnection& co
 
 void UAgoraBPuIRtcEngineEventHandlerEx::onConnectionInterrupted(const RtcConnection& connection) __deprecated
 {
-	FUABT_RtcConnection UERtcConnection = connection;
+	FRtcConnection UERtcConnection = connection;
 
 	TWeakObjectPtr<UAgoraBPuIRtcEngineEventHandlerEx> SelfWeakPtr(this);
 	if (!SelfWeakPtr.IsValid())
@@ -729,7 +729,7 @@ void UAgoraBPuIRtcEngineEventHandlerEx::onConnectionInterrupted(const RtcConnect
 
 void UAgoraBPuIRtcEngineEventHandlerEx::onConnectionBanned(const RtcConnection& connection)
 {
-	FUABT_RtcConnection UERtcConnection = connection;
+	FRtcConnection UERtcConnection = connection;
 
 	TWeakObjectPtr<UAgoraBPuIRtcEngineEventHandlerEx> SelfWeakPtr(this);
 	if (!SelfWeakPtr.IsValid())
@@ -751,7 +751,7 @@ void UAgoraBPuIRtcEngineEventHandlerEx::onConnectionBanned(const RtcConnection& 
 
 void UAgoraBPuIRtcEngineEventHandlerEx::onStreamMessage(const RtcConnection& connection, uid_t remoteUid, int streamId, const char* data, size_t length, uint64_t sentTs)
 {
-	FUABT_RtcConnection UERtcConnection = connection;
+	FRtcConnection UERtcConnection = connection;
 
 	FString UEData = FString(UTF8_TO_TCHAR(data));
 
@@ -775,7 +775,7 @@ void UAgoraBPuIRtcEngineEventHandlerEx::onStreamMessage(const RtcConnection& con
 
 void UAgoraBPuIRtcEngineEventHandlerEx::onStreamMessageError(const RtcConnection& connection, uid_t remoteUid, int streamId, int code, int missed, int cached)
 {
-	FUABT_RtcConnection UERtcConnection = connection;
+	FRtcConnection UERtcConnection = connection;
 
 	TWeakObjectPtr<UAgoraBPuIRtcEngineEventHandlerEx> SelfWeakPtr(this);
 	if (!SelfWeakPtr.IsValid())
@@ -797,7 +797,7 @@ void UAgoraBPuIRtcEngineEventHandlerEx::onStreamMessageError(const RtcConnection
 
 void UAgoraBPuIRtcEngineEventHandlerEx::onRequestToken(const RtcConnection& connection)
 {
-	FUABT_RtcConnection UERtcConnection = connection;
+	FRtcConnection UERtcConnection = connection;
 
 	TWeakObjectPtr<UAgoraBPuIRtcEngineEventHandlerEx> SelfWeakPtr(this);
 	if (!SelfWeakPtr.IsValid())
@@ -819,9 +819,9 @@ void UAgoraBPuIRtcEngineEventHandlerEx::onRequestToken(const RtcConnection& conn
 
 void UAgoraBPuIRtcEngineEventHandlerEx::onLicenseValidationFailure(const RtcConnection& connection, LICENSE_ERROR_TYPE reason)
 {
-	FUABT_RtcConnection UERtcConnection = connection;
+	FRtcConnection UERtcConnection = connection;
 
-	EUABT_LICENSE_ERROR_TYPE UELicenseErrorType = (EUABT_LICENSE_ERROR_TYPE)reason;
+	ELICENSE_ERROR_TYPE UELicenseErrorType = (ELICENSE_ERROR_TYPE)reason;
 
 	TWeakObjectPtr<UAgoraBPuIRtcEngineEventHandlerEx> SelfWeakPtr(this);
 	if (!SelfWeakPtr.IsValid())
@@ -843,7 +843,7 @@ void UAgoraBPuIRtcEngineEventHandlerEx::onLicenseValidationFailure(const RtcConn
 
 void UAgoraBPuIRtcEngineEventHandlerEx::onTokenPrivilegeWillExpire(const RtcConnection& connection, const char* token)
 {
-	FUABT_RtcConnection UERtcConnection = connection;
+	FRtcConnection UERtcConnection = connection;
 
 	FString UEToken = FString(UTF8_TO_TCHAR(token));
 
@@ -867,7 +867,7 @@ void UAgoraBPuIRtcEngineEventHandlerEx::onTokenPrivilegeWillExpire(const RtcConn
 
 void UAgoraBPuIRtcEngineEventHandlerEx::onFirstLocalAudioFramePublished(const RtcConnection& connection, int elapsed)
 {
-	FUABT_RtcConnection UERtcConnection = connection;
+	FRtcConnection UERtcConnection = connection;
 
 	TWeakObjectPtr<UAgoraBPuIRtcEngineEventHandlerEx> SelfWeakPtr(this);
 	if (!SelfWeakPtr.IsValid())
@@ -889,7 +889,7 @@ void UAgoraBPuIRtcEngineEventHandlerEx::onFirstLocalAudioFramePublished(const Rt
 
 void UAgoraBPuIRtcEngineEventHandlerEx::onFirstRemoteAudioFrame(const RtcConnection& connection, uid_t userId, int elapsed) __deprecated
 {
-	FUABT_RtcConnection UERtcConnection = connection;
+	FRtcConnection UERtcConnection = connection;
 
 	TWeakObjectPtr<UAgoraBPuIRtcEngineEventHandlerEx> SelfWeakPtr(this);
 	if (!SelfWeakPtr.IsValid())
@@ -911,7 +911,7 @@ void UAgoraBPuIRtcEngineEventHandlerEx::onFirstRemoteAudioFrame(const RtcConnect
 
 void UAgoraBPuIRtcEngineEventHandlerEx::onFirstRemoteAudioDecoded(const RtcConnection& connection, uid_t uid, int elapsed) __deprecated
 {
-	FUABT_RtcConnection UERtcConnection = connection;
+	FRtcConnection UERtcConnection = connection;
 
 	TWeakObjectPtr<UAgoraBPuIRtcEngineEventHandlerEx> SelfWeakPtr(this);
 	if (!SelfWeakPtr.IsValid())
@@ -933,10 +933,10 @@ void UAgoraBPuIRtcEngineEventHandlerEx::onFirstRemoteAudioDecoded(const RtcConne
 
 void UAgoraBPuIRtcEngineEventHandlerEx::onLocalAudioStateChanged(const RtcConnection& connection, LOCAL_AUDIO_STREAM_STATE state, LOCAL_AUDIO_STREAM_REASON reason)
 {
-	FUABT_RtcConnection UERtcConnection = connection;
+	FRtcConnection UERtcConnection = connection;
 
-	EUABT_LOCAL_AUDIO_STREAM_STATE UEState = (EUABT_LOCAL_AUDIO_STREAM_STATE)state;
-	EUABT_LOCAL_AUDIO_STREAM_REASON UEReason = (EUABT_LOCAL_AUDIO_STREAM_REASON)reason;
+	ELOCAL_AUDIO_STREAM_STATE UEState = (ELOCAL_AUDIO_STREAM_STATE)state;
+	ELOCAL_AUDIO_STREAM_REASON UEReason = (ELOCAL_AUDIO_STREAM_REASON)reason;
 
 	TWeakObjectPtr<UAgoraBPuIRtcEngineEventHandlerEx> SelfWeakPtr(this);
 	if (!SelfWeakPtr.IsValid())
@@ -958,10 +958,10 @@ void UAgoraBPuIRtcEngineEventHandlerEx::onLocalAudioStateChanged(const RtcConnec
 
 void UAgoraBPuIRtcEngineEventHandlerEx::onRemoteAudioStateChanged(const RtcConnection& connection, uid_t remoteUid, REMOTE_AUDIO_STATE state, REMOTE_AUDIO_STATE_REASON reason, int elapsed)
 {
-	FUABT_RtcConnection UERtcConnection = connection;
+	FRtcConnection UERtcConnection = connection;
 
-	EUABT_REMOTE_AUDIO_STATE UERemoteAudioState = (EUABT_REMOTE_AUDIO_STATE)state;
-	EUABT_REMOTE_AUDIO_STATE_REASON UERemoteAudioStateReason = (EUABT_REMOTE_AUDIO_STATE_REASON)reason;
+	EREMOTE_AUDIO_STATE UERemoteAudioState = (EREMOTE_AUDIO_STATE)state;
+	EREMOTE_AUDIO_STATE_REASON UERemoteAudioStateReason = (EREMOTE_AUDIO_STATE_REASON)reason;
 
 	TWeakObjectPtr<UAgoraBPuIRtcEngineEventHandlerEx> SelfWeakPtr(this);
 	if (!SelfWeakPtr.IsValid())
@@ -983,7 +983,7 @@ void UAgoraBPuIRtcEngineEventHandlerEx::onRemoteAudioStateChanged(const RtcConne
 
 void UAgoraBPuIRtcEngineEventHandlerEx::onActiveSpeaker(const RtcConnection& connection, uid_t uid)
 {
-	FUABT_RtcConnection UERtcConnection = connection;
+	FRtcConnection UERtcConnection = connection;
 
 	TWeakObjectPtr<UAgoraBPuIRtcEngineEventHandlerEx> SelfWeakPtr(this);
 	if (!SelfWeakPtr.IsValid())
@@ -1005,11 +1005,11 @@ void UAgoraBPuIRtcEngineEventHandlerEx::onActiveSpeaker(const RtcConnection& con
 
 void UAgoraBPuIRtcEngineEventHandlerEx::onClientRoleChanged(const RtcConnection& connection, CLIENT_ROLE_TYPE oldRole, CLIENT_ROLE_TYPE newRole, const ClientRoleOptions& newRoleOptions)
 {
-	FUABT_RtcConnection UERtcConnection = connection;
+	FRtcConnection UERtcConnection = connection;
 
-	EUABT_CLIENT_ROLE_TYPE UEOldRole = (EUABT_CLIENT_ROLE_TYPE)oldRole;
-	EUABT_CLIENT_ROLE_TYPE UENewRole = (EUABT_CLIENT_ROLE_TYPE)newRole;
-	FUABT_ClientRoleOptions UEClientRoleOptions = newRoleOptions;
+	ECLIENT_ROLE_TYPE UEOldRole = (ECLIENT_ROLE_TYPE)oldRole;
+	ECLIENT_ROLE_TYPE UENewRole = (ECLIENT_ROLE_TYPE)newRole;
+	FClientRoleOptions UEClientRoleOptions = newRoleOptions;
 
 	TWeakObjectPtr<UAgoraBPuIRtcEngineEventHandlerEx> SelfWeakPtr(this);
 	if (!SelfWeakPtr.IsValid())
@@ -1031,10 +1031,10 @@ void UAgoraBPuIRtcEngineEventHandlerEx::onClientRoleChanged(const RtcConnection&
 
 void UAgoraBPuIRtcEngineEventHandlerEx::onClientRoleChangeFailed(const RtcConnection& connection, CLIENT_ROLE_CHANGE_FAILED_REASON reason, CLIENT_ROLE_TYPE currentRole)
 {
-	FUABT_RtcConnection UERtcConnection = connection;
+	FRtcConnection UERtcConnection = connection;
 
-	EUABT_CLIENT_ROLE_CHANGE_FAILED_REASON UEClientRoleChangeFailedReason = (EUABT_CLIENT_ROLE_CHANGE_FAILED_REASON)reason;
-	EUABT_CLIENT_ROLE_TYPE UECurrentRole = (EUABT_CLIENT_ROLE_TYPE)currentRole;
+	ECLIENT_ROLE_CHANGE_FAILED_REASON UEClientRoleChangeFailedReason = (ECLIENT_ROLE_CHANGE_FAILED_REASON)reason;
+	ECLIENT_ROLE_TYPE UECurrentRole = (ECLIENT_ROLE_TYPE)currentRole;
 
 	TWeakObjectPtr<UAgoraBPuIRtcEngineEventHandlerEx> SelfWeakPtr(this);
 	if (!SelfWeakPtr.IsValid())
@@ -1056,7 +1056,7 @@ void UAgoraBPuIRtcEngineEventHandlerEx::onClientRoleChangeFailed(const RtcConnec
 
 void UAgoraBPuIRtcEngineEventHandlerEx::onRemoteAudioTransportStats(const RtcConnection& connection, uid_t remoteUid, unsigned short delay, unsigned short lost, unsigned short rxKBitRate) __deprecated
 {
-	FUABT_RtcConnection UERtcConnection = connection;
+	FRtcConnection UERtcConnection = connection;
 	
 	TWeakObjectPtr<UAgoraBPuIRtcEngineEventHandlerEx> SelfWeakPtr(this);
 	if (!SelfWeakPtr.IsValid())
@@ -1078,7 +1078,7 @@ void UAgoraBPuIRtcEngineEventHandlerEx::onRemoteAudioTransportStats(const RtcCon
 
 void UAgoraBPuIRtcEngineEventHandlerEx::onRemoteVideoTransportStats(const RtcConnection& connection, uid_t remoteUid, unsigned short delay, unsigned short lost, unsigned short rxKBitRate) __deprecated
 {
-	FUABT_RtcConnection UERtcConnection = connection;
+	FRtcConnection UERtcConnection = connection;
 
 	TWeakObjectPtr<UAgoraBPuIRtcEngineEventHandlerEx> SelfWeakPtr(this);
 	if (!SelfWeakPtr.IsValid())
@@ -1100,10 +1100,10 @@ void UAgoraBPuIRtcEngineEventHandlerEx::onRemoteVideoTransportStats(const RtcCon
 
 void UAgoraBPuIRtcEngineEventHandlerEx::onConnectionStateChanged(const RtcConnection& connection, CONNECTION_STATE_TYPE state, CONNECTION_CHANGED_REASON_TYPE reason)
 {
-	FUABT_RtcConnection UERtcConnection = connection;
+	FRtcConnection UERtcConnection = connection;
 
-	EUABT_CONNECTION_STATE_TYPE UEConnectionStateType = (EUABT_CONNECTION_STATE_TYPE)state;
-	EUABT_CONNECTION_CHANGED_REASON_TYPE UEConnectionChangedReasonType = (EUABT_CONNECTION_CHANGED_REASON_TYPE)reason;
+	ECONNECTION_STATE_TYPE UEConnectionStateType = (ECONNECTION_STATE_TYPE)state;
+	ECONNECTION_CHANGED_REASON_TYPE UEConnectionChangedReasonType = (ECONNECTION_CHANGED_REASON_TYPE)reason;
 
 	TWeakObjectPtr<UAgoraBPuIRtcEngineEventHandlerEx> SelfWeakPtr(this);
 	if (!SelfWeakPtr.IsValid())
@@ -1125,10 +1125,10 @@ void UAgoraBPuIRtcEngineEventHandlerEx::onConnectionStateChanged(const RtcConnec
 
 void UAgoraBPuIRtcEngineEventHandlerEx::onWlAccMessage(const RtcConnection& connection, WLACC_MESSAGE_REASON reason, WLACC_SUGGEST_ACTION action, const char* wlAccMsg)
 {
-	FUABT_RtcConnection UERtcConnection = connection;
+	FRtcConnection UERtcConnection = connection;
 
-	EUABT_WLACC_MESSAGE_REASON UEWlAccMessageReason = (EUABT_WLACC_MESSAGE_REASON)reason;
-	EUABT_WLACC_SUGGEST_ACTION UEWlAccSuggestAction = (EUABT_WLACC_SUGGEST_ACTION)action;
+	EWLACC_MESSAGE_REASON UEWlAccMessageReason = (EWLACC_MESSAGE_REASON)reason;
+	EWLACC_SUGGEST_ACTION UEWlAccSuggestAction = (EWLACC_SUGGEST_ACTION)action;
 	FString UEWlAccMsg = FString(UTF8_TO_TCHAR(wlAccMsg));
 
 	TWeakObjectPtr<UAgoraBPuIRtcEngineEventHandlerEx> SelfWeakPtr(this);
@@ -1151,10 +1151,10 @@ void UAgoraBPuIRtcEngineEventHandlerEx::onWlAccMessage(const RtcConnection& conn
 
 void UAgoraBPuIRtcEngineEventHandlerEx::onWlAccStats(const RtcConnection& connection, WlAccStats currentStats, WlAccStats averageStats)
 {
-	FUABT_RtcConnection UERtcConnection = connection;
+	FRtcConnection UERtcConnection = connection;
 
-	FUABT_WlAccStats UECurrentStats = currentStats;
-	FUABT_WlAccStats UEAverageStats = averageStats;
+	FWlAccStats UECurrentStats = currentStats;
+	FWlAccStats UEAverageStats = averageStats;
 
 	TWeakObjectPtr<UAgoraBPuIRtcEngineEventHandlerEx> SelfWeakPtr(this);
 	if (!SelfWeakPtr.IsValid())
@@ -1176,9 +1176,9 @@ void UAgoraBPuIRtcEngineEventHandlerEx::onWlAccStats(const RtcConnection& connec
 
 void UAgoraBPuIRtcEngineEventHandlerEx::onNetworkTypeChanged(const RtcConnection& connection, NETWORK_TYPE type)
 {
-	FUABT_RtcConnection UERtcConnection = connection;
+	FRtcConnection UERtcConnection = connection;
 
-	EUABT_NETWORK_TYPE UENetworkType = UABTEnum::WrapWithUE(type);
+	FENUMWRAP_NETWORK_TYPE UENetworkType = type;
 
 	TWeakObjectPtr<UAgoraBPuIRtcEngineEventHandlerEx> SelfWeakPtr(this);
 	if (!SelfWeakPtr.IsValid())
@@ -1200,9 +1200,9 @@ void UAgoraBPuIRtcEngineEventHandlerEx::onNetworkTypeChanged(const RtcConnection
 
 void UAgoraBPuIRtcEngineEventHandlerEx::onEncryptionError(const RtcConnection& connection, ENCRYPTION_ERROR_TYPE errorType)
 {
-	FUABT_RtcConnection UERtcConnection = connection;
+	FRtcConnection UERtcConnection = connection;
 
-	EUABT_ENCRYPTION_ERROR_TYPE UEErrorType = (EUABT_ENCRYPTION_ERROR_TYPE)errorType;
+	EENCRYPTION_ERROR_TYPE UEErrorType = (EENCRYPTION_ERROR_TYPE)errorType;
 
 	TWeakObjectPtr<UAgoraBPuIRtcEngineEventHandlerEx> SelfWeakPtr(this);
 	if (!SelfWeakPtr.IsValid())
@@ -1224,10 +1224,10 @@ void UAgoraBPuIRtcEngineEventHandlerEx::onEncryptionError(const RtcConnection& c
 
 void UAgoraBPuIRtcEngineEventHandlerEx::onUploadLogResult(const RtcConnection& connection, const char* requestId, bool success, UPLOAD_ERROR_REASON reason)
 {
-	FUABT_RtcConnection UERtcConnection = connection;
+	FRtcConnection UERtcConnection = connection;
 
 	FString UERequestId = FString(UTF8_TO_TCHAR(requestId));
-	EUABT_UPLOAD_ERROR_REASON UEUploadErrorReason = (EUABT_UPLOAD_ERROR_REASON)reason;
+	EUPLOAD_ERROR_REASON UEUploadErrorReason = (EUPLOAD_ERROR_REASON)reason;
 
 	TWeakObjectPtr<UAgoraBPuIRtcEngineEventHandlerEx> SelfWeakPtr(this);
 	if (!SelfWeakPtr.IsValid())
@@ -1249,7 +1249,7 @@ void UAgoraBPuIRtcEngineEventHandlerEx::onUploadLogResult(const RtcConnection& c
 
 void UAgoraBPuIRtcEngineEventHandlerEx::onUserAccountUpdated(const RtcConnection& connection, uid_t remoteUid, const char* remoteUserAccount)
 {
-	FUABT_RtcConnection UERtcConnection = connection;
+	FRtcConnection UERtcConnection = connection;
 
 	FString UERemoteUserAccount = FString(UTF8_TO_TCHAR(remoteUserAccount));
 
@@ -1273,7 +1273,7 @@ void UAgoraBPuIRtcEngineEventHandlerEx::onUserAccountUpdated(const RtcConnection
 
 void UAgoraBPuIRtcEngineEventHandlerEx::onSnapshotTaken(const RtcConnection& connection, uid_t uid, const char* filePath, int width, int height, int errCode)
 {
-	FUABT_RtcConnection UERtcConnection = connection;
+	FRtcConnection UERtcConnection = connection;
 
 	FString UEFilePath = FString(UTF8_TO_TCHAR(filePath));
 
@@ -1297,10 +1297,10 @@ void UAgoraBPuIRtcEngineEventHandlerEx::onSnapshotTaken(const RtcConnection& con
 
 void UAgoraBPuIRtcEngineEventHandlerEx::onVideoRenderingTracingResult(const RtcConnection& connection, uid_t uid, MEDIA_TRACE_EVENT currentEvent, VideoRenderingTracingInfo tracingInfo)
 {
-	FUABT_RtcConnection UERtcConnection = connection;
+	FRtcConnection UERtcConnection = connection;
 
-	EUABT_MEDIA_TRACE_EVENT UEMediaTraceEvent = (EUABT_MEDIA_TRACE_EVENT)currentEvent;
-	FUABT_VideoRenderingTracingInfo UETracingInfo = tracingInfo;
+	EMEDIA_TRACE_EVENT UEMediaTraceEvent = (EMEDIA_TRACE_EVENT)currentEvent;
+	FVideoRenderingTracingInfo UETracingInfo = tracingInfo;
 
 	TWeakObjectPtr<UAgoraBPuIRtcEngineEventHandlerEx> SelfWeakPtr(this);
 	if (!SelfWeakPtr.IsValid())
@@ -1322,7 +1322,7 @@ void UAgoraBPuIRtcEngineEventHandlerEx::onVideoRenderingTracingResult(const RtcC
 
 void UAgoraBPuIRtcEngineEventHandlerEx::onSetRtmFlagResult(const RtcConnection& connection, int code)
 {
-	FUABT_RtcConnection UERtcConnection = connection;
+	FRtcConnection UERtcConnection = connection;
 
 	int32 UECode = code;
 
@@ -1346,12 +1346,12 @@ void UAgoraBPuIRtcEngineEventHandlerEx::onSetRtmFlagResult(const RtcConnection& 
 
 void UAgoraBPuIRtcEngineEventHandlerEx::onTranscodedStreamLayoutInfo(const RtcConnection& connection, uid_t uid, int width, int height, int layoutCount, const VideoLayout* layoutlist)
 {
-	FUABT_RtcConnection UERtcConnection = connection;
+	FRtcConnection UERtcConnection = connection;
 
-	TArray<FUABT_VideoLayout> UELayoutList;
+	TArray<FVideoLayout> UELayoutList;
 	for (int i = 0; i < layoutCount; i++)
 	{
-		FUABT_VideoLayout UEVideoLayout = layoutlist[i];
+		FVideoLayout UEVideoLayout = layoutlist[i];
 		UELayoutList.Add(UEVideoLayout);
 	}
 
@@ -1375,7 +1375,7 @@ void UAgoraBPuIRtcEngineEventHandlerEx::onTranscodedStreamLayoutInfo(const RtcCo
 
 void UAgoraBPuIRtcEngineEventHandlerEx::onAudioMetadataReceived(const RtcConnection& connection, uid_t uid, const char* metadata, size_t length)
 {
-	FUABT_RtcConnection UERtcConnection = connection;
+	FRtcConnection UERtcConnection = connection;
 
 	FString UEMetadata = FString(UTF8_TO_TCHAR(metadata));
 
@@ -1402,273 +1402,273 @@ void UAgoraBPuIRtcEngineEventHandlerEx::onAudioMetadataReceived(const RtcConnect
 
 #pragma region BP Executor
 
-void UAgoraBPuIRtcEngineEventHandlerExCBExecutor::OnJoinChannelSuccess_Implementation(const FUABT_RtcConnection& Connection, int Elapsed)
+void UAgoraBPuIRtcEngineEventHandlerExCBExecutor::OnJoinChannelSuccess_Implementation(const FRtcConnection& Connection, int Elapsed)
 {
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
 
-void UAgoraBPuIRtcEngineEventHandlerExCBExecutor::OnLeaveChannel_Implementation(const FUABT_RtcConnection& connection, const FUABT_RtcStats& stats)
+void UAgoraBPuIRtcEngineEventHandlerExCBExecutor::OnLeaveChannel_Implementation(const FRtcConnection& connection, const FRtcStats& stats)
 {
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
 
-void UAgoraBPuIRtcEngineEventHandlerExCBExecutor::OnUserJoined_Implementation(const FUABT_RtcConnection& connection, int64 RemoteUid, int Elapsed)
+void UAgoraBPuIRtcEngineEventHandlerExCBExecutor::OnUserJoined_Implementation(const FRtcConnection& connection, int64 RemoteUid, int Elapsed)
 {
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
 
-void UAgoraBPuIRtcEngineEventHandlerExCBExecutor::OnUserOffline_Implementation(const FUABT_RtcConnection& connection, int64 RemoteUid, EUABT_USER_OFFLINE_REASON_TYPE Reason)
+void UAgoraBPuIRtcEngineEventHandlerExCBExecutor::OnUserOffline_Implementation(const FRtcConnection& connection, int64 RemoteUid, EUSER_OFFLINE_REASON_TYPE Reason)
 {
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
 
-void UAgoraBPuIRtcEngineEventHandlerExCBExecutor::OnRejoinChannelSuccess_Implementation(const FUABT_RtcConnection& connection, int Elapsed)
+void UAgoraBPuIRtcEngineEventHandlerExCBExecutor::OnRejoinChannelSuccess_Implementation(const FRtcConnection& connection, int Elapsed)
 {
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
 
-void UAgoraBPuIRtcEngineEventHandlerExCBExecutor::OnAudioQuality_Implementation(const FUABT_RtcConnection& connection, int64 RemoteUid, int Quality, int Delay, int Lost)
+void UAgoraBPuIRtcEngineEventHandlerExCBExecutor::OnAudioQuality_Implementation(const FRtcConnection& connection, int64 RemoteUid, int Quality, int Delay, int Lost)
 {
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
 
-void UAgoraBPuIRtcEngineEventHandlerExCBExecutor::OnAudioVolumeIndication_Implementation(const FUABT_RtcConnection& connection, const TArray<FUABT_AudioVolumeInfo>& Speakers, int TotalVolume)
+void UAgoraBPuIRtcEngineEventHandlerExCBExecutor::OnAudioVolumeIndication_Implementation(const FRtcConnection& connection, const TArray<FAudioVolumeInfo>& Speakers, int TotalVolume)
 {
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
 
-void UAgoraBPuIRtcEngineEventHandlerExCBExecutor::OnRtcStats_Implementation(const FUABT_RtcConnection& connection, const FUABT_RtcStats& Stats)
+void UAgoraBPuIRtcEngineEventHandlerExCBExecutor::OnRtcStats_Implementation(const FRtcConnection& connection, const FRtcStats& Stats)
 {
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
 
-void UAgoraBPuIRtcEngineEventHandlerExCBExecutor::OnNetworkQuality_Implementation(const FUABT_RtcConnection& connection, int64 RemoteUid, int TxQuality, int RxQuality)
+void UAgoraBPuIRtcEngineEventHandlerExCBExecutor::OnNetworkQuality_Implementation(const FRtcConnection& connection, int64 RemoteUid, int TxQuality, int RxQuality)
 {
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
 
-void UAgoraBPuIRtcEngineEventHandlerExCBExecutor::OnIntraRequestReceived_Implementation(const FUABT_RtcConnection& connection)
+void UAgoraBPuIRtcEngineEventHandlerExCBExecutor::OnIntraRequestReceived_Implementation(const FRtcConnection& connection)
 {
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
 
-void UAgoraBPuIRtcEngineEventHandlerExCBExecutor::OnFirstLocalVideoFramePublished_Implementation(const FUABT_RtcConnection& connection, int Elapsed)
+void UAgoraBPuIRtcEngineEventHandlerExCBExecutor::OnFirstLocalVideoFramePublished_Implementation(const FRtcConnection& connection, int Elapsed)
 {
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
 
-void UAgoraBPuIRtcEngineEventHandlerExCBExecutor::OnFirstRemoteVideoDecoded_Implementation(const FUABT_RtcConnection& connection, int64 RemoteUid, int Width, int Height, int Elapsed)
+void UAgoraBPuIRtcEngineEventHandlerExCBExecutor::OnFirstRemoteVideoDecoded_Implementation(const FRtcConnection& connection, int64 RemoteUid, int Width, int Height, int Elapsed)
 {
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
 
-void UAgoraBPuIRtcEngineEventHandlerExCBExecutor::OnVideoSizeChanged_Implementation(const FUABT_RtcConnection& connection, EUABT_VIDEO_SOURCE_TYPE SourceType, int64 Uid, int Width, int Height, int Rotation)
+void UAgoraBPuIRtcEngineEventHandlerExCBExecutor::OnVideoSizeChanged_Implementation(const FRtcConnection& connection, EVIDEO_SOURCE_TYPE SourceType, int64 Uid, int Width, int Height, int Rotation)
 {
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
 
 
-void UAgoraBPuIRtcEngineEventHandlerExCBExecutor::OnRemoteVideoStateChanged_Implementation(const FUABT_RtcConnection& connection, int64 RemoteUid, EUABT_REMOTE_VIDEO_STATE State, EUABT_REMOTE_VIDEO_STATE_REASON Reason, int Elapsed)
+void UAgoraBPuIRtcEngineEventHandlerExCBExecutor::OnRemoteVideoStateChanged_Implementation(const FRtcConnection& connection, int64 RemoteUid, EREMOTE_VIDEO_STATE State, EREMOTE_VIDEO_STATE_REASON Reason, int Elapsed)
 {
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
 
-void UAgoraBPuIRtcEngineEventHandlerExCBExecutor::OnFirstRemoteVideoFrame_Implementation(const FUABT_RtcConnection& connection, int64 RemoteUid, int Width, int Height, int Elapsed)
+void UAgoraBPuIRtcEngineEventHandlerExCBExecutor::OnFirstRemoteVideoFrame_Implementation(const FRtcConnection& connection, int64 RemoteUid, int Width, int Height, int Elapsed)
 {
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
 
-void UAgoraBPuIRtcEngineEventHandlerExCBExecutor::OnUserMuteAudio_Implementation(const FUABT_RtcConnection& connection, int64 RemoteUid, bool Muted)
+void UAgoraBPuIRtcEngineEventHandlerExCBExecutor::OnUserMuteAudio_Implementation(const FRtcConnection& connection, int64 RemoteUid, bool Muted)
 {
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
 
-void UAgoraBPuIRtcEngineEventHandlerExCBExecutor::OnUserMuteVideo_Implementation(const FUABT_RtcConnection& connection, int64 RemoteUid, bool Muted)
+void UAgoraBPuIRtcEngineEventHandlerExCBExecutor::OnUserMuteVideo_Implementation(const FRtcConnection& connection, int64 RemoteUid, bool Muted)
 {
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
 
-void UAgoraBPuIRtcEngineEventHandlerExCBExecutor::OnUserEnableVideo_Implementation(const FUABT_RtcConnection& connection, int64 RemoteUid, bool Enabled)
+void UAgoraBPuIRtcEngineEventHandlerExCBExecutor::OnUserEnableVideo_Implementation(const FRtcConnection& connection, int64 RemoteUid, bool Enabled)
 {
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
 
-void UAgoraBPuIRtcEngineEventHandlerExCBExecutor::OnUserEnableLocalVideo_Implementation(const FUABT_RtcConnection& connection, int64 RemoteUid, bool Enabled)
+void UAgoraBPuIRtcEngineEventHandlerExCBExecutor::OnUserEnableLocalVideo_Implementation(const FRtcConnection& connection, int64 RemoteUid, bool Enabled)
 {
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
 
-void UAgoraBPuIRtcEngineEventHandlerExCBExecutor::OnUserStateChanged_Implementation(const FUABT_RtcConnection& connection, int64 RemoteUid, int State)
+void UAgoraBPuIRtcEngineEventHandlerExCBExecutor::OnUserStateChanged_Implementation(const FRtcConnection& connection, int64 RemoteUid, int State)
 {
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
 
-void UAgoraBPuIRtcEngineEventHandlerExCBExecutor::OnLocalAudioStats_Implementation(const FUABT_RtcConnection& connection, const FUABT_LocalAudioStats& Stats)
+void UAgoraBPuIRtcEngineEventHandlerExCBExecutor::OnLocalAudioStats_Implementation(const FRtcConnection& connection, const FLocalAudioStats& Stats)
 {
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
 
-void UAgoraBPuIRtcEngineEventHandlerExCBExecutor::OnRemoteAudioStats_Implementation(const FUABT_RtcConnection& connection, const FUABT_RemoteAudioStats& Stats)
+void UAgoraBPuIRtcEngineEventHandlerExCBExecutor::OnRemoteAudioStats_Implementation(const FRtcConnection& connection, const FRemoteAudioStats& Stats)
 {
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
 
-void UAgoraBPuIRtcEngineEventHandlerExCBExecutor::OnLocalVideoStats_Implementation(const FUABT_RtcConnection& connection, const FUABT_LocalVideoStats& Stats)
+void UAgoraBPuIRtcEngineEventHandlerExCBExecutor::OnLocalVideoStats_Implementation(const FRtcConnection& connection, const FLocalVideoStats& Stats)
 {
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
 
-void UAgoraBPuIRtcEngineEventHandlerExCBExecutor::OnRemoteVideoStats_Implementation(const FUABT_RtcConnection& connection, const FUABT_RemoteVideoStats& Stats)
+void UAgoraBPuIRtcEngineEventHandlerExCBExecutor::OnRemoteVideoStats_Implementation(const FRtcConnection& connection, const FRemoteVideoStats& Stats)
 {
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
 
-void UAgoraBPuIRtcEngineEventHandlerExCBExecutor::OnConnectionLost_Implementation(const FUABT_RtcConnection& connection)
+void UAgoraBPuIRtcEngineEventHandlerExCBExecutor::OnConnectionLost_Implementation(const FRtcConnection& connection)
 {
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
 
-void UAgoraBPuIRtcEngineEventHandlerExCBExecutor::OnConnectionInterrupted_Implementation(const FUABT_RtcConnection& connection)
+void UAgoraBPuIRtcEngineEventHandlerExCBExecutor::OnConnectionInterrupted_Implementation(const FRtcConnection& connection)
 {
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
 
-void UAgoraBPuIRtcEngineEventHandlerExCBExecutor::OnConnectionBanned_Implementation(const FUABT_RtcConnection& connection)
+void UAgoraBPuIRtcEngineEventHandlerExCBExecutor::OnConnectionBanned_Implementation(const FRtcConnection& connection)
 {
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
 
-void UAgoraBPuIRtcEngineEventHandlerExCBExecutor::OnStreamMessage_Implementation(const FUABT_RtcConnection& connection, int64 RemoteUid, int StreamId, const FString& Data, int64 Length, int64 SentTs)
+void UAgoraBPuIRtcEngineEventHandlerExCBExecutor::OnStreamMessage_Implementation(const FRtcConnection& connection, int64 RemoteUid, int StreamId, const FString& Data, int64 Length, int64 SentTs)
 {
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
 
-void UAgoraBPuIRtcEngineEventHandlerExCBExecutor::OnStreamMessageError_Implementation(const FUABT_RtcConnection& connection, int64 RemoteUid, int StreamId, int Code, int Missed, int Cached)
+void UAgoraBPuIRtcEngineEventHandlerExCBExecutor::OnStreamMessageError_Implementation(const FRtcConnection& connection, int64 RemoteUid, int StreamId, int Code, int Missed, int Cached)
 {
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
 
-void UAgoraBPuIRtcEngineEventHandlerExCBExecutor::OnRequestToken_Implementation(const FUABT_RtcConnection& connection)
+void UAgoraBPuIRtcEngineEventHandlerExCBExecutor::OnRequestToken_Implementation(const FRtcConnection& connection)
 {
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
 
-void UAgoraBPuIRtcEngineEventHandlerExCBExecutor::OnLicenseValidationFailure_Implementation(const FUABT_RtcConnection& connection, EUABT_LICENSE_ERROR_TYPE Reason)
+void UAgoraBPuIRtcEngineEventHandlerExCBExecutor::OnLicenseValidationFailure_Implementation(const FRtcConnection& connection, ELICENSE_ERROR_TYPE Reason)
 {
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
 
-void UAgoraBPuIRtcEngineEventHandlerExCBExecutor::OnTokenPrivilegeWillExpire_Implementation(const FUABT_RtcConnection& connection, const FString& Token)
+void UAgoraBPuIRtcEngineEventHandlerExCBExecutor::OnTokenPrivilegeWillExpire_Implementation(const FRtcConnection& connection, const FString& Token)
 {
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
 
-void UAgoraBPuIRtcEngineEventHandlerExCBExecutor::OnFirstLocalAudioFramePublished_Implementation(const FUABT_RtcConnection& connection, int Elapsed)
+void UAgoraBPuIRtcEngineEventHandlerExCBExecutor::OnFirstLocalAudioFramePublished_Implementation(const FRtcConnection& connection, int Elapsed)
 {
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
 
-void UAgoraBPuIRtcEngineEventHandlerExCBExecutor::OnFirstRemoteAudioFrame_Implementation(const FUABT_RtcConnection& connection, int64 UserId, int Elapsed)
+void UAgoraBPuIRtcEngineEventHandlerExCBExecutor::OnFirstRemoteAudioFrame_Implementation(const FRtcConnection& connection, int64 UserId, int Elapsed)
 {
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
 
-void UAgoraBPuIRtcEngineEventHandlerExCBExecutor::OnFirstRemoteAudioDecoded_Implementation(const FUABT_RtcConnection& connection, int64 Uid, int Elapsed)
+void UAgoraBPuIRtcEngineEventHandlerExCBExecutor::OnFirstRemoteAudioDecoded_Implementation(const FRtcConnection& connection, int64 Uid, int Elapsed)
 {
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
 
-void UAgoraBPuIRtcEngineEventHandlerExCBExecutor::OnLocalAudioStateChanged_Implementation(const FUABT_RtcConnection& connection, EUABT_LOCAL_AUDIO_STREAM_STATE State, EUABT_LOCAL_AUDIO_STREAM_REASON Reason)
+void UAgoraBPuIRtcEngineEventHandlerExCBExecutor::OnLocalAudioStateChanged_Implementation(const FRtcConnection& connection, ELOCAL_AUDIO_STREAM_STATE State, ELOCAL_AUDIO_STREAM_REASON Reason)
 {
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
 
-void UAgoraBPuIRtcEngineEventHandlerExCBExecutor::OnRemoteAudioStateChanged_Implementation(const FUABT_RtcConnection& connection, int64 RemoteUid, EUABT_REMOTE_AUDIO_STATE State, EUABT_REMOTE_AUDIO_STATE_REASON Reason, int Elapsed)
+void UAgoraBPuIRtcEngineEventHandlerExCBExecutor::OnRemoteAudioStateChanged_Implementation(const FRtcConnection& connection, int64 RemoteUid, EREMOTE_AUDIO_STATE State, EREMOTE_AUDIO_STATE_REASON Reason, int Elapsed)
 {
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
 
-void UAgoraBPuIRtcEngineEventHandlerExCBExecutor::OnActiveSpeaker_Implementation(const FUABT_RtcConnection& connection, int64 Uid)
+void UAgoraBPuIRtcEngineEventHandlerExCBExecutor::OnActiveSpeaker_Implementation(const FRtcConnection& connection, int64 Uid)
 {
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
 
-void UAgoraBPuIRtcEngineEventHandlerExCBExecutor::OnClientRoleChanged_Implementation(const FUABT_RtcConnection& connection, EUABT_CLIENT_ROLE_TYPE OldRole, EUABT_CLIENT_ROLE_TYPE NewRole, const FUABT_ClientRoleOptions& NewRoleOptions)
+void UAgoraBPuIRtcEngineEventHandlerExCBExecutor::OnClientRoleChanged_Implementation(const FRtcConnection& connection, ECLIENT_ROLE_TYPE OldRole, ECLIENT_ROLE_TYPE NewRole, const FClientRoleOptions& NewRoleOptions)
 {
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
 
-void UAgoraBPuIRtcEngineEventHandlerExCBExecutor::OnClientRoleChangeFailed_Implementation(const FUABT_RtcConnection& connection, EUABT_CLIENT_ROLE_CHANGE_FAILED_REASON Reason, EUABT_CLIENT_ROLE_TYPE CurrentRole)
+void UAgoraBPuIRtcEngineEventHandlerExCBExecutor::OnClientRoleChangeFailed_Implementation(const FRtcConnection& connection, ECLIENT_ROLE_CHANGE_FAILED_REASON Reason, ECLIENT_ROLE_TYPE CurrentRole)
 {
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
 
-void UAgoraBPuIRtcEngineEventHandlerExCBExecutor::OnRemoteAudioTransportStats_Implementation(const FUABT_RtcConnection& connection, int64 RemoteUid, int Delay, int Lost, int RxKBitRate)
+void UAgoraBPuIRtcEngineEventHandlerExCBExecutor::OnRemoteAudioTransportStats_Implementation(const FRtcConnection& connection, int64 RemoteUid, int Delay, int Lost, int RxKBitRate)
 {
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
 
-void UAgoraBPuIRtcEngineEventHandlerExCBExecutor::OnRemoteVideoTransportStats_Implementation(const FUABT_RtcConnection& connection, int64 RemoteUid, int Delay, int Lost, int RxKBitRate)
+void UAgoraBPuIRtcEngineEventHandlerExCBExecutor::OnRemoteVideoTransportStats_Implementation(const FRtcConnection& connection, int64 RemoteUid, int Delay, int Lost, int RxKBitRate)
 {
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
 
-void UAgoraBPuIRtcEngineEventHandlerExCBExecutor::OnConnectionStateChanged_Implementation(const FUABT_RtcConnection& connection, EUABT_CONNECTION_STATE_TYPE State, EUABT_CONNECTION_CHANGED_REASON_TYPE Reason)
+void UAgoraBPuIRtcEngineEventHandlerExCBExecutor::OnConnectionStateChanged_Implementation(const FRtcConnection& connection, ECONNECTION_STATE_TYPE State, ECONNECTION_CHANGED_REASON_TYPE Reason)
 {
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
 
-void UAgoraBPuIRtcEngineEventHandlerExCBExecutor::OnWlAccMessage_Implementation(const FUABT_RtcConnection& connection, EUABT_WLACC_MESSAGE_REASON Reason, EUABT_WLACC_SUGGEST_ACTION Action, const FString& WlAccMsg)
+void UAgoraBPuIRtcEngineEventHandlerExCBExecutor::OnWlAccMessage_Implementation(const FRtcConnection& connection, EWLACC_MESSAGE_REASON Reason, EWLACC_SUGGEST_ACTION Action, const FString& WlAccMsg)
 {
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
 
-void UAgoraBPuIRtcEngineEventHandlerExCBExecutor::OnWlAccStats_Implementation(const FUABT_RtcConnection& connection, const FUABT_WlAccStats& CurrentStats, const FUABT_WlAccStats& AverageStats)
+void UAgoraBPuIRtcEngineEventHandlerExCBExecutor::OnWlAccStats_Implementation(const FRtcConnection& connection, const FWlAccStats& CurrentStats, const FWlAccStats& AverageStats)
 {
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
 
-void UAgoraBPuIRtcEngineEventHandlerExCBExecutor::OnNetworkTypeChanged_Implementation(const FUABT_RtcConnection& connection, EUABT_NETWORK_TYPE Type)
+void UAgoraBPuIRtcEngineEventHandlerExCBExecutor::OnNetworkTypeChanged_Implementation(const FRtcConnection& connection, FENUMWRAP_NETWORK_TYPE Type)
 {
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
 
-void UAgoraBPuIRtcEngineEventHandlerExCBExecutor::OnEncryptionError_Implementation(const FUABT_RtcConnection& connection, EUABT_ENCRYPTION_ERROR_TYPE ErrorType)
+void UAgoraBPuIRtcEngineEventHandlerExCBExecutor::OnEncryptionError_Implementation(const FRtcConnection& connection, EENCRYPTION_ERROR_TYPE ErrorType)
 {
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
 
-void UAgoraBPuIRtcEngineEventHandlerExCBExecutor::OnUploadLogResult_Implementation(const FUABT_RtcConnection& connection, const FString& RequestId, bool Success, EUABT_UPLOAD_ERROR_REASON Reason)
+void UAgoraBPuIRtcEngineEventHandlerExCBExecutor::OnUploadLogResult_Implementation(const FRtcConnection& connection, const FString& RequestId, bool Success, EUPLOAD_ERROR_REASON Reason)
 {
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
 
-void UAgoraBPuIRtcEngineEventHandlerExCBExecutor::OnUserAccountUpdated_Implementation(const FUABT_RtcConnection& connection, int64 RemoteUid, const FString& RemoteUserAccount)
+void UAgoraBPuIRtcEngineEventHandlerExCBExecutor::OnUserAccountUpdated_Implementation(const FRtcConnection& connection, int64 RemoteUid, const FString& RemoteUserAccount)
 {
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
 
-void UAgoraBPuIRtcEngineEventHandlerExCBExecutor::OnSnapshotTaken_Implementation(const FUABT_RtcConnection& connection, int64 Uid, const FString& FilePath, int Width, int Height, int ErrCode)
+void UAgoraBPuIRtcEngineEventHandlerExCBExecutor::OnSnapshotTaken_Implementation(const FRtcConnection& connection, int64 Uid, const FString& FilePath, int Width, int Height, int ErrCode)
 {
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
 
-void UAgoraBPuIRtcEngineEventHandlerExCBExecutor::OnVideoRenderingTracingResult_Implementation(const FUABT_RtcConnection& connection, int64 Uid, EUABT_MEDIA_TRACE_EVENT CurrentEvent, const FUABT_VideoRenderingTracingInfo& TracingInfo)
+void UAgoraBPuIRtcEngineEventHandlerExCBExecutor::OnVideoRenderingTracingResult_Implementation(const FRtcConnection& connection, int64 Uid, EMEDIA_TRACE_EVENT CurrentEvent, const FVideoRenderingTracingInfo& TracingInfo)
 {
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
 
-void UAgoraBPuIRtcEngineEventHandlerExCBExecutor::OnSetRtmFlagResult_Implementation(const FUABT_RtcConnection& connection, int Code)
+void UAgoraBPuIRtcEngineEventHandlerExCBExecutor::OnSetRtmFlagResult_Implementation(const FRtcConnection& connection, int Code)
 {
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
 
-void UAgoraBPuIRtcEngineEventHandlerExCBExecutor::OnTranscodedStreamLayoutInfo_Implementation(const FUABT_RtcConnection& connection, int64 Uid, int Width, int Height, const TArray<FUABT_VideoLayout>& Layoutlist)
+void UAgoraBPuIRtcEngineEventHandlerExCBExecutor::OnTranscodedStreamLayoutInfo_Implementation(const FRtcConnection& connection, int64 Uid, int Width, int Height, const TArray<FVideoLayout>& Layoutlist)
 {
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
 
-void UAgoraBPuIRtcEngineEventHandlerExCBExecutor::OnAudioMetadataReceived_Implementation(const FUABT_RtcConnection& connection, int64 Uid, const FString& Metadata)
+void UAgoraBPuIRtcEngineEventHandlerExCBExecutor::OnAudioMetadataReceived_Implementation(const FRtcConnection& connection, int64 Uid, const FString& Metadata)
 {
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }

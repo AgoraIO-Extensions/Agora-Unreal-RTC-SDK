@@ -243,7 +243,7 @@ void UAgoraBPuIRtcEngineEventHandler::onJoinChannelSuccess(const char* channel, 
 void UAgoraBPuIRtcEngineEventHandler::onLeaveChannel(const agora::rtc::RtcStats& stats)
 {
 
-	FUABT_RtcStats UERtcStats = stats;
+	FRtcStats UERtcStats = stats;
 
 	TWeakObjectPtr<UAgoraBPuIRtcEngineEventHandler> SelfWeakPtr(this);
 	if (!SelfWeakPtr.IsValid())
@@ -296,7 +296,7 @@ void UAgoraBPuIRtcEngineEventHandler::onUserOffline(agora::rtc::uid_t uid, agora
 			if (!SelfWeakPtr.IsValid())
 				return;
 
-			OnUserOffline.Broadcast((int64)uid, (EUABT_USER_OFFLINE_REASON_TYPE)reason);
+			OnUserOffline.Broadcast((int64)uid, (EUSER_OFFLINE_REASON_TYPE)reason);
 		});
 }
 
@@ -343,7 +343,7 @@ void UAgoraBPuIRtcEngineEventHandler::onProxyConnected(const char* channel, agor
 			if (!SelfWeakPtr.IsValid())
 				return;
 
-			OnProxyConnected.Broadcast(UEChannel, (int64)uid, (EUABT_PROXY_TYPE)proxyType, UELocalProxyIp, elapsed);
+			OnProxyConnected.Broadcast(UEChannel, (int64)uid, (EPROXY_TYPE)proxyType, UELocalProxyIp, elapsed);
 		});
 
 }
@@ -392,7 +392,7 @@ void UAgoraBPuIRtcEngineEventHandler::onAudioQuality(uid_t uid, int quality, uns
 
 void UAgoraBPuIRtcEngineEventHandler::onLastmileProbeResult(const LastmileProbeResult& result)
 {
-	FUABT_LastmileProbeResult UEProbeResult = result;
+	FLastmileProbeResult UEProbeResult = result;
 
 	TWeakObjectPtr<UAgoraBPuIRtcEngineEventHandler> SelfWeakPtr(this);
 	if (!SelfWeakPtr.IsValid())
@@ -413,7 +413,7 @@ void UAgoraBPuIRtcEngineEventHandler::onLastmileProbeResult(const LastmileProbeR
 
 void UAgoraBPuIRtcEngineEventHandler::onAudioVolumeIndication(const AudioVolumeInfo* speakers, unsigned int speakerNumber, int totalVolume)
 {
-	TArray<FUABT_AudioVolumeInfo> audioVolumeInfo;
+	TArray<FAudioVolumeInfo> audioVolumeInfo;
 
 	for (unsigned int i = 0; i < speakerNumber; i++)
 	{
@@ -439,7 +439,7 @@ void UAgoraBPuIRtcEngineEventHandler::onAudioVolumeIndication(const AudioVolumeI
 
 void UAgoraBPuIRtcEngineEventHandler::onRtcStats(const RtcStats& stats)
 {
-	FUABT_RtcStats UEStats = stats;
+	FRtcStats UEStats = stats;
 
 	TWeakObjectPtr<UAgoraBPuIRtcEngineEventHandler> SelfWeakPtr(this);
 	if (!SelfWeakPtr.IsValid())
@@ -598,7 +598,7 @@ void UAgoraBPuIRtcEngineEventHandler::onIntraRequestReceived()
 
 void UAgoraBPuIRtcEngineEventHandler::onUplinkNetworkInfoUpdated(const UplinkNetworkInfo& info)
 {
-	FUABT_UplinkNetworkInfo UEUplinkNetworkInfo = info;
+	FUplinkNetworkInfo UEUplinkNetworkInfo = info;
 
 	TWeakObjectPtr<UAgoraBPuIRtcEngineEventHandler> SelfWeakPtr(this);
 	if (!SelfWeakPtr.IsValid())
@@ -620,7 +620,7 @@ void UAgoraBPuIRtcEngineEventHandler::onUplinkNetworkInfoUpdated(const UplinkNet
 
 void UAgoraBPuIRtcEngineEventHandler::onDownlinkNetworkInfoUpdated(const DownlinkNetworkInfo& info)
 {
-	FUABT_DownlinkNetworkInfo UEDownlinkNetworkInfo = info;
+	FDownlinkNetworkInfo UEDownlinkNetworkInfo = info;
 	TWeakObjectPtr<UAgoraBPuIRtcEngineEventHandler> SelfWeakPtr(this);
 	if (!SelfWeakPtr.IsValid())
 		return;
@@ -673,7 +673,7 @@ void UAgoraBPuIRtcEngineEventHandler::onFirstLocalVideoFrame(agora::rtc::VIDEO_S
 			if (!SelfWeakPtr.IsValid())
 				return;
 
-			OnFirstLocalVideoFrame.Broadcast((EUABT_VIDEO_SOURCE_TYPE)source, width, height, elapsed);
+			OnFirstLocalVideoFrame.Broadcast((EVIDEO_SOURCE_TYPE)source, width, height, elapsed);
 		});
 }
 void UAgoraBPuIRtcEngineEventHandler::onFirstLocalVideoFramePublished(agora::rtc::VIDEO_SOURCE_TYPE source, int elapsed)
@@ -691,7 +691,7 @@ void UAgoraBPuIRtcEngineEventHandler::onFirstLocalVideoFramePublished(agora::rtc
 			if (!SelfWeakPtr.IsValid())
 				return;
 
-			OnFirstLocalVideoFramePublished.Broadcast((EUABT_VIDEO_SOURCE_TYPE)source, elapsed);
+			OnFirstLocalVideoFramePublished.Broadcast((EVIDEO_SOURCE_TYPE)source, elapsed);
 		});
 }
 void UAgoraBPuIRtcEngineEventHandler::onFirstRemoteVideoDecoded(agora::rtc::uid_t uid, int width, int height, int elapsed)
@@ -727,7 +727,7 @@ void UAgoraBPuIRtcEngineEventHandler::onVideoSizeChanged(agora::rtc::VIDEO_SOURC
 			if (!SelfWeakPtr.IsValid())
 				return;
 
-			OnVideoSizeChanged.Broadcast((EUABT_VIDEO_SOURCE_TYPE)sourceType, (int64)uid, width, height, rotation);
+			OnVideoSizeChanged.Broadcast((EVIDEO_SOURCE_TYPE)sourceType, (int64)uid, width, height, rotation);
 		});
 }
 void UAgoraBPuIRtcEngineEventHandler::onLocalVideoStateChanged(agora::rtc::VIDEO_SOURCE_TYPE source, agora::rtc::LOCAL_VIDEO_STREAM_STATE state, agora::rtc::LOCAL_VIDEO_STREAM_REASON reason)
@@ -745,7 +745,7 @@ void UAgoraBPuIRtcEngineEventHandler::onLocalVideoStateChanged(agora::rtc::VIDEO
 			if (!SelfWeakPtr.IsValid())
 				return;
 
-			OnLocalVideoStateChanged.Broadcast((EUABT_VIDEO_SOURCE_TYPE)source, (EUABT_LOCAL_VIDEO_STREAM_STATE)state, (EUABT_LOCAL_VIDEO_STREAM_REASON)reason);
+			OnLocalVideoStateChanged.Broadcast((EVIDEO_SOURCE_TYPE)source, (ELOCAL_VIDEO_STREAM_STATE)state, (ELOCAL_VIDEO_STREAM_REASON)reason);
 		});
 }
 void UAgoraBPuIRtcEngineEventHandler::onRemoteVideoStateChanged(agora::rtc::uid_t uid, agora::rtc::REMOTE_VIDEO_STATE state, agora::rtc::REMOTE_VIDEO_STATE_REASON reason, int elapsed)
@@ -763,7 +763,7 @@ void UAgoraBPuIRtcEngineEventHandler::onRemoteVideoStateChanged(agora::rtc::uid_
 			if (!SelfWeakPtr.IsValid())
 				return;
 
-			OnRemoteVideoStateChanged.Broadcast((int64)uid, (EUABT_REMOTE_VIDEO_STATE)state, (EUABT_REMOTE_VIDEO_STATE_REASON)reason, elapsed);
+			OnRemoteVideoStateChanged.Broadcast((int64)uid, (EREMOTE_VIDEO_STATE)state, (EREMOTE_VIDEO_STATE_REASON)reason, elapsed);
 		});
 }
 void UAgoraBPuIRtcEngineEventHandler::onFirstRemoteVideoFrame(agora::rtc::uid_t uid, int width, int height, int elapsed)
@@ -854,7 +854,7 @@ void UAgoraBPuIRtcEngineEventHandler::onUserStateChanged(agora::rtc::uid_t uid, 
 			if (!SelfWeakPtr.IsValid())
 				return;
 
-			OnUserStateChanged.Broadcast((int64)uid, UABTEnum::WrapWithUE(state));
+			OnUserStateChanged.Broadcast((int64)uid, FENUMWRAP_REMOTE_USER_STATE(state));
 		});
 }
 void UAgoraBPuIRtcEngineEventHandler::onUserEnableLocalVideo(agora::rtc::uid_t uid, bool enabled)
@@ -877,7 +877,7 @@ void UAgoraBPuIRtcEngineEventHandler::onUserEnableLocalVideo(agora::rtc::uid_t u
 }
 void UAgoraBPuIRtcEngineEventHandler::onLocalAudioStats(const agora::rtc::LocalAudioStats& stats)
 {
-	FUABT_LocalAudioStats UELocalAudioStats = stats;
+	FLocalAudioStats UELocalAudioStats = stats;
 
 	TWeakObjectPtr<UAgoraBPuIRtcEngineEventHandler> SelfWeakPtr(this);
 	if (!SelfWeakPtr.IsValid())
@@ -897,7 +897,7 @@ void UAgoraBPuIRtcEngineEventHandler::onLocalAudioStats(const agora::rtc::LocalA
 }
 void UAgoraBPuIRtcEngineEventHandler::onRemoteAudioStats(const agora::rtc::RemoteAudioStats& stats)
 {
-	FUABT_RemoteAudioStats UERemoteAudioStats = stats;
+	FRemoteAudioStats UERemoteAudioStats = stats;
 	TWeakObjectPtr<UAgoraBPuIRtcEngineEventHandler> SelfWeakPtr(this);
 	if (!SelfWeakPtr.IsValid())
 		return;
@@ -916,7 +916,7 @@ void UAgoraBPuIRtcEngineEventHandler::onRemoteAudioStats(const agora::rtc::Remot
 }
 void UAgoraBPuIRtcEngineEventHandler::onLocalVideoStats(agora::rtc::VIDEO_SOURCE_TYPE source, const agora::rtc::LocalVideoStats& stats)
 {
-	FUABT_LocalVideoStats UELocalVideoStats = stats;
+	FLocalVideoStats UELocalVideoStats = stats;
 
 	TWeakObjectPtr<UAgoraBPuIRtcEngineEventHandler> SelfWeakPtr(this);
 	if (!SelfWeakPtr.IsValid())
@@ -931,12 +931,12 @@ void UAgoraBPuIRtcEngineEventHandler::onLocalVideoStats(agora::rtc::VIDEO_SOURCE
 			if (!SelfWeakPtr.IsValid())
 				return;
 
-			OnLocalVideoStats.Broadcast((EUABT_VIDEO_SOURCE_TYPE)source, UELocalVideoStats);
+			OnLocalVideoStats.Broadcast((EVIDEO_SOURCE_TYPE)source, UELocalVideoStats);
 		});
 }
 void UAgoraBPuIRtcEngineEventHandler::onRemoteVideoStats(const agora::rtc::RemoteVideoStats& stats)
 {
-	FUABT_RemoteVideoStats UERemoteVBideoStats = stats;
+	FRemoteVideoStats UERemoteVBideoStats = stats;
 
 	TWeakObjectPtr<UAgoraBPuIRtcEngineEventHandler> SelfWeakPtr(this);
 	if (!SelfWeakPtr.IsValid())
@@ -1012,7 +1012,7 @@ void UAgoraBPuIRtcEngineEventHandler::onCameraExposureAreaChanged(int x, int y, 
 #if defined(__ANDROID__) || (defined(__APPLE__) && TARGET_OS_IOS)
 void UAgoraBPuIRtcEngineEventHandler::onFacePositionChanged(int imageWidth, int imageHeight, const agora::rtc::Rectangle* vecRectangle, const int* vecDistance, int numFaces)
 {
-	TArray<FUABT_Rectangle> UEVecRectangle;
+	TArray<FRectangle> UEVecRectangle;
 	for (int i = 0; i < numFaces; i++) {
 		UEVecRectangle.Add(vecRectangle[i]);
 	}
@@ -1072,7 +1072,7 @@ void UAgoraBPuIRtcEngineEventHandler::onAudioMixingStateChanged(agora::rtc::AUDI
 			if (!SelfWeakPtr.IsValid())
 				return;
 
-			OnAudioMixingStateChanged.Broadcast(UABTEnum::WrapWithUE(state), UABTEnum::WrapWithUE(reason));
+			OnAudioMixingStateChanged.Broadcast(state, reason);
 		});
 }
 void UAgoraBPuIRtcEngineEventHandler::onRhythmPlayerStateChanged(agora::rtc::RHYTHM_PLAYER_STATE_TYPE state, agora::rtc::RHYTHM_PLAYER_REASON reason)
@@ -1090,7 +1090,7 @@ void UAgoraBPuIRtcEngineEventHandler::onRhythmPlayerStateChanged(agora::rtc::RHY
 			if (!SelfWeakPtr.IsValid())
 				return;
 
-			OnRhythmPlayerStateChanged.Broadcast(UABTEnum::WrapWithUE(state), UABTEnum::WrapWithUE(reason));
+			OnRhythmPlayerStateChanged.Broadcast(state, reason);
 		});
 }
 void UAgoraBPuIRtcEngineEventHandler::onConnectionLost()
@@ -1240,7 +1240,7 @@ void UAgoraBPuIRtcEngineEventHandler::onLicenseValidationFailure(agora::LICENSE_
 			if (!SelfWeakPtr.IsValid())
 				return;
 
-			OnLicenseValidationFailure.Broadcast((EUABT_LICENSE_ERROR_TYPE)error);
+			OnLicenseValidationFailure.Broadcast((ELICENSE_ERROR_TYPE)error);
 		});
 }
 
@@ -1313,7 +1313,7 @@ void UAgoraBPuIRtcEngineEventHandler::onLocalAudioStateChanged(agora::rtc::LOCAL
 			if (!SelfWeakPtr.IsValid())
 				return;
 
-			OnLocalAudioStateChanged.Broadcast((EUABT_LOCAL_AUDIO_STREAM_STATE)state, (EUABT_LOCAL_AUDIO_STREAM_REASON)reason);
+			OnLocalAudioStateChanged.Broadcast((ELOCAL_AUDIO_STREAM_STATE)state, (ELOCAL_AUDIO_STREAM_REASON)reason);
 		});
 }
 void UAgoraBPuIRtcEngineEventHandler::onRemoteAudioStateChanged(agora::rtc::uid_t uid, agora::rtc::REMOTE_AUDIO_STATE state, agora::rtc::REMOTE_AUDIO_STATE_REASON reason, int elapsed)
@@ -1331,7 +1331,7 @@ void UAgoraBPuIRtcEngineEventHandler::onRemoteAudioStateChanged(agora::rtc::uid_
 			if (!SelfWeakPtr.IsValid())
 				return;
 
-			OnRemoteAudioStateChanged.Broadcast((int64)uid, (EUABT_REMOTE_AUDIO_STATE)state, (EUABT_REMOTE_AUDIO_STATE_REASON)reason, elapsed);
+			OnRemoteAudioStateChanged.Broadcast((int64)uid, (EREMOTE_AUDIO_STATE)state, (EREMOTE_AUDIO_STATE_REASON)reason, elapsed);
 		});
 }
 void UAgoraBPuIRtcEngineEventHandler::onActiveSpeaker(agora::rtc::uid_t uid)
@@ -1367,7 +1367,7 @@ void UAgoraBPuIRtcEngineEventHandler::onContentInspectResult(agora::media::CONTE
 			if (!SelfWeakPtr.IsValid())
 				return;
 
-			OnContentInspectResult.Broadcast((EUABT_CONTENT_INSPECT_RESULT)result);
+			OnContentInspectResult.Broadcast((ECONTENT_INSPECT_RESULT)result);
 		});
 }
 void UAgoraBPuIRtcEngineEventHandler::onSnapshotTaken(agora::rtc::uid_t uid, const char* filePath, int width, int height, int errCode)
@@ -1392,7 +1392,7 @@ void UAgoraBPuIRtcEngineEventHandler::onSnapshotTaken(agora::rtc::uid_t uid, con
 }
 void UAgoraBPuIRtcEngineEventHandler::onClientRoleChanged(agora::rtc::CLIENT_ROLE_TYPE oldRole, agora::rtc::CLIENT_ROLE_TYPE newRole, const agora::rtc::ClientRoleOptions& newRoleOptions)
 {
-	FUABT_ClientRoleOptions UEClientRoleOptions = newRoleOptions;
+	FClientRoleOptions UEClientRoleOptions = newRoleOptions;
 
 	TWeakObjectPtr<UAgoraBPuIRtcEngineEventHandler> SelfWeakPtr(this);
 	if (!SelfWeakPtr.IsValid())
@@ -1407,7 +1407,7 @@ void UAgoraBPuIRtcEngineEventHandler::onClientRoleChanged(agora::rtc::CLIENT_ROL
 			if (!SelfWeakPtr.IsValid())
 				return;
 
-			OnClientRoleChanged.Broadcast((EUABT_CLIENT_ROLE_TYPE)oldRole, (EUABT_CLIENT_ROLE_TYPE)newRole, UEClientRoleOptions);
+			OnClientRoleChanged.Broadcast((ECLIENT_ROLE_TYPE)oldRole, (ECLIENT_ROLE_TYPE)newRole, UEClientRoleOptions);
 		});
 }
 void UAgoraBPuIRtcEngineEventHandler::onClientRoleChangeFailed(agora::rtc::CLIENT_ROLE_CHANGE_FAILED_REASON reason, agora::rtc::CLIENT_ROLE_TYPE currentRole)
@@ -1425,7 +1425,7 @@ void UAgoraBPuIRtcEngineEventHandler::onClientRoleChangeFailed(agora::rtc::CLIEN
 			if (!SelfWeakPtr.IsValid())
 				return;
 
-			OnClientRoleChangeFailed.Broadcast((EUABT_CLIENT_ROLE_CHANGE_FAILED_REASON)reason, (EUABT_CLIENT_ROLE_TYPE)currentRole);
+			OnClientRoleChangeFailed.Broadcast((ECLIENT_ROLE_CHANGE_FAILED_REASON)reason, (ECLIENT_ROLE_TYPE)currentRole);
 		});
 }
 void UAgoraBPuIRtcEngineEventHandler::onAudioDeviceVolumeChanged(agora::rtc::MEDIA_DEVICE_TYPE deviceType, int volume, bool muted)
@@ -1443,7 +1443,7 @@ void UAgoraBPuIRtcEngineEventHandler::onAudioDeviceVolumeChanged(agora::rtc::MED
 			if (!SelfWeakPtr.IsValid())
 				return;
 
-			OnAudioDeviceVolumeChanged.Broadcast(UABTEnum::WrapWithUE(deviceType), volume, muted);
+			OnAudioDeviceVolumeChanged.Broadcast(deviceType, volume, muted);
 		});
 }
 void UAgoraBPuIRtcEngineEventHandler::onRtmpStreamingStateChanged(const char* url, agora::rtc::RTMP_STREAM_PUBLISH_STATE state, agora::rtc::RTMP_STREAM_PUBLISH_REASON reason)
@@ -1463,7 +1463,7 @@ void UAgoraBPuIRtcEngineEventHandler::onRtmpStreamingStateChanged(const char* ur
 			if (!SelfWeakPtr.IsValid())
 				return;
 
-			OnRtmpStreamingStateChanged.Broadcast(UEUrl, (EUABT_RTMP_STREAM_PUBLISH_STATE)state, (EUABT_RTMP_STREAM_PUBLISH_REASON)reason);
+			OnRtmpStreamingStateChanged.Broadcast(UEUrl, (ERTMP_STREAM_PUBLISH_STATE)state, (ERTMP_STREAM_PUBLISH_REASON)reason);
 		});
 }
 void UAgoraBPuIRtcEngineEventHandler::onRtmpStreamingEvent(const char* url, agora::rtc::RTMP_STREAMING_EVENT eventCode)
@@ -1483,7 +1483,7 @@ void UAgoraBPuIRtcEngineEventHandler::onRtmpStreamingEvent(const char* url, agor
 			if (!SelfWeakPtr.IsValid())
 				return;
 
-			OnRtmpStreamingEvent.Broadcast(UEUrl, (EUABT_RTMP_STREAMING_EVENT)eventCode);
+			OnRtmpStreamingEvent.Broadcast(UEUrl, (ERTMP_STREAMING_EVENT)eventCode);
 		});
 }
 void UAgoraBPuIRtcEngineEventHandler::onTranscodingUpdated()
@@ -1628,7 +1628,7 @@ void UAgoraBPuIRtcEngineEventHandler::onConnectionStateChanged(agora::rtc::CONNE
 			if (!SelfWeakPtr.IsValid())
 				return;
 
-			OnConnectionStateChanged.Broadcast((EUABT_CONNECTION_STATE_TYPE)state, (EUABT_CONNECTION_CHANGED_REASON_TYPE)reason);
+			OnConnectionStateChanged.Broadcast((ECONNECTION_STATE_TYPE)state, (ECONNECTION_CHANGED_REASON_TYPE)reason);
 		});
 }
 void UAgoraBPuIRtcEngineEventHandler::onWlAccMessage(agora::rtc::WLACC_MESSAGE_REASON reason, agora::rtc::WLACC_SUGGEST_ACTION action, const char* wlAccMsg)
@@ -1648,13 +1648,13 @@ void UAgoraBPuIRtcEngineEventHandler::onWlAccMessage(agora::rtc::WLACC_MESSAGE_R
 			if (!SelfWeakPtr.IsValid())
 				return;
 
-			OnWlAccMessage.Broadcast((EUABT_WLACC_MESSAGE_REASON)reason, (EUABT_WLACC_SUGGEST_ACTION)action, UEWlAccMsg);
+			OnWlAccMessage.Broadcast((EWLACC_MESSAGE_REASON)reason, (EWLACC_SUGGEST_ACTION)action, UEWlAccMsg);
 		});
 }
 void UAgoraBPuIRtcEngineEventHandler::onWlAccStats(const agora::rtc::WlAccStats& currentStats, const agora::rtc::WlAccStats& averageStats)
 {
-	FUABT_WlAccStats UECurrentStats = currentStats;
-	FUABT_WlAccStats UEAverageStats = averageStats;
+	FWlAccStats UECurrentStats = currentStats;
+	FWlAccStats UEAverageStats = averageStats;
 
 	TWeakObjectPtr<UAgoraBPuIRtcEngineEventHandler> SelfWeakPtr(this);
 	if (!SelfWeakPtr.IsValid())
@@ -1687,7 +1687,7 @@ void UAgoraBPuIRtcEngineEventHandler::onNetworkTypeChanged(agora::rtc::NETWORK_T
 			if (!SelfWeakPtr.IsValid())
 				return;
 
-			OnNetworkTypeChanged.Broadcast(UABTEnum::WrapWithUE(type));
+			OnNetworkTypeChanged.Broadcast(type);
 		});
 }
 void UAgoraBPuIRtcEngineEventHandler::onEncryptionError(agora::rtc::ENCRYPTION_ERROR_TYPE errorType)
@@ -1705,7 +1705,7 @@ void UAgoraBPuIRtcEngineEventHandler::onEncryptionError(agora::rtc::ENCRYPTION_E
 			if (!SelfWeakPtr.IsValid())
 				return;
 
-			OnEncryptionError.Broadcast((EUABT_ENCRYPTION_ERROR_TYPE)errorType);
+			OnEncryptionError.Broadcast((EENCRYPTION_ERROR_TYPE)errorType);
 		});
 }
 void UAgoraBPuIRtcEngineEventHandler::onPermissionError(agora::rtc::PERMISSION_TYPE permissionType)
@@ -1723,7 +1723,7 @@ void UAgoraBPuIRtcEngineEventHandler::onPermissionError(agora::rtc::PERMISSION_T
 			if (!SelfWeakPtr.IsValid())
 				return;
 
-			OnPermissionError.Broadcast((EUABT_PERMISSION_TYPE)permissionType);
+			OnPermissionError.Broadcast((EPERMISSION_TYPE)permissionType);
 		});
 }
 void UAgoraBPuIRtcEngineEventHandler::onLocalUserRegistered(agora::rtc::uid_t uid, const char* userAccount)
@@ -1748,7 +1748,7 @@ void UAgoraBPuIRtcEngineEventHandler::onLocalUserRegistered(agora::rtc::uid_t ui
 }
 void UAgoraBPuIRtcEngineEventHandler::onUserInfoUpdated(agora::rtc::uid_t uid, const agora::rtc::UserInfo& info)
 {
-	FUABT_UserInfo UEInfo = info;
+	FUserInfo UEInfo = info;
 
 	TWeakObjectPtr<UAgoraBPuIRtcEngineEventHandler> SelfWeakPtr(this);
 	if (!SelfWeakPtr.IsValid())
@@ -1793,7 +1793,7 @@ void UAgoraBPuIRtcEngineEventHandler::onUserAccountUpdated(agora::rtc::uid_t uid
 void UAgoraBPuIRtcEngineEventHandler::onVideoRenderingTracingResult(agora::rtc::uid_t uid, agora::rtc::MEDIA_TRACE_EVENT currentEvent, agora::rtc::VideoRenderingTracingInfo tracingInfo)
 {
 
-	FUABT_VideoRenderingTracingInfo UETracingInfo = tracingInfo;
+	FVideoRenderingTracingInfo UETracingInfo = tracingInfo;
 
 	TWeakObjectPtr<UAgoraBPuIRtcEngineEventHandler> SelfWeakPtr(this);
 	if (!SelfWeakPtr.IsValid())
@@ -1809,13 +1809,13 @@ void UAgoraBPuIRtcEngineEventHandler::onVideoRenderingTracingResult(agora::rtc::
 				return;
 
 
-			OnVideoRenderingTracingResult.Broadcast((int64)uid, (EUABT_MEDIA_TRACE_EVENT)currentEvent, UETracingInfo);
+			OnVideoRenderingTracingResult.Broadcast((int64)uid, (EMEDIA_TRACE_EVENT)currentEvent, UETracingInfo);
 		});
 }
 
 void UAgoraBPuIRtcEngineEventHandler::onLocalVideoTranscoderError(const agora::rtc::TranscodingVideoStream& stream, agora::rtc::VIDEO_TRANSCODER_ERROR error)
 {
-	FUABT_TranscodingVideoStream UEStream = stream;
+	FTranscodingVideoStream UEStream = stream;
 
 	TWeakObjectPtr<UAgoraBPuIRtcEngineEventHandler> SelfWeakPtr(this);
 	if (!SelfWeakPtr.IsValid())
@@ -1830,7 +1830,7 @@ void UAgoraBPuIRtcEngineEventHandler::onLocalVideoTranscoderError(const agora::r
 			if (!SelfWeakPtr.IsValid())
 				return;
 
-			OnLocalVideoTranscoderError.Broadcast(UEStream, (EUABT_VIDEO_TRANSCODER_ERROR)error);
+			OnLocalVideoTranscoderError.Broadcast(UEStream, (EVIDEO_TRANSCODER_ERROR)error);
 		});
 }
 
@@ -1851,7 +1851,7 @@ void UAgoraBPuIRtcEngineEventHandler::onUploadLogResult(const char* requestId, b
 			if (!SelfWeakPtr.IsValid())
 				return;
 
-			OnUploadLogResult.Broadcast(UERequestId, success, (EUABT_UPLOAD_ERROR_REASON)reason);
+			OnUploadLogResult.Broadcast(UERequestId, success, (EUPLOAD_ERROR_REASON)reason);
 		});
 }
 
@@ -1872,7 +1872,7 @@ void UAgoraBPuIRtcEngineEventHandler::onAudioSubscribeStateChanged(const char* c
 			if (!SelfWeakPtr.IsValid())
 				return;
 
-			OnAudioSubscribeStateChanged.Broadcast(UEChannel, (int64)uid, (EUABT_STREAM_SUBSCRIBE_STATE)oldState, (EUABT_STREAM_SUBSCRIBE_STATE)newState, elapseSinceLastState);
+			OnAudioSubscribeStateChanged.Broadcast(UEChannel, (int64)uid, (ESTREAM_SUBSCRIBE_STATE)oldState, (ESTREAM_SUBSCRIBE_STATE)newState, elapseSinceLastState);
 		});
 }
 
@@ -1893,7 +1893,7 @@ void UAgoraBPuIRtcEngineEventHandler::onVideoSubscribeStateChanged(const char* c
 			if (!SelfWeakPtr.IsValid())
 				return;
 
-			OnVideoSubscribeStateChanged.Broadcast(UEChannel, (int64)uid, (EUABT_STREAM_SUBSCRIBE_STATE)oldState, (EUABT_STREAM_SUBSCRIBE_STATE)newState, elapseSinceLastState);
+			OnVideoSubscribeStateChanged.Broadcast(UEChannel, (int64)uid, (ESTREAM_SUBSCRIBE_STATE)oldState, (ESTREAM_SUBSCRIBE_STATE)newState, elapseSinceLastState);
 		});
 }
 void UAgoraBPuIRtcEngineEventHandler::onAudioPublishStateChanged(const char* channel, agora::rtc::STREAM_PUBLISH_STATE oldState, agora::rtc::STREAM_PUBLISH_STATE newState, int elapseSinceLastState)
@@ -1913,7 +1913,7 @@ void UAgoraBPuIRtcEngineEventHandler::onAudioPublishStateChanged(const char* cha
 			if (!SelfWeakPtr.IsValid())
 				return;
 
-			OnAudioPublishStateChanged.Broadcast(UEChannel, (EUABT_STREAM_PUBLISH_STATE)oldState, (EUABT_STREAM_PUBLISH_STATE)newState, elapseSinceLastState);
+			OnAudioPublishStateChanged.Broadcast(UEChannel, (ESTREAM_PUBLISH_STATE)oldState, (ESTREAM_PUBLISH_STATE)newState, elapseSinceLastState);
 		});
 }
 void UAgoraBPuIRtcEngineEventHandler::onVideoPublishStateChanged(agora::rtc::VIDEO_SOURCE_TYPE source, const char* channel, agora::rtc::STREAM_PUBLISH_STATE oldState, agora::rtc::STREAM_PUBLISH_STATE newState, int elapseSinceLastState)
@@ -1933,13 +1933,13 @@ void UAgoraBPuIRtcEngineEventHandler::onVideoPublishStateChanged(agora::rtc::VID
 			if (!SelfWeakPtr.IsValid())
 				return;
 
-			OnVideoPublishStateChanged.Broadcast((EUABT_VIDEO_SOURCE_TYPE)source, UEChannel, (EUABT_STREAM_PUBLISH_STATE)oldState, (EUABT_STREAM_PUBLISH_STATE)newState, elapseSinceLastState);
+			OnVideoPublishStateChanged.Broadcast((EVIDEO_SOURCE_TYPE)source, UEChannel, (ESTREAM_PUBLISH_STATE)oldState, (ESTREAM_PUBLISH_STATE)newState, elapseSinceLastState);
 		});
 }
 
 void UAgoraBPuIRtcEngineEventHandler::onTranscodedStreamLayoutInfo(agora::rtc::uid_t uid, int width, int height, int layoutCount, const agora::VideoLayout* layoutlist)
 {
-	TArray<FUABT_VideoLayout> UELayoutlist;
+	TArray<FVideoLayout> UELayoutlist;
 	for (int i = 0; i < layoutCount; i++) {
 		UELayoutlist.Add(layoutlist[i]);
 	}
@@ -1988,7 +1988,7 @@ void UAgoraBPuIRtcEngineEventHandler::onExtensionEventWithContext(const Extensio
 {
 	FString UEKey = UTF8_TO_TCHAR(key);
 	FString UEValue = UTF8_TO_TCHAR(value);
-	FUABT_ExtensionContext UEContext = context;
+	FExtensionContext UEContext = context;
 
 	TWeakObjectPtr<UAgoraBPuIRtcEngineEventHandler> SelfWeakPtr(this);
 	if (!SelfWeakPtr.IsValid())
@@ -2009,7 +2009,7 @@ void UAgoraBPuIRtcEngineEventHandler::onExtensionEventWithContext(const Extensio
 
 void UAgoraBPuIRtcEngineEventHandler::onExtensionStartedWithContext(const ExtensionContext& context)
 {
-	FUABT_ExtensionContext UEContext = context;
+	FExtensionContext UEContext = context;
 
 	TWeakObjectPtr<UAgoraBPuIRtcEngineEventHandler> SelfWeakPtr(this);
 	if (!SelfWeakPtr.IsValid())
@@ -2030,7 +2030,7 @@ void UAgoraBPuIRtcEngineEventHandler::onExtensionStartedWithContext(const Extens
 
 void UAgoraBPuIRtcEngineEventHandler::onExtensionStoppedWithContext(const ExtensionContext& context)
 {
-	FUABT_ExtensionContext UEContext = context;
+	FExtensionContext UEContext = context;
 
 	TWeakObjectPtr<UAgoraBPuIRtcEngineEventHandler> SelfWeakPtr(this);
 	if (!SelfWeakPtr.IsValid())
@@ -2052,7 +2052,7 @@ void UAgoraBPuIRtcEngineEventHandler::onExtensionStoppedWithContext(const Extens
 void UAgoraBPuIRtcEngineEventHandler::onExtensionErrorWithContext(const ExtensionContext& context, int error, const char* message)
 {
 	FString UEMessage = UTF8_TO_TCHAR(message);
-	FUABT_ExtensionContext UEContext = context;
+	FExtensionContext UEContext = context;
 
 	TWeakObjectPtr<UAgoraBPuIRtcEngineEventHandler> SelfWeakPtr(this);
 	if (!SelfWeakPtr.IsValid())
@@ -2100,7 +2100,7 @@ void UAgoraBPuIRtcEngineEventHandlerCBExecutor::OnJoinChannelSuccess_Implementat
 	UE_LOG(LogAgora, Warning, TEXT("%s"),*FString(AG_FUNCTION_MACRO));
 }
 
-void UAgoraBPuIRtcEngineEventHandlerCBExecutor::OnLeaveChannel_Implementation(const FUABT_RtcStats& stats)
+void UAgoraBPuIRtcEngineEventHandlerCBExecutor::OnLeaveChannel_Implementation(const FRtcStats& stats)
 {
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
@@ -2110,7 +2110,7 @@ void UAgoraBPuIRtcEngineEventHandlerCBExecutor::OnUserJoined_Implementation(int6
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
 
-void UAgoraBPuIRtcEngineEventHandlerCBExecutor::OnUserOffline_Implementation(int64 uid, EUABT_USER_OFFLINE_REASON_TYPE reason )
+void UAgoraBPuIRtcEngineEventHandlerCBExecutor::OnUserOffline_Implementation(int64 uid, EUSER_OFFLINE_REASON_TYPE reason )
 {
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
@@ -2120,7 +2120,7 @@ void UAgoraBPuIRtcEngineEventHandlerCBExecutor::OnRejoinChannelSuccess_Implement
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
 
-void UAgoraBPuIRtcEngineEventHandlerCBExecutor::OnProxyConnected_Implementation(const FString& channel, int64 uid, EUABT_PROXY_TYPE proxyType, const FString& localProxyIp, int elapsed)
+void UAgoraBPuIRtcEngineEventHandlerCBExecutor::OnProxyConnected_Implementation(const FString& channel, int64 uid, EPROXY_TYPE proxyType, const FString& localProxyIp, int elapsed)
 {
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
@@ -2135,17 +2135,17 @@ void UAgoraBPuIRtcEngineEventHandlerCBExecutor::OnAudioQuality_Implementation(in
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
 
-void UAgoraBPuIRtcEngineEventHandlerCBExecutor::OnLastmileProbeResult_Implementation(const FUABT_LastmileProbeResult& result)
+void UAgoraBPuIRtcEngineEventHandlerCBExecutor::OnLastmileProbeResult_Implementation(const FLastmileProbeResult& result)
 {
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
 
-void UAgoraBPuIRtcEngineEventHandlerCBExecutor::OnAudioVolumeIndication_Implementation(const TArray<FUABT_AudioVolumeInfo>& speakers, int totalVolume)
+void UAgoraBPuIRtcEngineEventHandlerCBExecutor::OnAudioVolumeIndication_Implementation(const TArray<FAudioVolumeInfo>& speakers, int totalVolume)
 {
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
 
-void UAgoraBPuIRtcEngineEventHandlerCBExecutor::OnRtcStats_Implementation(const FUABT_RtcStats& stats)
+void UAgoraBPuIRtcEngineEventHandlerCBExecutor::OnRtcStats_Implementation(const FRtcStats& stats)
 {
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
@@ -2185,12 +2185,12 @@ void UAgoraBPuIRtcEngineEventHandlerCBExecutor::OnIntraRequestReceived_Implement
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
 
-void UAgoraBPuIRtcEngineEventHandlerCBExecutor::OnUplinkNetworkInfoUpdated_Implementation(const FUABT_UplinkNetworkInfo& info)
+void UAgoraBPuIRtcEngineEventHandlerCBExecutor::OnUplinkNetworkInfoUpdated_Implementation(const FUplinkNetworkInfo& info)
 {
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
 
-void UAgoraBPuIRtcEngineEventHandlerCBExecutor::OnDownlinkNetworkInfoUpdated_Implementation(const FUABT_DownlinkNetworkInfo& info)
+void UAgoraBPuIRtcEngineEventHandlerCBExecutor::OnDownlinkNetworkInfoUpdated_Implementation(const FDownlinkNetworkInfo& info)
 {
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
@@ -2200,12 +2200,12 @@ void UAgoraBPuIRtcEngineEventHandlerCBExecutor::OnLastmileQuality_Implementation
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
 
-void UAgoraBPuIRtcEngineEventHandlerCBExecutor::OnFirstLocalVideoFrame_Implementation(EUABT_VIDEO_SOURCE_TYPE source, int width, int height, int elapsed)
+void UAgoraBPuIRtcEngineEventHandlerCBExecutor::OnFirstLocalVideoFrame_Implementation(EVIDEO_SOURCE_TYPE source, int width, int height, int elapsed)
 {
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
 
-void UAgoraBPuIRtcEngineEventHandlerCBExecutor::OnFirstLocalVideoFramePublished_Implementation(EUABT_VIDEO_SOURCE_TYPE source, int elapsed)
+void UAgoraBPuIRtcEngineEventHandlerCBExecutor::OnFirstLocalVideoFramePublished_Implementation(EVIDEO_SOURCE_TYPE source, int elapsed)
 {
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
@@ -2215,17 +2215,17 @@ void UAgoraBPuIRtcEngineEventHandlerCBExecutor::OnFirstRemoteVideoDecoded_Implem
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
 
-void UAgoraBPuIRtcEngineEventHandlerCBExecutor::OnVideoSizeChanged_Implementation(EUABT_VIDEO_SOURCE_TYPE sourceType, int64 uid, int width, int height, int rotation)
+void UAgoraBPuIRtcEngineEventHandlerCBExecutor::OnVideoSizeChanged_Implementation(EVIDEO_SOURCE_TYPE sourceType, int64 uid, int width, int height, int rotation)
 {
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
 
-void UAgoraBPuIRtcEngineEventHandlerCBExecutor::OnLocalVideoStateChanged_Implementation(EUABT_VIDEO_SOURCE_TYPE source, EUABT_LOCAL_VIDEO_STREAM_STATE state, EUABT_LOCAL_VIDEO_STREAM_REASON reason)
+void UAgoraBPuIRtcEngineEventHandlerCBExecutor::OnLocalVideoStateChanged_Implementation(EVIDEO_SOURCE_TYPE source, ELOCAL_VIDEO_STREAM_STATE state, ELOCAL_VIDEO_STREAM_REASON reason)
 {
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
 
-void UAgoraBPuIRtcEngineEventHandlerCBExecutor::OnRemoteVideoStateChanged_Implementation(int64 uid, EUABT_REMOTE_VIDEO_STATE state, EUABT_REMOTE_VIDEO_STATE_REASON reason, int elapsed)
+void UAgoraBPuIRtcEngineEventHandlerCBExecutor::OnRemoteVideoStateChanged_Implementation(int64 uid, EREMOTE_VIDEO_STATE state, EREMOTE_VIDEO_STATE_REASON reason, int elapsed)
 {
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
@@ -2250,7 +2250,7 @@ void UAgoraBPuIRtcEngineEventHandlerCBExecutor::OnUserEnableVideo_Implementation
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
 
-void UAgoraBPuIRtcEngineEventHandlerCBExecutor::OnUserStateChanged_Implementation(int64 uid, EUABT_REMOTE_USER_STATE state)
+void UAgoraBPuIRtcEngineEventHandlerCBExecutor::OnUserStateChanged_Implementation(int64 uid, FENUMWRAP_REMOTE_USER_STATE state)
 {
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
@@ -2260,22 +2260,22 @@ void UAgoraBPuIRtcEngineEventHandlerCBExecutor::OnUserEnableLocalVideo_Implement
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
 
-void UAgoraBPuIRtcEngineEventHandlerCBExecutor::OnRemoteAudioStats_Implementation(const FUABT_RemoteAudioStats& stats)
+void UAgoraBPuIRtcEngineEventHandlerCBExecutor::OnRemoteAudioStats_Implementation(const FRemoteAudioStats& stats)
 {
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
 
-void UAgoraBPuIRtcEngineEventHandlerCBExecutor::OnLocalAudioStats_Implementation(const FUABT_LocalAudioStats& stats)
+void UAgoraBPuIRtcEngineEventHandlerCBExecutor::OnLocalAudioStats_Implementation(const FLocalAudioStats& stats)
 {
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
 
-void UAgoraBPuIRtcEngineEventHandlerCBExecutor::OnLocalVideoStats_Implementation(EUABT_VIDEO_SOURCE_TYPE source, const FUABT_LocalVideoStats& stats)
+void UAgoraBPuIRtcEngineEventHandlerCBExecutor::OnLocalVideoStats_Implementation(EVIDEO_SOURCE_TYPE source, const FLocalVideoStats& stats)
 {
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
 
-void UAgoraBPuIRtcEngineEventHandlerCBExecutor::OnRemoteVideoStats_Implementation(const FUABT_RemoteVideoStats& stats)
+void UAgoraBPuIRtcEngineEventHandlerCBExecutor::OnRemoteVideoStats_Implementation(const FRemoteVideoStats& stats)
 {
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
@@ -2295,7 +2295,7 @@ void UAgoraBPuIRtcEngineEventHandlerCBExecutor::OnCameraExposureAreaChanged_Impl
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
 
-void UAgoraBPuIRtcEngineEventHandlerCBExecutor::OnFacePositionChanged_Implementation(int imageWidth, int imageHeight, const TArray<FUABT_Rectangle>& vecRectangle, const TArray<int>& vecDistance, int numFaces)
+void UAgoraBPuIRtcEngineEventHandlerCBExecutor::OnFacePositionChanged_Implementation(int imageWidth, int imageHeight, const TArray<FRectangle>& vecRectangle, const TArray<int>& vecDistance, int numFaces)
 {
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
@@ -2305,12 +2305,12 @@ void UAgoraBPuIRtcEngineEventHandlerCBExecutor::OnVideoStopped_Implementation()
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
 
-void UAgoraBPuIRtcEngineEventHandlerCBExecutor::OnAudioMixingStateChanged_Implementation(EUABT_AUDIO_MIXING_STATE_TYPE state, EUABT_AUDIO_MIXING_REASON_TYPE reason)
+void UAgoraBPuIRtcEngineEventHandlerCBExecutor::OnAudioMixingStateChanged_Implementation(FENUMWRAP_AUDIO_MIXING_STATE_TYPE state, FENUMWRAP_AUDIO_MIXING_REASON_TYPE reason)
 {
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
 
-void UAgoraBPuIRtcEngineEventHandlerCBExecutor::OnRhythmPlayerStateChanged_Implementation(EUABT_RHYTHM_PLAYER_STATE_TYPE state, EUABT_RHYTHM_PLAYER_REASON reason)
+void UAgoraBPuIRtcEngineEventHandlerCBExecutor::OnRhythmPlayerStateChanged_Implementation(FENUMWRAP_RHYTHM_PLAYER_STATE_TYPE state, FENUMWRAP_RHYTHM_PLAYER_REASON reason)
 {
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
@@ -2350,7 +2350,7 @@ void UAgoraBPuIRtcEngineEventHandlerCBExecutor::OnTokenPrivilegeWillExpire_Imple
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
 
-void UAgoraBPuIRtcEngineEventHandlerCBExecutor::OnLicenseValidationFailure_Implementation(EUABT_LICENSE_ERROR_TYPE error)
+void UAgoraBPuIRtcEngineEventHandlerCBExecutor::OnLicenseValidationFailure_Implementation(ELICENSE_ERROR_TYPE error)
 {
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
@@ -2370,12 +2370,12 @@ void UAgoraBPuIRtcEngineEventHandlerCBExecutor::OnFirstRemoteAudioFrame_Implemen
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
 
-void UAgoraBPuIRtcEngineEventHandlerCBExecutor::OnLocalAudioStateChanged_Implementation(EUABT_LOCAL_AUDIO_STREAM_STATE state, EUABT_LOCAL_AUDIO_STREAM_REASON reason)
+void UAgoraBPuIRtcEngineEventHandlerCBExecutor::OnLocalAudioStateChanged_Implementation(ELOCAL_AUDIO_STREAM_STATE state, ELOCAL_AUDIO_STREAM_REASON reason)
 {
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
 
-void UAgoraBPuIRtcEngineEventHandlerCBExecutor::OnRemoteAudioStateChanged_Implementation(int64 uid, EUABT_REMOTE_AUDIO_STATE state, EUABT_REMOTE_AUDIO_STATE_REASON reason, int elapsed)
+void UAgoraBPuIRtcEngineEventHandlerCBExecutor::OnRemoteAudioStateChanged_Implementation(int64 uid, EREMOTE_AUDIO_STATE state, EREMOTE_AUDIO_STATE_REASON reason, int elapsed)
 {
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
@@ -2385,7 +2385,7 @@ void UAgoraBPuIRtcEngineEventHandlerCBExecutor::OnActiveSpeaker_Implementation(i
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
 
-void UAgoraBPuIRtcEngineEventHandlerCBExecutor::OnContentInspectResult_Implementation(EUABT_CONTENT_INSPECT_RESULT result)
+void UAgoraBPuIRtcEngineEventHandlerCBExecutor::OnContentInspectResult_Implementation(ECONTENT_INSPECT_RESULT result)
 {
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
@@ -2395,27 +2395,27 @@ void UAgoraBPuIRtcEngineEventHandlerCBExecutor::OnSnapshotTaken_Implementation(i
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
 
-void UAgoraBPuIRtcEngineEventHandlerCBExecutor::OnClientRoleChanged_Implementation(EUABT_CLIENT_ROLE_TYPE oldRole, EUABT_CLIENT_ROLE_TYPE newRole, const FUABT_ClientRoleOptions& newRoleOptions)
+void UAgoraBPuIRtcEngineEventHandlerCBExecutor::OnClientRoleChanged_Implementation(ECLIENT_ROLE_TYPE oldRole, ECLIENT_ROLE_TYPE newRole, const FClientRoleOptions& newRoleOptions)
 {
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
 
-void UAgoraBPuIRtcEngineEventHandlerCBExecutor::OnClientRoleChangeFailed_Implementation(EUABT_CLIENT_ROLE_CHANGE_FAILED_REASON reason, EUABT_CLIENT_ROLE_TYPE currentRole)
+void UAgoraBPuIRtcEngineEventHandlerCBExecutor::OnClientRoleChangeFailed_Implementation(ECLIENT_ROLE_CHANGE_FAILED_REASON reason, ECLIENT_ROLE_TYPE currentRole)
 {
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
 
-void UAgoraBPuIRtcEngineEventHandlerCBExecutor::OnAudioDeviceVolumeChanged_Implementation(EUABT_MEDIA_DEVICE_TYPE deviceType, int volume, bool muted)
+void UAgoraBPuIRtcEngineEventHandlerCBExecutor::OnAudioDeviceVolumeChanged_Implementation(FENUMWRAP_MEDIA_DEVICE_TYPE deviceType, int volume, bool muted)
 {
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
 
-void UAgoraBPuIRtcEngineEventHandlerCBExecutor::OnRtmpStreamingStateChanged_Implementation(const FString& url, EUABT_RTMP_STREAM_PUBLISH_STATE state, EUABT_RTMP_STREAM_PUBLISH_REASON reason)
+void UAgoraBPuIRtcEngineEventHandlerCBExecutor::OnRtmpStreamingStateChanged_Implementation(const FString& url, ERTMP_STREAM_PUBLISH_STATE state, ERTMP_STREAM_PUBLISH_REASON reason)
 {
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
 
-void UAgoraBPuIRtcEngineEventHandlerCBExecutor::OnRtmpStreamingEvent_Implementation(const FString& url, EUABT_RTMP_STREAMING_EVENT eventCode)
+void UAgoraBPuIRtcEngineEventHandlerCBExecutor::OnRtmpStreamingEvent_Implementation(const FString& url, ERTMP_STREAMING_EVENT eventCode)
 {
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
@@ -2455,32 +2455,32 @@ void UAgoraBPuIRtcEngineEventHandlerCBExecutor::OnRemoteVideoTransportStats_Impl
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
 
-void UAgoraBPuIRtcEngineEventHandlerCBExecutor::OnConnectionStateChanged_Implementation(EUABT_CONNECTION_STATE_TYPE state, EUABT_CONNECTION_CHANGED_REASON_TYPE reason)
+void UAgoraBPuIRtcEngineEventHandlerCBExecutor::OnConnectionStateChanged_Implementation(ECONNECTION_STATE_TYPE state, ECONNECTION_CHANGED_REASON_TYPE reason)
 {
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
 
-void UAgoraBPuIRtcEngineEventHandlerCBExecutor::OnWlAccMessage_Implementation(EUABT_WLACC_MESSAGE_REASON reason, EUABT_WLACC_SUGGEST_ACTION action, const FString& wlAccMsg)
+void UAgoraBPuIRtcEngineEventHandlerCBExecutor::OnWlAccMessage_Implementation(EWLACC_MESSAGE_REASON reason, EWLACC_SUGGEST_ACTION action, const FString& wlAccMsg)
 {
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
 
-void UAgoraBPuIRtcEngineEventHandlerCBExecutor::OnWlAccStats_Implementation(const FUABT_WlAccStats& currentStats, const FUABT_WlAccStats& averageStats)
+void UAgoraBPuIRtcEngineEventHandlerCBExecutor::OnWlAccStats_Implementation(const FWlAccStats& currentStats, const FWlAccStats& averageStats)
 {
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
 
-void UAgoraBPuIRtcEngineEventHandlerCBExecutor::OnNetworkTypeChanged_Implementation(EUABT_NETWORK_TYPE type)
+void UAgoraBPuIRtcEngineEventHandlerCBExecutor::OnNetworkTypeChanged_Implementation(FENUMWRAP_NETWORK_TYPE type)
 {
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
 
-void UAgoraBPuIRtcEngineEventHandlerCBExecutor::OnEncryptionError_Implementation(EUABT_ENCRYPTION_ERROR_TYPE errorType)
+void UAgoraBPuIRtcEngineEventHandlerCBExecutor::OnEncryptionError_Implementation(EENCRYPTION_ERROR_TYPE errorType)
 {
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
 
-void UAgoraBPuIRtcEngineEventHandlerCBExecutor::OnPermissionError_Implementation(EUABT_PERMISSION_TYPE permissionType)
+void UAgoraBPuIRtcEngineEventHandlerCBExecutor::OnPermissionError_Implementation(EPERMISSION_TYPE permissionType)
 {
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
@@ -2490,7 +2490,7 @@ void UAgoraBPuIRtcEngineEventHandlerCBExecutor::OnLocalUserRegistered_Implementa
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
 
-void UAgoraBPuIRtcEngineEventHandlerCBExecutor::OnUserInfoUpdated_Implementation(int64 uid, const FUABT_UserInfo& info)
+void UAgoraBPuIRtcEngineEventHandlerCBExecutor::OnUserInfoUpdated_Implementation(int64 uid, const FUserInfo& info)
 {
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
@@ -2500,42 +2500,42 @@ void UAgoraBPuIRtcEngineEventHandlerCBExecutor::OnUserAccountUpdated_Implementat
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
 
-void UAgoraBPuIRtcEngineEventHandlerCBExecutor::OnVideoRenderingTracingResult_Implementation(int64 uid, EUABT_MEDIA_TRACE_EVENT currentEvent, const FUABT_VideoRenderingTracingInfo& tracingInfo)
+void UAgoraBPuIRtcEngineEventHandlerCBExecutor::OnVideoRenderingTracingResult_Implementation(int64 uid, EMEDIA_TRACE_EVENT currentEvent, const FVideoRenderingTracingInfo& tracingInfo)
 {
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
 
-void UAgoraBPuIRtcEngineEventHandlerCBExecutor::OnLocalVideoTranscoderError_Implementation(const FUABT_TranscodingVideoStream& stream, EUABT_VIDEO_TRANSCODER_ERROR error)
+void UAgoraBPuIRtcEngineEventHandlerCBExecutor::OnLocalVideoTranscoderError_Implementation(const FTranscodingVideoStream& stream, EVIDEO_TRANSCODER_ERROR error)
 {
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
 
-void UAgoraBPuIRtcEngineEventHandlerCBExecutor::OnUploadLogResult_Implementation(const FString& requestId, bool success, EUABT_UPLOAD_ERROR_REASON reason)
+void UAgoraBPuIRtcEngineEventHandlerCBExecutor::OnUploadLogResult_Implementation(const FString& requestId, bool success, EUPLOAD_ERROR_REASON reason)
 {
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
 
-void UAgoraBPuIRtcEngineEventHandlerCBExecutor::OnAudioSubscribeStateChanged_Implementation(const FString& channel, int64 uid, EUABT_STREAM_SUBSCRIBE_STATE oldState, EUABT_STREAM_SUBSCRIBE_STATE newState, int elapseSinceLastState)
+void UAgoraBPuIRtcEngineEventHandlerCBExecutor::OnAudioSubscribeStateChanged_Implementation(const FString& channel, int64 uid, ESTREAM_SUBSCRIBE_STATE oldState, ESTREAM_SUBSCRIBE_STATE newState, int elapseSinceLastState)
 {
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
 
-void UAgoraBPuIRtcEngineEventHandlerCBExecutor::OnVideoSubscribeStateChanged_Implementation(const FString& channel, int64 uid, EUABT_STREAM_SUBSCRIBE_STATE oldState, EUABT_STREAM_SUBSCRIBE_STATE newState, int elapseSinceLastState)
+void UAgoraBPuIRtcEngineEventHandlerCBExecutor::OnVideoSubscribeStateChanged_Implementation(const FString& channel, int64 uid, ESTREAM_SUBSCRIBE_STATE oldState, ESTREAM_SUBSCRIBE_STATE newState, int elapseSinceLastState)
 {
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
 
-void UAgoraBPuIRtcEngineEventHandlerCBExecutor::OnAudioPublishStateChanged_Implementation(const FString& channel, EUABT_STREAM_PUBLISH_STATE oldState, EUABT_STREAM_PUBLISH_STATE newState, int elapseSinceLastState)
+void UAgoraBPuIRtcEngineEventHandlerCBExecutor::OnAudioPublishStateChanged_Implementation(const FString& channel, ESTREAM_PUBLISH_STATE oldState, ESTREAM_PUBLISH_STATE newState, int elapseSinceLastState)
 {
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
 
-void UAgoraBPuIRtcEngineEventHandlerCBExecutor::OnVideoPublishStateChanged_Implementation(EUABT_VIDEO_SOURCE_TYPE source, const FString& channel, EUABT_STREAM_PUBLISH_STATE oldState, EUABT_STREAM_PUBLISH_STATE newState, int elapseSinceLastState)
+void UAgoraBPuIRtcEngineEventHandlerCBExecutor::OnVideoPublishStateChanged_Implementation(EVIDEO_SOURCE_TYPE source, const FString& channel, ESTREAM_PUBLISH_STATE oldState, ESTREAM_PUBLISH_STATE newState, int elapseSinceLastState)
 {
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
 
-void UAgoraBPuIRtcEngineEventHandlerCBExecutor::OnTranscodedStreamLayoutInfo_Implementation(int64 uid, int width, int height, int layoutCount, const TArray<FUABT_VideoLayout>& layoutlist)
+void UAgoraBPuIRtcEngineEventHandlerCBExecutor::OnTranscodedStreamLayoutInfo_Implementation(int64 uid, int width, int height, int layoutCount, const TArray<FVideoLayout>& layoutlist)
 {
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
@@ -2545,22 +2545,22 @@ void UAgoraBPuIRtcEngineEventHandlerCBExecutor::OnAudioMetadataReceived_Implemen
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
 
-void UAgoraBPuIRtcEngineEventHandlerCBExecutor::OnExtensionEventWithContext_Implementation(const FUABT_ExtensionContext& context, const FString& key, const FString& value)
+void UAgoraBPuIRtcEngineEventHandlerCBExecutor::OnExtensionEventWithContext_Implementation(const FExtensionContext& context, const FString& key, const FString& value)
 {
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
 
-void UAgoraBPuIRtcEngineEventHandlerCBExecutor::OnExtensionStartedWithContext_Implementation(const FUABT_ExtensionContext& context)
+void UAgoraBPuIRtcEngineEventHandlerCBExecutor::OnExtensionStartedWithContext_Implementation(const FExtensionContext& context)
 {
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
 
-void UAgoraBPuIRtcEngineEventHandlerCBExecutor::OnExtensionStoppedWithContext_Implementation(const FUABT_ExtensionContext& context)
+void UAgoraBPuIRtcEngineEventHandlerCBExecutor::OnExtensionStoppedWithContext_Implementation(const FExtensionContext& context)
 {
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
 
-void UAgoraBPuIRtcEngineEventHandlerCBExecutor::OnExtensionErrorWithContext_Implementation(const FUABT_ExtensionContext& context, int error, const FString& message)
+void UAgoraBPuIRtcEngineEventHandlerCBExecutor::OnExtensionErrorWithContext_Implementation(const FExtensionContext& context, int error, const FString& message)
 {
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
