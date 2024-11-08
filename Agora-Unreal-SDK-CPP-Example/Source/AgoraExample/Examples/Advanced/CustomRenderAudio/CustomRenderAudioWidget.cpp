@@ -3,6 +3,7 @@
 
 #include "CustomRenderAudioWidget.h"
 #include <string>
+#include <vector>
 
 void UCustomRenderAudioWidget::InitAgoraWidget(FString APP_ID, FString TOKEN, FString CHANNEL_NAME)
 {

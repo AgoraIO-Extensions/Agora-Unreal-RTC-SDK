@@ -2,7 +2,7 @@
 
 
 #include "AgoraAudioWidget.h"
-
+#include <vector>
 
 void UAgoraAudioWidget::InitAgoraWidget(FString APP_ID, FString TOKEN, FString CHANNEL_NAME)
 {
