@@ -74,7 +74,7 @@ void UAgoraBPuIMediaPlayerSourceObserver::onPlayerSourceStateChanged(agora::medi
 			if (!SelfWeakPtr.IsValid())
 				return;
 
-			OnPlayerSourceStateChanged.Broadcast((EUABT_MEDIA_PLAYER_STATE)state, FENUMWRAP_MEDIA_PLAYER_REASON(ec));
+			OnPlayerSourceStateChanged.Broadcast((EMEDIA_PLAYER_STATE)state, FENUMWRAP_MEDIA_PLAYER_REASON(ec));
 		});
 }
 void UAgoraBPuIMediaPlayerSourceObserver::onPositionChanged(int64_t position_ms, int64_t timestampMs)
@@ -322,7 +322,7 @@ void UAgoraBPuIMediaPlayerSourceObserver::onPlayerPlaybackStats(const agora::med
 
 #pragma region IMediaPlayerSourceObserverCBExecutor
 
-void UAgoraBPuIMediaPlayerSourceObserverCBExecutor::OnPlayerSourceStateChanged_Implementation(EUABT_MEDIA_PLAYER_STATE state, FENUMWRAP_MEDIA_PLAYER_REASON ec)
+void UAgoraBPuIMediaPlayerSourceObserverCBExecutor::OnPlayerSourceStateChanged_Implementation(EMEDIA_PLAYER_STATE state, FENUMWRAP_MEDIA_PLAYER_REASON ec)
 {
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }

@@ -46,8 +46,3 @@ void UAgoraBPuLogger::PrintError(FString LogMsg, bool bToConsole /*= true*/, boo
 	}
 }
 
-void UAgoraBPuLogger::PrintErrorEnum()
-{
-	PrintError(TEXT("Convert Error Enum"));
-}
-
