@@ -16,10 +16,15 @@
 #define AG_FUNCTION_MACRO __PRETTY_FUNCTION__
 #endif
 
+
+
 static TMap<AGORA_UE_ERROR_CODE,FString> AGORA_UEBP_ERR_STR =
 {
 	{AGORA_UE_ERROR_CODE::ERROR_BP_RTC_ENGINE_NOT_INITIALIZED," Agora Rtc Engine may not be initialized, please check if it has been initialized. "},
-	{AGORA_UE_ERROR_CODE::ERROR_NULLPTR," Agora pointer Is nullptr, please check if it has been created successfully."},
+	{AGORA_UE_ERROR_CODE::ERROR_NULLPTR," Agora pointer is nullptr, please check if it has been created successfully."},
+	{AGORA_UE_ERROR_CODE::ERROR_INVALID_ENUM_CONVERSION," Enum conversion failed: UE enum has an invalid option that has no mapping in Agora."},
+
+	{AGORA_UE_ERROR_CODE::ERROR_OPTIONAL_VALUE_NOT_SET," The optional value has not been assigned. "},
 };
 
 /**

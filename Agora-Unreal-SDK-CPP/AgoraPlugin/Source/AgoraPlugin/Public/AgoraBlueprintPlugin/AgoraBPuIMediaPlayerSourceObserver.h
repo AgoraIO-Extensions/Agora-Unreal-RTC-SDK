@@ -3,222 +3,99 @@
 
 #include "CoreMinimal.h"
 #include "AgoraPluginInterface.h"
-#include "AgoraBPuBaseDataTypes.h"
+#include "AgoraBPuDataTypes.h"
 #include "AgoraBPuIMediaPlayerSourceObserver.generated.h"
 
 #pragma region Data Types
 
-UENUM(BlueprintType)
-enum class EENUMCUSTOM_MEDIA_PLAYER_REASON : uint8 {
-	PLAYER_REASON_NONE = 0,
-
-	PLAYER_REASON_INVALID_ARGUMENTS = 1,
-
-	PLAYER_REASON_INTERNAL = 2,
-
-
-	PLAYER_REASON_NO_RESOURCE = 3,
-
-	PLAYER_REASON_INVALID_MEDIA_SOURCE = 4,
-
-	PLAYER_REASON_UNKNOWN_STREAM_TYPE = 5,
-
-	PLAYER_REASON_OBJ_NOT_INITIALIZED = 6,
-
-	PLAYER_REASON_CODEC_NOT_SUPPORTED = 7,
-
-	PLAYER_REASON_VIDEO_RENDER_FAILED = 8,
-
-	PLAYER_REASON_INVALID_STATE = 9,
-
-	PLAYER_REASON_URL_NOT_FOUND = 10,
-
-	PLAYER_REASON_INVALID_CONNECTION_STATE = 11,
-
-	PLAYER_REASON_SRC_BUFFER_UNDERFLOW = 12,
-
-	PLAYER_REASON_INTERRUPTED = 13,
-
-	PLAYER_REASON_NOT_SUPPORTED = 14,
-
-	PLAYER_REASON_TOKEN_EXPIRED = 15,
-
-	PLAYER_REASON_IP_EXPIRED = 16,
-
-	PLAYER_REASON_UNKNOWN = 17,
-
-};
-
 USTRUCT(BlueprintType)
-struct FENUMWRAP_MEDIA_PLAYER_REASON {
-
+struct FUABT_SrcInfo {
 	GENERATED_BODY()
 
 public:
 
-	// require to call [GetRawValue] method to get the raw value
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|FENUMWRAP_MEDIA_PLAYER_REASON")
-	EENUMCUSTOM_MEDIA_PLAYER_REASON ValueWrapper = EENUMCUSTOM_MEDIA_PLAYER_REASON::PLAYER_REASON_NONE;
-
-	AGORA_CREATE_UEENUM_CONVERT_STRUCT_INNER_18_ENTRIES(FENUMWRAP_MEDIA_PLAYER_REASON, agora::media::base::MEDIA_PLAYER_REASON,EENUMCUSTOM_MEDIA_PLAYER_REASON, 
-		PLAYER_REASON_NONE, 
-		PLAYER_REASON_INVALID_ARGUMENTS, 
-		PLAYER_REASON_INTERNAL, 
-		PLAYER_REASON_NO_RESOURCE, 
-		PLAYER_REASON_INVALID_MEDIA_SOURCE, 
-		PLAYER_REASON_UNKNOWN_STREAM_TYPE, 
-		PLAYER_REASON_OBJ_NOT_INITIALIZED, 
-		PLAYER_REASON_CODEC_NOT_SUPPORTED, 
-		PLAYER_REASON_VIDEO_RENDER_FAILED, 
-		PLAYER_REASON_INVALID_STATE, 
-		PLAYER_REASON_URL_NOT_FOUND, 
-		PLAYER_REASON_INVALID_CONNECTION_STATE, 
-		PLAYER_REASON_SRC_BUFFER_UNDERFLOW, 
-		PLAYER_REASON_INTERRUPTED, 
-		PLAYER_REASON_NOT_SUPPORTED, 
-		PLAYER_REASON_TOKEN_EXPIRED, 
-		PLAYER_REASON_IP_EXPIRED, 
-		PLAYER_REASON_UNKNOWN);
-};
-
-UENUM(BlueprintType)
-enum EMEDIA_PLAYER_EVENT {
-
-	PLAYER_EVENT_SEEK_BEGIN = 0,
-
-	PLAYER_EVENT_SEEK_COMPLETE = 1,
-
-	PLAYER_EVENT_SEEK_ERROR = 2,
-
-	PLAYER_EVENT_AUDIO_TRACK_CHANGED = 5,
-
-	PLAYER_EVENT_BUFFER_LOW = 6,
-
-	PLAYER_EVENT_BUFFER_RECOVER = 7,
-
-	PLAYER_EVENT_FREEZE_START = 8,
-
-	PLAYER_EVENT_FREEZE_STOP = 9,
-
-	PLAYER_EVENT_SWITCH_BEGIN = 10,
-
-	PLAYER_EVENT_SWITCH_COMPLETE = 11,
-
-	PLAYER_EVENT_SWITCH_ERROR = 12,
-
-	PLAYER_EVENT_FIRST_DISPLAYED = 13,
-
-	PLAYER_EVENT_REACH_CACHE_FILE_MAX_COUNT = 14,
-
-	PLAYER_EVENT_REACH_CACHE_FILE_MAX_SIZE = 15,
-
-	PLAYER_EVENT_TRY_OPEN_START = 16,
-
-	PLAYER_EVENT_TRY_OPEN_SUCCEED = 17,
-
-	PLAYER_EVENT_TRY_OPEN_FAILED = 18,
-};
-
-
-UENUM(BlueprintType)
-enum class EPLAYER_PRELOAD_EVENT :uint8 {
-
-	PLAYER_PRELOAD_EVENT_BEGIN = 0,
-
-	PLAYER_PRELOAD_EVENT_COMPLETE = 1,
-
-	PLAYER_PRELOAD_EVENT_ERROR = 2,
-};
-
-
-USTRUCT(BlueprintType)
-struct FSrcInfo {
-	GENERATED_BODY()
-
-public:
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|SrcInfo")
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	int bitrateInKbps = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|SrcInfo")
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	FString name = "";
 
-	FSrcInfo(){}
-	FSrcInfo(const agora::media::base::SrcInfo& srcInfo) {
+	FUABT_SrcInfo(){}
+	FUABT_SrcInfo(const agora::media::base::SrcInfo& srcInfo) {
 		bitrateInKbps = srcInfo.bitrateInKbps;
 		name = UTF8_TO_TCHAR(srcInfo.name);
 	}
 
-	agora::media::base::SrcInfo CreateAgoraData() const {
+	agora::media::base::SrcInfo CreateRawData() const {
 		agora::media::base::SrcInfo srcInfo;
 		srcInfo.bitrateInKbps = bitrateInKbps;
-		SET_UABT_FSTRING_TO_CONST_CHAR___MEMALLOC(srcInfo.name,name)
+		srcInfo.name = UABT::New_CharPtr(name);
 		return srcInfo;
 	}
 
-	void FreeAgoraData(agora::media::base::SrcInfo& srcInfo) const {
-		SET_UABT_FSTRING_TO_CONST_CHAR___MEMFREE(srcInfo.name)
+	void FreeRawData(agora::media::base::SrcInfo& srcInfo) const {
+		UABT::Free_CharPtr(srcInfo.name);
 	}
 
 };
 
 USTRUCT(BlueprintType)
-struct FCacheStatistics {
+struct FUABT_CacheStatistics {
 
 	GENERATED_BODY()
 
 public:
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|CacheStatistics")
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	int64 fileSize = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|CacheStatistics")
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	int64 cacheSize = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|CacheStatistics")
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	int64 downloadSize = 0;
 	
-	FCacheStatistics(){}
-	FCacheStatistics(const agora::media::base::CacheStatistics& cacheStatistics) {
+	FUABT_CacheStatistics(){}
+	FUABT_CacheStatistics(const agora::media::base::CacheStatistics& cacheStatistics) {
 		fileSize = cacheStatistics.fileSize;
 		cacheSize = cacheStatistics.cacheSize;
 		downloadSize = cacheStatistics.downloadSize;
 	}
 
-	agora::media::base::CacheStatistics CreateAgoraData() const {
+	agora::media::base::CacheStatistics CreateRawData() const {
 		agora::media::base::CacheStatistics cacheStatistics;
 		cacheStatistics.fileSize = fileSize;
 		cacheStatistics.cacheSize = cacheSize;
 		cacheStatistics.downloadSize = downloadSize;
 		return cacheStatistics;
 	}
-	void FreeAgoraData(agora::media::base::CacheStatistics & AgoraData) const {
+	void FreeRawData(agora::media::base::CacheStatistics & AgoraData) const {
 		
 	}
 };
 
 USTRUCT(BlueprintType)
-struct FPlayerPlaybackStats {
+struct FUABT_PlayerPlaybackStats {
 	
 	GENERATED_BODY()
 
 public:
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|FPlayerPlaybackStats")
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	int videoFps = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|FPlayerPlaybackStats")
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	int videoBitrateInKbps =0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|FPlayerPlaybackStats")
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	int audioBitrateInKbps =0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|FPlayerPlaybackStats")
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	int totalBitrateInKbps =0;
 
-	FPlayerPlaybackStats(){}
-	FPlayerPlaybackStats(const agora::media::base::PlayerPlaybackStats& AgoraData) {
+	FUABT_PlayerPlaybackStats(){}
+	FUABT_PlayerPlaybackStats(const agora::media::base::PlayerPlaybackStats& AgoraData) {
 		videoFps = AgoraData.videoFps;
 		videoBitrateInKbps = AgoraData.videoBitrateInKbps;
 		audioBitrateInKbps = AgoraData.audioBitrateInKbps;
 		totalBitrateInKbps = AgoraData.totalBitrateInKbps;
 	}
 
-	agora::media::base::PlayerPlaybackStats CreateAgoraData() const {
+	agora::media::base::PlayerPlaybackStats CreateRawData() const {
 		agora::media::base::PlayerPlaybackStats AgoraData;
 		AgoraData.videoFps = videoFps;
 		AgoraData.videoBitrateInKbps = videoBitrateInKbps;
@@ -227,38 +104,38 @@ public:
 		return AgoraData;
 	}
 
-	void FreeAgoraData(agora::media::base::PlayerPlaybackStats & AgoraData) const {
+	void FreeRawData(agora::media::base::PlayerPlaybackStats & AgoraData) const {
 		
 	}
 };
 
 
 USTRUCT(BlueprintType)
-struct FPlayerUpdatedInfo {
+struct FUABT_PlayerUpdatedInfo {
 	GENERATED_BODY()
 
 public:
 
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|PlayerUpdatedInfo")
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	FString internalPlayerUuid = "";
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|PlayerUpdatedInfo")
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	FString deviceId = "";
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|PlayerUpdatedInfo")
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	int videoHeight = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|PlayerUpdatedInfo")
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	int videoWidth = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|PlayerUpdatedInfo")
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	int audioSampleRate = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|PlayerUpdatedInfo")
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	int audioChannels = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|PlayerUpdatedInfo")
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	int audioBitsPerSample = 0;
 
 
 
-	FPlayerUpdatedInfo(){}
-	FPlayerUpdatedInfo(const agora::media::base::PlayerUpdatedInfo& playerUpdatedInfo) {
+	FUABT_PlayerUpdatedInfo(){}
+	FUABT_PlayerUpdatedInfo(const agora::media::base::PlayerUpdatedInfo& playerUpdatedInfo) {
 		
 		internalPlayerUuid = UTF8_TO_TCHAR(playerUpdatedInfo.internalPlayerUuid);
 		deviceId = UTF8_TO_TCHAR(playerUpdatedInfo.deviceId);
@@ -269,11 +146,11 @@ public:
 		audioBitsPerSample = playerUpdatedInfo.audioBitsPerSample;
 	}
 
-	agora::media::base::PlayerUpdatedInfo CreateAgoraData() const {
+	agora::media::base::PlayerUpdatedInfo CreateRawData() const {
 		agora::media::base::PlayerUpdatedInfo AgoraData;
 
-		SET_UABT_FSTRING_TO_CONST_CHAR___MEMALLOC(AgoraData.internalPlayerUuid,this->internalPlayerUuid)
-		SET_UABT_FSTRING_TO_CONST_CHAR___MEMALLOC(AgoraData.deviceId,this->deviceId)
+		AgoraData.internalPlayerUuid = UABT::New_CharPtr(this->internalPlayerUuid);
+		AgoraData.deviceId = UABT::New_CharPtr(this->deviceId);
 		AgoraData.videoHeight = videoHeight;
 		AgoraData.videoWidth = videoWidth;
 		AgoraData.audioSampleRate = audioSampleRate;
@@ -283,9 +160,9 @@ public:
 		return AgoraData;
 	}
 
-	void FreeAgoraData(agora::media::base::PlayerUpdatedInfo & AgoraData) const {
-		SET_UABT_FSTRING_TO_CONST_CHAR___MEMFREE(AgoraData.internalPlayerUuid)
-		SET_UABT_FSTRING_TO_CONST_CHAR___MEMFREE(AgoraData.deviceId)
+	void FreeRawData(agora::media::base::PlayerUpdatedInfo & AgoraData) const {
+		UABT::Free_CharPtr(AgoraData.internalPlayerUuid);
+		UABT::Free_CharPtr(AgoraData.deviceId);
 	}
 };
 
@@ -293,20 +170,20 @@ public:
 #pragma endregion Data Types
 
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnPlayerSourceStateChanged, EMEDIA_PLAYER_STATE, state, FENUMWRAP_MEDIA_PLAYER_REASON, ec);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnPlayerSourceStateChanged, EUABT_MEDIA_PLAYER_STATE, state, EUABT_MEDIA_PLAYER_REASON, ec);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnPositionChanged, int64, position_ms, int64, timestampMs);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnPlayerEvent, EMEDIA_PLAYER_EVENT, eventCode, int64, elapsedTime, const FString &, message);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnPlayerEvent, EUABT_MEDIA_PLAYER_EVENT, eventCode, int64, elapsedTime, const FString &, message);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnMetaDataSource,const FString &,Data);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPlayBufferUpdated, int64, playCachedBuffer);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnPreloadEvent, const FString&, src, EPLAYER_PRELOAD_EVENT, event);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnPreloadEvent, const FString&, src, EUABT_PLAYER_PRELOAD_EVENT, event);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnCompleted);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnAgoraCDNTokenWillExpire);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnPlayerSrcInfoChanged, const FSrcInfo&, from, const FSrcInfo&, to);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPlayerInfoUpdated, const FPlayerUpdatedInfo&, info);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnPlayerSrcInfoChanged, const FUABT_SrcInfo&, from, const FUABT_SrcInfo&, to);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPlayerInfoUpdated, const FUABT_PlayerUpdatedInfo&, info);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAudioVolumeIndicationSource, int, volume);
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPlayerCacheStats, const FCacheStatistics &, stats);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPlayerPlaybackStats, const FPlayerPlaybackStats&, stats);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPlayerCacheStats, const FUABT_CacheStatistics &, stats);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPlayerPlaybackStats, const FUABT_PlayerPlaybackStats&, stats);
 
 
 
@@ -400,13 +277,13 @@ class AGORAPLUGIN_API UAgoraBPuIMediaPlayerSourceObserverCBExecutor : public UOb
 public:
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Agora|Event")
-	void OnPlayerSourceStateChanged(EMEDIA_PLAYER_STATE state, FENUMWRAP_MEDIA_PLAYER_REASON ec);
+	void OnPlayerSourceStateChanged(EUABT_MEDIA_PLAYER_STATE state, EUABT_MEDIA_PLAYER_REASON ec);
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Agora|Event")
 	void OnPositionChanged(int64 position_ms, int64 timestampMs);
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Agora|Event")
-	void OnPlayerEvent(EMEDIA_PLAYER_EVENT eventCode, int64 elapsedTime, const FString& message);
+	void OnPlayerEvent(EUABT_MEDIA_PLAYER_EVENT eventCode, int64 elapsedTime, const FString& message);
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Agora|Event")
 	void OnMetaData(const FString& Data);
@@ -415,7 +292,7 @@ public:
 	void OnPlayBufferUpdated(int64 playCachedBuffer);
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Agora|Event")
-	void OnPreloadEvent(const FString& src, EPLAYER_PRELOAD_EVENT event);
+	void OnPreloadEvent(const FString& src, EUABT_PLAYER_PRELOAD_EVENT event);
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Agora|Event")
 	void OnCompleted();
@@ -424,16 +301,16 @@ public:
 	void OnAgoraCDNTokenWillExpire();
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Agora|Event")
-	void OnPlayerSrcInfoChanged(const FSrcInfo& from, const FSrcInfo& to);
+	void OnPlayerSrcInfoChanged(const FUABT_SrcInfo& from, const FUABT_SrcInfo& to);
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Agora|Event")
-	void OnPlayerInfoUpdated(const FPlayerUpdatedInfo& info);
+	void OnPlayerInfoUpdated(const FUABT_PlayerUpdatedInfo& info);
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Agora|Event")
-	void OnPlayerCacheStats(const FCacheStatistics& stats);
+	void OnPlayerCacheStats(const FUABT_CacheStatistics& stats);
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Agora|Event")
-	void OnPlayerPlaybackStats(const FPlayerPlaybackStats& stats);
+	void OnPlayerPlaybackStats(const FUABT_PlayerPlaybackStats& stats);
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Agora|Event")
 	void OnAudioVolumeIndication(int volume);
