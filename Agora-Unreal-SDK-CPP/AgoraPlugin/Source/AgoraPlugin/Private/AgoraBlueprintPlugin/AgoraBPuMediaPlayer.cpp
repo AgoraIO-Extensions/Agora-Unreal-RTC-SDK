@@ -69,12 +69,12 @@ int UAgoraBPuMediaPlayer::Open(const FString & url, int64 startPos)
 	return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
 }
 
-int UAgoraBPuMediaPlayer::OpenWithMediaSource(const FAgoraMediaSource& source)
+int UAgoraBPuMediaPlayer::OpenWithMediaSource(const FUABT_AgoraMediaSource& source)
 {
 	if (MediaPlayer) {
-		agora::media::base::MediaSource mediaSource = source.CreateAgoraData();
+		agora::media::base::MediaSource mediaSource = source.CreateRawData();
 		int ret = MediaPlayer->openWithMediaSource(mediaSource);
-		source.FreeAgoraData(mediaSource);
+		source.FreeRawData(mediaSource);
 		return ret;
 	}
 	return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
@@ -151,7 +151,7 @@ int UAgoraBPuMediaPlayer::GetStreamCount(int64& count)
 	}
 	return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
 }
-int UAgoraBPuMediaPlayer::GetStreamInfo(int64 index, FPlayerStreamInfo& info)
+int UAgoraBPuMediaPlayer::GetStreamInfo(int64 index, FUABT_PlayerStreamInfo& info)
 {
 	if (MediaPlayer) {
 		agora::media::base::PlayerStreamInfo* playerStreamInfo = nullptr;
@@ -237,12 +237,12 @@ int UAgoraBPuMediaPlayer::SetExternalSubtitle(const FString& url)
 	}
 	return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
 }
-EMEDIA_PLAYER_STATE UAgoraBPuMediaPlayer::GetState()
+EUABT_MEDIA_PLAYER_STATE UAgoraBPuMediaPlayer::GetState()
 {
 	if (MediaPlayer) {
-		return (EMEDIA_PLAYER_STATE)MediaPlayer->getState();
+		return UABTEnum::WrapWithUE(MediaPlayer->getState());
 	}
-	return EMEDIA_PLAYER_STATE::PLAYER_STATE_FAILED;
+	return EUABT_MEDIA_PLAYER_STATE::PLAYER_STATE_FAILED;
 }
 int UAgoraBPuMediaPlayer::Mute(bool muted)
 {
@@ -300,19 +300,19 @@ int UAgoraBPuMediaPlayer::SetView(int64 view)
 	}
 	return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
 }
-int UAgoraBPuMediaPlayer::SetRenderMode(ERENDER_MODE_TYPE renderMode)
+int UAgoraBPuMediaPlayer::SetRenderMode(EUABT_RENDER_MODE_TYPE renderMode)
 {
 	if (MediaPlayer) {
-		int ret = MediaPlayer->setRenderMode((agora::media::base::RENDER_MODE_TYPE)renderMode);
+		int ret = MediaPlayer->setRenderMode(UABTEnum::ToRawValue(renderMode));
 		return ret;
 	}
 	return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
 }
 
-int UAgoraBPuMediaPlayer::SetAudioDualMonoMode(EAUDIO_DUAL_MONO_MODE mode)
+int UAgoraBPuMediaPlayer::SetAudioDualMonoMode(EUABT_AUDIO_DUAL_MONO_MODE mode)
 {
 	if (MediaPlayer) {
-		int ret = MediaPlayer->setAudioDualMonoMode((agora::media::base::AUDIO_DUAL_MONO_MODE)mode);
+		int ret = MediaPlayer->setAudioDualMonoMode(UABTEnum::ToRawValue(mode));
 		return ret;
 	}
 	return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
@@ -408,12 +408,12 @@ int UAgoraBPuMediaPlayer::UnloadSrc(const FString& src)
 	}
 	return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
 }
-int UAgoraBPuMediaPlayer::SetSpatialAudioParams(const FSpatialAudioParams& params)
+int UAgoraBPuMediaPlayer::SetSpatialAudioParams(const FUABT_SpatialAudioParams& params)
 {
 	if (MediaPlayer) {
-		agora::SpatialAudioParams spatialAudioParams = params.CreateAgoraData();
+		agora::SpatialAudioParams spatialAudioParams = params.CreateRawData();
 		int ret = MediaPlayer->setSpatialAudioParams(spatialAudioParams);
-		params.FreeAgoraData(spatialAudioParams);
+		params.FreeRawData(spatialAudioParams);
 		return ret;
 	}
 	return AGORA_UE_ERR_CODE(ERROR_NULLPTR);

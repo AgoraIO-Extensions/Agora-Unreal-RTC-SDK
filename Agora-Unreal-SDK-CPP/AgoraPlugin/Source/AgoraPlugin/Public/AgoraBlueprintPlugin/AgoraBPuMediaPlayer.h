@@ -6,7 +6,7 @@
 
 #include "AgoraPluginInterface.h"
 #include "IAgoraMediaPlayer.h" // because UE has a IMediaPlayer class
-#include "AgoraBPuBaseDataTypes.h"
+#include "AgoraBPuDataTypes.h"
 #include "AgoraBPuIMediaPlayerSourceObserver.h"
 #include "UObject/StrongObjectPtr.h"
 
@@ -16,125 +16,108 @@
 #pragma region  Data Types
 
 USTRUCT(BlueprintType)
-struct FAgoraMediaSource
+struct FUABT_AgoraMediaSource
 {
 	GENERATED_BODY()
 
 public:
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|MediaSource")
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	FString url = "";
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|MediaSource")
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	FString uri = "";
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|MediaSource")
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	int64 startPos = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|MediaSource")
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	bool autoPlay = false;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|MediaSource")
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	bool enableCache = false;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|MediaSource")
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	bool enableMultiAudioTrack = false;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|MediaSource")
-	EAgoraOptional isAgoraSource = EAgoraOptional::AGORA_NULL_VALUE;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|MediaSource")
-	EAgoraOptional isLiveSource = EAgoraOptional::AGORA_NULL_VALUE;
-	//UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|MediaSource")
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	FUABT_Opt_bool isAgoraSource;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	FUABT_Opt_bool isLiveSource;
+	//UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	//UIMediaPlayerCustomDataProvider* provider = nullptr;
 
-	FAgoraMediaSource(){}
-	FAgoraMediaSource(const agora::media::base::MediaSource & AgoraData){
+	FUABT_AgoraMediaSource(){}
+	FUABT_AgoraMediaSource(const agora::media::base::MediaSource & AgoraData){
 		url = UTF8_TO_TCHAR(AgoraData.url);
 		uri = UTF8_TO_TCHAR(AgoraData.uri);
 		startPos = AgoraData.startPos;
 		autoPlay = AgoraData.autoPlay;
 		enableCache = AgoraData.enableCache;
 		enableMultiAudioTrack = AgoraData.enableMultiAudioTrack;
-		SET_UEBP_OPTIONAL_VAL_BOOL(this->isAgoraSource,AgoraData.isAgoraSource)
-		SET_UEBP_OPTIONAL_VAL_BOOL(this->isLiveSource, AgoraData.isLiveSource)
+		this->isAgoraSource = AgoraData.isAgoraSource;
+		this->isLiveSource = AgoraData.isLiveSource;
 		// provider = AgoraData.provider; not supported
 	}
 
-	agora::media::base::MediaSource CreateAgoraData() const {
+	agora::media::base::MediaSource CreateRawData() const {
 		agora::media::base::MediaSource AgoraData;
 		
-		SET_UABT_FSTRING_TO_CONST_CHAR___MEMALLOC(AgoraData.url, url)
-		SET_UABT_FSTRING_TO_CONST_CHAR___MEMALLOC(AgoraData.uri, uri)
+		AgoraData.url = UABT::New_CharPtr(url);
+		AgoraData.uri = UABT::New_CharPtr(uri);
 		AgoraData.startPos = startPos;
 		AgoraData.autoPlay = autoPlay;
 		AgoraData.enableCache = enableCache;
 		AgoraData.enableMultiAudioTrack = enableMultiAudioTrack;
-		SET_AGORA_OPTIONAL_VAL_BOOL(AgoraData.isAgoraSource,isAgoraSource)
-		SET_AGORA_OPTIONAL_VAL_BOOL(AgoraData.isLiveSource, isLiveSource)
+		AgoraData.isAgoraSource = isAgoraSource.CreateRawOptData();
+		AgoraData.isLiveSource = isLiveSource.CreateRawOptData();
 		// not supported
 		return AgoraData;
 	}
 
-	void FreeAgoraData(agora::media::base::MediaSource& AgoraData) const{
-		SET_UABT_FSTRING_TO_CONST_CHAR___MEMFREE(AgoraData.url)
-		SET_UABT_FSTRING_TO_CONST_CHAR___MEMFREE(AgoraData.uri)
+	void FreeRawData(agora::media::base::MediaSource& AgoraData) const{
+		UABT::Free_CharPtr(AgoraData.url);
+		UABT::Free_CharPtr(AgoraData.uri);
+
+		FUABT_Opt_bool::FreeRawOptData(AgoraData.isAgoraSource);
+		FUABT_Opt_bool::FreeRawOptData(AgoraData.isLiveSource);
 	}
 
 };
 
 
-UENUM(BlueprintType)
-enum class EAUDIO_DUAL_MONO_MODE : uint8 {
-	AUDIO_DUAL_MONO_STEREO = 0,
-	AUDIO_DUAL_MONO_L = 1,
-	AUDIO_DUAL_MONO_R = 2,
-	AUDIO_DUAL_MONO_MIX = 3
-};
-
-UENUM(BlueprintType)
-enum class EMEDIA_STREAM_TYPE : uint8 {
-
-	STREAM_TYPE_UNKNOWN = 0,
-
-	STREAM_TYPE_VIDEO = 1,
-
-	STREAM_TYPE_AUDIO = 2,
-
-	STREAM_TYPE_SUBTITLE = 3,
-};
-
 USTRUCT(BlueprintType)
-struct FPlayerStreamInfo
+struct FUABT_PlayerStreamInfo
 {
 	GENERATED_BODY()
 
 public:
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|PlayerStreamInfo")
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	int streamIndex = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|PlayerStreamInfo")
-	EMEDIA_STREAM_TYPE streamType = EMEDIA_STREAM_TYPE::STREAM_TYPE_UNKNOWN;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|PlayerStreamInfo")
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	EUABT_MEDIA_STREAM_TYPE streamType = EUABT_MEDIA_STREAM_TYPE::STREAM_TYPE_UNKNOWN;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	FString codecName = "";
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|PlayerStreamInfo")
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	FString language = "";
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|PlayerStreamInfo")
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	int videoFrameRate = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|PlayerStreamInfo")
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	int videoBitRate = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|PlayerStreamInfo")
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	int videoWidth = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|PlayerStreamInfo")
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	int videoHeight = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|PlayerStreamInfo")
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	int videoRotation = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|PlayerStreamInfo")
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	int audioSampleRate = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|PlayerStreamInfo")
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	int audioChannels = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|PlayerStreamInfo")
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	int audioBitsPerSample = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|PlayerStreamInfo")
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	int duration = 0;
 
-	FPlayerStreamInfo(){}
-	FPlayerStreamInfo(const agora::media::base::PlayerStreamInfo & AgoraData){
+	FUABT_PlayerStreamInfo(){}
+	FUABT_PlayerStreamInfo(const agora::media::base::PlayerStreamInfo & AgoraData){
 		streamIndex = AgoraData.streamIndex;
-		streamType = (EMEDIA_STREAM_TYPE)AgoraData.streamType;
+		streamType = (EUABT_MEDIA_STREAM_TYPE)AgoraData.streamType;
 		codecName = UTF8_TO_TCHAR(AgoraData.codecName);
 		language = UTF8_TO_TCHAR(AgoraData.language);
 		videoFrameRate = AgoraData.videoFrameRate;
@@ -148,12 +131,12 @@ public:
 		duration = AgoraData.duration;
 	}
 
-	agora::media::base::PlayerStreamInfo CreateAgoraData() const {
+	agora::media::base::PlayerStreamInfo CreateRawData() const {
 		agora::media::base::PlayerStreamInfo AgoraData;
 		AgoraData.streamIndex = streamIndex;
 		AgoraData.streamType = (agora::media::base::MEDIA_STREAM_TYPE)streamType;
-		SET_UABT_FSTRING_TO_CHAR_ARRAY(AgoraData.codecName, codecName,agora::media::base::kMaxCharBufferLength)
-		SET_UABT_FSTRING_TO_CHAR_ARRAY(AgoraData.language, language, agora::media::base::kMaxCharBufferLength)
+		UABT::SetCharArrayPtr(AgoraData.codecName, codecName,agora::media::base::kMaxCharBufferLength);
+		UABT::SetCharArrayPtr(AgoraData.language, language, agora::media::base::kMaxCharBufferLength);
 		AgoraData.videoFrameRate = videoFrameRate;
 		AgoraData.videoBitRate = videoBitRate;
 		AgoraData.videoWidth = videoWidth;
@@ -166,7 +149,7 @@ public:
 		return AgoraData;
 	}
 
-	void FreeAgoraData(agora::media::base::PlayerStreamInfo & AgoraData) const {
+	void FreeRawData(agora::media::base::PlayerStreamInfo & AgoraData) const {
 	
 	}
 };
@@ -206,7 +189,7 @@ public:
 	//int OpenWithCustomSource(int64 startPos, UIMediaPlayerCustomDataProvider* provider);
 
 	UFUNCTION(BlueprintCallable, Category = "Agora|IMediaPlayer")
-	int OpenWithMediaSource(const FAgoraMediaSource& source);
+	int OpenWithMediaSource(const FUABT_AgoraMediaSource& source);
 	UFUNCTION(BlueprintCallable, Category = "Agora|IMediaPlayer")
 	int Play();
 	UFUNCTION(BlueprintCallable, Category = "Agora|IMediaPlayer")
@@ -226,7 +209,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Agora|IMediaPlayer")
 	int GetStreamCount(int64& count);
 	UFUNCTION(BlueprintCallable, Category = "Agora|IMediaPlayer")
-	int GetStreamInfo(int64 index, FPlayerStreamInfo& info);
+	int GetStreamInfo(int64 index, FUABT_PlayerStreamInfo& info);
 	UFUNCTION(BlueprintCallable, Category = "Agora|IMediaPlayer")
 	int SetLoopCount(int loopCount);
 	UFUNCTION(BlueprintCallable, Category = "Agora|IMediaPlayer")
@@ -247,7 +230,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Agora|IMediaPlayer")
 	int SetExternalSubtitle(const FString& url);
 	UFUNCTION(BlueprintCallable, Category = "Agora|IMediaPlayer")
-	EMEDIA_PLAYER_STATE GetState();
+	EUABT_MEDIA_PLAYER_STATE GetState();
 	UFUNCTION(BlueprintCallable, Category = "Agora|IMediaPlayer")
 	int Mute(bool muted);
 	UFUNCTION(BlueprintCallable, Category = "Agora|IMediaPlayer")
@@ -263,13 +246,13 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Agora|IMediaPlayer")
 	int SetView(int64 view);
 	UFUNCTION(BlueprintCallable, Category = "Agora|IMediaPlayer")
-	int SetRenderMode(ERENDER_MODE_TYPE renderMode);
+	int SetRenderMode(EUABT_RENDER_MODE_TYPE renderMode);
 	//UFUNCTION(BlueprintCallable, Category = "Agora|IMediaPlayer")
 	//int RegisterPlayerSourceObserver(UIMediaPlayerSourceObserver* observer);
 	//UFUNCTION(BlueprintCallable, Category = "Agora|IMediaPlayer")
 	//int UnregisterPlayerSourceObserver(UIMediaPlayerSourceObserver* observer);
 	//UFUNCTION(BlueprintCallable, Category = "Agora|IMediaPlayer")
-	//int RegisterAudioFrameObserver(UIAudioPcmFrameSink* observer, ERAW_AUDIO_FRAME_OP_MODE_TYPE mode = ERAW_AUDIO_FRAME_OP_MODE_TYPE::RAW_AUDIO_FRAME_OP_MODE_READ_ONLY);
+	//int RegisterAudioFrameObserver(UIAudioPcmFrameSink* observer, EUABT_RAW_AUDIO_FRAME_OP_MODE_TYPE mode = EUABT_RAW_AUDIO_FRAME_OP_MODE_TYPE::RAW_AUDIO_FRAME_OP_MODE_READ_ONLY);
 	//UFUNCTION(BlueprintCallable, Category = "Agora|IMediaPlayer")
 	//int UnregisterAudioFrameObserver(UIAudioPcmFrameSink* observer);
 	//UFUNCTION(BlueprintCallable, Category = "Agora|IMediaPlayer")
@@ -281,7 +264,7 @@ public:
 	//UFUNCTION(BlueprintCallable, Category = "Agora|IMediaPlayer")
 	//int UnregisterMediaPlayerAudioSpectrumObserver(UIAudioSpectrumObserver* observer);
 	UFUNCTION(BlueprintCallable, Category = "Agora|IMediaPlayer")
-	int SetAudioDualMonoMode(EAUDIO_DUAL_MONO_MODE mode);
+	int SetAudioDualMonoMode(EUABT_AUDIO_DUAL_MONO_MODE mode);
 	UFUNCTION(BlueprintCallable, Category = "Agora|IMediaPlayer")
 	FString GetPlayerSdkVersion();
 	UFUNCTION(BlueprintCallable, Category = "Agora|IMediaPlayer")
@@ -309,7 +292,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Agora|IMediaPlayer")
 	int UnloadSrc(const FString& src);
 	UFUNCTION(BlueprintCallable, Category = "Agora|IMediaPlayer")
-	int SetSpatialAudioParams(const FSpatialAudioParams& params);
+	int SetSpatialAudioParams(const FUABT_SpatialAudioParams& params);
 	UFUNCTION(BlueprintCallable, Category = "Agora|IMediaPlayer")
 	int SetSoundPositionParams(float pan, float gain);
 

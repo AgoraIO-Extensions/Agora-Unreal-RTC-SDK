@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 
 #include "AgoraPluginInterface.h"
-#include "AgoraBPuBaseDataTypes.h"
+#include "AgoraBPuDataTypes.h"
 
 
 #include "AgoraBPuDeviceManager.generated.h"
@@ -93,7 +93,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Agora|IVideoDeviceManager")
 	int NumberOfCapabilities(const FString & deviceIdUTF8);
 	UFUNCTION(BlueprintCallable, Category = "Agora|IVideoDeviceManager")
-	int GetCapability(const FString & deviceIdUTF8, int deviceCapabilityNumber, FVideoFormat& capability);
+	int GetCapability(const FString & deviceIdUTF8, int deviceCapabilityNumber, FUABT_VideoFormat& capability);
 	UFUNCTION(BlueprintCallable, Category = "Agora|IVideoDeviceManager")
 	int StartDeviceTest(int64 hwnd);
 	UFUNCTION(BlueprintCallable, Category = "Agora|IVideoDeviceManager")
