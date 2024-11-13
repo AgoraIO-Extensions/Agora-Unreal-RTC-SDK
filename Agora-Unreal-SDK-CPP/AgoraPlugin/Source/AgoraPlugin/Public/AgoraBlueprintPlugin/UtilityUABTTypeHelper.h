@@ -9,6 +9,7 @@
 
 #include "UtilityAgoraBPuLogger.h"
 #include "AgoraHeaderBase.h"
+#include <string>
 
 
 #include "UtilityUABTTypeHelper.generated.h"
