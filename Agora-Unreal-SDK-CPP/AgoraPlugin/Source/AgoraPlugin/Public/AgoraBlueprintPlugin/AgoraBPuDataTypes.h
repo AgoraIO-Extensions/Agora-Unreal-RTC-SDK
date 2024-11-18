@@ -4882,3 +4882,57 @@ public:
 		UABT::Free_RawDataArray<agora::rtc::MixedAudioStream, FUABT_MixedAudioStream>(AgoraData.sourceStreams, AgoraData.streamCount);
 	}
 };
+
+
+
+
+/** Definition of SnapshotConfig.
+ */
+
+USTRUCT(BlueprintType)
+struct FUABT_SnapshotConfig {
+
+	GENERATED_BODY()
+
+public:
+
+	/**
+	 * The local path (including filename extensions) of the snapshot. For example:
+	 * - Windows: `C:\Users\<user_name>\AppData\Local\Agora\<process_name>\example.jpg`
+	 * - iOS: `/App Sandbox/Library/Caches/example.jpg`
+	 * - macOS: `бл/Library/Logs/example.jpg`
+	 * - Android: `/storage/emulated/0/Android/data/<package name>/files/example.jpg`
+	 */
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	FString filePath;
+
+	/**
+	 * The position of the video observation. See VIDEO_MODULE_POSITION.
+	 *
+	 * Allowed values vary depending on the `uid` parameter passed in `takeSnapshot` or `takeSnapshotEx`:
+	 * - uid = 0: Position 2, 4 and 8 are allowed.
+	 * - uid != 0: Only position 2 is allowed.
+	 *
+	 */
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	EUABT_VIDEO_MODULE_POSITION position = EUABT_VIDEO_MODULE_POSITION::POSITION_PRE_ENCODER;
+
+
+	FUABT_SnapshotConfig() {}
+	FUABT_SnapshotConfig(const agora::media::SnapshotConfig& AgoraData) {
+		filePath = UTF8_TO_TCHAR(AgoraData.filePath);
+		position = UABTEnum::WrapWithUE(AgoraData.position);
+	}
+
+	agora::media::SnapshotConfig CreateRawData() const {
+		agora::media::SnapshotConfig AgoraData;
+		AgoraData.filePath = UABT::New_CharPtr(filePath);
+		AgoraData.position = UABTEnum::ToRawValue(position);
+		return AgoraData;
+	}
+
+	void FreeRawData(agora::media::SnapshotConfig& AgoraData) const {
+		UABT::Free_CharPtr(AgoraData.filePath);
+	}
+
+};
