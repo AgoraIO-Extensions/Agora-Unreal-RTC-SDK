@@ -68,49 +68,12 @@ public:
 
 	UFUNCTION(BlueprintPure, Category = "Agora|IRtcEngine")
 	void GetEventHandler(EAgoraBPuEventHandlerType& HandlerType, UAgoraBPuIRtcEngineEventHandler*& EventHandler, UAgoraBPuIRtcEngineEventHandlerEx* & EventHandlerEx);
-	
-	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
-	int Initialize(const FUABT_RtcEngineContext& context);
-
-	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
-	FString GetVersion();
-
-
-	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
-	void Release(bool sync = false);
 
 	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
 	void ClearAllEventHandlerCBExecutors();
-
-
-
+	
 	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
-	int JoinChannel(const FString & token, const FString& channelId, int64 uid);
-
-	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
-	int JoinChannelWithOptions(const FString& token, const FString& channelId, int64 uid, const FUABT_ChannelMediaOptions& options);
-
-	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
-	int LeaveChannel();
-
-	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
-	int LeaveChannelWithOptions(const FUABT_LeaveChannelOptions& options);
-
-	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
-	int EnableVideo();
-
-	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
-	int DisableVideo();
-
-	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
-	int EnableAudio();
-
-	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
-	int DisableAudio();
-
-	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
-	int SetClientRole(FUABT_ClientRoleOptions options, EUABT_CLIENT_ROLE_TYPE clientroletype = EUABT_CLIENT_ROLE_TYPE::CLIENT_ROLE_BROADCASTER);
-
+	int Initialize(const FUABT_RtcEngineContext& context);
 
 
 	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
@@ -122,7 +85,11 @@ public:
 	int SetupRemoteVideoEx(const FUABT_VideoCanvas& canvas, const FUABT_RtcConnection& connection);
 
 
-#pragma region Other APIs
+	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
+	FString GetVersion();
+
+	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
+	void Release(bool sync = false);
 
 	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
 	FString GetErrorDescription(int code);
@@ -142,9 +109,20 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
 	int UpdatePreloadChannelToken(const FString& token);
 
+	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
+	int JoinChannel(const FString & token, const FString& channelId, int64 uid);
+
+	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
+	int JoinChannelWithOptions(const FString& token, const FString& channelId, int64 uid, const FUABT_ChannelMediaOptions& options);
 
 	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
 	int UpdateChannelMediaOptions(const FUABT_ChannelMediaOptions& options);
+
+	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
+	int LeaveChannel();
+
+	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
+	int LeaveChannelWithOptions(const FUABT_LeaveChannelOptions& options);
 
 	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
 	int RenewToken(const FString & token);
@@ -152,25 +130,62 @@ public:
 	int SetChannelProfile(EUABT_CHANNEL_PROFILE_TYPE profile);
 
 	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
+	int SetClientRole(EUABT_CLIENT_ROLE_TYPE clientroletype = EUABT_CLIENT_ROLE_TYPE::CLIENT_ROLE_BROADCASTER);
+
+	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
+	int SetClientRoleWithOptions(FUABT_ClientRoleOptions options, EUABT_CLIENT_ROLE_TYPE clientroletype = EUABT_CLIENT_ROLE_TYPE::CLIENT_ROLE_BROADCASTER);
+
+	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
 	int StartEchoTest(const FUABT_EchoTestConfiguration& config);
 	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
 	int StopEchoTest();
+
 	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
 	int EnableMultiCamera(bool enabled, const FUABT_CameraCapturerConfiguration& config);
 
 
 	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
-	int StartPreview(EUABT_VIDEO_SOURCE_TYPE sourceType = EUABT_VIDEO_SOURCE_TYPE::VIDEO_SOURCE_CAMERA_PRIMARY);
+	int EnableVideo();
+
 	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
-	int StopPreview(EUABT_VIDEO_SOURCE_TYPE sourceType = EUABT_VIDEO_SOURCE_TYPE::VIDEO_SOURCE_CAMERA_PRIMARY);
+	int DisableVideo();
+
+	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
+	int StartPreview();
+
+	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
+	int StartPreviewWithOptions(EUABT_VIDEO_SOURCE_TYPE sourceType = EUABT_VIDEO_SOURCE_TYPE::VIDEO_SOURCE_CAMERA_PRIMARY);
+	
+	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
+	int StopPreview();
+	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
+	int StopPreviewWithOptions(EUABT_VIDEO_SOURCE_TYPE sourceType = EUABT_VIDEO_SOURCE_TYPE::VIDEO_SOURCE_CAMERA_PRIMARY);
+
 	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
 	int StartLastmileProbeTest(const FUABT_LastmileProbeConfig& config);
 	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
 	int StopLastmileProbeTest();
+
 	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
 	int SetVideoEncoderConfiguration(const FUABT_VideoEncoderConfiguration& config);
 	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
 	int SetBeautyEffectOptions(bool enabled, const FUABT_BeautyOptions& options, EUABT_MEDIA_SOURCE_TYPE type);
+
+	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
+	int SetFaceShapeBeautyOptions(bool enabled, const FUABT_FaceShapeBeautyOptions& options, EUABT_MEDIA_SOURCE_TYPE type = EUABT_MEDIA_SOURCE_TYPE::PRIMARY_CAMERA_SOURCE);
+
+	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
+	int SetFaceShapeAreaOptions(const FUABT_FaceShapeAreaOptions& options, EUABT_MEDIA_SOURCE_TYPE type = EUABT_MEDIA_SOURCE_TYPE::PRIMARY_CAMERA_SOURCE);
+
+	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
+	int GetFaceShapeBeautyOptions(FUABT_FaceShapeBeautyOptions & options, EUABT_MEDIA_SOURCE_TYPE type = EUABT_MEDIA_SOURCE_TYPE::PRIMARY_CAMERA_SOURCE);
+
+	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
+	int GetFaceShapeAreaOptions(EUABT_FACE_SHAPE_AREA shapeArea, FUABT_FaceShapeAreaOptions& options, EUABT_MEDIA_SOURCE_TYPE type = EUABT_MEDIA_SOURCE_TYPE::PRIMARY_CAMERA_SOURCE);
+
+	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
+	int SetFilterEffectOptions(bool enabled, const FUABT_FilterEffectOptions & options, EUABT_MEDIA_SOURCE_TYPE type = EUABT_MEDIA_SOURCE_TYPE::PRIMARY_CAMERA_SOURCE);
+
 	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
 	int SetLowlightEnhanceOptions(bool enabled, const FUABT_LowlightEnhanceOptions& options, EUABT_MEDIA_SOURCE_TYPE type);
 	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
@@ -186,6 +201,12 @@ public:
 	int SetVideoQoEPreference(EUABT_VIDEO_QOE_PREFERENCE_TYPE qoePreference);
 
 	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
+	int EnableAudio();
+
+	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
+	int DisableAudio();
+
+	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
 	int SetAudioProfileAndScenario(EUABT_AUDIO_PROFILE_TYPE profile = EUABT_AUDIO_PROFILE_TYPE::AUDIO_PROFILE_DEFAULT, EUABT_AUDIO_SCENARIO_TYPE scenario = EUABT_AUDIO_SCENARIO_TYPE::AUDIO_SCENARIO_DEFAULT);
 
 	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
@@ -198,8 +219,7 @@ public:
 	int MuteLocalAudioStream(bool mute);
 	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
 	int MuteAllRemoteAudioStreams(bool mute);
-	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
-	int SetRemoteDefaultVideoStreamType(EUABT_VIDEO_STREAM_TYPE streamType);
+
 	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
 	int MuteRemoteAudioStream(int64 uid, bool mute);
 
@@ -209,6 +229,10 @@ public:
 	int EnableLocalVideo(bool enabled);
 	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
 	int MuteAllRemoteVideoStreams(bool mute);
+
+	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
+	int SetRemoteDefaultVideoStreamType(EUABT_VIDEO_STREAM_TYPE streamType);
+
 	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
 	int MuteRemoteVideoStream(int64 uid, bool mute);
 	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
@@ -217,7 +241,22 @@ public:
 	int SetRemoteVideoSubscriptionOptions(int64 uid, const FUABT_VideoSubscriptionOptions& options);
 
 	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
+	int SetSubscribeAudioBlocklist(TArray<int64> uidList, int uidNumber);
+
+	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
+	int SetSubscribeAudioAllowlist(TArray<int64> uidList, int uidNumber);
+	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
+	int SetSubscribeVideoBlocklist(TArray<int64> uidList, int uidNumber);
+	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
+	int SetSubscribeVideoAllowlist(TArray<int64> uidList, int uidNumber);
+
+	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
 	int EnableAudioVolumeIndication(int interval, int smooth, bool reportVad);
+
+
+	//virtual int startAudioRecording(const char* filePath, AUDIO_RECORDING_QUALITY_TYPE quality) override;
+	//virtual int startAudioRecording(const char* filePath, int sampleRate, AUDIO_RECORDING_QUALITY_TYPE quality) override;
+
 	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
 	int StartAudioRecording(const FUABT_AudioRecordingConfiguration& config);
 	
@@ -236,6 +275,8 @@ public:
 	//UIMediaRecorder* CreateMediaRecorder(FRecorderStreamInfo info);
 	//UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
 	//int DestroyMediaRecorder(UIMediaRecorder* mediaRecorder);
+
+	//virtual int startAudioMixing(const char* filePath, bool loopback, int cycle) override;
 
 	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
 	int StartAudioMixing(const FString & filePath, bool loopback, int cycle, int startPos = 0);
@@ -338,6 +379,15 @@ public:
 	int SetLocalVoiceEqualization(EUABT_AUDIO_EQUALIZATION_BAND_FREQUENCY bandFrequency, int bandGain);
 	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
 	int SetLocalVoiceReverb(EUABT_AUDIO_REVERB_TYPE reverbKey, int value);
+
+	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
+	int SetHeadphoneEQPreset(EUABT_HEADPHONE_EQUALIZER_PRESET preset);
+	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
+	int SetHeadphoneEQParameters(int lowGain, int highGain);
+
+	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
+	int EnableVoiceAITuner(bool enabled, EUABT_VOICE_AI_TUNER_TYPE type);
+
 	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
 	int SetLogFile(const FString& filePath);
 	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
@@ -355,12 +405,31 @@ public:
 	int SetLocalRenderMode(EUABT_RENDER_MODE_TYPE renderMode, EUABT_VIDEO_MIRROR_MODE_TYPE mirrorMode = EUABT_VIDEO_MIRROR_MODE_TYPE::VIDEO_MIRROR_MODE_AUTO);
 	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
 	int SetRemoteRenderMode(int64 uid, EUABT_RENDER_MODE_TYPE renderMode, EUABT_VIDEO_MIRROR_MODE_TYPE mirrorMode);
+
+	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
+	int SetLocalRenderTargetFps(EUABT_VIDEO_SOURCE_TYPE sourceType, int targetFps);
+
+	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
+	int SetRemoteRenderTargetFps(int targetFps);
+
+	//virtual int setLocalRenderMode(media::base::RENDER_MODE_TYPE renderMode) __deprecated override;
+
 	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
 	int SetLocalVideoMirrorMode(EUABT_VIDEO_MIRROR_MODE_TYPE mirrorMode);
+
+	//virtual int enableDualStreamMode(bool enabled) __deprecated override;
+
 	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
 	int EnableDualStreamMode(bool enabled, const FUABT_SimulcastStreamConfig& streamConfig);
+
+	//virtual int setDualStreamMode(SIMULCAST_STREAM_MODE mode) override;
+
+	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
+	int SetSimulcastConfig(const FUABT_SimulcastConfig& simulcastConfig);
+
 	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
 	int SetDualStreamMode(EUABT_SIMULCAST_STREAM_MODE mode, const FUABT_SimulcastStreamConfig& streamConfig);
+
 	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
 	int EnableCustomAudioLocalPlayback(int64 trackId, bool enabled);
 	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
@@ -369,6 +438,8 @@ public:
 	int SetPlaybackAudioFrameParameters(int sampleRate, int channel, EUABT_RAW_AUDIO_FRAME_OP_MODE_TYPE mode, int samplesPerCall);
 	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
 	int SetMixedAudioFrameParameters(int sampleRate, int channel, int samplesPerCall);
+	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
+	int SetEarMonitoringAudioFrameParameters(int sampleRate, int channel, EUABT_RAW_AUDIO_FRAME_OP_MODE_TYPE mode, int samplesPerCall);
 	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
 	int SetPlaybackAudioFrameBeforeMixingParameters(int sampleRate, int channel);
 	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
@@ -399,6 +470,12 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
 	int SetHighPriorityUserList(const TArray<int64> & uidList, EUABT_STREAM_FALLBACK_OPTIONS option);
 
+	//virtual int enableExtension(const char* provider, const char* extension, const ExtensionInfo& extensionInfo, bool enable = true) override;
+	
+	//virtual int setExtensionProperty(const char* provider, const char* extension, const ExtensionInfo& extensionInfo, const char* key, const char* value)override;
+
+	//virtual int getExtensionProperty(const char* provider, const char* extension, const ExtensionInfo& extensionInfo, const char* key, char* value, int buf_len)override;
+
 	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
 	int EnableLoopbackRecording(bool enabled, const FString & deviceName);
 	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
@@ -413,13 +490,19 @@ public:
 	int LoadExtensionProvider(const FString& path, bool unload_after_use);
 	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
 	int SetExtensionProviderProperty(const FString& provider, const FString& key, const FString& value);
+
+	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
+	int RegisterExtension(const FString& provider, const FString& extension, EUABT_MEDIA_SOURCE_TYPE type);
+
 	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
 	int EnableExtension(const FString& provider, const FString& extension, bool enable = true, EUABT_MEDIA_SOURCE_TYPE type = EUABT_MEDIA_SOURCE_TYPE::UNKNOWN_MEDIA_SOURCE);
+
+
 	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
 	int SetExtensionProperty(const FString& provider, const FString& extension, const FString& key, const FString& value, EUABT_MEDIA_SOURCE_TYPE type = EUABT_MEDIA_SOURCE_TYPE::UNKNOWN_MEDIA_SOURCE);
-	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
-	int GetExtensionProperty(const FString& provider, const FString& extension,const FUABT_ExtensionInfo & ExtensionInfo, const FString& key, FString& value);
 
+	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
+	int GetExtensionProperty(const FString& provider, const FString& extension, const FString& key, FString& value, EUABT_MEDIA_SOURCE_TYPE type = EUABT_MEDIA_SOURCE_TYPE::UNKNOWN_MEDIA_SOURCE);
 
 	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
 	int SetCameraCapturerConfiguration(const FUABT_CameraCapturerConfiguration& config);
@@ -502,19 +585,29 @@ public:
 	int UpdateScreenCaptureRegion(const FUABT_Rectangle& regionRect);
 	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
 	int UpdateScreenCaptureParameters(const FUABT_ScreenCaptureParameters& captureParams);
+
+	
 	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
 	int StartScreenCapture(const FUABT_ScreenCaptureParameters2& captureParams);
+
+	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
+	int UpdateScreenCapture(const FUABT_ScreenCaptureParameters2& captureParams);
+
 	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
 	int QueryScreenCaptureCapability();
 
 	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
 	int QueryCameraFocalLengthCapability(const TArray<FUABT_FocalLengthInfo> & focalLengthInfos);
+
+	// UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
+	// int SetExternalMediaProjection(void* mediaProjection);
+
 	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
 	int SetScreenCaptureScenario(EUABT_SCREEN_SCENARIO_TYPE screenScenario);
-	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
-	int UpdateScreenCapture(const FUABT_ScreenCaptureParameters2& captureParams);
+	
 	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
 	int StopScreenCapture();
+
 	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
 	int GetCallId(FString& callId);
 	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
@@ -528,29 +621,39 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
 	int UpdateRtmpTranscoding(const FUABT_LiveTranscoding& transcoding);
 	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
+	int StartLocalVideoTranscoder(const FUABT_LocalTranscoderConfiguration& config);
+	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
+	int UpdateLocalTranscoderConfiguration(const FUABT_LocalTranscoderConfiguration& config);
+	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
 	int StopRtmpStream(const FString& url);
+	
+	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
+	int StopLocalVideoTranscoder();
+
+	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
+	int StartLocalAudioMixer(const FUABT_LocalAudioMixerConfiguration& config);
+	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
+	int UpdateLocalAudioMixerConfiguration(const FUABT_LocalAudioMixerConfiguration& config);
+	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
+	int StopLocalAudioMixer();
 
 	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
 	int StartCameraCapture(EUABT_VIDEO_SOURCE_TYPE sourceType, const FUABT_CameraCapturerConfiguration& config);
 	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
 	int StopCameraCapture(EUABT_VIDEO_SOURCE_TYPE sourceType);
 	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
+	int SetCameraDeviceOrientation(EUABT_VIDEO_SOURCE_TYPE type, EUABT_VIDEO_ORIENTATION orientation);
+	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
+	int SetScreenCaptureOrientation(EUABT_VIDEO_SOURCE_TYPE type, EUABT_VIDEO_ORIENTATION orientation);
+
+	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
 	int StartScreenCaptureBySourceType(EUABT_VIDEO_SOURCE_TYPE sourceType, const FUABT_ScreenCaptureConfiguration& config);
 	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
 	int StopScreenCaptureBySourceType(EUABT_VIDEO_SOURCE_TYPE sourceType);
 
 	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
-	int StartLocalVideoTranscoder(const FUABT_LocalTranscoderConfiguration& config);
-	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
-	int UpdateLocalTranscoderConfiguration(const FUABT_LocalTranscoderConfiguration& config);
-	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
-	int StopLocalVideoTranscoder();
-	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
-	int SetCameraDeviceOrientation(EUABT_VIDEO_SOURCE_TYPE type, EUABT_VIDEO_ORIENTATION orientation);
-	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
-	int SetScreenCaptureOrientation(EUABT_VIDEO_SOURCE_TYPE type, EUABT_VIDEO_ORIENTATION orientation);
-	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
 	EUABT_CONNECTION_STATE_TYPE GetConnectionState();
+
 	//UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
 	//bool RegisterEventHandler(UIRtcEngineEventHandler* eventHandler);
 	//UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
@@ -559,16 +662,23 @@ public:
 	//bool UnregisterEventHandler(UIRtcEngineEventHandler* eventHandler);
 	//UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
 	//bool UnregisterEventHandlerEx(UIRtcEngineEventHandlerEx* eventHandler);
+
 	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
 	int SetRemoteUserPriority(int64 uid, EUABT_PRIORITY_TYPE userPriority);
 	//UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
 	//int RegisterPacketObserver(UIPacketObserver* observer);
 	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
 	int EnableEncryption(bool enabled, const FUABT_EncryptionConfig& config);
+
+	//virtual int createDataStream(int* streamId, bool reliable, bool ordered) override;
+
 	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
 	int CreateDataStream(int& streamId, const FUABT_DataStreamConfig& config);
 	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
 	int SendStreamMessage(int streamId, const FString& data);
+
+	//virtual int addVideoWatermark(const RtcImage& watermark) __deprecated override;
+
 	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
 	int AddVideoWatermark(const FString& watermarkUrl, const FUABT_WatermarkOptions& options);
 	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
@@ -581,10 +691,12 @@ public:
 	int EnableWebSdkInteroperability(bool enabled);
 	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
 	int SendCustomReportMessage(const FString& id, const FString& category, const FString& event, const FString& label, int value);
+
 	//UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
-	//int RegisterMediaMetadataObserver(UIMetadataObserver* observer, FENUMWRAP_METADATA_TYPE type);
+	//int RegisterMediaMetadataObserver(UIMetadataObserver* observer, EUABT_METADATA_TYPE type);
 	//UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
-	//int UnregisterMediaMetadataObserver(UIMetadataObserver* observer, FENUMWRAP_METADATA_TYPE type);
+	//int UnregisterMediaMetadataObserver(UIMetadataObserver* observer, EUABT_METADATA_TYPE type);
+
 	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
 	int StartAudioFrameDump(const FString& channel_id, int64 uid, const FString& location, const FString& uuid, const FString& passwd, int64 duration_ms, bool auto_upload);
 	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
@@ -594,6 +706,9 @@ public:
 	int SetAINSMode(bool enabled, EUABT_AUDIO_AINS_MODE mode);
 	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
 	int RegisterLocalUserAccount(const FString& appId, const FString& userAccount);
+
+	//virtual int joinChannelWithUserAccount(const char* token, const char* channelId, const char* userAccount) override;
+
 	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
 	int JoinChannelWithUserAccount(const FString& token, const FString& channelId, const FString& userAccount, const FUABT_ChannelMediaOptions& options);
 	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
@@ -605,17 +720,15 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
 	int StartOrUpdateChannelMediaRelay(const FUABT_ChannelMediaRelayConfiguration& configuration);
 	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
-	int StartOrUpdateChannelMediaRelayEx(const FUABT_ChannelMediaRelayConfiguration& configuration, const FUABT_RtcConnection& connection);
-	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
 	int StopChannelMediaRelay();
 	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
 	int PauseAllChannelMediaRelay();
 	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
 	int ResumeAllChannelMediaRelay();
-	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
-	int SetDirectCdnStreamingAudioConfiguration(EUABT_AUDIO_PROFILE_TYPE profile);
-	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
-	int SetDirectCdnStreamingVideoConfiguration(const FUABT_VideoEncoderConfiguration& config);
+	//UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
+	//int SetDirectCdnStreamingAudioConfiguration(EUABT_AUDIO_PROFILE_TYPE profile);
+	//UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
+	//int SetDirectCdnStreamingVideoConfiguration(const FUABT_VideoEncoderConfiguration& config);
 	//UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
 	//int StartDirectCdnStreaming(UIDirectCdnStreamingEventHandler* eventHandler, FString publishUrl, FDirectCdnStreamingMediaOptions& options);
 	//UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
@@ -628,8 +741,12 @@ public:
 	int StopRhythmPlayer();
 	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
 	int ConfigRhythmPlayer(const FUABT_AgoraRhythmPlayerConfig& config);
+
 	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
 	int TakeSnapshot(int64 uid, const FString& filePath);
+	
+	// virtual int takeSnapshot(uid_t uid, const media::SnapshotConfig& config) override;
+
 	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
 	int EnableContentInspect(bool enabled, const FUABT_ContentInspectConfig& config);
 
@@ -648,10 +765,52 @@ public:
 	int SetAVSyncSource(const FString& channelId, int64 uid);
 	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
 	int EnableVideoImageSource(bool enable, const FUABT_ImageTrackOptions& options);
+
+	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
+	int64 GetCurrentMonotonicTimeInMs();
+
+	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
+	int EnableWirelessAccelerate(bool enabled);
+
+	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
+	int GetNetworkType();
+
+	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
+	int SetParameters(const FString& parameters);
+
+	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
+	int StartMediaRenderingTracing();
+
+	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
+	int EnableInstantMediaRendering();
+
+	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
+	FString GetNtpWallTimeInMs();
+
+	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
+	bool IsFeatureAvailableOnDevice(EUABT_FeatureType type);
+
+	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
+	int SendAudioMetadata(const FString& metadata, const FString& length);
+
+	
+	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
+	int	QueryHDRCapability(EUABT_VIDEO_MODULE_TYPE videoModule, EUABT_HDR_CAPABILITY& capability);
+
+#pragma region BP - IRtcEngineEx
+
 	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
 	int JoinChannelEx(const FString& token, const FUABT_RtcConnection& connection, const FUABT_ChannelMediaOptions& options);
+	
+	/*virtual int leaveChannelEx(const RtcConnection& connection) override;*/
+
 	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
 	int LeaveChannelEx(const FUABT_RtcConnection& connection, const FUABT_LeaveChannelOptions& options);
+
+	//virtual int leaveChannelWithUserAccountEx(const char* channelId, const char* userAccount) override;
+
+	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
+	int LeaveChannelWithUserAccountEx(FString channelId, const FString & userAccount, FUABT_LeaveChannelOptions options);
 	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
 	int UpdateChannelMediaOptionsEx(const FUABT_ChannelMediaOptions& options, const FUABT_RtcConnection& connection);
 	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
@@ -662,6 +821,26 @@ public:
 	int MuteRemoteVideoStreamEx(int64 uid, bool mute, const FUABT_RtcConnection& connection);
 	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
 	int SetRemoteVideoStreamTypeEx(int64 uid, EUABT_VIDEO_STREAM_TYPE streamType, const FUABT_RtcConnection& connection);
+
+UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
+	int MuteLocalAudioStreamEx(bool mute, const FUABT_RtcConnection& connection);
+	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
+	int MuteLocalVideoStreamEx(bool mute, const FUABT_RtcConnection& connection);
+	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
+	int MuteAllRemoteAudioStreamsEx(bool mute, const FUABT_RtcConnection& connection);
+	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
+	int MuteAllRemoteVideoStreamsEx(bool mute, const FUABT_RtcConnection& connection);
+
+	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
+	int SetSubscribeAudioBlocklistEx(TArray<int64> uidList, int uidNumber, const FUABT_RtcConnection& connection);
+	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
+	int SetSubscribeAudioAllowlistEx(TArray<int64> uidList, int uidNumber, const FUABT_RtcConnection& connection);
+
+	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
+	int SetSubscribeVideoBlocklistEx(TArray<int64> uidList, int uidNumber, const FUABT_RtcConnection& connection);
+	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
+	int SetSubscribeVideoAllowlistEx(TArray<int64> uidList, int uidNumber, const FUABT_RtcConnection& connection);
+
 	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
 	int SetRemoteVideoSubscriptionOptionsEx(int64 uid, const FUABT_VideoSubscriptionOptions& options, const FUABT_RtcConnection& connection);
 	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
@@ -672,10 +851,23 @@ public:
 	int SetRemoteRenderModeEx(int64 uid, EUABT_RENDER_MODE_TYPE renderMode, EUABT_VIDEO_MIRROR_MODE_TYPE mirrorMode, const FUABT_RtcConnection& connection);
 	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
 	int EnableLoopbackRecordingEx(const FUABT_RtcConnection& connection, bool enabled, const FString& deviceName);
+
+	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
+	int AdjustRecordingSignalVolumeEx(int volume, const FUABT_RtcConnection& connection);
+
+	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
+	int MuteRecordingSignalEx(bool mute, const FUABT_RtcConnection& connection);
+
+	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
+	int AdjustUserPlaybackSignalVolumeEx(int64 uid, int volume, const FUABT_RtcConnection& connection);
+
 	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
 	EUABT_CONNECTION_STATE_TYPE GetConnectionStateEx(const FUABT_RtcConnection& connection);
 	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
 	int EnableEncryptionEx(const FUABT_RtcConnection& connection, bool enabled, const FUABT_EncryptionConfig& config);
+
+	//virtual int createDataStreamEx(int* streamId, bool reliable, bool ordered, const RtcConnection& connection) override;
+
 	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
 	int CreateDataStreamEx(int& streamId, const FUABT_DataStreamConfig& config, const FUABT_RtcConnection& connection);
 	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
@@ -688,47 +880,7 @@ public:
 	int SendCustomReportMessageEx(const FString& id, const FString& category, const FString& event, const FString& label, int value, const FUABT_RtcConnection& connection);
 	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
 	int EnableAudioVolumeIndicationEx(int interval, int smooth, bool reportVad, const FUABT_RtcConnection& connection);
-	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
-	int GetUserInfoByUserAccountEx(const FString& userAccount, FUABT_UserInfo& userInfo, const FUABT_RtcConnection& connection);
-	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
-	int GetUserInfoByUidEx(int64 uid, FUABT_UserInfo& userInfo, const FUABT_RtcConnection& connection);
-	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
-	int EnableDualStreamModeEx(bool enabled, const FUABT_SimulcastStreamConfig& streamConfig, const FUABT_RtcConnection& connection);
-	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
-	int SetDualStreamModeEx(EUABT_SIMULCAST_STREAM_MODE mode, const FUABT_SimulcastStreamConfig& streamConfig, const FUABT_RtcConnection& connection);
-	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
-	int EnableWirelessAccelerate(bool enabled);
-	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
-	int TakeSnapshotEx(const FUABT_RtcConnection& connection, int64 uid, const FString& filePath);
-	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
-	int EnableContentInspectEx(bool enabled, const FUABT_ContentInspectConfig& config, const FUABT_RtcConnection& connection);
-	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
 
-	int MuteLocalAudioStreamEx(bool mute, const FUABT_RtcConnection& connection);
-	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
-	int MuteLocalVideoStreamEx(bool mute, const FUABT_RtcConnection& connection);
-	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
-	int MuteAllRemoteAudioStreamsEx(bool mute, const FUABT_RtcConnection& connection);
-	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
-	int MuteAllRemoteVideoStreamsEx(bool mute, const FUABT_RtcConnection& connection);
-	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
-	int SetSubscribeAudioBlocklist(TArray<int64> uidList, int uidNumber);
-	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
-	int SetSubscribeAudioBlocklistEx(TArray<int64> uidList, int uidNumber, const FUABT_RtcConnection& connection);
-	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
-	int SetSubscribeAudioAllowlist(TArray<int64> uidList, int uidNumber);
-	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
-	int SetSubscribeAudioAllowlistEx(TArray<int64> uidList, int uidNumber, const FUABT_RtcConnection& connection);
-	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
-	int SetSubscribeVideoBlocklist(TArray<int64> uidList, int uidNumber);
-	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
-	int SetSubscribeVideoBlocklistEx(TArray<int64> uidList, int uidNumber, const FUABT_RtcConnection& connection);
-	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
-	int SetSubscribeVideoAllowlist(TArray<int64> uidList, int uidNumber);
-	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
-	int SetSubscribeVideoAllowlistEx(TArray<int64> uidList, int uidNumber, const FUABT_RtcConnection& connection);
-	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
-	int AdjustUserPlaybackSignalVolumeEx(int64 uid, int volume, const FUABT_RtcConnection& connection);
 	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
 	int StartRtmpStreamWithoutTranscodingEx(const FString& url, const FUABT_RtcConnection& connection);
 	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
@@ -737,14 +889,44 @@ public:
 	int UpdateRtmpTranscodingEx(const FUABT_LiveTranscoding& transcoding, const FUABT_RtcConnection& connection);
 	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
 	int StopRtmpStreamEx(const FString& url, const FUABT_RtcConnection& connection);
+
+	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
+	int StartOrUpdateChannelMediaRelayEx(const FUABT_ChannelMediaRelayConfiguration& configuration, const FUABT_RtcConnection& connection);
 	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
 	int StopChannelMediaRelayEx(const FUABT_RtcConnection& connection);
 	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
 	int PauseAllChannelMediaRelayEx(const FUABT_RtcConnection& connection);
 	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
 	int ResumeAllChannelMediaRelayEx(const FUABT_RtcConnection& connection);
+
 	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
-	int SetParameters(const FString& parameters);
+	int GetUserInfoByUserAccountEx(const FString& userAccount, FUABT_UserInfo& userInfo, const FUABT_RtcConnection& connection);
+	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
+	int GetUserInfoByUidEx(int64 uid, FUABT_UserInfo& userInfo, const FUABT_RtcConnection& connection);
+	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
+	int EnableDualStreamModeEx(bool enabled, const FUABT_SimulcastStreamConfig& streamConfig, const FUABT_RtcConnection& connection);
+	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
+	int SetDualStreamModeEx(EUABT_SIMULCAST_STREAM_MODE mode, const FUABT_SimulcastStreamConfig& streamConfig, const FUABT_RtcConnection& connection);
+
+	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
+	int SetSimulcastConfigEx(const FUABT_SimulcastConfig& simulcastConfig,
+		const FUABT_RtcConnection& connection);
+
+	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
+	int SetHighPriorityUserListEx(TArray<int64> uidList, EUABT_STREAM_FALLBACK_OPTIONS option, const FUABT_RtcConnection& connection);
+
+	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
+	int TakeSnapshotEx(const FUABT_RtcConnection& connection, int64 uid, const FString& filePath);
+
+	//virtual int takeSnapshotEx(const RtcConnection& connection, uid_t uid, const media::SnapshotConfig& config) override;
+
+	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
+	int EnableContentInspectEx(bool enabled, const FUABT_ContentInspectConfig& config, const FUABT_RtcConnection& connection);
+
+	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
+	int StartMediaRenderingTracingEx(const FUABT_RtcConnection& connection);
+
+
 	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
 	int SetParametersEx(const FUABT_RtcConnection& connection, const FString & parameters);
 
@@ -752,51 +934,15 @@ public:
 	int GetCallIdEx( FString & callId, const FUABT_RtcConnection& connection);
 
 	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
-	int SendAudioMetadata(const FString& metadata, const FString& length);
-	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
 	int SendAudioMetadataEx(const FUABT_RtcConnection& connection,const FString & metadata, const FString & length);
 
-	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
-	int StartMediaRenderingTracing();
-	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
-	int StartMediaRenderingTracingEx(const FUABT_RtcConnection& connection);
-
-	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
-	int EnableInstantMediaRendering();
-
-	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
-	FString GetNtpWallTimeInMs();
-
-	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
-	int SetHeadphoneEQPreset(EUABT_HEADPHONE_EQUALIZER_PRESET preset);
-	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
-	int SetHeadphoneEQParameters(int lowGain, int highGain);
-
-	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
-	int EnableVoiceAITuner(bool enabled, EUABT_VOICE_AI_TUNER_TYPE type);
-
-	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
-	int SetEarMonitoringAudioFrameParameters(int sampleRate, int channel, EUABT_RAW_AUDIO_FRAME_OP_MODE_TYPE mode, int samplesPerCall);
-
-	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
-	int64 GetCurrentMonotonicTimeInMs();
-
-	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
-	int RegisterExtension(const FString& provider, const FString& extension, EUABT_MEDIA_SOURCE_TYPE type);
-
-	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
-	int GetNetworkType();
-
-	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
-	bool IsFeatureAvailableOnDevice(EUABT_FeatureType type);
-
-#pragma endregion Other APIs
+#pragma endregion BP - IRtcEngineEx
 
 
 private:
-	//// avoid copy constructor
-	//UAgoraBPRtcEngine(const UAgoraBPRtcEngine&) = delete;
-	//UAgoraBPRtcEngine& operator=(const UAgoraBPRtcEngine&) = delete;
+	//// [No Need] avoid copy constructor
+	//UAgoraBPuRtcEngine(const UAgoraBPuRtcEngine&) = delete;
+	//UAgoraBPuRtcEngine& operator=(const UAgoraBPuRtcEngine&) = delete;
 
 	static UAgoraBPuRtcEngine* Instance;
 
