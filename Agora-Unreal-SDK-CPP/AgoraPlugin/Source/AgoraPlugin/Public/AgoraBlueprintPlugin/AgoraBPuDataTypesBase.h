@@ -3001,6 +3001,140 @@ GEN_UABTFUNC_SIGNATURE_ENUMCONVERSION_10_ENTRIES(EUABT_VOICE_AI_TUNER_TYPE, agor
 
 
 
+/** The face shape style.
+	*/
+UENUM(BlueprintType)
+enum class EUABT_FACE_SHAPE_BEAUTY_STYLE : uint8 {
+	/** (Default) Female face shape style. */
+	FACE_SHAPE_BEAUTY_STYLE_FEMALE = 0,
+	/** Male face shape style. */
+	FACE_SHAPE_BEAUTY_STYLE_MALE = 1,
+};
+
+GEN_UABTFUNC_SIGNATURE_ENUMCONVERSION_2_ENTRIES(EUABT_FACE_SHAPE_BEAUTY_STYLE,
+	agora::rtc::FaceShapeBeautyOptions::FACE_SHAPE_BEAUTY_STYLE,
+	FACE_SHAPE_BEAUTY_STYLE_FEMALE,
+	FACE_SHAPE_BEAUTY_STYLE_MALE)
+
+
+
+/**
+	* The index of multi-layer video stream
+	*/
+UENUM(BlueprintType)
+enum class EUABT_StreamLayerIndex : uint8{
+	/**
+		* 0: video stream index of layer_1
+		*/
+	STREAM_LAYER_1 = 0,
+	/**
+		* 1: video stream index of layer_2
+		*/
+	STREAM_LAYER_2 = 1,
+	/**
+		* 2: video stream index of layer_3
+		*/
+	STREAM_LAYER_3 = 2,
+	/**
+		* 3: video stream index of layer_4
+		*/
+	STREAM_LAYER_4 = 3,
+	/**
+		* 4: video stream index of layer_5
+		*/
+	STREAM_LAYER_5 = 4,
+	/**
+		* 5: video stream index of layer_6
+		*/
+	STREAM_LAYER_6 = 5,
+	/**
+		* 6: video stream index of low
+		*/
+	STREAM_LOW = 6,
+	/**
+		* 7: max count of video stream layers
+		*/
+	STREAM_LAYER_COUNT_MAX = 7
+};
+
+
+GEN_UABTFUNC_SIGNATURE_ENUMCONVERSION_8_ENTRIES(EUABT_StreamLayerIndex, agora::rtc::SimulcastConfig::StreamLayerIndex,
+	STREAM_LAYER_1,
+	STREAM_LAYER_2,
+	STREAM_LAYER_3,
+	STREAM_LAYER_4,
+	STREAM_LAYER_5,
+	STREAM_LAYER_6,
+	STREAM_LOW,
+	STREAM_LAYER_COUNT_MAX)
+
+
+
+/**
+* Audio source types definition.
+**/
+UENUM(BlueprintType)
+enum class EUABT_AUDIO_SOURCE_TYPE : uint8 {
+	/** Audio captured by the mic.
+	 */
+	AUDIO_SOURCE_MICROPHONE = 0,
+	/** Not define.
+	 */
+	AUDIO_SOURCE_CUSTOM = 1,
+	/** Audio for media player sharing.
+	 */
+	AUDIO_SOURCE_MEDIA_PLAYER = 2,
+	/** Audio for screen audio.
+	 */
+	AUDIO_SOURCE_LOOPBACK_RECORDING = 3,
+	/** Audio captured by mixed source.
+	 */
+	AUDIO_SOURCE_MIXED_STREAM = 4,
+	/** Remote audio received from network.
+	 */
+	AUDIO_SOURCE_REMOTE_USER = 5,
+	/** Remote audio received from network by channel.
+	 */
+	AUDIO_SOURCE_REMOTE_CHANNEL = 6,
+
+	AUDIO_SOURCE_UNKNOWN = 100
+};
+
+GEN_UABTFUNC_SIGNATURE_ENUMCONVERSION_8_ENTRIES(EUABT_AUDIO_SOURCE_TYPE, agora::rtc::AUDIO_SOURCE_TYPE,
+	AUDIO_SOURCE_MICROPHONE,
+	AUDIO_SOURCE_CUSTOM,
+	AUDIO_SOURCE_MEDIA_PLAYER,
+	AUDIO_SOURCE_LOOPBACK_RECORDING,
+	AUDIO_SOURCE_MIXED_STREAM,
+	AUDIO_SOURCE_REMOTE_USER,
+	AUDIO_SOURCE_REMOTE_CHANNEL,
+	AUDIO_SOURCE_UNKNOWN
+)
+
+UENUM(BlueprintType)
+enum class EUABT_VIDEO_MODULE_TYPE : uint8 {
+	/** Video capture module */
+	VIDEO_MODULE_CAPTURER = 0,
+	/** Video software encoder module */
+	VIDEO_MODULE_SOFTWARE_ENCODER = 1,
+	/** Video hardware encoder module */
+	VIDEO_MODULE_HARDWARE_ENCODER = 2,
+	/** Video software decoder module */
+	VIDEO_MODULE_SOFTWARE_DECODER = 3,
+	/** Video hardware decoder module */
+	VIDEO_MODULE_HARDWARE_DECODER = 4,
+	/** Video render module */
+	VIDEO_MODULE_RENDERER = 5,
+};
+
+GEN_UABTFUNC_SIGNATURE_ENUMCONVERSION_6_ENTRIES(EUABT_VIDEO_MODULE_TYPE, agora::rtc::VIDEO_MODULE_TYPE,
+	VIDEO_MODULE_CAPTURER,
+	VIDEO_MODULE_SOFTWARE_ENCODER,
+	VIDEO_MODULE_HARDWARE_ENCODER,
+	VIDEO_MODULE_SOFTWARE_DECODER,
+	VIDEO_MODULE_HARDWARE_DECODER,
+	VIDEO_MODULE_RENDERER
+)
 
 #pragma endregion Enum - NoChange
 
@@ -4635,5 +4769,65 @@ GEN_UABTFUNC_SIGNATURE_ENUMCONVERSION_3_ENTRIES(
 		LASTMILE_PROBE_RESULT_INCOMPLETE_NO_BWE,
 		LASTMILE_PROBE_RESULT_UNAVAILABLE)
 
-#pragma endregion Enum Wrapper
 
+UENUM(BlueprintType)
+enum class EUABT_FACE_SHAPE_AREA : uint8 {
+	/** (Default) Invalid area. */
+	FACE_SHAPE_AREA_NONE = 0,
+	/** Head Scale, reduces the size of head. */
+	FACE_SHAPE_AREA_HEADSCALE,
+	/** Forehead, adjusts the size of forehead. */
+	FACE_SHAPE_AREA_FOREHEAD,
+	/** Face Contour, slims the facial contour. */
+	FACE_SHAPE_AREA_FACECONTOUR,
+	/** Face Length, adjusts the length of face. */
+	FACE_SHAPE_AREA_FACELENGTH,
+	/** Face Width, narrows the width of face. */
+	FACE_SHAPE_AREA_FACEWIDTH,
+	/** Cheekbone, adjusts the size of cheekbone. */
+	FACE_SHAPE_AREA_CHEEKBONE,
+	/** Cheek, adjusts the size of cheek. */
+	FACE_SHAPE_AREA_CHEEK,
+	/** Chin, adjusts the length of chin. */
+	FACE_SHAPE_AREA_CHIN,
+	/** Eye Scale, adjusts the size of eyes. */
+	FACE_SHAPE_AREA_EYESCALE,
+	/** Nose Length, adjusts the length of nose. */
+	FACE_SHAPE_AREA_NOSELENGTH,
+	/** Nose Width, adjusts the width of nose. */
+	FACE_SHAPE_AREA_NOSEWIDTH,
+	/** Mouth Scale, adjusts the size of mouth. */
+	FACE_SHAPE_AREA_MOUTHSCALE,
+};
+
+GEN_UABTFUNC_SIGNATURE_ENUMCONVERSION_13_ENTRIES(EUABT_FACE_SHAPE_AREA, agora::rtc::FaceShapeAreaOptions::FACE_SHAPE_AREA,
+	FACE_SHAPE_AREA_NONE,
+	FACE_SHAPE_AREA_HEADSCALE,
+	FACE_SHAPE_AREA_FOREHEAD,
+	FACE_SHAPE_AREA_FACECONTOUR,
+	FACE_SHAPE_AREA_FACELENGTH,
+	FACE_SHAPE_AREA_FACEWIDTH,
+	FACE_SHAPE_AREA_CHEEKBONE,
+	FACE_SHAPE_AREA_CHEEK,
+	FACE_SHAPE_AREA_CHIN,
+	FACE_SHAPE_AREA_EYESCALE,
+	FACE_SHAPE_AREA_NOSELENGTH,
+	FACE_SHAPE_AREA_NOSEWIDTH,
+	FACE_SHAPE_AREA_MOUTHSCALE)
+
+UENUM(BlueprintType)
+enum class EUABT_HDR_CAPABILITY : uint8 {
+	/** The result of static check is not reliable, by defualt*/
+	HDR_CAPABILITY_UNKNOWN = 0,
+	/** The module you query doesn't support HDR */
+	HDR_CAPABILITY_UNSUPPORTED,
+	/** The module you query supports HDR */
+	HDR_CAPABILITY_SUPPORTED,
+};
+
+GEN_UABTFUNC_SIGNATURE_ENUMCONVERSION_3_ENTRIES(EUABT_HDR_CAPABILITY, agora::rtc::HDR_CAPABILITY,
+	HDR_CAPABILITY_UNKNOWN,
+	HDR_CAPABILITY_UNSUPPORTED,
+	HDR_CAPABILITY_SUPPORTED)
+
+#pragma endregion Enum Wrapper

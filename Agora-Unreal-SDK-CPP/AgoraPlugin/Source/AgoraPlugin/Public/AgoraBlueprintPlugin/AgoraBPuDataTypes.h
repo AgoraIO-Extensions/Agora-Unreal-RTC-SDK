@@ -874,8 +874,7 @@ public:
 		AgoraData.bandwidth_estimation_bps = bandwidth_estimation_bps;
 		AgoraData.total_downscale_level_count = total_downscale_level_count;
 		AgoraData.total_received_video_count = this->peer_downlink_info.Num();
-
-		UABT::New_RawDataArray<agora::rtc::DownlinkNetworkInfo::PeerDownlinkInfo,FUABT_PeerDownlinkInfo>(this->peer_downlink_info);
+		AgoraData.peer_downlink_info = UABT::New_RawDataArray<agora::rtc::DownlinkNetworkInfo::PeerDownlinkInfo,FUABT_PeerDownlinkInfo>(this->peer_downlink_info);
 		return AgoraData;
 	}
 
@@ -4549,3 +4548,337 @@ public:
 };
 
 #pragma endregion Rtc Engine 3
+
+
+
+
+/** Face shape beauty options. This structure defines options for facial adjustments of different facial styles.
+ *
+ * @technical preview
+ */
+USTRUCT(BlueprintType)
+struct FUABT_FaceShapeBeautyOptions {
+	GENERATED_BODY()
+
+public:
+	/** The face shape style, See #FACE_SHAPE_BEAUTY_STYLE.
+	  */
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	EUABT_FACE_SHAPE_BEAUTY_STYLE shapeStyle = EUABT_FACE_SHAPE_BEAUTY_STYLE::FACE_SHAPE_BEAUTY_STYLE_FEMALE;
+
+	/** The intensity of the pinching effect applied to the specified facial style. The value ranges from 0 (original) to 100. The default value is 0. The greater the value, the stronger the intensity applied to face pinching.
+	  */
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	int styleIntensity = 50;
+
+	FUABT_FaceShapeBeautyOptions(){}
+	FUABT_FaceShapeBeautyOptions(const agora::rtc::FaceShapeBeautyOptions& AgoraData){
+		shapeStyle = UABTEnum::WrapWithUE(AgoraData.shapeStyle);
+		styleIntensity = AgoraData.styleIntensity;
+	}
+
+	agora::rtc::FaceShapeBeautyOptions CreateRawData() const {
+		agora::rtc::FaceShapeBeautyOptions AgoraData;
+		AgoraData.shapeStyle = UABTEnum::ToRawValue(shapeStyle);
+		AgoraData.styleIntensity = styleIntensity;
+		return AgoraData;
+	}
+
+	void FreeRawData(agora::rtc::FaceShapeBeautyOptions& AgoraData) const {
+
+	}
+};
+
+
+
+
+/** Face shape area options. This structure defines options for facial adjustments on different facial areas.
+ *
+ * @technical preview
+ */
+USTRUCT(BlueprintType)
+struct FUABT_FaceShapeAreaOptions {
+	/** The specific facial area to be adjusted.
+	  */
+	GENERATED_BODY()
+
+public:
+
+
+	/** The specific facial area to be adjusted, See #FACE_SHAPE_AREA.
+	  */
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	EUABT_FACE_SHAPE_AREA shapeArea = EUABT_FACE_SHAPE_AREA::FACE_SHAPE_AREA_NONE;
+
+	/** The intensity of the pinching effect applied to the specified facial area.
+	 * For the following area values: #FACE_SHAPE_AREA_FOREHEAD, #FACE_SHAPE_AREA_FACELENGTH, #FACE_SHAPE_AREA_CHIN, #FACE_SHAPE_AREA_NOSELENGTH, #FACE_SHAPE_AREA_NOSEWIDTH, #FACE_SHAPE_AREA_MOUTHSCALE, the value ranges from -100 to 100.
+	 * The default value is 0. The greater the absolute value, the stronger the intensity applied to the specified facial area, and negative values indicate the opposite direction.
+	 * For enumeration values other than the above, the value ranges from 0 to 100. The default value is 0. The greater the value, the stronger the intensity applied to the specified facial area.
+	  */
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	int shapeIntensity = 0;
+
+	FUABT_FaceShapeAreaOptions(){}
+	FUABT_FaceShapeAreaOptions(const agora::rtc::FaceShapeAreaOptions& AgoraData) {
+		shapeArea = UABTEnum::WrapWithUE(AgoraData.shapeArea);
+		shapeIntensity = AgoraData.shapeIntensity;
+	}
+	
+	agora::rtc::FaceShapeAreaOptions CreateRawData() const {
+		agora::rtc::FaceShapeAreaOptions AgoraData;
+		AgoraData.shapeArea = UABTEnum::ToRawValue(shapeArea);
+		AgoraData.shapeIntensity = shapeIntensity;
+		return AgoraData;
+	}
+
+	void FreeRawData(agora::rtc::FaceShapeAreaOptions& AgoraData) const {
+
+	}
+};
+
+
+
+/** Filter effect options. This structure defines options for filter effect.
+ *
+ * @since v4.4.1
+ */
+USTRUCT(BlueprintType)
+struct FUABT_FilterEffectOptions {
+	GENERATED_BODY()
+
+public:
+	/**
+	 * The local absolute path of the custom 3D Cube path. Only cube format is supported.
+	 * The cube file must strictly comply with the Cube LUT Specification; otherwise, the filter effects will not take effect.
+	 *
+	 * The following is an example of the Cube file format. The cube file starts with `LUT_3D_SIZE`, which indicates the cube size. In filter effects, the cube size is limited to 32.
+
+	 * LUT_3D_SIZE 32
+	 * 0.0039215689 0 0.0039215682
+	 * 0.0086021447 0.0037950677 0
+	 * 0.0728652592 0.0039215689 0
+	 * ...
+	 *
+	 * The SDK provides a built-in cube named `built_in_whiten.cube` for whitening. To use this cube, specify the path to `built_in_whiten_filter`
+	 */
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	FString path;
+
+	/**
+	 * The intensity of specified filter effect. The value ranges from 0.0 to 1.0. The default value is 0.5. The greater the value, the stronger the intensity of the filter.
+	 */
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	float strength = 0.5;
+
+	FUABT_FilterEffectOptions(){}
+	FUABT_FilterEffectOptions(const agora::rtc::FilterEffectOptions& AgoraData) {
+		path = UTF8_TO_TCHAR(AgoraData.path);
+		strength = AgoraData.strength;
+	}
+	
+	agora::rtc::FilterEffectOptions CreateRawData() const {
+		agora::rtc::FilterEffectOptions AgoraData;
+		AgoraData.path = UABT::New_CharPtr(path);
+		AgoraData.strength = strength;
+		return AgoraData;
+	}
+
+	void FreeRawData(agora::rtc::FilterEffectOptions& AgoraData) const {
+		UABT::Free_CharPtr(AgoraData.path);
+	}
+};
+
+
+USTRUCT(BlueprintType)
+struct FUABT_StreamLayerConfig {
+
+	GENERATED_BODY()
+
+public:
+	/**
+	 * The video frame dimension. The default value is 0.
+	 */
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	FUABT_VideoDimensions dimensions;
+	/**
+	 * The capture frame rate (fps) of the local video. The default value is 0.
+	 */
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	int framerate = 0;
+	/**
+	 * Whether to enable the corresponding layer of video stream. The default value is false.
+	 */
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	bool enable = false;
+	
+	FUABT_StreamLayerConfig() {}
+	FUABT_StreamLayerConfig(const agora::rtc::SimulcastConfig::StreamLayerConfig& AgoraData) {
+		dimensions = FUABT_VideoDimensions(AgoraData.dimensions);
+		framerate = AgoraData.framerate;
+		enable = AgoraData.enable;
+	}
+
+	agora::rtc::SimulcastConfig::StreamLayerConfig CreateRawData() const {
+		agora::rtc::SimulcastConfig::StreamLayerConfig AgoraData;
+		AgoraData.dimensions = dimensions.CreateRawData();
+		AgoraData.framerate = framerate;
+		AgoraData.enable = enable;
+		return AgoraData;
+	}
+
+	void FreeRawData(agora::rtc::SimulcastConfig::StreamLayerConfig& AgoraData) const {
+		dimensions.FreeRawData(AgoraData.dimensions);
+	}
+};
+
+
+/**
+ * The configuration of the multi-layer video stream.
+ */
+USTRUCT(BlueprintType)
+struct FUABT_SimulcastConfig {
+
+	GENERATED_BODY()
+
+public:
+	/**
+	 * The array of StreamLayerConfig, which contains STREAM_LAYER_COUNT_MAX layers of video stream at most.
+	 */
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	TArray<FUABT_StreamLayerConfig> configs;
+
+	FUABT_SimulcastConfig() {}
+	FUABT_SimulcastConfig(const agora::rtc::SimulcastConfig& AgoraData) {
+		for (int i = 0; i < agora::rtc::SimulcastConfig::STREAM_LAYER_COUNT_MAX; i++) {
+			configs.Add(FUABT_StreamLayerConfig(AgoraData.configs[i]));
+		}
+	}
+
+	agora::rtc::SimulcastConfig CreateRawData() const {
+		agora::rtc::SimulcastConfig AgoraData;
+		for (int i = 0; i < agora::rtc::SimulcastConfig::STREAM_LAYER_COUNT_MAX; i++) {
+			AgoraData.configs[i] = configs[i].CreateRawData();
+		}
+		return AgoraData;
+	}
+
+	void FreeRawData(agora::rtc::SimulcastConfig& AgoraData) const {
+		for (int i = 0; i < agora::rtc::SimulcastConfig::STREAM_LAYER_COUNT_MAX; i++) {
+			FUABT_StreamLayerConfig ReleaseOperator;
+			ReleaseOperator.FreeRawData(AgoraData.configs[i]);
+		}
+	}
+};
+
+
+/**
+ * The audio streams for the video mixing on the local client.
+ */
+USTRUCT(BlueprintType)
+struct FUABT_MixedAudioStream {
+
+	GENERATED_BODY()
+
+public:
+	/**
+	 * The source type of audio for the audio mixing on the local client. See #AUDIO_SOURCE_TYPE.
+	 */
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	EUABT_AUDIO_SOURCE_TYPE sourceType = EUABT_AUDIO_SOURCE_TYPE::AUDIO_SOURCE_MICROPHONE;
+	/**
+	 * The ID of the remote user.
+	 * @note Use this parameter only when the source type is `AUDIO_SOURCE_REMOTE`.
+	 */
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	int64 remoteUserUid;
+	/**
+	 * The channel ID of the remote user.
+	 * @note Use this parameter only when the source type is `AUDIO_SOURCE_REMOTE`.
+	 */
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	FString channelName;
+	/**
+	 * The track ID of the local track.
+	 * @note Use this parameter only when the source type is `AUDIO_SOURCE_REMOTE`.
+	 */
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	int64 trackId;
+
+	FUABT_MixedAudioStream() {}
+	FUABT_MixedAudioStream(const agora::rtc::MixedAudioStream& AgoraData) {
+		sourceType = UABTEnum::WrapWithUE(AgoraData.sourceType);
+		remoteUserUid = AgoraData.remoteUserUid;
+		channelName = UTF8_TO_TCHAR(AgoraData.channelName);
+		trackId = AgoraData.trackId;
+	}
+
+	agora::rtc::MixedAudioStream CreateRawData() const {
+		agora::rtc::MixedAudioStream AgoraData = UABTEnum::ToRawValue(sourceType);
+		AgoraData.remoteUserUid = remoteUserUid;
+		AgoraData.channelName = UABT::New_CharPtr(channelName);
+		AgoraData.trackId = trackId;
+		return AgoraData;
+	}
+
+	void FreeRawData(agora::rtc::MixedAudioStream& AgoraData) const {
+		UABT::Free_CharPtr(AgoraData.channelName);
+	}
+
+};
+
+/**
+ * The configuration of the audio mixing on the local client.
+ */
+USTRUCT(BlueprintType)
+struct FUABT_LocalAudioMixerConfiguration {
+
+	GENERATED_BODY()
+
+public:
+	/**
+	 * The source of the streams to mixed;
+	 */
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	TArray<FUABT_MixedAudioStream> sourceStreams;
+
+	/**
+	 * Whether to use the timestamp follow the local mic's audio frame.
+	 * - true: (Default) Use the timestamp of the captured audio frame as the timestamp of the mixed audio frame.
+	 * - false: Do not use the timestamp of the captured audio frame as the timestamp of the mixed audio frame. Instead, use the timestamp when the mixed audio frame is constructed.
+	 */
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	bool syncWithLocalMic;
+
+	FUABT_LocalAudioMixerConfiguration() {}
+	FUABT_LocalAudioMixerConfiguration(const agora::rtc::LocalAudioMixerConfiguration& AgoraData) {
+		for (unsigned int i = 0; i < AgoraData.streamCount; i++) {
+			sourceStreams.Add(FUABT_MixedAudioStream(AgoraData.sourceStreams[i]));
+		}
+		syncWithLocalMic = AgoraData.syncWithLocalMic;
+	}
+
+	agora::rtc::LocalAudioMixerConfiguration CreateRawData() const {
+		agora::rtc::LocalAudioMixerConfiguration AgoraData;
+		AgoraData.streamCount = sourceStreams.Num();
+
+		int Num = sourceStreams.Num();
+
+		agora::rtc::MixedAudioStream* DstArray = static_cast<agora::rtc::MixedAudioStream*>(FMemory::Malloc(Num * sizeof(agora::rtc::MixedAudioStream)));
+
+		for (int i = 0; i < Num; ++i) {
+			agora::rtc::MixedAudioStream Tmp = sourceStreams[i].CreateRawData();
+			new (&DstArray[i]) agora::rtc::MixedAudioStream(Tmp.sourceType,Tmp.remoteUserUid,Tmp.channelName,Tmp.trackId);
+		}
+
+		AgoraData.sourceStreams = DstArray;
+
+		AgoraData.syncWithLocalMic = syncWithLocalMic;
+		return AgoraData;
+	}
+
+	void FreeRawData(agora::rtc::LocalAudioMixerConfiguration& AgoraData) const {
+		UABT::Free_RawDataArray<agora::rtc::MixedAudioStream, FUABT_MixedAudioStream>(AgoraData.sourceStreams, AgoraData.streamCount);
+	}
+};
