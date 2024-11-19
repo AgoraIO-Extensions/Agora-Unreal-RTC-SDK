@@ -742,11 +742,11 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
 	int ConfigRhythmPlayer(const FUABT_AgoraRhythmPlayerConfig& config);
 
-	//UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
-	//int TakeSnapshot(int64 uid, const FString& filePath);
+	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
+	int TakeSnapshot(int64 uid, const FString& filePath);
 	
 	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
-	int TakeSnapshot(int64 uid, const FUABT_SnapshotConfig& config);
+	int TakeSnapshotWithConfig(int64 uid, const FUABT_SnapshotConfig& config);
 
 	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
 	int EnableContentInspect(bool enabled, const FUABT_ContentInspectConfig& config);
@@ -916,11 +916,11 @@ UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
 	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
 	int SetHighPriorityUserListEx(TArray<int64> uidList, EUABT_STREAM_FALLBACK_OPTIONS option, const FUABT_RtcConnection& connection);
 
-	//UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
-	//int TakeSnapshotEx(const FUABT_RtcConnection& connection, int64 uid, const FString& filePath);
+	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
+	int TakeSnapshotEx(const FUABT_RtcConnection& connection, int64 uid, const FString& filePath);
 
 	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
-	int TakeSnapshotEx(const FUABT_RtcConnection& connection, int64 uid, const FUABT_SnapshotConfig& config);
+	int TakeSnapshotWithConfigEx(const FUABT_RtcConnection& connection, int64 uid, const FUABT_SnapshotConfig& config);
 
 	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
 	int EnableContentInspectEx(bool enabled, const FUABT_ContentInspectConfig& config, const FUABT_RtcConnection& connection);

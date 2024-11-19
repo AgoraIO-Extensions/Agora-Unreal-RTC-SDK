@@ -2157,7 +2157,13 @@ int UAgoraBPuRtcEngine::ConfigRhythmPlayer(const FUABT_AgoraRhythmPlayerConfig& 
 }
 
 
-int UAgoraBPuRtcEngine::TakeSnapshot(int64 uid, const FUABT_SnapshotConfig& config)
+int UAgoraBPuRtcEngine::TakeSnapshot(int64 uid, const FString& filePath)
+{
+	auto ret = AgoraUERtcEngine::Get()->takeSnapshot(UABT::ToUID(uid), TCHAR_TO_UTF8(*filePath));
+	return ret;
+}
+
+int UAgoraBPuRtcEngine::TakeSnapshotWithConfig(int64 uid, const FUABT_SnapshotConfig& config)
 {
 	agora::media::SnapshotConfig snapshotConfig = config.CreateRawData();
 	auto ret = AgoraUERtcEngine::Get()->takeSnapshot(UABT::ToUID(uid), snapshotConfig);
@@ -2742,7 +2748,16 @@ int UAgoraBPuRtcEngine::SetHighPriorityUserListEx(TArray<int64> uidList, EUABT_S
 	return ret;
 }
 
-int UAgoraBPuRtcEngine::TakeSnapshotEx(const FUABT_RtcConnection& connection, int64 uid, const FUABT_SnapshotConfig& config)
+int UAgoraBPuRtcEngine::TakeSnapshotEx(const FUABT_RtcConnection& connection, int64 uid, const FString& filePath)
+{
+	agora::rtc::RtcConnection rtcConnection = connection.CreateRawData();
+	std::string FilePath = TCHAR_TO_UTF8(*filePath);
+	auto ret = AgoraUERtcEngine::Get()->takeSnapshotEx(rtcConnection, UABT::ToUID(uid), FilePath.c_str());
+	connection.FreeRawData(rtcConnection);
+	return ret;
+}
+
+int UAgoraBPuRtcEngine::TakeSnapshotWithConfigEx(const FUABT_RtcConnection& connection, int64 uid, const FUABT_SnapshotConfig& config)
 {
 	agora::rtc::RtcConnection rtcConnection = connection.CreateRawData();
 	agora::media::SnapshotConfig snapshotConfig = config.CreateRawData();
