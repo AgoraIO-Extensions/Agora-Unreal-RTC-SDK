@@ -4798,7 +4798,7 @@ public:
 	 * @note Use this parameter only when the source type is `AUDIO_SOURCE_REMOTE`.
 	 */
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-	FString channelName;
+	FString channelId;
 	/**
 	 * The track ID of the local track.
 	 * @note Use this parameter only when the source type is `AUDIO_SOURCE_REMOTE`.
@@ -4810,20 +4810,20 @@ public:
 	FUABT_MixedAudioStream(const agora::rtc::MixedAudioStream& AgoraData) {
 		sourceType = UABTEnum::WrapWithUE(AgoraData.sourceType);
 		remoteUserUid = AgoraData.remoteUserUid;
-		channelName = UTF8_TO_TCHAR(AgoraData.channelName);
+		channelId = UTF8_TO_TCHAR(AgoraData.channelId);
 		trackId = AgoraData.trackId;
 	}
 
 	agora::rtc::MixedAudioStream CreateRawData() const {
 		agora::rtc::MixedAudioStream AgoraData = UABTEnum::ToRawValue(sourceType);
 		AgoraData.remoteUserUid = remoteUserUid;
-		AgoraData.channelName = UABT::New_CharPtr(channelName);
+		AgoraData.channelId = UABT::New_CharPtr(channelId);
 		AgoraData.trackId = trackId;
 		return AgoraData;
 	}
 
 	void FreeRawData(agora::rtc::MixedAudioStream& AgoraData) const {
-		UABT::Free_CharPtr(AgoraData.channelName);
+		UABT::Free_CharPtr(AgoraData.channelId);
 	}
 
 };
@@ -4841,7 +4841,7 @@ public:
 	 * The source of the streams to mixed;
 	 */
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-	TArray<FUABT_MixedAudioStream> sourceStreams;
+	TArray<FUABT_MixedAudioStream> audioInputStreams;
 
 	/**
 	 * Whether to use the timestamp follow the local mic's audio frame.
@@ -4854,32 +4854,32 @@ public:
 	FUABT_LocalAudioMixerConfiguration() {}
 	FUABT_LocalAudioMixerConfiguration(const agora::rtc::LocalAudioMixerConfiguration& AgoraData) {
 		for (unsigned int i = 0; i < AgoraData.streamCount; i++) {
-			sourceStreams.Add(FUABT_MixedAudioStream(AgoraData.sourceStreams[i]));
+			audioInputStreams.Add(FUABT_MixedAudioStream(AgoraData.audioInputStreams[i]));
 		}
 		syncWithLocalMic = AgoraData.syncWithLocalMic;
 	}
 
 	agora::rtc::LocalAudioMixerConfiguration CreateRawData() const {
 		agora::rtc::LocalAudioMixerConfiguration AgoraData;
-		AgoraData.streamCount = sourceStreams.Num();
+		AgoraData.streamCount = audioInputStreams.Num();
 
-		int Num = sourceStreams.Num();
+		int Num = audioInputStreams.Num();
 
 		agora::rtc::MixedAudioStream* DstArray = static_cast<agora::rtc::MixedAudioStream*>(FMemory::Malloc(Num * sizeof(agora::rtc::MixedAudioStream)));
 
 		for (int i = 0; i < Num; ++i) {
-			agora::rtc::MixedAudioStream Tmp = sourceStreams[i].CreateRawData();
-			new (&DstArray[i]) agora::rtc::MixedAudioStream(Tmp.sourceType,Tmp.remoteUserUid,Tmp.channelName,Tmp.trackId);
+			agora::rtc::MixedAudioStream Tmp = audioInputStreams[i].CreateRawData();
+			new (&DstArray[i]) agora::rtc::MixedAudioStream(Tmp.sourceType,Tmp.remoteUserUid,Tmp.channelId,Tmp.trackId);
 		}
 
-		AgoraData.sourceStreams = DstArray;
+		AgoraData.audioInputStreams = DstArray;
 
 		AgoraData.syncWithLocalMic = syncWithLocalMic;
 		return AgoraData;
 	}
 
 	void FreeRawData(agora::rtc::LocalAudioMixerConfiguration& AgoraData) const {
-		UABT::Free_RawDataArray<agora::rtc::MixedAudioStream, FUABT_MixedAudioStream>(AgoraData.sourceStreams, AgoraData.streamCount);
+		UABT::Free_RawDataArray<agora::rtc::MixedAudioStream, FUABT_MixedAudioStream>(AgoraData.audioInputStreams, AgoraData.streamCount);
 	}
 };
 
