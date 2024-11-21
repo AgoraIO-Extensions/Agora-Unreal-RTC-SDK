@@ -4900,7 +4900,7 @@ public:
 	 * The local path (including filename extensions) of the snapshot. For example:
 	 * - Windows: `C:\Users\<user_name>\AppData\Local\Agora\<process_name>\example.jpg`
 	 * - iOS: `/App Sandbox/Library/Caches/example.jpg`
-	 * - macOS: `бл/Library/Logs/example.jpg`
+	 * - macOS: `я╜Ю/Library/Logs/example.jpg`
 	 * - Android: `/storage/emulated/0/Android/data/<package name>/files/example.jpg`
 	 */
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
