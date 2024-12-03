@@ -192,6 +192,7 @@ namespace agora {
 
 #if PLATFORM_IOS
 					EnableIOSAudioSession(true);
+					AgoraUERtcEngine::Get()->setAudioScenario(agora::rtc::AUDIO_SCENARIO_TYPE::AUDIO_SCENARIO_GAME_STREAMING);
 #endif
 
 				}
