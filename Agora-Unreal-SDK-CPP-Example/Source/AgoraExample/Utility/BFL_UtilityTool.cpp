@@ -104,7 +104,9 @@ FString UBFL_UtilityTool::GetAgoraSaveDataSlotName()
 	// UE_LOG(LogTemp, Log, TEXT("Current Engine Version: %s"), *VersionString);
 
 	FString SlotName = "AgoraSaveData_" + VersionString;
-	return SlotName;
+	FString FinalSlotName = SlotName.Replace(TEXT("."), TEXT("_"));
+
+	return FinalSlotName;
 }
 
 void UBFL_UtilityTool::SetCBSTextColor(UComboBoxString* CBSPtr)
