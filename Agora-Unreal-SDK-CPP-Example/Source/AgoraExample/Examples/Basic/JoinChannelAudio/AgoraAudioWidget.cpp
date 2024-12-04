@@ -23,6 +23,13 @@ void UAgoraAudioWidget::InitUI()
 {
 	Txt_PlaybackSignalVolume->SetText(FText::FromString(FString::FromInt(FMath::RoundToInt(Slider_PlaybackSignalVolume->GetValue()))));
 	Txt_RecordingSignalVolume->SetText(FText::FromString(FString::FromInt(FMath::RoundToInt(Slider_RecordingSignalVolume->GetValue()))));
+
+#if PLATFORM_IOS
+
+	VB_SetAudioProfileAndSenario->SetVisibility(ESlateVisibility::Collapsed);
+
+#endif
+
 }
 
 void UAgoraAudioWidget::CheckPermission()
