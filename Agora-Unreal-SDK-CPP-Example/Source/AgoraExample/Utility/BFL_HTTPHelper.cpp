@@ -2,6 +2,7 @@
 
 
 #include "BFL_HTTPHelper.h"
+#include "AgoraUERTCEngine.h"
 
 void UBFL_HTTPHelper::FetchToken(FString RequestURL, int64 uid, FString ChannelName, int64 Role, std::function<void(FString, bool)> Callback)
 {
