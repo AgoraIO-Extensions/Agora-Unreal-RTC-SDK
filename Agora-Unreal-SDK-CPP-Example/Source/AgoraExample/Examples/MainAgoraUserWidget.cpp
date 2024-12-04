@@ -34,7 +34,7 @@ void UMainAgoraUserWidget::NativeConstruct()
 	Super::NativeConstruct();
 
 
-	if (UAgoraConfig* LoadedGame = Cast<UAgoraConfig>(UGameplayStatics::LoadGameFromSlot(FString("AgoraSave"), 0)))
+	if (UAgoraConfig* LoadedGame = Cast<UAgoraConfig>(UGameplayStatics::LoadGameFromSlot(UBFL_UtilityTool::GetAgoraSaveDataSlotName(), 0)))
 	{
 		this->APP_ID = LoadedGame->AppId;
 
