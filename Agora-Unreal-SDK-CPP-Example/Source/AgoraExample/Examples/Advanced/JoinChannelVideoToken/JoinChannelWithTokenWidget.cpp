@@ -72,6 +72,7 @@ void UJoinChannelWithTokenWidget::ShowUserGuide()
 		"1. You can join the channel using the token you provide.\n"
 		"2. You can also join the channel using the token retrieved from the server.\n"
 		"3. A simple server can be launched with the website link commented in the source code.\n"
+		"4. The demo won't work if the engine version is under 4.27."
 		"";
 
 	UBFL_Logger::DisplayUserGuide(Guide, LogMsgViewPtr);
