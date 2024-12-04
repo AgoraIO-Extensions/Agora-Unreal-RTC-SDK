@@ -33,6 +33,9 @@ public:
 
 	static FString GenSimpleUIDPart_FuncCode(EUIDFuncType Type);
 
+
+	static FString GetAgoraSaveDataSlotName();
+
 	UFUNCTION(BlueprintCallable, Category = "Utility")
 	static void SetCBSTextColor(UComboBoxString* CBSPtr);
 };

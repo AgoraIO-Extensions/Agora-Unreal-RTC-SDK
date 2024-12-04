@@ -221,8 +221,9 @@ protected:
 	FString MPL_URL = "https://download.agora.io/demo/test/Agora.io-Interactions.wav";
 
 #else
-	FString MPL_URL =
-		"https://agoracdn.s3.us-west-1.amazonaws.com/videos/Agora.io-Interactions.mp4";
+	
+	FString MPL_URL = "https://download.agora.io/demo/test/Agora.io-Interactions.mp4";
+
 #endif
 
 	TSharedPtr<FUserIMediaPlayerSourceObserver> MediaPlayerSourceObserverWarpper;

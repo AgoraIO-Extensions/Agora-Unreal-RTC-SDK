@@ -6,6 +6,7 @@
 void UBFL_HTTPHelper::FetchToken(FString RequestURL, int64 uid, FString ChannelName, int64 Role, std::function<void(FString, bool)> Callback)
 {
 
+#if AG_UE427_OR_LATER
 	// Create Json Data
 	FString ServerData;
 
@@ -54,10 +55,15 @@ void UBFL_HTTPHelper::FetchToken(FString RequestURL, int64 uid, FString ChannelN
 
 	// Send Request
 	Request->ProcessRequest();
+
+#endif
 }
 
 void UBFL_HTTPHelper::HandleRequest(FHttpRequestPtr RequestPtr, FHttpResponsePtr ResponsePtr, bool bIsSuccess, std::function<void(FString, bool)> Callback)
 {
+
+#if AG_UE427_OR_LATER
+
 	if (!EHttpResponseCodes::IsOk(ResponsePtr->GetResponseCode())) {
 		Callback("", false);
 		return;
@@ -81,4 +87,6 @@ void UBFL_HTTPHelper::HandleRequest(FHttpRequestPtr RequestPtr, FHttpResponsePtr
 	}
 
 	Callback("", false);
+
+#endif
 }

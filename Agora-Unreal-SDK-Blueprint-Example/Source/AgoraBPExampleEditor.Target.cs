@@ -2,6 +2,7 @@
 
 using UnrealBuildTool;
 using System.Collections.Generic;
+using System;
 
 public class AgoraBPExampleEditorTarget : TargetRules
 {
@@ -28,11 +29,25 @@ public class AgoraBPExampleEditorTarget : TargetRules
 
             // [-Wno-single-bit-bitfield-constant-conversion]: UE_4.27/Engine/Source/Runtime/Engine/Public/MaterialShared.h:2304:30: error: implicit truncation from 'int' to a one-bit wide bit-field changes value from 1 to -1 
             //  MarkedForGarbageCollection = 1;
-            // AdditionalCompilerArguments = "-Wno-unused-but-set-variable -Wno-gcc-compat -Wno-reorder-ctor -Wno-deprecated-builtins -Wno-bitwise-instead-of-logical -Wno-single-bit-bitfield-constant-conversion";
+
+            if (Target.Version.MajorVersion < 5)
+            {
+                AdditionalCompilerArguments = "-Wno-unused-but-set-variable -Wno-gcc-compat -Wno-reorder-ctor -Wno-deprecated-builtins -Wno-bitwise-instead-of-logical -Wno-single-bit-bitfield-constant-conversion";
+
+                Console.WriteLine("[Apply Compiler Arguments] For UE Ver < 5: AdditionalCompilerArguments: " + AdditionalCompilerArguments);
+            }
+
 
             // error: unknown warning option '-Wno-deprecated-builtins'; did you mean '-Wno-deprecated-volatile'? [-Werror,-Wunknown-warning-option]
             // error: unknown warning option '-Wno-single-bit-bitfield-constant-conversion'; did you mean '-Wno-bitfield-constant-conversion'? [-Werror,-Wunknown-warning-option]
-            AdditionalCompilerArguments = "-Wno-unused-but-set-variable -Wno-gcc-compat -Wno-reorder-ctor";
+
+            else
+            {
+                AdditionalCompilerArguments = "-Wno-unused-but-set-variable -Wno-gcc-compat -Wno-reorder-ctor";
+
+                Console.WriteLine("[Apply Compiler Arguments] For UE Ver >= 5: AdditionalCompilerArguments: " + AdditionalCompilerArguments);
+            }
+
             
         }
 		
