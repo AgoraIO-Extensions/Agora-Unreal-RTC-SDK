@@ -36,7 +36,7 @@ struct FUABT_Opt_bool {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|Opt_bool")
 	EAgoraOptional Value = EAgoraOptional::AGORA_NULL_VALUE;
 
 	FUABT_Opt_bool() {}
@@ -74,11 +74,11 @@ struct FUABT_Opt_VIDEO_STREAM_TYPE {
 
 public:
 	// If the box is unchecked, the value of the corresponding variable will be ignored.
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|Opt_VIDEO_STREAM_TYPE")
 
 	bool SetValue = false;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|Opt_VIDEO_STREAM_TYPE")
 	EUABT_VIDEO_STREAM_TYPE Value = EUABT_VIDEO_STREAM_TYPE::VIDEO_STREAM_HIGH;
 
 	FUABT_Opt_VIDEO_STREAM_TYPE() {}
@@ -109,11 +109,11 @@ struct FUABT_Opt_CAMERA_DIRECTION {
 
 public:
 	// If the box is unchecked, the value of the corresponding variable will be ignored.
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|Opt_CAMERA_DIRECTION")
 
 	bool SetValue = false;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|Opt_CAMERA_DIRECTION")
 	EUABT_CAMERA_DIRECTION Value = EUABT_CAMERA_DIRECTION::CAMERA_FRONT;
 
 	FUABT_Opt_CAMERA_DIRECTION() {}
@@ -144,11 +144,11 @@ struct FUABT_Opt_CAMERA_FOCAL_LENGTH_TYPE {
 
 public:
 	// If the box is unchecked, the value of the corresponding variable will be ignored.
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|Opt_CAMERA_FOCAL_LENGTH_TYPE")
 
 	bool SetValue = false;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|Opt_CAMERA_FOCAL_LENGTH_TYPE")
 	EUABT_CAMERA_FOCAL_LENGTH_TYPE Value = EUABT_CAMERA_FOCAL_LENGTH_TYPE::CAMERA_FOCAL_LENGTH_DEFAULT;
 
 	FUABT_Opt_CAMERA_FOCAL_LENGTH_TYPE() {}
@@ -178,11 +178,11 @@ struct FUABT_Opt_double {
 
 public:
 	// If the box is unchecked, the value of the corresponding variable will be ignored.
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|Opt_double")
 
 	bool SetValue = false;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|Opt_double")
 	FString Value = "";
 
 	FUABT_Opt_double() {}
@@ -216,11 +216,11 @@ struct FUABT_Opt_int {
 
 public:
 	// If the box is unchecked, the value of the corresponding variable will be ignored.
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|Opt_int")
 
 	bool SetValue = false;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|Opt_int")
 	int Value = 0;
 
 	FUABT_Opt_int() {}
@@ -254,11 +254,11 @@ struct FUABT_Opt_ConstCharPtr {
 
 public:
 	// If the box is unchecked, the value of the corresponding variable will be ignored.
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|Opt_ConstCharPtr")
 
 	bool SetValue = false;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|Opt_ConstCharPtr")
 	FString Value = "";
 
 	FUABT_Opt_ConstCharPtr() {}
@@ -296,11 +296,11 @@ struct FUABT_Opt_CLIENT_ROLE_TYPE {
 
 public:
 	// If the box is unchecked, the value of the corresponding variable will be ignored.
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|Opt_CLIENT_ROLE_TYPE")
 
 	bool SetValue = false;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|Opt_CLIENT_ROLE_TYPE")
 	EUABT_CLIENT_ROLE_TYPE Value = EUABT_CLIENT_ROLE_TYPE::CLIENT_ROLE_AUDIENCE;
 
 	FUABT_Opt_CLIENT_ROLE_TYPE() {}
@@ -332,11 +332,11 @@ struct FUABT_Opt_AUDIENCE_LATENCY_LEVEL_TYPE {
 
 public:
 	// If the box is unchecked, the value of the corresponding variable will be ignored.
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|Opt_AUDIENCE_LATENCY_LEVEL_TYPE")
 
 	bool SetValue = false;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|Opt_AUDIENCE_LATENCY_LEVEL_TYPE")
 	EUABT_AUDIENCE_LATENCY_LEVEL_TYPE Value = EUABT_AUDIENCE_LATENCY_LEVEL_TYPE::AUDIENCE_LATENCY_LEVEL_LOW_LATENCY;
 
 	FUABT_Opt_AUDIENCE_LATENCY_LEVEL_TYPE() {}
@@ -368,11 +368,11 @@ struct FUABT_Opt_CHANNEL_PROFILE_TYPE {
 
 public:
 	// If the box is unchecked, the value of the corresponding variable will be ignored.
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|Opt_CHANNEL_PROFILE_TYPE")
 
 	bool SetValue = false;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|Opt_CHANNEL_PROFILE_TYPE")
 	EUABT_CHANNEL_PROFILE_TYPE Value = EUABT_CHANNEL_PROFILE_TYPE::CHANNEL_PROFILE_LIVE_BROADCASTING;
 
 	FUABT_Opt_CHANNEL_PROFILE_TYPE() {}
@@ -404,11 +404,11 @@ struct FUABT_Opt_video_track_id_t {
 
 public:
 	// If the box is unchecked, the value of the corresponding variable will be ignored.
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|Opt_video_track_id_t")
 
 	bool SetValue = false;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|Opt_video_track_id_t")
 	int64 Value = 0;
 
 	FUABT_Opt_video_track_id_t() {}
@@ -440,11 +440,11 @@ struct FUABT_Opt_THREAD_PRIORITY_TYPE {
 public:
 
 	// If the box is unchecked, the value of the corresponding variable will be ignored.
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|Opt_THREAD_PRIORITY_TYPE")
 
 	bool SetValue = false;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|Opt_THREAD_PRIORITY_TYPE")
 	EUABT_THREAD_PRIORITY_TYPE Value = EUABT_THREAD_PRIORITY_TYPE::NORMAL;
 
 	FUABT_Opt_THREAD_PRIORITY_TYPE(){}
@@ -487,13 +487,13 @@ struct FUABT_LastmileProbeOneWayResult {
 
 public:
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LastmileProbeOneWayResult")
 	int64 packetLossRate = 0;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LastmileProbeOneWayResult")
 	int64 jitter = 0;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LastmileProbeOneWayResult")
 	int64 availableBandwidth = 0;
 
 	FUABT_LastmileProbeOneWayResult(){}
@@ -525,13 +525,13 @@ struct FUABT_AudioVolumeInfo {
 
 public:
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|AudioVolumeInfo")
 	int64 uid = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|AudioVolumeInfo")
 	int64 volume = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|AudioVolumeInfo")
 	int64 vad = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|AudioVolumeInfo")
 	float voicePitch = 0;
 
 	FUABT_AudioVolumeInfo(){}
@@ -566,16 +566,16 @@ struct FUABT_LastmileProbeResult {
 
 public:
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LastmileProbeResult")
 	EUABT_LASTMILE_PROBE_RESULT_STATE state = EUABT_LASTMILE_PROBE_RESULT_STATE::LASTMILE_PROBE_RESULT_UNAVAILABLE;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LastmileProbeResult")
 	FUABT_LastmileProbeOneWayResult uplinkReport = FUABT_LastmileProbeOneWayResult();
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LastmileProbeResult")
 	FUABT_LastmileProbeOneWayResult downlinkReport = FUABT_LastmileProbeOneWayResult();
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LastmileProbeResult")
 	int64 rtt = 0;
 
 	FUABT_LastmileProbeResult(){}
@@ -611,73 +611,73 @@ struct FUABT_RtcStats
 
 public:
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RtcStats")
 	int64 duration = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RtcStats")
 	int64 txBytes = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RtcStats")
 	int64 rxBytes = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RtcStats")
 	int64 txAudioBytes = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RtcStats")
 	int64 txVideoBytes = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RtcStats")
 	int64 rxAudioBytes = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RtcStats")
 	int64 rxVideoBytes = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RtcStats")
 	int32 txKBitRate = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RtcStats")
 	int32 rxKBitRate = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RtcStats")
 	int32 rxAudioKBitRate = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RtcStats")
 	int32 txAudioKBitRate = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RtcStats")
 	int32 rxVideoKBitRate = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RtcStats")
 	int32 txVideoKBitRate = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RtcStats")
 	int32 lastmileDelay = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RtcStats")
 	int64 userCount = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RtcStats")
 	FString cpuAppUsage = "0";
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RtcStats")
 	FString cpuTotalUsage = "0";
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RtcStats")
 	int32 gatewayRtt = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RtcStats")
 	FString memoryAppUsageRatio = "0";
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RtcStats")
 	FString memoryTotalUsageRatio = "0";
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RtcStats")
 	int32 memoryAppUsageInKbytes = 0;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RtcStats")
 	int32 connectTimeMs = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RtcStats")
 	int32 firstAudioPacketDuration = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RtcStats")
 	int32 firstVideoPacketDuration = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RtcStats")
 	int32 firstVideoKeyFramePacketDuration = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RtcStats")
 	int32 packetsBeforeFirstKeyFramePacket = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RtcStats")
 	int32 firstAudioPacketDurationAfterUnmute = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RtcStats")
 	int32 firstVideoPacketDurationAfterUnmute = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RtcStats")
 	int32 firstVideoKeyFramePacketDurationAfterUnmute = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RtcStats")
 	int32 firstVideoKeyFrameDecodedDurationAfterUnmute = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RtcStats")
 	int32 firstVideoKeyFrameRenderedDurationAfterUnmute = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RtcStats")
 	int32 txPacketLossRate = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RtcStats")
 	int32 rxPacketLossRate = 0;
 
 
@@ -781,7 +781,7 @@ struct FUABT_UplinkNetworkInfo {
 
 public:
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|UplinkNetworkInfo")
 	int video_encoder_target_bitrate_bps = 0;
 
 	FUABT_UplinkNetworkInfo(){}
@@ -807,13 +807,13 @@ struct FUABT_PeerDownlinkInfo {
 
 public:
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|PeerDownlinkInfo")
 	FString userId = "";
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|PeerDownlinkInfo")
 	EUABT_VIDEO_STREAM_TYPE stream_type = EUABT_VIDEO_STREAM_TYPE::VIDEO_STREAM_HIGH;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|PeerDownlinkInfo")
 	EUABT_REMOTE_VIDEO_DOWNSCALE_LEVEL current_downscale_level = EUABT_REMOTE_VIDEO_DOWNSCALE_LEVEL::REMOTE_VIDEO_DOWNSCALE_LEVEL_NONE;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|PeerDownlinkInfo")
 	int expected_bitrate_bps = 0;
 
 	FUABT_PeerDownlinkInfo(){}
@@ -846,16 +846,16 @@ struct FUABT_DownlinkNetworkInfo {
 
 public:
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|DownlinkNetworkInfo")
 	int lastmile_buffer_delay_time_ms = -1;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|DownlinkNetworkInfo")
 	int bandwidth_estimation_bps = -1;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|DownlinkNetworkInfo")
 	int total_downscale_level_count = -1;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|DownlinkNetworkInfo")
 	TArray<FUABT_PeerDownlinkInfo> peer_downlink_info;
 
 	FUABT_DownlinkNetworkInfo(){}
@@ -891,26 +891,26 @@ struct FUABT_LocalAudioStats
 
 public:
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LocalAudioStats")
 	int numChannels = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LocalAudioStats")
 	int sentSampleRate = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LocalAudioStats")
 	int sentBitrate = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LocalAudioStats")
 	int internalCodec = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LocalAudioStats")
 	int txPacketLossRate = 0; // unsigned short 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LocalAudioStats")
 	int audioDeviceDelay = 0;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LocalAudioStats")
 	int audioPlayoutDelay = 0;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LocalAudioStats")
 	int earMonitorDelay = 0;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LocalAudioStats")
 	int aecEstimatedDelay = 0;
 
 	FUABT_LocalAudioStats(){}
@@ -954,45 +954,45 @@ struct FUABT_RemoteAudioStats
 
 public:
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RemoteAudioStats")
 	int64 uid = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RemoteAudioStats")
 	int quality = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RemoteAudioStats")
 	int networkTransportDelay = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RemoteAudioStats")
 	int jitterBufferDelay = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RemoteAudioStats")
 	int audioLossRate = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RemoteAudioStats")
 	int numChannels = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RemoteAudioStats")
 	int receivedSampleRate = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RemoteAudioStats")
 	int receivedBitrate = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RemoteAudioStats")
 	int totalFrozenTime = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RemoteAudioStats")
 	int frozenRate = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RemoteAudioStats")
 	int mosValue = 0;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RemoteAudioStats")
 	int64 frozenRateByCustomPlcCount = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RemoteAudioStats")
 	int64 plcCount = 0;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RemoteAudioStats")
 	int totalActiveTime = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RemoteAudioStats")
 	int publishDuration = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RemoteAudioStats")
 	int qoeQuality = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RemoteAudioStats")
 	int qualityChangedReason = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RemoteAudioStats")
 	int64 rxAudioBytes = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RemoteAudioStats")
 	int e2eDelay = 0;
 
 	FUABT_RemoteAudioStats(){}
@@ -1056,50 +1056,50 @@ struct FUABT_LocalVideoStats
 
 public:
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LocalVideoStats")
 	int64 uid = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LocalVideoStats")
 	int sentBitrate = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LocalVideoStats")
 	int sentFrameRate = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LocalVideoStats")
 	int captureFrameRate = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LocalVideoStats")
 	int captureFrameWidth = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LocalVideoStats")
 	int captureFrameHeight = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LocalVideoStats")
 	int regulatedCaptureFrameRate = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LocalVideoStats")
 	int regulatedCaptureFrameWidth = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LocalVideoStats")
 	int regulatedCaptureFrameHeight = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LocalVideoStats")
 	int encoderOutputFrameRate = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LocalVideoStats")
 	int encodedFrameWidth = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LocalVideoStats")
 	int encodedFrameHeight = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LocalVideoStats")
 	int rendererOutputFrameRate = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LocalVideoStats")
 	int targetBitrate = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LocalVideoStats")
 	int targetFrameRate = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LocalVideoStats")
 	EUABT_QUALITY_ADAPT_INDICATION qualityAdaptIndication = EUABT_QUALITY_ADAPT_INDICATION::ADAPT_NONE;
 	int encodedBitrate = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LocalVideoStats")
 	int encodedFrameCount = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LocalVideoStats")
 	EUABT_VIDEO_CODEC_TYPE codecType = EUABT_VIDEO_CODEC_TYPE::VIDEO_CODEC_GENERIC_H264;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LocalVideoStats")
 	int txPacketLossRate = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LocalVideoStats")
 	EUABT_CAPTURE_BRIGHTNESS_LEVEL_TYPE  captureBrightnessLevel = EUABT_CAPTURE_BRIGHTNESS_LEVEL_TYPE::CAPTURE_BRIGHTNESS_LEVEL_INVALID;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LocalVideoStats")
 	bool dualStreamEnabled = false;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LocalVideoStats")
 	int hwEncoderAccelerating = 0;
 
 
@@ -1173,42 +1173,42 @@ struct FUABT_RemoteVideoStats {
 
 public:
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RemoteVideoStats")
 	int64 uid = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RemoteVideoStats")
 	int delay = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RemoteVideoStats")
 	int e2eDelay = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RemoteVideoStats")
 	int width = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RemoteVideoStats")
 	int height = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RemoteVideoStats")
 	int receivedBitrate = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RemoteVideoStats")
 	int decoderOutputFrameRate = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RemoteVideoStats")
 	int rendererOutputFrameRate = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RemoteVideoStats")
 	int frameLossRate = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RemoteVideoStats")
 	int packetLossRate = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RemoteVideoStats")
 	EUABT_VIDEO_STREAM_TYPE rxStreamType = EUABT_VIDEO_STREAM_TYPE::VIDEO_STREAM_HIGH;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RemoteVideoStats")
 	int totalFrozenTime = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RemoteVideoStats")
 	int frozenRate = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RemoteVideoStats")
 	int avSyncTimeMs = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RemoteVideoStats")
 	int totalActiveTime = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RemoteVideoStats")
 	int publishDuration = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RemoteVideoStats")
 	int mosValue = 0;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RemoteVideoStats")
 	int64 rxVideoBytes = 0;
 
 
@@ -1269,11 +1269,11 @@ struct FUABT_WlAccStats {
 
 public:
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|WlAccStats")
 	int64 e2eDelayPercent = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|WlAccStats")
 	int64 frozenRatioPercent = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|WlAccStats")
 	int64 lossRatePercent = 0;
 
 	FUABT_WlAccStats(){}
@@ -1300,9 +1300,9 @@ struct FUABT_UserInfo
 
 public:
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|UserInfo")
 	int64 uid = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|UserInfo")
 	FString userAccount = "";
 
 	FUABT_UserInfo(){}
@@ -1329,19 +1329,19 @@ struct FUABT_VideoRenderingTracingInfo {
 	GENERATED_BODY()
 
 public: 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|VideoRenderingTracingInfo")
 	int elapsedTime = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|VideoRenderingTracingInfo")
 	int start2JoinChannel = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|VideoRenderingTracingInfo")
 	int join2JoinSuccess = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|VideoRenderingTracingInfo")
 	int joinSuccess2RemoteJoined = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|VideoRenderingTracingInfo")
 	int remoteJoined2SetView = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|VideoRenderingTracingInfo")
 	int remoteJoined2UnmuteVideo = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|VideoRenderingTracingInfo")
 	int remoteJoined2PacketReceived = 0;
 
 	FUABT_VideoRenderingTracingInfo() {}
@@ -1381,27 +1381,27 @@ struct FUABT_TranscodingVideoStream {
 
 public:
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|TranscodingVideoStream")
 	EUABT_VIDEO_SOURCE_TYPE sourceType = EUABT_VIDEO_SOURCE_TYPE::VIDEO_SOURCE_CAMERA_PRIMARY;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|TranscodingVideoStream")
 	int64 remoteUserUid = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|TranscodingVideoStream")
 	FString imageUrl = "";
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|TranscodingVideoStream")
 	int mediaPlayerId = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|TranscodingVideoStream")
 	int x = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|TranscodingVideoStream")
 	int y = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|TranscodingVideoStream")
 	int width = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|TranscodingVideoStream")
 	int height = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|TranscodingVideoStream")
 	int zOrder = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|TranscodingVideoStream")
 	float alpha = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|TranscodingVideoStream")
 	bool mirror = false;
 
 	FUABT_TranscodingVideoStream(){}
@@ -1450,26 +1450,26 @@ struct FUABT_VideoLayout
 	
 public:
 	
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|FUABT_VideoLayout")
 	FString channelId = "";
 	
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|FUABT_VideoLayout")
 	int64 uid = 0;
 	
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|FUABT_VideoLayout")
 	FString strUid = "";
 
-    UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|FUABT_VideoLayout")
 	int64 x = 0;
 	
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|FUABT_VideoLayout")
 	int64 y = 0;
 	
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|FUABT_VideoLayout")
 	int64 width = 0;
-    UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|FUABT_VideoLayout")
 	int64 height = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|FUABT_VideoLayout")
 	int64 videoState = 0;
 
 	FUABT_VideoLayout(){}
@@ -1511,13 +1511,13 @@ struct FUABT_AgoraMetadata
 
 public:
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|AgoraMetadata")
 	int64 uid = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|AgoraMetadata")
 	int64 size = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|AgoraMetadata")
 	FString buffer;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|AgoraMetadata")
 	int64 timeStampMs = 0;
 
 	FUABT_AgoraMetadata(){}
@@ -1549,15 +1549,15 @@ struct FUABT_DirectCdnStreamingStats {
 
 public:
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|DirectCdnStreamingStats")
 	int videoWidth = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|DirectCdnStreamingStats")
 	int videoHeight = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|DirectCdnStreamingStats")
 	int fps = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|DirectCdnStreamingStats")
 	int videoBitrate = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|DirectCdnStreamingStats")
 	int audioBitrate = 0;
 
 	FUABT_DirectCdnStreamingStats(){}
@@ -1588,13 +1588,13 @@ struct FUABT_ExtensionContext {
 
 	GENERATED_BODY()
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ExtensionContext")
 	bool isValid = false;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ExtensionContext")
 	int64 uid = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ExtensionContext")
 	FString providerName = "";
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ExtensionContext")
 	FString extensionName = "";
 
 	FUABT_ExtensionContext(){}
@@ -1633,13 +1633,13 @@ struct FUABT_EncryptionConfig
 
 public:
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|EncryptionConfig")
 	EUABT_ENCRYPTION_MODE encryptionMode = EUABT_ENCRYPTION_MODE::AES_128_GCM2;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|EncryptionConfig")
 	FString encryptionKey = "";
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|EncryptionConfig")
 	FString encryptionKdfSalt = "";
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|EncryptionConfig")
 	bool datastreamEncryptionEnabled = false;
 
 	FUABT_EncryptionConfig(){}
@@ -1690,7 +1690,7 @@ struct FUABT_ClientRoleOptions
 
 public:
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ClientRoleOptions")
 	EUABT_AUDIENCE_LATENCY_LEVEL_TYPE audienceLatencyLevel = EUABT_AUDIENCE_LATENCY_LEVEL_TYPE::AUDIENCE_LATENCY_LEVEL_ULTRA_LOW_LATENCY;
 
 	FUABT_ClientRoleOptions() {}
@@ -1716,11 +1716,11 @@ struct FUABT_SenderOptions
 {
 	GENERATED_BODY()
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|SenderOptions")
 	EUABT_TCcMode ccMode = EUABT_TCcMode::CC_ENABLED;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|SenderOptions")
 	EUABT_VIDEO_CODEC_TYPE codecType = EUABT_VIDEO_CODEC_TYPE::VIDEO_CODEC_GENERIC_H264;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|SenderOptions")
 	int targetBitrate = 6500;
 
 
@@ -1746,13 +1746,13 @@ struct FUABT_Rectangle
 
 public:
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|Rectangle")
 	int x = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|Rectangle")
 	int y = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|Rectangle")
 	int width = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|Rectangle")
 	int height = 0;
 
 	FUABT_Rectangle(){}
@@ -1785,34 +1785,34 @@ struct FUABT_VideoCanvas
 
 public:
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|VideoCanvas")
 	int64 uid = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|VideoCanvas")
 	int64 subviewUid = 0;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|VideoCanvas")
 	UImage* view = nullptr;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|VideoCanvas")
 	int64 backgroundColor = 0;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|VideoCanvas")
 	EUABT_RENDER_MODE_TYPE renderMode = EUABT_RENDER_MODE_TYPE::RENDER_MODE_HIDDEN;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|VideoCanvas")
 	EUABT_VIDEO_MIRROR_MODE_TYPE mirrorMode = EUABT_VIDEO_MIRROR_MODE_TYPE::VIDEO_MIRROR_MODE_AUTO;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|VideoCanvas")
 	EUABT_VIDEO_VIEW_SETUP_MODE setupMode = EUABT_VIDEO_VIEW_SETUP_MODE::VIDEO_VIEW_SETUP_REPLACE;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|VideoCanvas")
 	EUABT_VIDEO_SOURCE_TYPE sourceType = EUABT_VIDEO_SOURCE_TYPE::VIDEO_SOURCE_CAMERA_PRIMARY;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|VideoCanvas")
 	int mediaPlayerId = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|VideoCanvas")
 	FUABT_Rectangle cropArea;
 	
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|VideoCanvas")
 	bool enableAlphaMask = false;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|VideoCanvas")
 	EUABT_VIDEO_MODULE_POSITION position = EUABT_VIDEO_MODULE_POSITION::POSITION_POST_CAPTURER;
 
 
@@ -1863,11 +1863,11 @@ struct FUABT_LogConfig {
 
 public:
 	
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LogConfig")
 	FString filePath = "";
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LogConfig")
 	int64 fileSizeInKB = 2048;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LogConfig")
 	EUABT_LOG_LEVEL level = EUABT_LOG_LEVEL::LOG_LEVEL_INFO;
 
 	FUABT_LogConfig() {}
@@ -1897,45 +1897,45 @@ struct FUABT_RtcEngineContext
 {
 	GENERATED_BODY()
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RtcEngineContext")
 	EAgoraBPuEventHandlerType EventHandlerCreationType = EAgoraBPuEventHandlerType::EventHandler;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RtcEngineContext")
 	FString appId = "";
 
 	//UIRtcEngineEventHandler* eventHandler = nullptr;
 
-	//UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	//UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RtcEngineContext")
 	//int64 context = 0;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RtcEngineContext")
 	EUABT_CHANNEL_PROFILE_TYPE channelProfile = EUABT_CHANNEL_PROFILE_TYPE::CHANNEL_PROFILE_LIVE_BROADCASTING;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RtcEngineContext")
 	FString license = "";
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RtcEngineContext")
 	EUABT_AUDIO_SCENARIO_TYPE audioScenario = EUABT_AUDIO_SCENARIO_TYPE::AUDIO_SCENARIO_DEFAULT;
 	
 
 	
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RtcEngineContext")
 	EUABT_AREA_CODE areaCode = EUABT_AREA_CODE::AREA_CODE_GLOB;
 
 	
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RtcEngineContext")
 	FUABT_LogConfig logConfig;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RtcEngineContext")
 	FUABT_Opt_THREAD_PRIORITY_TYPE threadPriority;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RtcEngineContext")
 	bool useExternalEglContext = false;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RtcEngineContext")
 	bool domainLimit = false;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RtcEngineContext")
 	bool autoRegisterAgoraExtensions = true;
 
 
@@ -2003,9 +2003,9 @@ struct FUABT_RtcConnection
 
 public:
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RtcConnection")
 	FString channelId = "";
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RtcConnection")
 	int64 localUid = 0;
 
 	FUABT_RtcConnection(){}
@@ -2041,9 +2041,9 @@ struct FUABT_CodecCapLevels {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|FUABT_CodecCapLevels")
 	EUABT_VIDEO_CODEC_CAPABILITY_LEVEL hwDecodingLevel;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|FUABT_CodecCapLevels")
 	EUABT_VIDEO_CODEC_CAPABILITY_LEVEL swDecodingLevel;
 	
 	FUABT_CodecCapLevels() {}
@@ -2071,11 +2071,11 @@ struct FUABT_CodecCapInfo {
 
 public:
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|CodecCapInfo")
 	EUABT_VIDEO_CODEC_TYPE codecType = EUABT_VIDEO_CODEC_TYPE::VIDEO_CODEC_NONE;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|CodecCapInfo")
 	int codecCapMask = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|CodecCapInfo")
 	FUABT_CodecCapLevels codecLevels;
 
 	FUABT_CodecCapInfo(){}
@@ -2107,105 +2107,105 @@ struct FUABT_ChannelMediaOptions
 
 public:
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ChannelMediaOptions")
 	FUABT_Opt_bool publishCameraTrack;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ChannelMediaOptions")
 	FUABT_Opt_bool publishSecondaryCameraTrack;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ChannelMediaOptions")
 	FUABT_Opt_bool publishThirdCameraTrack;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ChannelMediaOptions")
 	FUABT_Opt_bool publishFourthCameraTrack;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ChannelMediaOptions")
 	FUABT_Opt_bool publishMicrophoneTrack;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ChannelMediaOptions")
 	FUABT_Opt_bool publishScreenCaptureVideo;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ChannelMediaOptions")
 	FUABT_Opt_bool publishScreenCaptureAudio;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ChannelMediaOptions")
 	FUABT_Opt_bool publishScreenTrack;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ChannelMediaOptions")
 	FUABT_Opt_bool publishSecondaryScreenTrack;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ChannelMediaOptions")
 	FUABT_Opt_bool publishThirdScreenTrack;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ChannelMediaOptions")
 	FUABT_Opt_bool publishFourthScreenTrack;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ChannelMediaOptions")
 	FUABT_Opt_bool publishCustomAudioTrack;
 	// If the box is unchecked, the value of the corresponding variable (named without _SetValue)  will be ignored.
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ChannelMediaOptions")
 	FUABT_Opt_int publishCustomAudioTrackId;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ChannelMediaOptions")
 	FUABT_Opt_bool publishCustomVideoTrack;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ChannelMediaOptions")
 	FUABT_Opt_bool publishEncodedVideoTrack;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ChannelMediaOptions")
 	FUABT_Opt_bool publishMediaPlayerAudioTrack;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ChannelMediaOptions")
 	FUABT_Opt_bool publishMediaPlayerVideoTrack;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ChannelMediaOptions")
 	FUABT_Opt_bool publishTranscodedVideoTrack;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ChannelMediaOptions")
 	FUABT_Opt_bool publishMixedAudioTrack;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ChannelMediaOptions")
 	FUABT_Opt_bool publishLipSyncTrack;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ChannelMediaOptions")
 	EAgoraOptional autoSubscribeAudio = EAgoraOptional::AGORA_TRUE_VALUE;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ChannelMediaOptions")
 	EAgoraOptional autoSubscribeVideo = EAgoraOptional::AGORA_TRUE_VALUE;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ChannelMediaOptions")
 	FUABT_Opt_bool enableAudioRecordingOrPlayout;
 	// If the box is unchecked, the value of the corresponding variable (named without _SetValue)  will be ignored.
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ChannelMediaOptions")
 	FUABT_Opt_int publishMediaPlayerId;
 	// If the box is unchecked, the value of the corresponding variable (named without _SetValue)  will be ignored.
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ChannelMediaOptions")
 	bool clientRoleType_SetValue = true;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ChannelMediaOptions")
 	EUABT_CLIENT_ROLE_TYPE clientRoleType = EUABT_CLIENT_ROLE_TYPE::CLIENT_ROLE_BROADCASTER;
 	// If the box is unchecked, the value of the corresponding variable (named without _SetValue)  will be ignored.
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ChannelMediaOptions")
 	FUABT_Opt_AUDIENCE_LATENCY_LEVEL_TYPE audienceLatencyLevel;
 	// If the box is unchecked, the value of the corresponding variable (named without _SetValue)  will be ignored.
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ChannelMediaOptions")
 	FUABT_Opt_VIDEO_STREAM_TYPE defaultVideoStreamType;
 	// If the box is unchecked, the value of the corresponding variable (named without _SetValue)  will be ignored.
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ChannelMediaOptions")
 	bool channelProfile_SetValue = true;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ChannelMediaOptions")
 	EUABT_CHANNEL_PROFILE_TYPE channelProfile = EUABT_CHANNEL_PROFILE_TYPE::CHANNEL_PROFILE_LIVE_BROADCASTING;
 	// If the box is unchecked, the value of the corresponding variable (named without _SetValue)  will be ignored.
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ChannelMediaOptions")
 	FUABT_Opt_int audioDelayMs;
 	// If the box is unchecked, the value of the corresponding variable (named without _SetValue)  will be ignored.
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ChannelMediaOptions")
 	FUABT_Opt_int mediaPlayerAudioDelayMs;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ChannelMediaOptions")
 	FUABT_Opt_ConstCharPtr token;
 	
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ChannelMediaOptions")
 	FUABT_Opt_bool enableBuiltInMediaEncryption;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ChannelMediaOptions")
 	FUABT_Opt_bool publishRhythmPlayerTrack;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ChannelMediaOptions")
 	FUABT_Opt_bool isInteractiveAudience;
 	// If the box is unchecked, the value of the corresponding variable (named without _SetValue)  will be ignored.
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ChannelMediaOptions")
 	FUABT_Opt_video_track_id_t customVideoTrackId;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ChannelMediaOptions")
 	FUABT_Opt_bool isAudioFilterable;
 
 
@@ -2409,11 +2409,11 @@ struct FUABT_LeaveChannelOptions
 
 public:
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LeaveChannelOptions")
 	bool stopAudioMixing = true;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LeaveChannelOptions")
 	bool stopAllEffect = true;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LeaveChannelOptions")
 	bool stopMicrophoneRecording = true;
 
 	
@@ -2448,17 +2448,17 @@ struct FUABT_EchoTestConfiguration
 
 public:
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|EchoTestConfiguration")
 	UImage* view = nullptr;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|EchoTestConfiguration")
 	bool enableAudio = true;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|EchoTestConfiguration")
 	bool enableVideo = true;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|EchoTestConfiguration")
 	FString token = "";
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|EchoTestConfiguration")
 	FString channelId = "";
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|EchoTestConfiguration")
 	int intervalInSeconds = 2;
 
 	
@@ -2501,11 +2501,11 @@ struct FUABT_VideoFormat {
 
 public:
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|VideoFormat")
 	int width = 640;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|VideoFormat")
 	int height = 360;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|VideoFormat")
 	int fps = 15;
 
 	FUABT_VideoFormat(){}
@@ -2535,23 +2535,23 @@ struct FUABT_CameraCapturerConfiguration
 
 public:
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|CameraCapturerConfiguration")
 	EUABT_CAMERA_DIRECTION cameraDirection = EUABT_CAMERA_DIRECTION::CAMERA_FRONT;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|CameraCapturerConfiguration")
 	EUABT_CAMERA_FOCAL_LENGTH_TYPE cameraFocalLengthType = EUABT_CAMERA_FOCAL_LENGTH_TYPE::CAMERA_FOCAL_LENGTH_DEFAULT;
 
 	// If the box is unchecked, the value of the corresponding variable (named without _SetValue)  will be ignored.
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|CameraCapturerConfiguration")
 	FUABT_Opt_ConstCharPtr deviceId;
 
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|CameraCapturerConfiguration")
 	FUABT_Opt_ConstCharPtr cameraId;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|CameraCapturerConfiguration")
 	FUABT_VideoFormat format = FUABT_VideoFormat();
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ChannelMediaOptions")
 	FUABT_Opt_bool followEncodeDimensionRatio;
 
 
@@ -2622,13 +2622,13 @@ struct FUABT_LastmileProbeConfig
 
 public:
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LastmileProbeConfig")
 	bool probeUplink = false;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LastmileProbeConfig")
 	bool probeDownlink = false;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LastmileProbeConfig")
 	int expectedUplinkBitrate = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LastmileProbeConfig")
 	int expectedDownlinkBitrate = 0;
 
 	FUABT_LastmileProbeConfig(){}
@@ -2662,9 +2662,9 @@ struct FUABT_VideoDimensions {
 
 public:
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|FUABT_VideoDimensions")
 	int width = 640;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|FUABT_VideoDimensions")
 	int height = 480;
 
 	FUABT_VideoDimensions(){}
@@ -2690,13 +2690,13 @@ struct FUABT_AdvanceOptions {
 
 	GENERATED_BODY()
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|AdvanceOptions")
 	EUABT_ENCODING_PREFERENCE encodingPreference = EUABT_ENCODING_PREFERENCE::PREFER_AUTO;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|AdvanceOptions")
 	EUABT_COMPRESSION_PREFERENCE compressionPreference = EUABT_COMPRESSION_PREFERENCE::PREFER_QUALITY;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|AdvanceOptions")
 	bool encodeAlpha = false;
 
 
@@ -2728,23 +2728,23 @@ struct FUABT_VideoEncoderConfiguration
 
 public:
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|VideoEncoderConfiguration")
 	EUABT_VIDEO_CODEC_TYPE codecType = EUABT_VIDEO_CODEC_TYPE::VIDEO_CODEC_NONE;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|VideoEncoderConfiguration")
 	FUABT_VideoDimensions dimensions = FUABT_VideoDimensions();
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|VideoEncoderConfiguration")
 	int frameRate = 15;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|VideoEncoderConfiguration")
 	int bitrate = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|VideoEncoderConfiguration")
 	int minBitrate = -1;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|VideoEncoderConfiguration")
 	EUABT_ORIENTATION_MODE orientationMode = EUABT_ORIENTATION_MODE::ORIENTATION_MODE_ADAPTIVE;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|VideoEncoderConfiguration")
 	EUABT_DEGRADATION_PREFERENCE degradationPreference = EUABT_DEGRADATION_PREFERENCE::MAINTAIN_QUALITY;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|VideoEncoderConfiguration")
 	EUABT_VIDEO_MIRROR_MODE_TYPE mirrorMode = EUABT_VIDEO_MIRROR_MODE_TYPE::VIDEO_MIRROR_MODE_DISABLED;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|VideoEncoderConfiguration")
 	FUABT_AdvanceOptions advanceOptions = FUABT_AdvanceOptions();
 
 	FUABT_VideoEncoderConfiguration(){}
@@ -2788,15 +2788,15 @@ struct FUABT_BeautyOptions
 
 public:
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|BeautyOptions")
 	EUABT_LIGHTENING_CONTRAST_LEVEL lighteningContrastLevel = EUABT_LIGHTENING_CONTRAST_LEVEL::LIGHTENING_CONTRAST_NORMAL;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|BeautyOptions")
 	float lighteningLevel = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|BeautyOptions")
 	float smoothnessLevel = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|BeautyOptions")
 	float rednessLevel = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|BeautyOptions")
 	float sharpnessLevel = 0;
 
 	FUABT_BeautyOptions(){}
@@ -2831,9 +2831,9 @@ struct FUABT_LowlightEnhanceOptions
 
 public:
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LowlightEnhanceOptions")
 	EUABT_LOW_LIGHT_ENHANCE_MODE mode = EUABT_LOW_LIGHT_ENHANCE_MODE::LOW_LIGHT_ENHANCE_AUTO;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LowlightEnhanceOptions")
 	EUABT_LOW_LIGHT_ENHANCE_LEVEL level = EUABT_LOW_LIGHT_ENHANCE_LEVEL::LOW_LIGHT_ENHANCE_LEVEL_HIGH_QUALITY;
 
 	FUABT_LowlightEnhanceOptions(){}
@@ -2861,9 +2861,9 @@ struct FUABT_VideoDenoiserOptions
 
 public:
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|VideoDenoiserOptions")
 	EUABT_VIDEO_DENOISER_MODE mode = EUABT_VIDEO_DENOISER_MODE::VIDEO_DENOISER_AUTO;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|VideoDenoiserOptions")
 	EUABT_VIDEO_DENOISER_LEVEL  level = EUABT_VIDEO_DENOISER_LEVEL ::VIDEO_DENOISER_LEVEL_HIGH_QUALITY;
 
 	FUABT_VideoDenoiserOptions(){}
@@ -2892,9 +2892,9 @@ struct FUABT_ColorEnhanceOptions
 
 public:
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ColorEnhanceOptions")
 	float strengthLevel = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ColorEnhanceOptions")
 	float skinProtectLevel = 0;
 
 	FUABT_ColorEnhanceOptions(){}
@@ -2923,13 +2923,13 @@ struct FUABT_VirtualBackgroundSource
 
 public:
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|VirtualBackgroundSource")
 	EUABT_BACKGROUND_SOURCE_TYPE background_source_type = EUABT_BACKGROUND_SOURCE_TYPE::BACKGROUND_COLOR;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|VirtualBackgroundSource")
 	int64 color = 0xffffff;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|VirtualBackgroundSource")
 	FString source = "";
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|VirtualBackgroundSource")
 	EUABT_BACKGROUND_BLUR_DEGREE blur_degree = EUABT_BACKGROUND_BLUR_DEGREE::BLUR_DEGREE_HIGH;
 
 	FUABT_VirtualBackgroundSource(){}
@@ -2961,9 +2961,9 @@ struct FUABT_SegmentationProperty
 
 public:
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|SegmentationProperty")
 	EUABT_SEG_MODEL_TYPE modelType = EUABT_SEG_MODEL_TYPE::SEG_MODEL_AI;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|SegmentationProperty")
 	float greenCapacity = 0.5;
 
 	FUABT_SegmentationProperty(){}
@@ -2993,9 +2993,9 @@ struct FUABT_VideoSubscriptionOptions
 public:
 
 	// If the box is unchecked, the value of the corresponding variable (named without _SetValue)  will be ignored.
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ChannelMediaOptions")
 	FUABT_Opt_VIDEO_STREAM_TYPE type;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|VideoSubscriptionOptions")
 	FUABT_Opt_bool encodedFrameOnly;
 
 	FUABT_VideoSubscriptionOptions(){}
@@ -3026,17 +3026,17 @@ struct FUABT_AudioRecordingConfiguration
 
 public:
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|AudioRecordingConfiguration")
 	FString filePath = "";
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|AudioRecordingConfiguration")
 	bool encode = false;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|AudioRecordingConfiguration")
 	int sampleRate = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|AudioRecordingConfiguration")
 	EUABT_AUDIO_FILE_RECORDING_TYPE fileRecordingType = EUABT_AUDIO_FILE_RECORDING_TYPE::AUDIO_FILE_RECORDING_MIXED;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|AudioRecordingConfiguration")
 	EUABT_AUDIO_RECORDING_QUALITY_TYPE quality = EUABT_AUDIO_RECORDING_QUALITY_TYPE::AUDIO_RECORDING_QUALITY_LOW;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|AudioRecordingConfiguration")
 	int recordingChannel = 0;
 
 	FUABT_AudioRecordingConfiguration(){}
@@ -3074,28 +3074,28 @@ struct FUABT_SpatialAudioParams
 public:
 
 	// If the box is unchecked, the value of the corresponding variable (named without _SetValue)  will be ignored.
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|SpatialAudioParams")
 	FUABT_Opt_double speaker_azimuth;
 	// If the box is unchecked, the value of the corresponding variable (named without _SetValue)  will be ignored.
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|SpatialAudioParams")
 	FUABT_Opt_double speaker_elevation;
 	// If the box is unchecked, the value of the corresponding variable (named without _SetValue)  will be ignored.
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|SpatialAudioParams")
 	FUABT_Opt_double speaker_distance;
 	// If the box is unchecked, the value of the corresponding variable (named without _SetValue)  will be ignored.
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|SpatialAudioParams")
 	FUABT_Opt_int speaker_orientation;
 	// If the box is unchecked, the value of the corresponding variable (named without _SetValue)  will be ignored.
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|SpatialAudioParams")
 	FUABT_Opt_bool enable_blur;
 	// If the box is unchecked, the value of the corresponding variable (named without _SetValue)  will be ignored.
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|SpatialAudioParams")
 	FUABT_Opt_bool enable_air_absorb;
 	// If the box is unchecked, the value of the corresponding variable (named without _SetValue)  will be ignored.
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|SpatialAudioParams")
 	FUABT_Opt_double speaker_attenuation;
 	// If the box is unchecked, the value of the corresponding variable (named without _SetValue)  will be ignored.
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|SpatialAudioParams")
 	FUABT_Opt_bool enable_doppler;
 
 	FUABT_SpatialAudioParams(){}
@@ -3143,11 +3143,11 @@ struct FUABT_SimulcastStreamConfig
 
 public:
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|SimulcastStreamConfig")
 	FUABT_VideoDimensions dimensions = FUABT_VideoDimensions();
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|SimulcastStreamConfig")
 	int kBitrate = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|SimulcastStreamConfig")
 	int framerate = 0;
 
 	FUABT_SimulcastStreamConfig(){}
@@ -3178,13 +3178,13 @@ struct FUABT_ExtensionInfo {
 	GENERATED_BODY();
 
 public:
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ExtensionInfo")
 	EUABT_MEDIA_SOURCE_TYPE mediaSourceType = EUABT_MEDIA_SOURCE_TYPE::UNKNOWN_MEDIA_SOURCE;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ExtensionInfo")
 	int64 remoteUid = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ExtensionInfo")
 	FString channelId = "";
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ExtensionInfo")
 	int64 localUid = 0;
 
 	FUABT_ExtensionInfo() {}
@@ -3231,16 +3231,16 @@ struct FUABT_ThumbImageBuffer {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ThumbImageBuffer")
 	UImage* Image = nullptr;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ThumbImageBuffer")
 	TArray<uint8> buffer;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ThumbImageBuffer")
 	int64 length = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ThumbImageBuffer")
 	int64 width = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ThumbImageBuffer")
 	int64 height = 0;
 
 #if defined(_WIN32) || (defined(__APPLE__) && TARGET_OS_MAC && !TARGET_OS_IPHONE)
@@ -3313,30 +3313,30 @@ struct FUABT_ScreenCaptureSourceInfo {
 
 public:
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|FUABT_ScreenCaptureSourceInfo")
 	EUABT_ScreenCaptureSourceType type = EUABT_ScreenCaptureSourceType();
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|FUABT_ScreenCaptureSourceInfo")
 	int64 sourceId = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|FUABT_ScreenCaptureSourceInfo")
 	FString sourceName = "";
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|FUABT_ScreenCaptureSourceInfo")
 	FUABT_ThumbImageBuffer thumbImage = FUABT_ThumbImageBuffer();
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|FUABT_ScreenCaptureSourceInfo")
 	FUABT_ThumbImageBuffer iconImage = FUABT_ThumbImageBuffer();
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|FUABT_ScreenCaptureSourceInfo")
 	FString processPath = "";
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|FUABT_ScreenCaptureSourceInfo")
 	FString sourceTitle = "";
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|FUABT_ScreenCaptureSourceInfo")
 	bool primaryMonitor = false;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|FUABT_ScreenCaptureSourceInfo")
 	bool isOccluded = false;
 	
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|FUABT_ScreenCaptureSourceInfo")
 	FUABT_Rectangle position = FUABT_Rectangle();
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|FUABT_ScreenCaptureSourceInfo")
 	bool minimizeWindow = false;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|FUABT_ScreenCaptureSourceInfo")
 	int64 sourceDisplayId = 0;
 
 #if defined(_WIN32) || (defined(__APPLE__) && TARGET_OS_MAC && !TARGET_OS_IPHONE)
@@ -3398,9 +3398,9 @@ struct FUABT_SIZE {
 
 public:
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|SIZE")
 	int width = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|SIZE")
 	int height = 0;
 
 #if (defined(__APPLE__) && TARGET_OS_MAC && !TARGET_OS_IPHONE)
@@ -3432,25 +3432,25 @@ struct FUABT_ScreenCaptureParameters
 
 public:
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ScreenCaptureParameters")
 	FUABT_VideoDimensions dimensions = FUABT_VideoDimensions();
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ScreenCaptureParameters")
 	int frameRate = 5;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ScreenCaptureParameters")
 	int bitrate = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ScreenCaptureParameters")
 	bool captureMouseCursor = true;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ScreenCaptureParameters")
 	bool windowFocus = false;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ScreenCaptureParameters")
 	int64 excludeWindowList = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ScreenCaptureParameters")
 	int excludeWindowCount = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ScreenCaptureParameters")
 	int highLightWidth = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ScreenCaptureParameters")
 	int highLightColor = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ScreenCaptureParameters")
 	bool enableHighLight = false;
 
 	FUABT_ScreenCaptureParameters(){}
@@ -3494,13 +3494,13 @@ struct FUABT_ScreenAudioParameters {
 
 public:
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ScreenAudioParameters")
 	int sampleRate = 16000;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ScreenAudioParameters")
 	int channels = 2;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ScreenAudioParameters")
 	int captureSignalVolume = 100;
 
 #if defined(__ANDROID__) || (defined(__APPLE__) && TARGET_OS_IOS)
@@ -3532,16 +3532,16 @@ struct FUABT_ScreenVideoParameters {
 
 public:
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ScreenVideoParameters")
 	FUABT_VideoDimensions dimensions = FUABT_VideoDimensions();
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ScreenVideoParameters")
 	int frameRate = 15;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ScreenVideoParameters")
 	int bitrate = 0;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ScreenVideoParameters")
 	EUABT_VIDEO_CONTENT_HINT contentHint = EUABT_VIDEO_CONTENT_HINT::CONTENT_HINT_MOTION;
 
 #if defined(__ANDROID__) || (defined(__APPLE__) && TARGET_OS_IOS)
@@ -3576,13 +3576,13 @@ struct FUABT_ScreenCaptureParameters2
 
 public:
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ScreenCaptureParameters2")
 	bool captureAudio = false;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ScreenCaptureParameters2")
 	FUABT_ScreenAudioParameters audioParams = FUABT_ScreenAudioParameters();
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ScreenCaptureParameters2")
 	bool captureVideo = false;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ScreenCaptureParameters2")
 	FUABT_ScreenVideoParameters videoParams = FUABT_ScreenVideoParameters();
 
 #if defined(__ANDROID__) || (defined(__APPLE__) && TARGET_OS_IOS)
@@ -3618,17 +3618,17 @@ struct FUABT_ScreenCaptureConfiguration
 
 public:
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ScreenCaptureConfiguration")
 	bool isCaptureWindow = false;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ScreenCaptureConfiguration")
 	int displayId = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ScreenCaptureConfiguration")
 	FUABT_Rectangle screenRect = FUABT_Rectangle();
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ScreenCaptureConfiguration")
 	int64 windowId = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ScreenCaptureConfiguration")
 	FUABT_ScreenCaptureParameters params = FUABT_ScreenCaptureParameters();
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ScreenCaptureConfiguration")
 	FUABT_Rectangle regionRect = FUABT_Rectangle();
 
 	FUABT_ScreenCaptureConfiguration(){}
@@ -3672,10 +3672,10 @@ struct FUABT_FocalLengthInfo {
 
 public:
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|FUABT_FocalLengthInfo")
 	int cameraDirection = 0;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|FUABT_FocalLengthInfo")
 	EUABT_CAMERA_FOCAL_LENGTH_TYPE focalLengthType = EUABT_CAMERA_FOCAL_LENGTH_TYPE::CAMERA_FOCAL_LENGTH_DEFAULT;
 
 	FUABT_FocalLengthInfo(){}
@@ -3705,21 +3705,21 @@ struct FUABT_TranscodingUser {
 
 public:
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|TranscodingUser")
 	int64 uid = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|TranscodingUser")
 	int x = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|TranscodingUser")
 	int y = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|TranscodingUser")
 	int width = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|TranscodingUser")
 	int height = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|TranscodingUser")
 	int zOrder = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|TranscodingUser")
 	float alpha = 1.0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|TranscodingUser")
 	int audioChannel = 0;
 
 	FUABT_TranscodingUser(){}
@@ -3758,19 +3758,19 @@ struct FUABT_RtcImage
 {
 	GENERATED_BODY()
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RtcImage")
 	FString url = "";
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RtcImage")
 	int x = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RtcImage")
 	int y = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RtcImage")
 	int width = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RtcImage")
 	int height = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RtcImage")
 	int zOrder = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|RtcImage")
 	float alpha = 0;
 
 	FUABT_RtcImage() {}
@@ -3818,9 +3818,9 @@ struct FUABT_LiveStreamAdvancedFeature {
 
 public:
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LiveStreamAdvancedFeature")
 	FString featureName = "";
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LiveStreamAdvancedFeature")
 	bool opened = false;
 
 	FUABT_LiveStreamAdvancedFeature(){}
@@ -3850,43 +3850,43 @@ struct FUABT_LiveTranscoding
 
 public:
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LiveTranscoding")
 	int width = 360;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LiveTranscoding")
 	int height = 640;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LiveTranscoding")
 	int videoBitrate = 400;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LiveTranscoding")
 	int videoFramerate = 15;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LiveTranscoding")
 	bool lowLatency = false;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LiveTranscoding")
 	int videoGop = 30;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LiveTranscoding")
 	EUABT_VIDEO_CODEC_PROFILE_TYPE videoCodecProfile = EUABT_VIDEO_CODEC_PROFILE_TYPE::VIDEO_CODEC_PROFILE_HIGH;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LiveTranscoding")
 	int64 backgroundColor = 0x000000;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LiveTranscoding")
 	EUABT_VIDEO_CODEC_TYPE_FOR_STREAM videoCodecType = EUABT_VIDEO_CODEC_TYPE_FOR_STREAM::VIDEO_CODEC_H264_FOR_STREAM;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LiveTranscoding")
 	TArray<FUABT_TranscodingUser> transcodingUsers;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LiveTranscoding")
 	FString transcodingExtraInfo = "";
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LiveTranscoding")
 	FString metadata = "";
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LiveTranscoding")
 	TArray <FUABT_RtcImage> watermark;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LiveTranscoding")
 	TArray<FUABT_RtcImage> backgroundImage;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LiveTranscoding")
 	EUABT_AUDIO_SAMPLE_RATE_TYPE audioSampleRate = EUABT_AUDIO_SAMPLE_RATE_TYPE::AUDIO_SAMPLE_RATE_48000;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LiveTranscoding")
 	int audioBitrate = 48;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LiveTranscoding")
 	int audioChannels = 1;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LiveTranscoding")
 	EUABT_AUDIO_CODEC_PROFILE_TYPE audioCodecProfile = EUABT_AUDIO_CODEC_PROFILE_TYPE::AUDIO_CODEC_PROFILE_LC_AAC;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LiveTranscoding")
 	TArray<FUABT_LiveStreamAdvancedFeature> advancedFeatures;
 
 	FUABT_LiveTranscoding(){}
@@ -3985,11 +3985,11 @@ struct FUABT_LocalTranscoderConfiguration
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LocalTranscoderConfiguration")
 	TArray<FUABT_TranscodingVideoStream> videoInputStreams;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LocalTranscoderConfiguration")
 	FUABT_VideoEncoderConfiguration videoOutputConfiguration = FUABT_VideoEncoderConfiguration();
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LocalTranscoderConfiguration")
 	bool syncWithPrimaryCamera = true;
 
 	FUABT_LocalTranscoderConfiguration(){}
@@ -4025,9 +4025,9 @@ struct FUABT_DataStreamConfig
 
 public:
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|DataStreamConfig")
 	bool syncWithAudio = false;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|DataStreamConfig")
 	bool ordered = false;
 
 	FUABT_DataStreamConfig(){}
@@ -4057,13 +4057,13 @@ struct FUABT_WatermarkRatio {
 
 public:
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|WatermarkRatio")
 	float xRatio = 0;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|WatermarkRatio")
 	float yRatio = 0;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|WatermarkRatio")
 	float widthRatio = 0;
 
 	FUABT_WatermarkRatio(){}
@@ -4093,15 +4093,15 @@ struct FUABT_WatermarkOptions
 
 public:
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|WatermarkOptions")
 	bool visibleInPreview = false;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|WatermarkOptions")
 	FUABT_Rectangle positionInLandscapeMode = FUABT_Rectangle();
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|WatermarkOptions")
 	FUABT_Rectangle positionInPortraitMode = FUABT_Rectangle();
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|WatermarkOptions")
 	FUABT_WatermarkRatio watermarkRatio = FUABT_WatermarkRatio();
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|WatermarkOptions")
 	EUABT_WATERMARK_FIT_MODE mode = EUABT_WATERMARK_FIT_MODE::FIT_MODE_COVER_POSITION;
 
 	FUABT_WatermarkOptions(){}
@@ -4138,9 +4138,9 @@ struct FUABT_AgoraRhythmPlayerConfig
 
 public:
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|AgoraRhythmPlayerConfig")
 	int beatsPerMeasure = 4;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|AgoraRhythmPlayerConfig")
 	int beatsPerMinute = 60;
 
 	FUABT_AgoraRhythmPlayerConfig(){}
@@ -4170,10 +4170,10 @@ struct FUABT_ContentInspectModule {
 
 public:
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ContentInspectModule")
 	EUABT_CONTENT_INSPECT_TYPE type = EUABT_CONTENT_INSPECT_TYPE::CONTENT_INSPECT_INVALID;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ContentInspectModule")
 	int64 interval = 0;
 
 	FUABT_ContentInspectModule(){}
@@ -4200,14 +4200,14 @@ struct FUABT_ContentInspectConfig
 
 public:
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ContentInspectConfig")
 	FString extraInfo = "";
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ContentInspectConfig")
 	FString serverConfig;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ContentInspectConfig")
 	TArray<FUABT_ContentInspectModule> modules;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ContentInspectConfig")
 	int moduleCount = 0;
 
 	FUABT_ContentInspectConfig(){}
@@ -4249,16 +4249,16 @@ struct FUABT_LogUploadServerInfo {
 
 public:
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LogUploadServerInfo")
 	FString serverDomain = "";
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LogUploadServerInfo")
 	FString serverPath = "";
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LogUploadServerInfo")
 	int serverPort = 0;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LogUploadServerInfo")
 	bool serverHttps = true;
 
 	FUABT_LogUploadServerInfo() {}
@@ -4292,7 +4292,7 @@ struct FUABT_AdvancedConfigInfo {
 	GENERATED_BODY()
 
 public: 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|AdvancedConfigInfo")
 	FUABT_LogUploadServerInfo logUploadServer = FUABT_LogUploadServerInfo();
 
 	FUABT_AdvancedConfigInfo(){}
@@ -4318,23 +4318,23 @@ struct FUABT_LocalAccessPointConfiguration
 
 public:
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LocalAccessPointConfiguration")
 	TArray<FString> ipList;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LocalAccessPointConfiguration")
 	int ipListSize = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LocalAccessPointConfiguration")
 	TArray<FString> domainList;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LocalAccessPointConfiguration")
 	int domainListSize = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LocalAccessPointConfiguration")
 	FString verifyDomainName = "";
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LocalAccessPointConfiguration")
 	EUABT_LOCAL_PROXY_MODE mode = EUABT_LOCAL_PROXY_MODE::ConnectivityFirst;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LocalAccessPointConfiguration")
 	FUABT_AdvancedConfigInfo advancedConfig;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LocalAccessPointConfiguration")
 	bool disableAut = false;
 
 	FUABT_LocalAccessPointConfiguration(){}
@@ -4391,7 +4391,7 @@ struct FUABT_AdvancedAudioOptions
 public:
 
 	// If the box is unchecked, the value of the corresponding variable (named without _SetValue)  will be ignored.
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|AdvancedAudioOptions")
 	FUABT_Opt_int audioProcessingChannels;
 
 	FUABT_AdvancedAudioOptions(){}
@@ -4418,9 +4418,9 @@ struct FUABT_ImageTrackOptions
 
 public:
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ImageTrackOptions")
 	FString imageUrl = "";
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ImageTrackOptions")
 	int fps = 1;
 
 	FUABT_ImageTrackOptions(){}
@@ -4448,7 +4448,7 @@ struct FUABT_DeviceInfo
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|DeviceInfo")
 	bool isLowLatencyAudioSupported = false;
 
 	FUABT_DeviceInfo(){}
@@ -4476,13 +4476,13 @@ struct FUABT_ChannelMediaInfo {
 
 public:
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|UserInfo")
 	int64 uid = 0;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|UserInfo")
 	FString channelName = "";
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|UserInfo")
 	FString token = "";
 
 	FUABT_ChannelMediaInfo(){}
@@ -4514,10 +4514,10 @@ struct FUABT_ChannelMediaRelayConfiguration
 
 public:
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ChannelMediaRelayConfiguration")
 	FUABT_ChannelMediaInfo srcInfo = FUABT_ChannelMediaInfo();
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|ChannelMediaRelayConfiguration")
 	TArray<FUABT_ChannelMediaInfo> destInfos;
 
 	FUABT_ChannelMediaRelayConfiguration(){}
@@ -4563,12 +4563,12 @@ struct FUABT_FaceShapeBeautyOptions {
 public:
 	/** The face shape style, See #FACE_SHAPE_BEAUTY_STYLE.
 	  */
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|FaceShapeBeautyOptions")
 	EUABT_FACE_SHAPE_BEAUTY_STYLE shapeStyle = EUABT_FACE_SHAPE_BEAUTY_STYLE::FACE_SHAPE_BEAUTY_STYLE_FEMALE;
 
 	/** The intensity of the pinching effect applied to the specified facial style. The value ranges from 0 (original) to 100. The default value is 0. The greater the value, the stronger the intensity applied to face pinching.
 	  */
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|FaceShapeBeautyOptions")
 	int styleIntensity = 50;
 
 	FUABT_FaceShapeBeautyOptions(){}
@@ -4607,7 +4607,7 @@ public:
 
 	/** The specific facial area to be adjusted, See #FACE_SHAPE_AREA.
 	  */
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|FaceShapeAreaOptions")
 	EUABT_FACE_SHAPE_AREA shapeArea = EUABT_FACE_SHAPE_AREA::FACE_SHAPE_AREA_NONE;
 
 	/** The intensity of the pinching effect applied to the specified facial area.
@@ -4615,7 +4615,7 @@ public:
 	 * The default value is 0. The greater the absolute value, the stronger the intensity applied to the specified facial area, and negative values indicate the opposite direction.
 	 * For enumeration values other than the above, the value ranges from 0 to 100. The default value is 0. The greater the value, the stronger the intensity applied to the specified facial area.
 	  */
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|FaceShapeAreaOptions")
 	int shapeIntensity = 0;
 
 	FUABT_FaceShapeAreaOptions(){}
@@ -4662,14 +4662,14 @@ public:
 	 * The SDK provides a built-in cube named `built_in_whiten.cube` for whitening. To use this cube, specify the path to `built_in_whiten_filter`
 	 */
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|FilterEffectOptions")
 	FString path;
 
 	/**
 	 * The intensity of specified filter effect. The value ranges from 0.0 to 1.0. The default value is 0.5. The greater the value, the stronger the intensity of the filter.
 	 */
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|FilterEffectOptions")
 	float strength = 0.5;
 
 	FUABT_FilterEffectOptions(){}
@@ -4700,17 +4700,17 @@ public:
 	/**
 	 * The video frame dimension. The default value is 0.
 	 */
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|StreamLayerConfig")
 	FUABT_VideoDimensions dimensions;
 	/**
 	 * The capture frame rate (fps) of the local video. The default value is 0.
 	 */
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|StreamLayerConfig")
 	int framerate = 0;
 	/**
 	 * Whether to enable the corresponding layer of video stream. The default value is false.
 	 */
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|StreamLayerConfig")
 	bool enable = false;
 	
 	FUABT_StreamLayerConfig() {}
@@ -4746,7 +4746,7 @@ public:
 	/**
 	 * The array of StreamLayerConfig, which contains STREAM_LAYER_COUNT_MAX layers of video stream at most.
 	 */
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|SimulcastConfig")
 	TArray<FUABT_StreamLayerConfig> configs;
 
 	FUABT_SimulcastConfig() {}
@@ -4785,25 +4785,25 @@ public:
 	/**
 	 * The source type of audio for the audio mixing on the local client. See #AUDIO_SOURCE_TYPE.
 	 */
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|MixedAudioStream")
 	EUABT_AUDIO_SOURCE_TYPE sourceType = EUABT_AUDIO_SOURCE_TYPE::AUDIO_SOURCE_MICROPHONE;
 	/**
 	 * The ID of the remote user.
 	 * @note Use this parameter only when the source type is `AUDIO_SOURCE_REMOTE`.
 	 */
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|MixedAudioStream")
 	int64 remoteUserUid;
 	/**
 	 * The channel ID of the remote user.
 	 * @note Use this parameter only when the source type is `AUDIO_SOURCE_REMOTE`.
 	 */
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|MixedAudioStream")
 	FString channelId;
 	/**
 	 * The track ID of the local track.
 	 * @note Use this parameter only when the source type is `AUDIO_SOURCE_REMOTE`.
 	 */
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|MixedAudioStream")
 	int64 trackId;
 
 	FUABT_MixedAudioStream() {}
@@ -4840,7 +4840,7 @@ public:
 	/**
 	 * The source of the streams to mixed;
 	 */
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LocalAudioMixerConfiguration")
 	TArray<FUABT_MixedAudioStream> audioInputStreams;
 
 	/**
@@ -4848,7 +4848,7 @@ public:
 	 * - true: (Default) Use the timestamp of the captured audio frame as the timestamp of the mixed audio frame.
 	 * - false: Do not use the timestamp of the captured audio frame as the timestamp of the mixed audio frame. Instead, use the timestamp when the mixed audio frame is constructed.
 	 */
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|LocalAudioMixerConfiguration")
 	bool syncWithLocalMic;
 
 	FUABT_LocalAudioMixerConfiguration() {}
@@ -4903,7 +4903,7 @@ public:
 	 * - macOS: `~/Library/Logs/example.jpg`
 	 * - Android: `/storage/emulated/0/Android/data/<package name>/files/example.jpg`
 	 */
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|SnapshotConfig")
 	FString filePath;
 
 	/**
@@ -4914,7 +4914,7 @@ public:
 	 * - uid != 0: Only position 2 is allowed.
 	 *
 	 */
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|SnapshotConfig")
 	EUABT_VIDEO_MODULE_POSITION position = EUABT_VIDEO_MODULE_POSITION::POSITION_PRE_ENCODER;
 
 
