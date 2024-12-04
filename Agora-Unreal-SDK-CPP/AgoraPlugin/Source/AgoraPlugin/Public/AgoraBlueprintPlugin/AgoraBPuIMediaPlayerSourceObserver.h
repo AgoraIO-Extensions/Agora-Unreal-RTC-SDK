@@ -14,9 +14,9 @@ struct FUABT_SrcInfo {
 
 public:
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|SrcInfo")
 	int bitrateInKbps = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|SrcInfo")
 	FString name = "";
 
 	FUABT_SrcInfo(){}
@@ -45,11 +45,11 @@ struct FUABT_CacheStatistics {
 
 public:
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|CacheStatistics")
 	int64 fileSize = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|CacheStatistics")
 	int64 cacheSize = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|CacheStatistics")
 	int64 downloadSize = 0;
 	
 	FUABT_CacheStatistics(){}
@@ -78,13 +78,13 @@ struct FUABT_PlayerPlaybackStats {
 
 public:
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|FUABT_PlayerPlaybackStats")
 	int videoFps = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|FUABT_PlayerPlaybackStats")
 	int videoBitrateInKbps =0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|FUABT_PlayerPlaybackStats")
 	int audioBitrateInKbps =0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|FUABT_PlayerPlaybackStats")
 	int totalBitrateInKbps =0;
 
 	FUABT_PlayerPlaybackStats(){}
@@ -117,19 +117,19 @@ struct FUABT_PlayerUpdatedInfo {
 public:
 
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|PlayerUpdatedInfo")
 	FString internalPlayerUuid = "";
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|PlayerUpdatedInfo")
 	FString deviceId = "";
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|PlayerUpdatedInfo")
 	int videoHeight = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|PlayerUpdatedInfo")
 	int videoWidth = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|PlayerUpdatedInfo")
 	int audioSampleRate = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|PlayerUpdatedInfo")
 	int audioChannels = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|PlayerUpdatedInfo")
 	int audioBitsPerSample = 0;
 
 
