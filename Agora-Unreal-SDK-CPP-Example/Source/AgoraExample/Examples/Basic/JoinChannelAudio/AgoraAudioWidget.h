@@ -17,6 +17,7 @@
 #include "Components/Slider.h"
 #include "Components/TextBlock.h"
 #include "Components/ComboBoxString.h"
+#include "Components/VerticalBox.h"
 
 //UI Utility
 #include "../../../Utility/BFL_Logger.h"
@@ -105,6 +106,9 @@ public:
 	UComboBoxString* CBS_AudioProfile = nullptr;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget))
 	UComboBoxString* CBS_AudioSenario = nullptr;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget))
+	UVerticalBox* VB_SetAudioProfileAndSenario = nullptr;
 
 	UFUNCTION(BlueprintCallable)
 	void OnBtnBackToHomeClicked();
