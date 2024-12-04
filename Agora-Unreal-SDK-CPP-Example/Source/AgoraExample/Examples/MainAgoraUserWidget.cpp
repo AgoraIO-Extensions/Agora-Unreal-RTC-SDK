@@ -4,6 +4,7 @@
 #include "MainAgoraUserWidget.h"
 #include "AgoraPluginInterface.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "../Utility//BFL_UtilityTool.h"
 #include "GameFramework/GameUserSettings.h"
 
 #pragma region CustomTileView
@@ -80,7 +81,7 @@ void UMainAgoraUserWidget::NativeDestruct()
 	SaveGameInstance->Token = FString(TokenBox->GetText().ToString());
 	SaveGameInstance->Channelname = FString(ChannelBox->GetText().ToString());
 
-	if (UGameplayStatics::SaveGameToSlot(SaveGameInstance, FString("AgoraSave"), 0))
+	if (UGameplayStatics::SaveGameToSlot(SaveGameInstance, UBFL_UtilityTool::GetAgoraSaveDataSlotName(), 0))
 	{
 		UE_LOG(LogTemp,Warning,TEXT("Save Config Succeed"));
 	}

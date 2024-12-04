@@ -3,6 +3,7 @@
 
 #include "BFL_UtilityTool.h"
 #include "MediaPlayer.h"
+#include "Misc/EngineVersion.h"
 
 FString UBFL_UtilityTool::ConvertToAbsolutePath(FString InRelativePath, bool bAndroidUseInternalBasePath /*= false*/)
 {
@@ -94,6 +95,16 @@ FString UBFL_UtilityTool::GenSimpleUIDPart_FuncCode(EUIDFuncType Type)
 {
 	int ValType = (uint8)Type;
 	return  "00" + FString::FromInt(ValType);
+}
+
+FString UBFL_UtilityTool::GetAgoraSaveDataSlotName()
+{
+	FEngineVersion EngineVersion = FEngineVersion::Current();
+	FString VersionString = EngineVersion.ToString(EVersionComponent::Patch);
+	// UE_LOG(LogTemp, Log, TEXT("Current Engine Version: %s"), *VersionString);
+
+	FString SlotName = "AgoraSaveData_" + VersionString;
+	return SlotName;
 }
 
 void UBFL_UtilityTool::SetCBSTextColor(UComboBoxString* CBSPtr)
