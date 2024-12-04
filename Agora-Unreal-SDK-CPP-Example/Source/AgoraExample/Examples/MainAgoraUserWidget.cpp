@@ -3,6 +3,7 @@
 
 #include "MainAgoraUserWidget.h"
 #include "AgoraPluginInterface.h"
+#include "Kismet/KismetSystemLibrary.h"
 #include "GameFramework/GameUserSettings.h"
 
 #pragma region CustomTileView
@@ -61,6 +62,13 @@ void UMainAgoraUserWidget::NativeConstruct()
 	if(Txt_SDKVer){
 		Txt_SDKVer->SetText(FText::FromString(AgoraUERtcEngine::GetSDKVersion()));
 	}
+
+#if PLATFORM_ANDROID
+	// to keep screen on
+	// For IOS: please check IOS config ini: bEnableIdleTimer
+	UKismetSystemLibrary::ControlScreensaver(false);
+#endif
+
 }
 
 void UMainAgoraUserWidget::NativeDestruct()
