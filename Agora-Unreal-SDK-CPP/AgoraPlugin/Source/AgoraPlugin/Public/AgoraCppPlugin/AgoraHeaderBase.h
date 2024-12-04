@@ -22,6 +22,15 @@
 #define CONSTEXPR constexpr 
 #endif
 
+// For Test Build Plugin Compilation
+#ifndef THIRD_PARTY_INCLUDES_START
+#define THIRD_PARTY_INCLUDES_START
+#endif 	
+
+#ifndef THIRD_PARTY_INCLUDES_END
+#define THIRD_PARTY_INCLUDES_END
+#endif 	
+
 THIRD_PARTY_INCLUDES_START
 #include <AgoraCppPlugin/include/IAgoraMediaComponentFactory.h>
 #include <AgoraCppPlugin/include/IAgoraMediaEngine.h>
