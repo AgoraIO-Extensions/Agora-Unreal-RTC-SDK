@@ -110,6 +110,10 @@ public class AgoraPlugin : ModuleRules
 
 
 
+        /* ==== For Test Build Plugin === 
+           AdditionalCompilerArguments are only required on the Mac or iOS platforms.
+         */
+
 
         //// Add Compile Options
         //if (Target.Platform == UnrealTargetPlatform.Mac || Target.Platform == UnrealTargetPlatform.IOS)
@@ -120,7 +124,15 @@ public class AgoraPlugin : ModuleRules
         //    Type TargetType = Target.GetType();
         //    FieldInfo InnerField = TargetType.GetField("Inner", BindingFlags.Instance | BindingFlags.NonPublic);
         //    TargetRules Inner = (TargetRules)InnerField.GetValue(Target);
-        //    Inner.AdditionalCompilerArguments += " -Wno-gcc-compat -Wno-reorder-ctor -Wno-nonportable-include-path ";
+        //    Inner.AdditionalCompilerArguments += " -Wno-gcc-compat -Wno-reorder-ctor -Wno-nonportable-include-path -Wno-undef  -Wno-macro-redefined ";
+
+
+        /*
+            //// If UE4.27 or lower than 4.27 fails
+            // Inner.AdditionalCompilerArguments += " -Wno-deprecated-builtins -Wno-unused-but-set-variable -Wno-single-bit-bitfield-constant-conversion -Wno-bitwise-instead-of-logical ";
+         */
+
+
         //}
 
 
