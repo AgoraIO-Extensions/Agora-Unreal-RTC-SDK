@@ -2,6 +2,8 @@
 
 
 #include "BFL_UtilityTool.h"
+#include "Misc/EngineVersion.h"
+
 
 bool UBFL_UtilityTool::IsAgoraAudioOnlySDK()
 {
@@ -11,4 +13,15 @@ bool UBFL_UtilityTool::IsAgoraAudioOnlySDK()
 	return false;
 #endif
 
+}
+
+FString UBFL_UtilityTool::GetAgoraSaveDataSlotName()
+{
+	
+	FEngineVersion EngineVersion = FEngineVersion::Current();
+	FString VersionString = EngineVersion.ToString(EVersionComponent::Patch);
+	// UE_LOG(LogTemp, Log, TEXT("Current Engine Version: %s"), *VersionString);
+
+	FString SlotName = "AgoraSaveData_" + VersionString;
+	return SlotName;
 }
