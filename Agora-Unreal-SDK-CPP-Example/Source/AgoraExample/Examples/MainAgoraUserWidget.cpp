@@ -119,7 +119,10 @@ void UMainAgoraUserWidget::InitLevelArray()
 	LevelArray.Add(FString("StreamMessageScene"));
 	LevelArray.Add(FString("VoiceChanger"));
 
+#if !PLATFORM_MAC
 	LevelArray.Add(FString("MusicPlayer"));
+#endif
+
 
 #else
 
@@ -158,7 +161,11 @@ void UMainAgoraUserWidget::InitLevelArray()
 	LevelArray.Add(FString("TakeSnapshot"));
 	LevelArray.Add(FString("VirtualBackground"));
 	LevelArray.Add(FString("VoiceChanger"));
+
+#if !PLATFORM_MAC
 	LevelArray.Add(FString("MusicPlayer"));
+#endif
+
 	//LevelArray.Add(FString("RenderWithYUV"));
 	LevelArray.Add(FString("MediaPlayerWithCustomDataProvide"));
 	LevelArray.Add(FString("WriteBackVideoRawData"));
