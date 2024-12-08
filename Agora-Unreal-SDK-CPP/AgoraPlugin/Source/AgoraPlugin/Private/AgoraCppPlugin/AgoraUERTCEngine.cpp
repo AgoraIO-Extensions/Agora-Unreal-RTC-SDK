@@ -129,6 +129,10 @@ namespace agora {
 					_VideoFrameRenderManager = nullptr;
 					_VideoObserver = nullptr;
 #endif
+
+#if PLATFORM_IOS
+					EnableIOSAudioSession(true);
+#endif
 				}
 			}
 
@@ -354,6 +358,9 @@ namespace agora {
 			int AgoraUERtcEngine::leaveChannel() {
 				if (RtcEngine != nullptr) {
 					int ret = RtcEngine->leaveChannel();
+#if PLATFORM_IOS
+					EnableIOSAudioSession(true);
+#endif
 					return ret;
 				}
 				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
