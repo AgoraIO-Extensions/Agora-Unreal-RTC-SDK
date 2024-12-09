@@ -129,10 +129,6 @@ namespace agora {
 					_VideoFrameRenderManager = nullptr;
 					_VideoObserver = nullptr;
 #endif
-
-#if PLATFORM_IOS
-					EnableIOSAudioSession(true);
-#endif
 				}
 			}
 
@@ -197,6 +193,8 @@ namespace agora {
 #if PLATFORM_IOS
 					EnableIOSAudioSession(true);
 					AgoraUERtcEngine::Get()->setAudioScenario(agora::rtc::AUDIO_SCENARIO_TYPE::AUDIO_SCENARIO_GAME_STREAMING);
+					int ret00 = AgoraUERtcEngine::Get()->setParameters("{\"che.audio.keep.audiosession\": true}");
+					UE_LOG(LogTemp, Warning, TEXT("Agora RTC Engine Keep Audio Session ret %d"), ret00);
 #endif
 
 				}
@@ -358,9 +356,6 @@ namespace agora {
 			int AgoraUERtcEngine::leaveChannel() {
 				if (RtcEngine != nullptr) {
 					int ret = RtcEngine->leaveChannel();
-#if PLATFORM_IOS
-					EnableIOSAudioSession(true);
-#endif
 					return ret;
 				}
 				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
