@@ -3,6 +3,8 @@
 
 #include "MainAgoraUserWidget.h"
 #include "AgoraPluginInterface.h"
+#include "Kismet/KismetSystemLibrary.h"
+#include "../Utility//BFL_UtilityTool.h"
 #include "GameFramework/GameUserSettings.h"
 
 #pragma region CustomTileView
@@ -32,7 +34,7 @@ void UMainAgoraUserWidget::NativeConstruct()
 	Super::NativeConstruct();
 
 
-	if (UAgoraConfig* LoadedGame = Cast<UAgoraConfig>(UGameplayStatics::LoadGameFromSlot(FString("AgoraSave"), 0)))
+	if (UAgoraConfig* LoadedGame = Cast<UAgoraConfig>(UGameplayStatics::LoadGameFromSlot(UBFL_UtilityTool::GetAgoraSaveDataSlotName(), 0)))
 	{
 		this->APP_ID = LoadedGame->AppId;
 
@@ -61,6 +63,13 @@ void UMainAgoraUserWidget::NativeConstruct()
 	if(Txt_SDKVer){
 		Txt_SDKVer->SetText(FText::FromString(AgoraUERtcEngine::GetSDKVersion()));
 	}
+
+#if PLATFORM_ANDROID
+	// to keep screen on
+	// For IOS: please check IOS config ini: bEnableIdleTimer
+	UKismetSystemLibrary::ControlScreensaver(false);
+#endif
+
 }
 
 void UMainAgoraUserWidget::NativeDestruct()
@@ -72,7 +81,7 @@ void UMainAgoraUserWidget::NativeDestruct()
 	SaveGameInstance->Token = FString(TokenBox->GetText().ToString());
 	SaveGameInstance->Channelname = FString(ChannelBox->GetText().ToString());
 
-	if (UGameplayStatics::SaveGameToSlot(SaveGameInstance, FString("AgoraSave"), 0))
+	if (UGameplayStatics::SaveGameToSlot(SaveGameInstance, UBFL_UtilityTool::GetAgoraSaveDataSlotName(), 0))
 	{
 		UE_LOG(LogTemp,Warning,TEXT("Save Config Succeed"));
 	}
@@ -110,7 +119,10 @@ void UMainAgoraUserWidget::InitLevelArray()
 	LevelArray.Add(FString("StreamMessageScene"));
 	LevelArray.Add(FString("VoiceChanger"));
 
+#if !PLATFORM_MAC
 	LevelArray.Add(FString("MusicPlayer"));
+#endif
+
 
 #else
 
@@ -142,14 +154,18 @@ void UMainAgoraUserWidget::InitLevelArray()
 	LevelArray.Add(FString("JoinChannelWithToken"));
 	LevelArray.Add(FString("JoinChannelWithUserAccount"));
 	LevelArray.Add(FString("JoinMultipleChannels"));
-	LevelArray.Add(FString("PushEncodedVideoImage"));
+	//LevelArray.Add(FString("PushEncodedVideoImage"));
 	LevelArray.Add(FString("SpatialAudioWithMediaPlayer"));
 	LevelArray.Add(FString("StartDirectCdnStreaming"));
 	LevelArray.Add(FString("Metadata"));
 	LevelArray.Add(FString("TakeSnapshot"));
 	LevelArray.Add(FString("VirtualBackground"));
 	LevelArray.Add(FString("VoiceChanger"));
+
+#if !PLATFORM_MAC
 	LevelArray.Add(FString("MusicPlayer"));
+#endif
+
 	//LevelArray.Add(FString("RenderWithYUV"));
 	LevelArray.Add(FString("MediaPlayerWithCustomDataProvide"));
 	LevelArray.Add(FString("WriteBackVideoRawData"));

@@ -3,6 +3,7 @@
 
 #include "AgoraActor.h"
 #include "Engine/Engine.h"
+#include "Utility/BFL_UtilityTool.h"
 
 // Sets default values
 AAgoraActor::AAgoraActor()
@@ -23,7 +24,7 @@ void AAgoraActor::BeginPlay()
 	}
 	VideoWidget->AddToViewport();
 
-	if (UAgoraConfig* LoadedGame = Cast<UAgoraConfig>(UGameplayStatics::LoadGameFromSlot(FString("AgoraSave"), 0)))
+	if (UAgoraConfig* LoadedGame = Cast<UAgoraConfig>(UGameplayStatics::LoadGameFromSlot(UBFL_UtilityTool::GetAgoraSaveDataSlotName(), 0)))
 	{
 		if (bLoadConfig)
 		{

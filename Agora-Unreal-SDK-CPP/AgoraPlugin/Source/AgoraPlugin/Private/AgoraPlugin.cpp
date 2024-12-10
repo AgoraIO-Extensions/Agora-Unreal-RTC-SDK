@@ -12,13 +12,13 @@ DEFINE_LOG_CATEGORY(LogAgora);
 
 void FAgoraPluginModule::StartupModule()
 {
-	UE_LOG(LogAgora, Warning, TEXT("FAgoraPluginModule: %s"), *(AgoraUERtcEngine::GetSDKVersion()));
+	UE_LOG(LogAgora, Display, TEXT("FAgoraPluginModule - StartupModule: %s"), *(AgoraUERtcEngine::GetSDKVersion()));
 }
 
 void FAgoraPluginModule::ShutdownModule()
 {
-	//untested, so comment out the code for now
-	//AgoraUERtcEngine::Release();
+	AgoraUERtcEngine::Release();
+	UE_LOG(LogAgora, Display, TEXT("FAgoraPluginModule - ShutdownModule: Release RTC Engine"));
 }
 
 #undef LOCTEXT_NAMESPACE

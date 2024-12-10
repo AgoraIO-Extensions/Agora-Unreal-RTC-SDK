@@ -33,7 +33,6 @@ namespace agora {
 
 			AgoraUERtcEngine* AgoraUERtcEngine::Instance = nullptr;
 			std::mutex AgoraUERtcEngine::MutexLock;
-
 			AgoraAppType AgoraUERtcEngine::RtcEngineAppType = AgoraAppType::kAppTypeUnreal;
 
 			AgoraUERtcEngine* AgoraUERtcEngine::Get()
@@ -193,6 +192,9 @@ namespace agora {
 
 #if PLATFORM_IOS
 					EnableIOSAudioSession(true);
+					AgoraUERtcEngine::Get()->setAudioScenario(agora::rtc::AUDIO_SCENARIO_TYPE::AUDIO_SCENARIO_GAME_STREAMING);
+					int ret00 = AgoraUERtcEngine::Get()->setParameters("{\"che.audio.keep.audiosession\": true}");
+					UE_LOG(LogTemp, Warning, TEXT("Agora RTC Engine Keep Audio Session ret %d"), ret00);
 #endif
 
 				}
@@ -525,6 +527,14 @@ namespace agora {
 				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
 			}
 
+			int AgoraUERtcEngine::setFilterEffectOptions(bool enabled, const FilterEffectOptions& options, agora::media::MEDIA_SOURCE_TYPE type /*= agora::media::PRIMARY_CAMERA_SOURCE*/)
+			{
+				if (RtcEngine != nullptr) {
+					return RtcEngine->setFilterEffectOptions(enabled, options, type);
+				}
+				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
+			}
+
 			int AgoraUERtcEngine::setLowlightEnhanceOptions(bool enabled, agora::rtc::LowlightEnhanceOptions const& options, agora::media::MEDIA_SOURCE_TYPE type) {
 				if (RtcEngine != nullptr) {
 					return RtcEngine->setLowlightEnhanceOptions(enabled, options, type);
@@ -663,6 +673,26 @@ namespace agora {
 				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
 			}
 
+			int AgoraUERtcEngine::muteRemoteVideoStream(agora::rtc::uid_t uid, bool mute) {
+				if (RtcEngine != nullptr) {
+					return RtcEngine->muteRemoteVideoStream(uid, mute);
+				}
+				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
+			}
+
+			int AgoraUERtcEngine::setRemoteVideoStreamType(agora::rtc::uid_t uid, agora::rtc::VIDEO_STREAM_TYPE streamType) {
+				if (RtcEngine != nullptr) {
+					return RtcEngine->setRemoteVideoStreamType(uid, streamType);
+				}
+				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
+			}
+
+			int AgoraUERtcEngine::setRemoteVideoSubscriptionOptions(agora::rtc::uid_t uid, agora::rtc::VideoSubscriptionOptions const& options) {
+				if (RtcEngine != nullptr) {
+					return RtcEngine->setRemoteVideoSubscriptionOptions(uid, options);
+				}
+				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
+			}
 
 			int AgoraUERtcEngine::setSubscribeAudioBlocklist(uid_t* uidList, int uidNumber)
 			{
@@ -692,27 +722,6 @@ namespace agora {
 			{
 				if (RtcEngine != nullptr) {
 					return RtcEngine->setSubscribeVideoAllowlist(uidList, uidNumber);
-				}
-				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
-			}
-
-			int AgoraUERtcEngine::muteRemoteVideoStream(agora::rtc::uid_t uid, bool mute) {
-				if (RtcEngine != nullptr) {
-					return RtcEngine->muteRemoteVideoStream(uid, mute);
-				}
-				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
-			}
-
-			int AgoraUERtcEngine::setRemoteVideoStreamType(agora::rtc::uid_t uid, agora::rtc::VIDEO_STREAM_TYPE streamType) {
-				if (RtcEngine != nullptr) {
-					return RtcEngine->setRemoteVideoStreamType(uid, streamType);
-				}
-				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
-			}
-
-			int AgoraUERtcEngine::setRemoteVideoSubscriptionOptions(agora::rtc::uid_t uid, agora::rtc::VideoSubscriptionOptions const& options) {
-				if (RtcEngine != nullptr) {
-					return RtcEngine->setRemoteVideoSubscriptionOptions(uid, options);
 				}
 				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
 			}
@@ -1248,6 +1257,22 @@ namespace agora {
 				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
 			}
 
+			int AgoraUERtcEngine::setLocalRenderTargetFps(VIDEO_SOURCE_TYPE sourceType, int targetFps)
+			{
+				if (RtcEngine != nullptr) {
+					return RtcEngine->setLocalRenderTargetFps(sourceType, targetFps);
+				}
+				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
+			}
+
+			int AgoraUERtcEngine::setRemoteRenderTargetFps(int targetFps)
+			{
+				if (RtcEngine != nullptr) {
+					return RtcEngine->setRemoteRenderTargetFps(targetFps);
+				}
+				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
+			}
+
 			int AgoraUERtcEngine::setLocalRenderMode(media::base::RENDER_MODE_TYPE renderMode) {
 				if (RtcEngine != nullptr) {
 					return RtcEngine->setLocalRenderMode(renderMode);
@@ -1301,22 +1326,6 @@ namespace agora {
 				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
 			}
 
-			int AgoraUERtcEngine::setEarMonitoringAudioFrameParameters(int sampleRate, int channel, RAW_AUDIO_FRAME_OP_MODE_TYPE mode, int samplesPerCall)
-			{
-				if (RtcEngine != nullptr) {
-					return RtcEngine->setEarMonitoringAudioFrameParameters(sampleRate, channel, mode, samplesPerCall);
-				}
-				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
-			}
-
-			int AgoraUERtcEngine::registerExtension(const char* provider, const char* extension, agora::media::MEDIA_SOURCE_TYPE type /*= agora::media::UNKNOWN_MEDIA_SOURCE*/)
-			{
-				if (RtcEngine != nullptr) {
-					return RtcEngine->registerExtension(provider, extension, type);
-				}
-				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
-			}
-
 
 			int AgoraUERtcEngine::enableCustomAudioLocalPlayback(track_id_t trackId, bool enabled)
 			{
@@ -1343,6 +1352,14 @@ namespace agora {
 			int AgoraUERtcEngine::setMixedAudioFrameParameters(int sampleRate, int channel, int samplesPerCall) {
 				if (RtcEngine != nullptr) {
 					return RtcEngine->setMixedAudioFrameParameters(sampleRate, channel, samplesPerCall);
+				}
+				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
+			}
+
+			int AgoraUERtcEngine::setEarMonitoringAudioFrameParameters(int sampleRate, int channel, RAW_AUDIO_FRAME_OP_MODE_TYPE mode, int samplesPerCall)
+			{
+				if (RtcEngine != nullptr) {
+					return RtcEngine->setEarMonitoringAudioFrameParameters(sampleRate, channel, mode, samplesPerCall);
 				}
 				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
 			}
@@ -1434,6 +1451,30 @@ namespace agora {
 				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
 			}
 
+			int AgoraUERtcEngine::enableExtension(const char* provider, const char* extension, const ExtensionInfo& extensionInfo, bool enable /*= true*/)
+			{
+				if (RtcEngine != nullptr) {
+					return RtcEngine->enableExtension(provider, extension, extensionInfo, enable);
+				}
+				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
+			}
+
+			int AgoraUERtcEngine::setExtensionProperty(const char* provider, const char* extension, const ExtensionInfo& extensionInfo, const char* key, const char* value)
+			{
+				if (RtcEngine != nullptr) {
+					return RtcEngine->setExtensionProperty(provider, extension, extensionInfo, key, value);
+				}
+				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
+			}
+
+			int AgoraUERtcEngine::getExtensionProperty(const char* provider, const char* extension, const ExtensionInfo& extensionInfo, const char* key, char* value, int buf_len)
+			{
+				if (RtcEngine != nullptr) {
+					return RtcEngine->getExtensionProperty(provider, extension, extensionInfo, key, value, buf_len);
+				}
+				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
+			}
+
 			int AgoraUERtcEngine::enableLoopbackRecording(bool enabled, char const* deviceName) {
 				if (RtcEngine != nullptr) {
 					return RtcEngine->enableLoopbackRecording(enabled, deviceName);
@@ -1483,22 +1524,20 @@ namespace agora {
 				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
 			}
 
+			int AgoraUERtcEngine::registerExtension(const char* provider, const char* extension, agora::media::MEDIA_SOURCE_TYPE type /*= agora::media::UNKNOWN_MEDIA_SOURCE*/)
+			{
+				if (RtcEngine != nullptr) {
+					return RtcEngine->registerExtension(provider, extension, type);
+				}
+				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
+			}
+
 			int AgoraUERtcEngine::enableExtension(char const* provider, char const* extension, bool enable, agora::media::MEDIA_SOURCE_TYPE type) {
 				if (RtcEngine != nullptr) {
 					return RtcEngine->enableExtension(provider, extension, enable, type);
 				}
 				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
 			}
-
-			int AgoraUERtcEngine::enableExtension(const char* provider, const char* extension, const ExtensionInfo& extensionInfo, bool enable /*= true*/)
-			{
-				if (RtcEngine != nullptr) {
-					return RtcEngine->enableExtension(provider, extension, extensionInfo, enable);
-				}
-				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
-			}
-
-
 
 			int AgoraUERtcEngine::setExtensionProperty(const char* provider, const char* extension, const char* key, const char* value, agora::media::MEDIA_SOURCE_TYPE type /*= agora::media::UNKNOWN_MEDIA_SOURCE*/)
 			{
@@ -1507,24 +1546,6 @@ namespace agora {
 				}
 				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
 			}
-
-
-			int AgoraUERtcEngine::setExtensionProperty(const char* provider, const char* extension, const ExtensionInfo& extensionInfo, const char* key, const char* value)
-			{
-				if (RtcEngine != nullptr) {
-					return RtcEngine->setExtensionProperty(provider, extension, extensionInfo, key, value);
-				}
-				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
-			}
-
-			int AgoraUERtcEngine::getExtensionProperty(const char* provider, const char* extension, const ExtensionInfo& extensionInfo, const char* key, char* value, int buf_len)
-			{
-				if (RtcEngine != nullptr) {
-					return RtcEngine->getExtensionProperty(provider, extension, extensionInfo, key, value, buf_len);
-				}
-				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
-			}
-
 
 			int AgoraUERtcEngine::getExtensionProperty(const char* provider, const char* extension, const char* key, char* value, int buf_len, agora::media::MEDIA_SOURCE_TYPE type /*= agora::media::UNKNOWN_MEDIA_SOURCE*/)
 			{
@@ -1779,7 +1800,7 @@ namespace agora {
 			}
 #endif
 #if defined(_WIN32) || (defined(__APPLE__) && !TARGET_OS_IPHONE && TARGET_OS_MAC)
-			int AgoraUERtcEngine::startScreenCaptureByDisplayId(uint32_t displayId, Rectangle const& regionRect, ScreenCaptureParameters const& captureParams) {
+			int AgoraUERtcEngine::startScreenCaptureByDisplayId(int64_t displayId, Rectangle const& regionRect, ScreenCaptureParameters const& captureParams) {
 				if (RtcEngine != nullptr) {
 					return RtcEngine->startScreenCaptureByDisplayId(displayId, regionRect, captureParams);
 				}
@@ -1804,7 +1825,7 @@ namespace agora {
 			}
 #endif 
 #if defined(_WIN32) || (defined(__APPLE__) && TARGET_OS_MAC && !TARGET_OS_IPHONE)
-			int AgoraUERtcEngine::startScreenCaptureByWindowId(agora::view_t windowId, agora::rtc::Rectangle const& regionRect, agora::rtc::ScreenCaptureParameters const& captureParams) {
+			int AgoraUERtcEngine::startScreenCaptureByWindowId(int64_t windowId, agora::rtc::Rectangle const& regionRect, agora::rtc::ScreenCaptureParameters const& captureParams) {
 				if (RtcEngine != nullptr) {
 					return RtcEngine->startScreenCaptureByWindowId(windowId, regionRect, captureParams);
 				}
@@ -1865,6 +1886,16 @@ namespace agora {
 				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
 			}
 
+#if defined(__ANDROID__)
+			int  AgoraUERtcEngine::setExternalMediaProjection(void* mediaProjection)
+			{
+				if (RtcEngine != nullptr) {
+					return RtcEngine->setExternalMediaProjection(mediaProjection);
+				}
+				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
+			}
+#endif
+
 #endif
 #if defined(_WIN32) || defined(__APPLE__) || defined(__ANDROID__)
 
@@ -1877,8 +1908,6 @@ namespace agora {
 				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
 			}
 
-
-
 			int AgoraUERtcEngine::stopScreenCapture() {
 				if (RtcEngine != nullptr) {
 					return RtcEngine->stopScreenCapture();
@@ -1886,23 +1915,9 @@ namespace agora {
 				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
 			}
 
-			int AgoraUERtcEngine::startScreenCapture(VIDEO_SOURCE_TYPE sourceType, const ScreenCaptureConfiguration& config)
-			{
-				if (RtcEngine != nullptr) {
-					return RtcEngine->startScreenCapture(sourceType, config);
-				}
-				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
-			}
-
-			int AgoraUERtcEngine::stopScreenCapture(VIDEO_SOURCE_TYPE sourceType)
-			{
-				if (RtcEngine != nullptr) {
-					return RtcEngine->stopScreenCapture(sourceType);
-				}
-				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
-			}
 
 #endif
+
 			int AgoraUERtcEngine::getCallId(agora::util::AString& callId) {
 				if (RtcEngine != nullptr) {
 					return RtcEngine->getCallId(callId);
@@ -1945,13 +1960,6 @@ namespace agora {
 				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
 			}
 
-			int AgoraUERtcEngine::stopRtmpStream(char const* url) {
-				if (RtcEngine != nullptr) {
-					return RtcEngine->stopRtmpStream(url);
-				}
-				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
-			}
-
 			int AgoraUERtcEngine::startLocalVideoTranscoder(agora::rtc::LocalTranscoderConfiguration const& config) {
 				if (RtcEngine != nullptr) {
 					return RtcEngine->startLocalVideoTranscoder(config);
@@ -1966,9 +1974,43 @@ namespace agora {
 				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
 			}
 
+			int AgoraUERtcEngine::stopRtmpStream(char const* url) {
+				if (RtcEngine != nullptr) {
+					return RtcEngine->stopRtmpStream(url);
+				}
+				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
+			}
+
 			int AgoraUERtcEngine::stopLocalVideoTranscoder() {
 				if (RtcEngine != nullptr) {
 					return RtcEngine->stopLocalVideoTranscoder();
+				}
+				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
+			}
+
+
+			int AgoraUERtcEngine::startLocalAudioMixer(const LocalAudioMixerConfiguration& config)
+			{
+				if (RtcEngine != nullptr) {
+					return RtcEngine->startLocalAudioMixer(config);
+				}
+				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
+			}
+
+
+			int AgoraUERtcEngine::updateLocalAudioMixerConfiguration(const LocalAudioMixerConfiguration& config)
+			{
+				if (RtcEngine != nullptr) {
+					return RtcEngine->updateLocalAudioMixerConfiguration(config);
+				}
+				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
+			}
+
+
+			int AgoraUERtcEngine::stopLocalAudioMixer()
+			{
+				if (RtcEngine != nullptr) {
+					return RtcEngine->stopLocalAudioMixer();
 				}
 				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
 			}
@@ -2005,6 +2047,21 @@ namespace agora {
 				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
 			}
 
+			int AgoraUERtcEngine::startScreenCapture(VIDEO_SOURCE_TYPE sourceType, const ScreenCaptureConfiguration& config)
+			{
+				if (RtcEngine != nullptr) {
+					return RtcEngine->startScreenCapture(sourceType, config);
+				}
+				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
+			}
+
+			int AgoraUERtcEngine::stopScreenCapture(VIDEO_SOURCE_TYPE sourceType)
+			{
+				if (RtcEngine != nullptr) {
+					return RtcEngine->stopScreenCapture(sourceType);
+				}
+				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
+			}
 
 			agora::rtc::CONNECTION_STATE_TYPE AgoraUERtcEngine::getConnectionState() {
 				if (RtcEngine != nullptr) {
@@ -2113,89 +2170,6 @@ namespace agora {
 				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
 			}
 
-			int AgoraUERtcEngine::setAdvancedAudioOptions(AdvancedAudioOptions& options, int sourceType /*= 0*/)
-			{
-				if (RtcEngine != nullptr) {
-					return RtcEngine->setAdvancedAudioOptions(options, sourceType);
-				}
-				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
-			}
-
-			int64_t AgoraUERtcEngine::getCurrentMonotonicTimeInMs()
-			{
-				if (RtcEngine != nullptr) {
-					return RtcEngine->getCurrentMonotonicTimeInMs();
-				}
-				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
-			}
-			int AgoraUERtcEngine::enableWirelessAccelerate(bool enabled) {
-				if (RtcEngine != nullptr) {
-					return ((IRtcEngineEx*)RtcEngine)->enableWirelessAccelerate(enabled);
-				}
-				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
-			}
-
-			int AgoraUERtcEngine::getNetworkType()
-			{
-				if (RtcEngine != nullptr) {
-					return RtcEngine->getNetworkType();
-				}
-				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
-			}
-
-
-			int AgoraUERtcEngine::setParameters(const char* parameters)
-			{
-				if (RtcEngine != nullptr) {
-					return RtcEngine->setParameters(parameters);
-				}
-				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
-			}
-
-
-			int AgoraUERtcEngine::startMediaRenderingTracing()
-			{
-				if (RtcEngine != nullptr) {
-					return ((IRtcEngineEx*)RtcEngine)->startMediaRenderingTracing();
-				}
-				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
-			}
-
-
-			int AgoraUERtcEngine::enableInstantMediaRendering()
-			{
-				if (RtcEngine != nullptr) {
-					return ((IRtcEngineEx*)RtcEngine)->enableInstantMediaRendering();
-				}
-				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
-			}
-
-
-			uint64_t AgoraUERtcEngine::getNtpWallTimeInMs()
-			{
-				if (RtcEngine != nullptr) {
-					return ((IRtcEngineEx*)RtcEngine)->getNtpWallTimeInMs();
-				}
-				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
-			}
-
-
-			bool AgoraUERtcEngine::isFeatureAvailableOnDevice(FeatureType type)
-			{
-				if (RtcEngine != nullptr) {
-					return RtcEngine->isFeatureAvailableOnDevice(type);
-				}
-				return true;
-			}
-
-
-			int AgoraUERtcEngine::sendAudioMetadata(const char* metadata, size_t length)
-			{
-				if (RtcEngine != nullptr) {
-					return RtcEngine->sendAudioMetadata(metadata, length);
-				}
-				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
-			}
 
 			int AgoraUERtcEngine::sendCustomReportMessage(char const* id, char const* category, char const* event, char const* label, int value) {
 				if (RtcEngine != nullptr) {
@@ -2376,6 +2350,14 @@ namespace agora {
 				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
 			}
 
+			int AgoraUERtcEngine::takeSnapshot(uid_t uid, const media::SnapshotConfig& config)
+			{
+				if (RtcEngine != nullptr) {
+					return RtcEngine->takeSnapshot(uid, config);
+				}
+				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
+			}
+
 			int AgoraUERtcEngine::enableContentInspect(bool enabled, media::ContentInspectConfig const& config) {
 				if (RtcEngine != nullptr) {
 					return RtcEngine->enableContentInspect(enabled, config);
@@ -2414,6 +2396,13 @@ namespace agora {
 				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
 			}
 
+			int AgoraUERtcEngine::setAdvancedAudioOptions(AdvancedAudioOptions& options, int sourceType /*= 0*/)
+			{
+				if (RtcEngine != nullptr) {
+					return RtcEngine->setAdvancedAudioOptions(options, sourceType);
+				}
+				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
+			}
 
 			int AgoraUERtcEngine::setAVSyncSource(char const* channelId, agora::rtc::uid_t uid) {
 				if (RtcEngine != nullptr) {
@@ -2429,6 +2418,95 @@ namespace agora {
 				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
 			}
 
+
+			int64_t AgoraUERtcEngine::getCurrentMonotonicTimeInMs()
+			{
+				if (RtcEngine != nullptr) {
+					return RtcEngine->getCurrentMonotonicTimeInMs();
+				}
+				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
+			}
+
+			int AgoraUERtcEngine::enableWirelessAccelerate(bool enabled) {
+				if (RtcEngine != nullptr) {
+					return ((IRtcEngineEx*)RtcEngine)->enableWirelessAccelerate(enabled);
+				}
+				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
+			}
+
+			int AgoraUERtcEngine::getNetworkType()
+			{
+				if (RtcEngine != nullptr) {
+					return RtcEngine->getNetworkType();
+				}
+				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
+			}
+
+
+			int AgoraUERtcEngine::setParameters(const char* parameters)
+			{
+				if (RtcEngine != nullptr) {
+					return RtcEngine->setParameters(parameters);
+				}
+				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
+			}
+
+
+			int AgoraUERtcEngine::startMediaRenderingTracing()
+			{
+				if (RtcEngine != nullptr) {
+					return ((IRtcEngineEx*)RtcEngine)->startMediaRenderingTracing();
+				}
+				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
+			}
+
+
+			int AgoraUERtcEngine::enableInstantMediaRendering()
+			{
+				if (RtcEngine != nullptr) {
+					return ((IRtcEngineEx*)RtcEngine)->enableInstantMediaRendering();
+				}
+				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
+			}
+
+
+			uint64_t AgoraUERtcEngine::getNtpWallTimeInMs()
+			{
+				if (RtcEngine != nullptr) {
+					return ((IRtcEngineEx*)RtcEngine)->getNtpWallTimeInMs();
+				}
+				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
+			}
+
+
+			bool AgoraUERtcEngine::isFeatureAvailableOnDevice(FeatureType type)
+			{
+				if (RtcEngine != nullptr) {
+					return RtcEngine->isFeatureAvailableOnDevice(type);
+				}
+				return true;
+			}
+
+
+			int AgoraUERtcEngine::sendAudioMetadata(const char* metadata, size_t length)
+			{
+				if (RtcEngine != nullptr) {
+					return RtcEngine->sendAudioMetadata(metadata, length);
+				}
+				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
+			}
+
+			int AgoraUERtcEngine::queryHDRCapability(VIDEO_MODULE_TYPE videoModule, HDR_CAPABILITY& capability)
+			{
+				if (RtcEngine != nullptr) {
+					return RtcEngine->queryHDRCapability(videoModule, capability);
+				}
+				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
+			}
+
+
+
+			// IRtcEngineEx
 			int AgoraUERtcEngine::joinChannelEx(char const* token, agora::rtc::RtcConnection const& connection, agora::rtc::ChannelMediaOptions const& options, agora::rtc::IRtcEngineEventHandler* eventHandler) {
 				if (RtcEngine != nullptr) {
 					return ((IRtcEngineEx*)RtcEngine)->joinChannelEx(token, connection, options, eventHandler);
@@ -2447,6 +2525,59 @@ namespace agora {
 			{
 				if (RtcEngine != nullptr) {
 					return ((IRtcEngineEx*)RtcEngine)->leaveChannelEx(connection, options);
+				}
+				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
+			}
+
+
+			int AgoraUERtcEngine::leaveChannelWithUserAccountEx(const char* channelId, const char* userAccount)
+			{
+				if (RtcEngine != nullptr) {
+					return ((IRtcEngineEx*)RtcEngine)->leaveChannelWithUserAccountEx(channelId, userAccount);
+				}
+				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
+			}
+
+			int AgoraUERtcEngine::leaveChannelWithUserAccountEx(const char* channelId, const char* userAccount, const LeaveChannelOptions& options)
+			{
+				if (RtcEngine != nullptr) {
+					return ((IRtcEngineEx*)RtcEngine)->leaveChannelWithUserAccountEx(channelId, userAccount, options);
+				}
+				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
+			}
+
+			int AgoraUERtcEngine::updateChannelMediaOptionsEx(agora::rtc::ChannelMediaOptions const& options, agora::rtc::RtcConnection const& connection) {
+				if (RtcEngine != nullptr) {
+					return ((IRtcEngineEx*)RtcEngine)->updateChannelMediaOptionsEx(options, connection);
+				}
+				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
+			}
+
+			int AgoraUERtcEngine::setVideoEncoderConfigurationEx(agora::rtc::VideoEncoderConfiguration const& config, agora::rtc::RtcConnection const& connection) {
+				if (RtcEngine != nullptr) {
+					return ((IRtcEngineEx*)RtcEngine)->setVideoEncoderConfigurationEx(config, connection);
+				}
+				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
+			}
+
+			int AgoraUERtcEngine::muteRemoteAudioStreamEx(agora::rtc::uid_t uid, bool mute, agora::rtc::RtcConnection const& connection) {
+				if (RtcEngine != nullptr) {
+					return ((IRtcEngineEx*)RtcEngine)->muteRemoteAudioStreamEx(uid, mute, connection);
+				}
+				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
+			}
+
+			int AgoraUERtcEngine::muteRemoteVideoStreamEx(agora::rtc::uid_t uid, bool mute, agora::rtc::RtcConnection const& connection) {
+				if (RtcEngine != nullptr) {
+					return ((IRtcEngineEx*)RtcEngine)->muteRemoteVideoStreamEx(uid, mute, connection);
+				}
+				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
+			}
+
+
+			int AgoraUERtcEngine::setRemoteVideoStreamTypeEx(agora::rtc::uid_t uid, agora::rtc::VIDEO_STREAM_TYPE streamType, agora::rtc::RtcConnection const& connection) {
+				if (RtcEngine != nullptr) {
+					return ((IRtcEngineEx*)RtcEngine)->setRemoteVideoStreamTypeEx(uid, streamType, connection);
 				}
 				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
 			}
@@ -2515,149 +2646,6 @@ namespace agora {
 				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
 			}
 
-			int AgoraUERtcEngine::adjustUserPlaybackSignalVolumeEx(uid_t uid, int volume, const RtcConnection& connection)
-			{
-				if (RtcEngine != nullptr) {
-					return ((IRtcEngineEx*)RtcEngine)->adjustUserPlaybackSignalVolumeEx(uid, volume, connection);
-				}
-				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
-			}
-
-			int AgoraUERtcEngine::startRtmpStreamWithoutTranscodingEx(const char* url, const RtcConnection& connection)
-			{
-				if (RtcEngine != nullptr) {
-					return ((IRtcEngineEx*)RtcEngine)->startRtmpStreamWithoutTranscodingEx(url, connection);
-				}
-				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
-			}
-
-			int AgoraUERtcEngine::startRtmpStreamWithTranscodingEx(const char* url, const LiveTranscoding& transcoding, const RtcConnection& connection)
-			{
-				if (RtcEngine != nullptr) {
-					return ((IRtcEngineEx*)RtcEngine)->startRtmpStreamWithTranscodingEx(url, transcoding, connection);
-				}
-				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
-			}
-
-			int AgoraUERtcEngine::updateRtmpTranscodingEx(const LiveTranscoding& transcoding, const RtcConnection& connection)
-			{
-				if (RtcEngine != nullptr) {
-					return ((IRtcEngineEx*)RtcEngine)->updateRtmpTranscodingEx(transcoding, connection);
-				}
-				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
-			}
-
-			int AgoraUERtcEngine::stopRtmpStreamEx(const char* url, const RtcConnection& connection)
-			{
-				if (RtcEngine != nullptr) {
-					return ((IRtcEngineEx*)RtcEngine)->stopRtmpStreamEx(url, connection);
-				}
-				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
-			}
-
-
-			int AgoraUERtcEngine::startOrUpdateChannelMediaRelayEx(const ChannelMediaRelayConfiguration& configuration, const RtcConnection& connection)
-			{
-				if (RtcEngine != nullptr) {
-					return ((IRtcEngineEx*)RtcEngine)->startOrUpdateChannelMediaRelayEx(configuration, connection);
-				}
-				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
-			}
-
-			int AgoraUERtcEngine::stopChannelMediaRelayEx(const RtcConnection& connection)
-			{
-				if (RtcEngine != nullptr) {
-					return ((IRtcEngineEx*)RtcEngine)->stopChannelMediaRelayEx(connection);
-				}
-				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
-			}
-
-			int AgoraUERtcEngine::pauseAllChannelMediaRelayEx(const RtcConnection& connection)
-			{
-				if (RtcEngine != nullptr) {
-					return ((IRtcEngineEx*)RtcEngine)->stopChannelMediaRelayEx(connection);
-				}
-				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
-			}
-
-			int AgoraUERtcEngine::resumeAllChannelMediaRelayEx(const RtcConnection& connection)
-			{
-				if (RtcEngine != nullptr) {
-					return ((IRtcEngineEx*)RtcEngine)->resumeAllChannelMediaRelayEx(connection);
-				}
-				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
-			}
-
-			int AgoraUERtcEngine::enableDualStreamModeEx(bool enabled, const SimulcastStreamConfig& streamConfig, const RtcConnection& connection)
-			{
-				if (RtcEngine != nullptr) {
-					return ((IRtcEngineEx*)RtcEngine)->enableDualStreamModeEx(enabled, streamConfig, connection);
-				}
-				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
-			}
-
-			int AgoraUERtcEngine::setDualStreamModeEx(SIMULCAST_STREAM_MODE mode, const SimulcastStreamConfig& streamConfig, const RtcConnection& connection)
-			{
-				if (RtcEngine != nullptr) {
-					return ((IRtcEngineEx*)RtcEngine)->setDualStreamModeEx(mode, streamConfig, connection);
-				}
-				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
-			}
-
-
-			int AgoraUERtcEngine::setSimulcastConfigEx(const SimulcastConfig& simulcastConfig, const RtcConnection& connection)
-			{
-				if (RtcEngine != nullptr) {
-					return ((IRtcEngineEx*)RtcEngine)->setSimulcastConfigEx(simulcastConfig, connection);
-				}
-				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
-
-			}
-
-
-			int AgoraUERtcEngine::setHighPriorityUserListEx(uid_t* uidList, int uidNum, STREAM_FALLBACK_OPTIONS option, const RtcConnection& connection)
-			{
-				if (RtcEngine != nullptr) {
-					return ((IRtcEngineEx*)RtcEngine)->setHighPriorityUserListEx(uidList, uidNum, option, connection);
-				}
-				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
-			}
-
-			int AgoraUERtcEngine::updateChannelMediaOptionsEx(agora::rtc::ChannelMediaOptions const& options, agora::rtc::RtcConnection const& connection) {
-				if (RtcEngine != nullptr) {
-					return ((IRtcEngineEx*)RtcEngine)->updateChannelMediaOptionsEx(options, connection);
-				}
-				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
-			}
-
-			int AgoraUERtcEngine::setVideoEncoderConfigurationEx(agora::rtc::VideoEncoderConfiguration const& config, agora::rtc::RtcConnection const& connection) {
-				if (RtcEngine != nullptr) {
-					return ((IRtcEngineEx*)RtcEngine)->setVideoEncoderConfigurationEx(config, connection);
-				}
-				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
-			}
-
-			int AgoraUERtcEngine::muteRemoteAudioStreamEx(agora::rtc::uid_t uid, bool mute, agora::rtc::RtcConnection const& connection) {
-				if (RtcEngine != nullptr) {
-					return ((IRtcEngineEx*)RtcEngine)->muteRemoteAudioStreamEx(uid, mute, connection);
-				}
-				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
-			}
-
-			int AgoraUERtcEngine::muteRemoteVideoStreamEx(agora::rtc::uid_t uid, bool mute, agora::rtc::RtcConnection const& connection) {
-				if (RtcEngine != nullptr) {
-					return ((IRtcEngineEx*)RtcEngine)->muteRemoteVideoStreamEx(uid, mute, connection);
-				}
-				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
-			}
-
-			int AgoraUERtcEngine::setRemoteVideoStreamTypeEx(agora::rtc::uid_t uid, agora::rtc::VIDEO_STREAM_TYPE streamType, agora::rtc::RtcConnection const& connection) {
-				if (RtcEngine != nullptr) {
-					return ((IRtcEngineEx*)RtcEngine)->setRemoteVideoStreamTypeEx(uid, streamType, connection);
-				}
-				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
-			}
-
 			int AgoraUERtcEngine::setRemoteVideoSubscriptionOptionsEx(agora::rtc::uid_t uid, agora::rtc::VideoSubscriptionOptions const& options, agora::rtc::RtcConnection const& connection) {
 				if (RtcEngine != nullptr) {
 					return ((IRtcEngineEx*)RtcEngine)->setRemoteVideoSubscriptionOptionsEx(uid, options, connection);
@@ -2710,6 +2698,16 @@ namespace agora {
 				}
 				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
 			}
+
+
+			int AgoraUERtcEngine::adjustUserPlaybackSignalVolumeEx(uid_t uid, int volume, const RtcConnection& connection)
+			{
+				if (RtcEngine != nullptr) {
+					return ((IRtcEngineEx*)RtcEngine)->adjustUserPlaybackSignalVolumeEx(uid, volume, connection);
+				}
+				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
+			}
+
 
 			agora::rtc::CONNECTION_STATE_TYPE AgoraUERtcEngine::getConnectionStateEx(agora::rtc::RtcConnection const& connection) {
 				if (RtcEngine != nullptr) {
@@ -2774,6 +2772,71 @@ namespace agora {
 				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
 			}
 
+			int AgoraUERtcEngine::startRtmpStreamWithoutTranscodingEx(const char* url, const RtcConnection& connection)
+			{
+				if (RtcEngine != nullptr) {
+					return ((IRtcEngineEx*)RtcEngine)->startRtmpStreamWithoutTranscodingEx(url, connection);
+				}
+				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
+			}
+
+			int AgoraUERtcEngine::startRtmpStreamWithTranscodingEx(const char* url, const LiveTranscoding& transcoding, const RtcConnection& connection)
+			{
+				if (RtcEngine != nullptr) {
+					return ((IRtcEngineEx*)RtcEngine)->startRtmpStreamWithTranscodingEx(url, transcoding, connection);
+				}
+				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
+			}
+
+			int AgoraUERtcEngine::updateRtmpTranscodingEx(const LiveTranscoding& transcoding, const RtcConnection& connection)
+			{
+				if (RtcEngine != nullptr) {
+					return ((IRtcEngineEx*)RtcEngine)->updateRtmpTranscodingEx(transcoding, connection);
+				}
+				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
+			}
+
+			int AgoraUERtcEngine::stopRtmpStreamEx(const char* url, const RtcConnection& connection)
+			{
+				if (RtcEngine != nullptr) {
+					return ((IRtcEngineEx*)RtcEngine)->stopRtmpStreamEx(url, connection);
+				}
+				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
+			}
+
+
+			int AgoraUERtcEngine::startOrUpdateChannelMediaRelayEx(const ChannelMediaRelayConfiguration& configuration, const RtcConnection& connection)
+			{
+				if (RtcEngine != nullptr) {
+					return ((IRtcEngineEx*)RtcEngine)->startOrUpdateChannelMediaRelayEx(configuration, connection);
+				}
+				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
+			}
+
+			int AgoraUERtcEngine::stopChannelMediaRelayEx(const RtcConnection& connection)
+			{
+				if (RtcEngine != nullptr) {
+					return ((IRtcEngineEx*)RtcEngine)->stopChannelMediaRelayEx(connection);
+				}
+				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
+			}
+
+			int AgoraUERtcEngine::pauseAllChannelMediaRelayEx(const RtcConnection& connection)
+			{
+				if (RtcEngine != nullptr) {
+					return ((IRtcEngineEx*)RtcEngine)->pauseAllChannelMediaRelayEx(connection);
+				}
+				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
+			}
+
+			int AgoraUERtcEngine::resumeAllChannelMediaRelayEx(const RtcConnection& connection)
+			{
+				if (RtcEngine != nullptr) {
+					return ((IRtcEngineEx*)RtcEngine)->resumeAllChannelMediaRelayEx(connection);
+				}
+				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
+			}
+
 			int AgoraUERtcEngine::getUserInfoByUserAccountEx(char const* userAccount, rtc::UserInfo* userInfo, agora::rtc::RtcConnection const& connection) {
 				if (RtcEngine != nullptr) {
 					return ((IRtcEngineEx*)RtcEngine)->getUserInfoByUserAccountEx(userAccount, userInfo, connection);
@@ -2788,9 +2851,53 @@ namespace agora {
 				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
 			}
 
+			int AgoraUERtcEngine::enableDualStreamModeEx(bool enabled, const SimulcastStreamConfig& streamConfig, const RtcConnection& connection)
+			{
+				if (RtcEngine != nullptr) {
+					return ((IRtcEngineEx*)RtcEngine)->enableDualStreamModeEx(enabled, streamConfig, connection);
+				}
+				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
+			}
+
+			int AgoraUERtcEngine::setDualStreamModeEx(SIMULCAST_STREAM_MODE mode, const SimulcastStreamConfig& streamConfig, const RtcConnection& connection)
+			{
+				if (RtcEngine != nullptr) {
+					return ((IRtcEngineEx*)RtcEngine)->setDualStreamModeEx(mode, streamConfig, connection);
+				}
+				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
+			}
+
+
+			int AgoraUERtcEngine::setSimulcastConfigEx(const SimulcastConfig& simulcastConfig, const RtcConnection& connection)
+			{
+				if (RtcEngine != nullptr) {
+					return ((IRtcEngineEx*)RtcEngine)->setSimulcastConfigEx(simulcastConfig, connection);
+				}
+				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
+
+			}
+
+
+			int AgoraUERtcEngine::setHighPriorityUserListEx(uid_t* uidList, int uidNum, STREAM_FALLBACK_OPTIONS option, const RtcConnection& connection)
+			{
+				if (RtcEngine != nullptr) {
+					return ((IRtcEngineEx*)RtcEngine)->setHighPriorityUserListEx(uidList, uidNum, option, connection);
+				}
+				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
+			}
+
 			int AgoraUERtcEngine::takeSnapshotEx(agora::rtc::RtcConnection const& connection, agora::rtc::uid_t uid, char const* filePath) {
 				if (RtcEngine != nullptr) {
 					return ((IRtcEngineEx*)RtcEngine)->takeSnapshotEx(connection, uid, filePath);
+				}
+				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
+			}
+
+
+			int AgoraUERtcEngine::takeSnapshotEx(const RtcConnection& connection, uid_t uid, const media::SnapshotConfig& config)
+			{
+				if (RtcEngine != nullptr) {
+					return ((IRtcEngineEx*)RtcEngine)->takeSnapshotEx(connection, uid, config);
 				}
 				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
 			}

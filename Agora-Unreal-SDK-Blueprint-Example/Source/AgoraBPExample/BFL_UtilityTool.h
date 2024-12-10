@@ -17,4 +17,8 @@ class AGORABPEXAMPLE_API UBFL_UtilityTool : public UBlueprintFunctionLibrary
 
 	UFUNCTION(Blueprintcallable)
 	static bool IsAgoraAudioOnlySDK();
+
+
+	UFUNCTION(BlueprintPure)
+	static FString GetAgoraSaveDataSlotName();
 };

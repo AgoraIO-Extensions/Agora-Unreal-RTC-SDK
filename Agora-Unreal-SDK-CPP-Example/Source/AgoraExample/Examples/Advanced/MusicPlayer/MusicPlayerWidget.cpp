@@ -40,7 +40,7 @@ void UMusicPlayerWidget::ShowUserGuide()
 {
 	FString Guide =
 		"Case: [MusicPlayer]\n"
-		"1. Currently, it is only supported on mobile platforms.\n"
+		"1. Currently, it is not supported on Mac.\n"
 		"2. It requires an [RTM AppID, not the RTC one], an [RTM Token], and an [RTM UID].\n"
 		"";
 

@@ -1,6 +1,7 @@
 // Copyright(c) 2024 Agora.io. All rights reserved.
 
 #include "AgoraBPuIMediaPlayerSourceObserver.h"
+#include "Async/Async.h"
 
 #pragma region IMediaPlayerSourceObserver
 
@@ -73,7 +74,7 @@ void UAgoraBPuIMediaPlayerSourceObserver::onPlayerSourceStateChanged(agora::medi
 			if (!SelfWeakPtr.IsValid())
 				return;
 
-			OnPlayerSourceStateChanged.Broadcast((EMEDIA_PLAYER_STATE)state, FENUMWRAP_MEDIA_PLAYER_REASON(ec));
+			OnPlayerSourceStateChanged.Broadcast(UABTEnum::WrapWithUE(state), UABTEnum::WrapWithUE(ec));
 		});
 }
 void UAgoraBPuIMediaPlayerSourceObserver::onPositionChanged(int64_t position_ms, int64_t timestampMs)
@@ -111,7 +112,7 @@ void UAgoraBPuIMediaPlayerSourceObserver::onPlayerEvent(agora::media::base::MEDI
 			if (!SelfWeakPtr.IsValid())
 				return;
 
-			OnPlayerEvent.Broadcast((EMEDIA_PLAYER_EVENT)eventCode, elapsedTime, UEMessage);
+			OnPlayerEvent.Broadcast(UABTEnum::WrapWithUE(eventCode), elapsedTime, UEMessage);
 		});
 }
 void UAgoraBPuIMediaPlayerSourceObserver::onMetaData(const void* data, int length)
@@ -168,7 +169,7 @@ void UAgoraBPuIMediaPlayerSourceObserver::onPreloadEvent(const char* src, agora:
 			if (!SelfWeakPtr.IsValid())
 				return;
 
-			OnPreloadEvent.Broadcast(UEStr, (EPLAYER_PRELOAD_EVENT)event);
+			OnPreloadEvent.Broadcast(UEStr, UABTEnum::WrapWithUE(event));
 		});
 }
 void UAgoraBPuIMediaPlayerSourceObserver::onCompleted()
@@ -210,8 +211,8 @@ void UAgoraBPuIMediaPlayerSourceObserver::onAgoraCDNTokenWillExpire()
 void UAgoraBPuIMediaPlayerSourceObserver::onPlayerSrcInfoChanged(const agora::media::base::SrcInfo& from, const agora::media::base::SrcInfo& to)
 {
 
-	FSrcInfo UESrcInfoFrom = from;
-	FSrcInfo UESrcInfoTo = to;
+	FUABT_SrcInfo UESrcInfoFrom = from;
+	FUABT_SrcInfo UESrcInfoTo = to;
 
 	TWeakObjectPtr<UAgoraBPuIMediaPlayerSourceObserver> SelfWeakPtr(this);
 	if (!SelfWeakPtr.IsValid())
@@ -231,7 +232,7 @@ void UAgoraBPuIMediaPlayerSourceObserver::onPlayerSrcInfoChanged(const agora::me
 }
 void UAgoraBPuIMediaPlayerSourceObserver::onPlayerInfoUpdated(const agora::media::base::PlayerUpdatedInfo& info)
 {
-	FPlayerUpdatedInfo UEPlayerUpdatedInfo = info;
+	FUABT_PlayerUpdatedInfo UEPlayerUpdatedInfo = info;
 
 	TWeakObjectPtr<UAgoraBPuIMediaPlayerSourceObserver> SelfWeakPtr(this);
 	if (!SelfWeakPtr.IsValid())
@@ -273,7 +274,7 @@ void UAgoraBPuIMediaPlayerSourceObserver::onAudioVolumeIndication(int volume)
 
 void UAgoraBPuIMediaPlayerSourceObserver::onPlayerCacheStats(const agora::media::base::CacheStatistics& stats)
 {
-	FCacheStatistics UEStats = stats;
+	FUABT_CacheStatistics UEStats = stats;
 	TWeakObjectPtr<UAgoraBPuIMediaPlayerSourceObserver> SelfWeakPtr(this);
 	if (!SelfWeakPtr.IsValid())
 		return;
@@ -297,7 +298,7 @@ void UAgoraBPuIMediaPlayerSourceObserver::onPlayerPlaybackStats(const agora::med
 {
 
 
-	FPlayerPlaybackStats UEStats = stats;
+	FUABT_PlayerPlaybackStats UEStats = stats;
 	TWeakObjectPtr<UAgoraBPuIMediaPlayerSourceObserver> SelfWeakPtr(this);
 	if (!SelfWeakPtr.IsValid())
 		return;
@@ -321,7 +322,7 @@ void UAgoraBPuIMediaPlayerSourceObserver::onPlayerPlaybackStats(const agora::med
 
 #pragma region IMediaPlayerSourceObserverCBExecutor
 
-void UAgoraBPuIMediaPlayerSourceObserverCBExecutor::OnPlayerSourceStateChanged_Implementation(EMEDIA_PLAYER_STATE state, FENUMWRAP_MEDIA_PLAYER_REASON ec)
+void UAgoraBPuIMediaPlayerSourceObserverCBExecutor::OnPlayerSourceStateChanged_Implementation(EUABT_MEDIA_PLAYER_STATE state, EUABT_MEDIA_PLAYER_REASON ec)
 {
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
@@ -331,7 +332,7 @@ void UAgoraBPuIMediaPlayerSourceObserverCBExecutor::OnPositionChanged_Implementa
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
 
-void UAgoraBPuIMediaPlayerSourceObserverCBExecutor::OnPlayerEvent_Implementation(EMEDIA_PLAYER_EVENT eventCode, int64 elapsedTime, const FString& message)
+void UAgoraBPuIMediaPlayerSourceObserverCBExecutor::OnPlayerEvent_Implementation(EUABT_MEDIA_PLAYER_EVENT eventCode, int64 elapsedTime, const FString& message)
 {
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
@@ -346,7 +347,7 @@ void UAgoraBPuIMediaPlayerSourceObserverCBExecutor::OnPlayBufferUpdated_Implemen
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
 
-void UAgoraBPuIMediaPlayerSourceObserverCBExecutor::OnPreloadEvent_Implementation(const FString& src, EPLAYER_PRELOAD_EVENT event)
+void UAgoraBPuIMediaPlayerSourceObserverCBExecutor::OnPreloadEvent_Implementation(const FString& src, EUABT_PLAYER_PRELOAD_EVENT event)
 {
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
@@ -364,25 +365,25 @@ void UAgoraBPuIMediaPlayerSourceObserverCBExecutor::OnAgoraCDNTokenWillExpire_Im
 }
 
 
-void UAgoraBPuIMediaPlayerSourceObserverCBExecutor::OnPlayerSrcInfoChanged_Implementation(const FSrcInfo& from, const FSrcInfo& to)
+void UAgoraBPuIMediaPlayerSourceObserverCBExecutor::OnPlayerSrcInfoChanged_Implementation(const FUABT_SrcInfo& from, const FUABT_SrcInfo& to)
 {
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
 
 
-void UAgoraBPuIMediaPlayerSourceObserverCBExecutor::OnPlayerInfoUpdated_Implementation(const FPlayerUpdatedInfo& info)
+void UAgoraBPuIMediaPlayerSourceObserverCBExecutor::OnPlayerInfoUpdated_Implementation(const FUABT_PlayerUpdatedInfo& info)
 {
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
 
 
-void UAgoraBPuIMediaPlayerSourceObserverCBExecutor::OnPlayerCacheStats_Implementation(const FCacheStatistics& stats)
+void UAgoraBPuIMediaPlayerSourceObserverCBExecutor::OnPlayerCacheStats_Implementation(const FUABT_CacheStatistics& stats)
 {
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }
 
 
-void UAgoraBPuIMediaPlayerSourceObserverCBExecutor::OnPlayerPlaybackStats_Implementation(const FPlayerPlaybackStats& stats)
+void UAgoraBPuIMediaPlayerSourceObserverCBExecutor::OnPlayerPlaybackStats_Implementation(const FUABT_PlayerPlaybackStats& stats)
 {
 	UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
 }

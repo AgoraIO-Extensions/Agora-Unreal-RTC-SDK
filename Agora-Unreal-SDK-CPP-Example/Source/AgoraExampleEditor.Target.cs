@@ -15,6 +15,8 @@ public class AgoraExampleEditorTarget : TargetRules
         {
             bOverrideBuildEnvironment = true;
 
+            /* ======== It's related to your Xcode Version ====== */
+
             // [-Wno-unused-but-set-variable]: fix error "variable 'layerNames' set but not used"
             // [-Wno-gcc-compat]: gcc does not allow an attribute in this position on a function declaration
             // [-Wno-reorder-ctor]: fix error "field 'eventHandler' will be initialized after field 'mccUid'"

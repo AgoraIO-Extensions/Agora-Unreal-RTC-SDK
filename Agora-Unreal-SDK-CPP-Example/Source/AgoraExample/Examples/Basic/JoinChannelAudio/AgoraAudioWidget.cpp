@@ -2,7 +2,7 @@
 
 
 #include "AgoraAudioWidget.h"
-
+#include <vector>
 
 void UAgoraAudioWidget::InitAgoraWidget(FString APP_ID, FString TOKEN, FString CHANNEL_NAME)
 {
@@ -23,6 +23,13 @@ void UAgoraAudioWidget::InitUI()
 {
 	Txt_PlaybackSignalVolume->SetText(FText::FromString(FString::FromInt(FMath::RoundToInt(Slider_PlaybackSignalVolume->GetValue()))));
 	Txt_RecordingSignalVolume->SetText(FText::FromString(FString::FromInt(FMath::RoundToInt(Slider_RecordingSignalVolume->GetValue()))));
+
+#if PLATFORM_IOS
+
+	VB_SetAudioProfileAndSenario->SetVisibility(ESlateVisibility::Collapsed);
+
+#endif
+
 }
 
 void UAgoraAudioWidget::CheckPermission()
@@ -304,6 +311,9 @@ void UAgoraAudioWidget::FUserRtcEventHandler::onAudioVolumeIndication(const agor
 	if (!IsWidgetValid())
 		return;
 
+	// Create a vector to hold the copied speaker data
+	std::vector<agora::rtc::AudioVolumeInfo> SpeakerData(speakers, speakers + speakerNumber);
+
 #if  ((__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)) 
 	AsyncTask(ENamedThreads::GameThread, [=, this]()
 #else
@@ -319,7 +329,7 @@ void UAgoraAudioWidget::FUserRtcEventHandler::onAudioVolumeIndication(const agor
 
 			for (unsigned int i = 0; i < speakerNumber; i++)
 			{
-				UBFL_Logger::Print(FString::Printf(TEXT("%s uid:%u,vad:%d,voicepatch:%d,volume %d,totalvolume:%d"), *FString(FUNCTION_MACRO), speakers[i].uid, speakers[i].vad, speakers[i].voicePitch, speakers[i].volume, totalVolume), WidgetPtr->GetLogMsgViewPtr());
+				UBFL_Logger::Print(FString::Printf(TEXT("%s uid:%u,vad:%u,voicepatch:%f,volume %u,totalvolume:%d"), *FString(FUNCTION_MACRO), SpeakerData[i].uid, SpeakerData[i].vad, SpeakerData[i].voicePitch, SpeakerData[i].volume, totalVolume), WidgetPtr->GetLogMsgViewPtr());
 			}
 
 		});

@@ -3,11 +3,12 @@
 #pragma once
 
 #include "Runtime/Launch/Resources/Version.h"
-#define AG_UE_5_4_OR_LATER   (ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >= 4) 
-#define AG_UE_5_3_OR_LATER   (ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >= 3)
-#define AG_UE_5_2_OR_LATER   (ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >= 2)
-#define AG_UE_5_1_OR_LATER   (ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >= 1)
-#define AG_UE5_OR_LATER   (ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >= 0)
+#define AG_UE_5_4_OR_LATER   (ENGINE_MAJOR_VERSION >= 5 && ENGINE_MINOR_VERSION >= 4) 
+#define AG_UE_5_3_OR_LATER   (ENGINE_MAJOR_VERSION >= 5 && ENGINE_MINOR_VERSION >= 3)
+#define AG_UE_5_2_OR_LATER   (ENGINE_MAJOR_VERSION >= 5 && ENGINE_MINOR_VERSION >= 2)
+#define AG_UE_5_1_OR_LATER   (ENGINE_MAJOR_VERSION >= 5 && ENGINE_MINOR_VERSION >= 1)
+#define AG_UE5_OR_LATER   (ENGINE_MAJOR_VERSION >= 5 && ENGINE_MINOR_VERSION >= 0)
+#define AG_UE427_OR_LATER   (ENGINE_MAJOR_VERSION >= 4 && ENGINE_MINOR_VERSION >= 27)
 
 // For compiling the plugin independently using UAT's BuildPlugin command
 #if PLATFORM_WINDOWS
@@ -20,6 +21,15 @@
 #undef CONSTEXPR
 #define CONSTEXPR constexpr 
 #endif
+
+// For Test Build Plugin Compilation
+#ifndef THIRD_PARTY_INCLUDES_START
+#define THIRD_PARTY_INCLUDES_START
+#endif 	
+
+#ifndef THIRD_PARTY_INCLUDES_END
+#define THIRD_PARTY_INCLUDES_END
+#endif 	
 
 THIRD_PARTY_INCLUDES_START
 #include <AgoraCppPlugin/include/IAgoraMediaComponentFactory.h>
@@ -55,6 +65,8 @@ enum class AGORA_UE_ERROR_CODE
 
 	// BP
 	ERROR_BP_RTC_ENGINE_NOT_INITIALIZED = 50,
+	ERROR_INVALID_ENUM_CONVERSION = 51,
+	ERROR_OPTIONAL_VALUE_NOT_SET = 52,
 
 };
 
@@ -75,7 +87,7 @@ enum class AgoraAppType {
 	kAppTypeCSharp = 12,
 	kAppTypeCef = 13,
 	kAppTypeUniApp = 14,
-	//kAppTypeUnrealBlueprint = 15, // Unreal Engine Blueprint Version
+	kAppTypeUnrealBlueprint = 15, // Unreal Engine Blueprint Version
 };
 
 

@@ -14,6 +14,8 @@ public class AgoraBPExampleEditorTarget : TargetRules
         if (Target.Platform == UnrealTargetPlatform.IOS || Target.Platform == UnrealTargetPlatform.Mac)
         {
             bOverrideBuildEnvironment = true;
+            
+            /* ======== It's related to your Xcode Version ====== */
 
             // [-Wno-unused-but-set-variable]: fix error "variable 'layerNames' set but not used"
             // [-Wno-gcc-compat]: gcc does not allow an attribute in this position on a function declaration

@@ -1,5 +1,6 @@
 // Copyright(c) 2024 Agora.io. All rights reserved.
 #include "UtilityAgoraBPuLogger.h"
+#include "Engine/Engine.h"
 
 bool UAgoraBPuLogger::bDisablePrintToConsole = false;
 bool UAgoraBPuLogger::bDisablePrintToLogMsgView = false;

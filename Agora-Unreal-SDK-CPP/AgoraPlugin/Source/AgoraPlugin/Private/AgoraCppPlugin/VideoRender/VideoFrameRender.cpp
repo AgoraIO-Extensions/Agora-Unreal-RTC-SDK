@@ -7,6 +7,7 @@
 
 #include "Components/Image.h"
 #include "Engine/Texture2D.h"
+#include "TextureResource.h"
 
 #include "Components/CanvasPanelSlot.h"
 
