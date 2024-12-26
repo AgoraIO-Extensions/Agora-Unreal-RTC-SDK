@@ -94,6 +94,8 @@ namespace agora {
 				virtual int setChannelProfile(CHANNEL_PROFILE_TYPE profile) override;
 				virtual int setClientRole(CLIENT_ROLE_TYPE role) override;
 				virtual int setClientRole(CLIENT_ROLE_TYPE role, const ClientRoleOptions& options) override;
+				virtual int startEchoTest() override;
+				virtual int startEchoTest(int intervalInSeconds) override;
 				virtual int startEchoTest(const EchoTestConfiguration& config) override;
 				virtual int stopEchoTest() override;
 #if defined(__APPLE__) && TARGET_OS_IOS
@@ -105,15 +107,29 @@ namespace agora {
 				virtual int startPreview(VIDEO_SOURCE_TYPE sourceType) override;
 				virtual int stopPreview() override;
 				virtual int stopPreview(VIDEO_SOURCE_TYPE sourceType) override;
+
+#if defined(__ANDROID__) || (defined(__APPLE__) && TARGET_OS_IOS)
+
+
+				virtual bool isPipSupported() override;
+
+
+				virtual int setupPip(const PipOptions& options) override;
+
+
+				virtual int startPip() override;
+
+#if defined(__APPLE__) && TARGET_OS_IOS
+
+
+				virtual int stopPip() override;
+
+#endif
+#endif
 				virtual int startLastmileProbeTest(const LastmileProbeConfig& config) override;
 				virtual int stopLastmileProbeTest() override;
 				virtual int setVideoEncoderConfiguration(const VideoEncoderConfiguration& config) override;
 				virtual int setBeautyEffectOptions(bool enabled, const BeautyOptions& options, agora::media::MEDIA_SOURCE_TYPE type = agora::media::PRIMARY_CAMERA_SOURCE) override;
-				virtual int setFaceShapeBeautyOptions(bool enabled, const FaceShapeBeautyOptions& options, agora::media::MEDIA_SOURCE_TYPE type = agora::media::PRIMARY_CAMERA_SOURCE) override;
-				virtual int setFaceShapeAreaOptions(const FaceShapeAreaOptions& options, agora::media::MEDIA_SOURCE_TYPE type = agora::media::PRIMARY_CAMERA_SOURCE) override;
-				virtual int getFaceShapeBeautyOptions(FaceShapeBeautyOptions& options, agora::media::MEDIA_SOURCE_TYPE type = agora::media::PRIMARY_CAMERA_SOURCE) override;
-				virtual int getFaceShapeAreaOptions(agora::rtc::FaceShapeAreaOptions::FACE_SHAPE_AREA shapeArea, FaceShapeAreaOptions& options, agora::media::MEDIA_SOURCE_TYPE type = agora::media::PRIMARY_CAMERA_SOURCE) override;
-				virtual int setFilterEffectOptions(bool enabled, const FilterEffectOptions& options, agora::media::MEDIA_SOURCE_TYPE type = agora::media::PRIMARY_CAMERA_SOURCE) override;
 				virtual int setLowlightEnhanceOptions(bool enabled, const LowlightEnhanceOptions& options, agora::media::MEDIA_SOURCE_TYPE type = agora::media::PRIMARY_CAMERA_SOURCE) override;
 				virtual int setVideoDenoiserOptions(bool enabled, const VideoDenoiserOptions& options, agora::media::MEDIA_SOURCE_TYPE type = agora::media::PRIMARY_CAMERA_SOURCE) override;
 				virtual int setColorEnhanceOptions(bool enabled, const ColorEnhanceOptions& options, agora::media::MEDIA_SOURCE_TYPE type = agora::media::PRIMARY_CAMERA_SOURCE) override;
@@ -128,10 +144,12 @@ namespace agora {
 				virtual int enableLocalAudio(bool enabled) override;
 				virtual int muteLocalAudioStream(bool mute) override;
 				virtual int muteAllRemoteAudioStreams(bool mute) override;
+				virtual int setDefaultMuteAllRemoteAudioStreams(bool mute) __deprecated override;
 				virtual int muteRemoteAudioStream(uid_t uid, bool mute) override;
 				virtual int muteLocalVideoStream(bool mute) override;
 				virtual int enableLocalVideo(bool enabled) override;
 				virtual int muteAllRemoteVideoStreams(bool mute) override;
+				virtual int setDefaultMuteAllRemoteVideoStreams(bool mute) __deprecated override;
 				virtual int setRemoteDefaultVideoStreamType(VIDEO_STREAM_TYPE streamType) override;
 				virtual int muteRemoteVideoStream(uid_t uid, bool mute) override;
 				virtual int setRemoteVideoStreamType(uid_t uid, VIDEO_STREAM_TYPE streamType) override;
@@ -203,7 +221,6 @@ namespace agora {
 				virtual int setLocalVoiceReverb(AUDIO_REVERB_TYPE reverbKey, int value) override;
 				virtual int setHeadphoneEQPreset(HEADPHONE_EQUALIZER_PRESET preset) override;
 				virtual int setHeadphoneEQParameters(int lowGain, int highGain) override;
-				virtual int enableVoiceAITuner(bool enabled, VOICE_AI_TUNER_TYPE type) override;
 				virtual int setLogFile(const char* filePath) override;
 				virtual int setLogFilter(unsigned int filter) override;
 				virtual int setLogLevel(commons::LOG_LEVEL level) override;
@@ -308,7 +325,7 @@ namespace agora {
 				virtual int setAudioSessionOperationRestriction(AUDIO_SESSION_OPERATION_RESTRICTION restriction) override;
 #endif
 #if defined(_WIN32) || (defined(__APPLE__) && !TARGET_OS_IPHONE && TARGET_OS_MAC)
-				virtual int startScreenCaptureByDisplayId(int64_t displayId, const Rectangle& regionRect, const ScreenCaptureParameters& captureParams) override;
+				virtual int startScreenCaptureByDisplayId(uint32_t displayId, const Rectangle& regionRect, const ScreenCaptureParameters& captureParams) override;
 #endif
 #if defined(_WIN32)
 				virtual int startScreenCaptureByScreenRect(const Rectangle& screenRect, const Rectangle& regionRect, const ScreenCaptureParameters& captureParams) __deprecated override;
@@ -317,7 +334,7 @@ namespace agora {
 				virtual int getAudioDeviceInfo(DeviceInfo& deviceInfo) override;
 #endif
 #if defined(_WIN32) || (defined(__APPLE__) && TARGET_OS_MAC && !TARGET_OS_IPHONE)
-				virtual int startScreenCaptureByWindowId(int64_t windowId, const Rectangle& regionRect, const ScreenCaptureParameters& captureParams) override;
+				virtual int startScreenCaptureByWindowId(view_t windowId, const Rectangle& regionRect, const ScreenCaptureParameters& captureParams) override;
 				virtual int setScreenCaptureContentHint(VIDEO_CONTENT_HINT contentHint) override;
 				virtual int updateScreenCaptureRegion(const Rectangle& regionRect) override;
 				virtual int updateScreenCaptureParameters(const ScreenCaptureParameters& captureParams) override;
@@ -348,9 +365,6 @@ namespace agora {
 
 				virtual int stopRtmpStream(const char* url) override;
 				virtual int stopLocalVideoTranscoder() override;
-				virtual int startLocalAudioMixer(const LocalAudioMixerConfiguration& config) override;
-				virtual int updateLocalAudioMixerConfiguration(const LocalAudioMixerConfiguration& config) override;
-				virtual int stopLocalAudioMixer() override;
 				virtual int startCameraCapture(VIDEO_SOURCE_TYPE sourceType, const CameraCapturerConfiguration& config) override;
 				virtual int stopCameraCapture(VIDEO_SOURCE_TYPE sourceType) override;
 				virtual int setCameraDeviceOrientation(VIDEO_SOURCE_TYPE type, VIDEO_ORIENTATION orientation) override;
@@ -362,6 +376,8 @@ namespace agora {
 				virtual bool unregisterEventHandler(IRtcEngineEventHandler* eventHandler) override;
 				virtual int setRemoteUserPriority(uid_t uid, PRIORITY_TYPE userPriority) override;
 				virtual int registerPacketObserver(IPacketObserver* observer) override;
+				virtual int setEncryptionMode(const char* encryptionMode) __deprecated override;
+				virtual int setEncryptionSecret(const char* secret) __deprecated override;
 				virtual int enableEncryption(bool enabled, const EncryptionConfig& config) override;
 				virtual int createDataStream(int* streamId, bool reliable, bool ordered) override;
 				virtual int createDataStream(int* streamId, const DataStreamConfig& config) override;
@@ -418,8 +434,6 @@ namespace agora {
 				virtual uint64_t getNtpWallTimeInMs() override;
 				virtual bool isFeatureAvailableOnDevice(FeatureType type) override;
 				virtual int sendAudioMetadata(const char* metadata, size_t length) override;
-				virtual int queryHDRCapability(VIDEO_MODULE_TYPE videoModule, HDR_CAPABILITY& capability) override;
-
 
 
 				// IRtcEngineEx
@@ -481,6 +495,10 @@ namespace agora {
 				virtual int setParametersEx(const RtcConnection& connection, const char* parameters) override;
 				virtual int getCallIdEx(agora::util::AString& callId, const RtcConnection& connection) override;
 				virtual int sendAudioMetadataEx(const RtcConnection& connection, const char* metadata, size_t length) override;
+
+				virtual int preloadEffectEx(const RtcConnection& connection, int soundId, const char* filePath, int startPos = 0) override;
+
+				virtual int playEffectEx(const RtcConnection& connection, int soundId, const char* filePath, int loopCount, double pitch, double pan, int gain, bool publish = false, int startPos = 0) override;
 
 #pragma endregion Other Native APIs
 			};

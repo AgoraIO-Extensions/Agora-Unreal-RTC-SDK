@@ -318,6 +318,40 @@ class IRtcEngineEventHandlerEx : public IRtcEngineEventHandler {
     (void)rotation;
   }
 
+  /** Occurs when the local video stream state changes.
+   *
+   * When the state of the local video stream changes (including the state of the video capture and
+   * encoding), the SDK triggers this callback to report the current state. This callback indicates
+   * the state of the local video stream, including camera capturing and video encoding, and allows
+   * you to troubleshoot issues when exceptions occur.
+   *
+   * The SDK triggers the onLocalVideoStateChanged callback with the state code of `LOCAL_VIDEO_STREAM_STATE_FAILED`
+   * and error code of `LOCAL_VIDEO_STREAM_REASON_CAPTURE_FAILURE` in the following situations:
+   * - The app switches to the background, and the system gets the camera resource.
+   * - The camera starts normally, but does not output video for four consecutive seconds.
+   *
+   * When the camera outputs the captured video frames, if the video frames are the same for 15
+   * consecutive frames, the SDK triggers the `onLocalVideoStateChanged` callback with the state code
+   * of `LOCAL_VIDEO_STREAM_STATE_CAPTURING` and error code of `LOCAL_VIDEO_STREAM_REASON_CAPTURE_FAILURE`.
+   * Note that the video frame duplication detection is only available for video frames with a resolution
+   * greater than 200 × 200, a frame rate greater than or equal to 10 fps, and a bitrate less than 20 Kbps.
+   *
+   * @note For some device models, the SDK does not trigger this callback when the state of the local
+   * video changes while the local video capturing device is in use, so you have to make your own
+   * timeout judgment.
+   *
+   * @param connection The RtcConnection object.
+   * @param state The state of the local video. See #LOCAL_VIDEO_STREAM_STATE.
+   * @param reason The detailed error information. See #LOCAL_VIDEO_STREAM_REASON.
+   */
+  virtual void onLocalVideoStateChanged(const RtcConnection& connection,
+                                        LOCAL_VIDEO_STREAM_STATE state,
+                                        LOCAL_VIDEO_STREAM_REASON reason) {
+    (void)connection;
+    (void)state;
+    (void)reason;
+  }
+
   /**
    * Occurs when the remote video state changes.
    *
@@ -2062,6 +2096,73 @@ public:
      * @technical preview
     */
     virtual int sendAudioMetadataEx(const RtcConnection& connection, const char* metadata, size_t length) = 0;
+
+    /** Preloads a specified audio effect.
+     *
+     * This method preloads only one specified audio effect into the memory each time
+     * it is called. To preload multiple audio effects, call this method multiple times.
+     *
+     * After preloading, you can call \ref IRtcEngine::playEffect "playEffect"
+     * to play the preloaded audio effect or call
+     * \ref IRtcEngine::playAllEffects "playAllEffects" to play all the preloaded
+     * audio effects.
+     *
+     * @note
+     * - To ensure smooth communication, limit the size of the audio effect file.
+     * - Agora recommends calling this method before joining the channel.
+     *
+     * @param connection The RtcConnection object.
+     * @param soundId The ID of the audio effect.
+     * @param filePath The absolute path of the local audio effect file or the URL
+     * of the online audio effect file. Supported audio formats: mp3, mp4, m4a, aac,
+     * 3gp, mkv, and wav.
+     *
+     * @return
+     * - 0: Success.
+     * - < 0: Failure.
+    */
+    virtual int preloadEffectEx(const RtcConnection& connection, int soundId, const char* filePath, int startPos = 0) = 0;
+
+    /** Plays a specified audio effect.
+     *
+     *
+     * This method plays only one specified audio effect each time it is called.
+     * To play multiple audio effects, call this method multiple times.
+     *
+     * @note
+     * - Agora recommends playing no more than three audio effects at the same time.
+     * - The ID and file path of the audio effect in this method must be the same
+     * as that in the \ref IRtcEngine::preloadEffect "preloadEffect" method.
+     *
+     * @param connection The RtcConnection object.
+     * @param soundId The ID of the audio effect.
+     * @param filePath The absolute path of the local audio effect file or the URL
+     * of the online audio effect file. Supported audio formats: mp3, mp4, m4a, aac,
+     * 3gp, mkv, and wav.
+     * @param loopCount The number of times the audio effect loops:
+     * - `-1`: Play the audio effect in an indefinite loop until
+     * \ref IRtcEngine::stopEffect "stopEffect" or
+     * \ref IRtcEngine::stopAllEffects "stopAllEffects"
+     * - `0`: Play the audio effect once.
+     * - `1`: Play the audio effect twice.
+     * @param pitch The pitch of the audio effect. The value ranges between 0.5 and 2.0.
+     * The default value is `1.0` (original pitch). The lower the value, the lower the pitch.
+     * @param pan The spatial position of the audio effect. The value ranges between -1.0 and 1.0:
+     * - `-1.0`: The audio effect displays to the left.
+     * - `0.0`: The audio effect displays ahead.
+     * - `1.0`: The audio effect displays to the right.
+     * @param gain The volume of the audio effect. The value ranges between 0 and 100.
+     * The default value is `100` (original volume). The lower the value, the lower
+     * the volume of the audio effect.
+     * @param publish Sets whether to publish the audio effect to the remote:
+     * - true: Publish the audio effect to the remote.
+     * - false: (Default) Do not publish the audio effect to the remote.
+     *
+     * @return
+     * - 0: Success.
+     * - < 0: Failure.
+    */
+    virtual int playEffectEx(const RtcConnection& connection, int soundId, const char* filePath, int loopCount, double pitch, double pan, int gain, bool publish = false, int startPos = 0) = 0;
 };
 
 }  // namespace rtc

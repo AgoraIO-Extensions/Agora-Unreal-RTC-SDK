@@ -439,6 +439,16 @@ struct RemoteAudioStats
   uint32_t plcCount;
 
   /**
+   * The number of times the remote audio stream has experienced freezing.
+   */
+  uint32_t frozenCntByCustom;
+
+  /**
+   * The total duration (ms) that the remote audio stream has been in a frozen state.
+   */
+  uint32_t frozenTimeByCustom;
+
+  /**
    * The total time (ms) when the remote user neither stops sending the audio
    * stream nor disables the audio module after joining the channel.
    */
@@ -478,6 +488,8 @@ struct RemoteAudioStats
         mosValue(0),
         frozenRateByCustomPlcCount(0),
         plcCount(0),
+        frozenCntByCustom(0),
+        frozenTimeByCustom(0),
         totalActiveTime(0),
         publishDuration(0),
         qoeQuality(0),
@@ -856,7 +868,7 @@ struct ScreenCaptureConfiguration {
   /**
    * (macOS only) The display ID of the screen.
    */
-  int64_t displayId;
+  uint32_t displayId;
   /**
    * (Windows only) The relative position of the shared screen to the virtual screen.
    * @note This parameter takes effect only when you want to capture the screen on Windows.
@@ -866,7 +878,7 @@ struct ScreenCaptureConfiguration {
    * (For Windows and macOS only) The window ID.
    * @note This parameter takes effect only when you want to capture the window.
    */
-  int64_t windowId;
+  view_t windowId;
   /**
    * (For Windows and macOS only) The screen capture configuration. For details, see ScreenCaptureParameters.
    */
@@ -946,7 +958,7 @@ struct ScreenCaptureSourceInfo {
   /**
    * The window ID for a window or the display ID for a screen.
    */
-  int64_t sourceId;
+  view_t sourceId;
   /**
    * The name of the window or screen. UTF-8 encoding.
    */
@@ -989,11 +1001,11 @@ struct ScreenCaptureSourceInfo {
    * ID to the display monitor that has the largest area of intersection with the window, Otherwise
    * the return value is -2.
    */
-  int64_t sourceDisplayId;
-  ScreenCaptureSourceInfo() : type(ScreenCaptureSourceType_Unknown), sourceId(0), sourceName(nullptr),
-                              processPath(nullptr), sourceTitle(nullptr), primaryMonitor(false), isOccluded(false), minimizeWindow(false), sourceDisplayId(-2) {}
+  view_t sourceDisplayId;
+  ScreenCaptureSourceInfo() : type(ScreenCaptureSourceType_Unknown), sourceId(nullptr), sourceName(nullptr),
+                              processPath(nullptr), sourceTitle(nullptr), primaryMonitor(false), isOccluded(false), minimizeWindow(false), sourceDisplayId((view_t)-2) {}
 #else
-  ScreenCaptureSourceInfo() : type(ScreenCaptureSourceType_Unknown), sourceId(0), sourceName(nullptr), processPath(nullptr), sourceTitle(nullptr), primaryMonitor(false), isOccluded(false) {}
+  ScreenCaptureSourceInfo() : type(ScreenCaptureSourceType_Unknown), sourceId(nullptr), sourceName(nullptr), processPath(nullptr), sourceTitle(nullptr), primaryMonitor(false), isOccluded(false) {}
 #endif
 };
 /**
@@ -1277,7 +1289,7 @@ struct ChannelMediaOptions {
 
   /** Provides the technical preview functionalities or special customizations by configuring the SDK with JSON options.
       Pointer to the set parameters in a JSON string.
-    * @technical preview 
+    * @technical preview
    */
   Optional<const char*> parameters;
 
@@ -1702,6 +1714,12 @@ class IRtcEngineEventHandler {
     (void)deviceType;
     (void)deviceState;
   }
+
+#if defined(__ANDROID__) || (defined(__APPLE__) && TARGET_OS_IOS)
+  virtual void onPipStateChanged(PIP_STATE state) {
+    (void)state;
+  };
+#endif
 
   /**
    * Reports the last mile network quality of each user in the channel.
@@ -2892,56 +2910,64 @@ class IRtcEngineEventHandler {
     (void)metadata;
     (void)length;
   }
-    
+
   /**
    * The event callback of the extension.
    *
    * To listen for events while the extension is running, you need to register this callback.
-   * 
-   * @param context The context of the extension.
+   *
+   * @param provider The name of the extension provider.
+   * @param extension The name of the extension.
    * @param key The key of the extension.
    * @param value The value of the extension key.
    */
-  virtual void onExtensionEventWithContext(const ExtensionContext &context, const char* key, const char* value) {
-    (void)context;
+  virtual void onExtensionEvent(const char* provider, const char* extension, const char* key, const char* value) {
+    (void)provider;
+    (void)extension;
     (void)key;
     (void)value;
   }
 
   /**
    * Occurs when the extension is enabled.
-   * 
-   * After a successful creation of filter , the extension triggers this callback.
-   * 
-   * @param context The context of the extension.
+   *
+   * After a successful call of `enableExtension(true)`, the extension triggers this callback.
+   *
+   * @param provider The name of the extension provider.
+   * @param extension The name of the extension.
    */
-  virtual void onExtensionStartedWithContext(const ExtensionContext &context) {
-    (void)context;
+  virtual void onExtensionStarted(const char* provider, const char* extension) {
+    (void)provider;
+    (void)extension;
   }
 
   /**
    * Occurs when the extension is disabled.
-   * 
-   * After a successful destroy filter, the extension triggers this callback.
-   * 
-   * @param context The context of the extension.
+   *
+   * After a successful call of `enableExtension(false)`, the extension triggers this callback.
+   *
+   * @param provider The name of the extension provider.
+   * @param extension The name of the extension.
    */
-  virtual void onExtensionStoppedWithContext(const ExtensionContext &context) {
-    (void)context;
+  virtual void onExtensionStopped(const char* provider, const char* extension) {
+    (void)provider;
+    (void)extension;
   }
 
   /**
    * Occurs when the extension runs incorrectly.
-   * 
-   * When the extension runs in error, the extension triggers
+   *
+   * When calling `enableExtension(true)` fails or the extension runs in error, the extension triggers
    * this callback and reports the error code and reason.
    *
-   * @param context The context of the extension.
+   * @param provider The name of the extension provider.
+   * @param extension The name of the extension.
    * @param error The error code. For details, see the extension documentation provided by the extension provider.
    * @param message The error message. For details, see the extension documentation provided by the extension provider.
    */
-  virtual void onExtensionErrorWithContext(const ExtensionContext &context, int error, const char* message) {
-    (void)context;
+  virtual void onExtensionError(const char* provider, const char* extension, int error, const char* message) {
+    (void)provider;
+    (void)extension;
     (void)error;
     (void)message;
   }
@@ -3244,26 +3270,23 @@ public:
      */
     struct Metadata
     {
-        /** The channel ID of the `metadata`.
-         */
-        const char* channelId;
-        /** The User ID that sent the metadata.
-         * - For the receiver: The user ID of the user who sent the `metadata`.
-         * - For the sender: Ignore this value.
-         */
-        unsigned int uid;
-        /** The buffer size of the sent or received `metadata`.
-         */
-        unsigned int size;
-        /** The buffer address of the sent or received `metadata`.
-         */
-        unsigned char *buffer;
-        /** The NTP timestamp (ms) when the metadata is sent.
-         *  @note If the receiver is audience, the receiver cannot get the NTP timestamp (ms).
-         */
-        long long timeStampMs;
+      /** The User ID that sent the metadata.
+        * - For the receiver: The user ID of the user who sent the `metadata`.
+        * - For the sender: Ignore this value.
+        */
+      unsigned int uid;
+      /** The buffer size of the sent or received `metadata`.
+        */
+      unsigned int size;
+      /** The buffer address of the sent or received `metadata`.
+        */
+      unsigned char* buffer;
+      /** The timestamp (ms) of the `metadata`.
+        *
+        */
+      long long timeStampMs;
 
-         Metadata() : channelId(NULL), uid(0), size(0), buffer(NULL), timeStampMs(0) {}
+      Metadata() : uid(0), size(0), buffer(NULL), timeStampMs(0) {}
     };
 
    /** Occurs when the SDK requests the maximum size of the metadata.
@@ -3937,7 +3960,6 @@ class IRtcEngine : public agora::base::IEngineBase {
    * @return
    * - 0: Success.
    * - < 0: Failure.
-   *  - -8(ERR_INVALID_STATE): The current status is invalid, only allowed to be called when the connection is disconnected.
    */
   virtual int setChannelProfile(CHANNEL_PROFILE_TYPE profile) = 0;
 
@@ -3986,9 +4008,47 @@ class IRtcEngine : public agora::base::IEngineBase {
     *  - -1(ERR_FAILED): A general error occurs (no specified reason).
     *  - -2(ERR_INALID_ARGUMENT): The parameter is invalid.
     *  - -7(ERR_NOT_INITIALIZED): The SDK is not initialized.
-    *  - -8(ERR_INVALID_STATE): The channel profile is not `LIVE_BROADCASTING`.
     */
   virtual int setClientRole(CLIENT_ROLE_TYPE role, const ClientRoleOptions& options) = 0;
+
+  /** Starts an audio call test.
+
+  This method launches an audio call test to determine whether the audio devices
+  (for example, headset and speaker) and the network connection are working
+  properly.
+
+  In the test, the user first speaks, and the recording is played back
+  in 10 seconds. If the user can hear the recording in 10 seconds, it indicates
+  that the audio devices and network connection work properly.
+
+  @note
+  After calling the startEchoTest() method, always call stopEchoTest() to end
+  the test. Otherwise, the app cannot run the next echo test, nor can
+  it call the joinChannel() method.
+
+  @return
+  - 0: Success.
+  - < 0: Failure.
+  */
+  virtual int startEchoTest() = 0;
+
+  /** Starts an audio call test.
+
+  This method starts an audio call test to determine whether the audio devices (for example, headset and speaker) and the network connection are working properly.
+
+  In the audio call test, you record your voice. If the recording plays back within the set time interval, the audio devices and the network connection are working properly.
+
+  @note
+  - Call this method before joining a channel.
+  - After calling this method, call the \ref IRtcEngine::stopEchoTest "stopEchoTest" method to end the test. Otherwise, the app cannot run the next echo test, or call the \ref IRtcEngine::joinChannel "joinChannel" method.
+  - In the `LIVE_BROADCASTING` profile, only a host can call this method.
+  @param intervalInSeconds The time interval (s) between when you speak and when the recording plays back.
+
+  @return
+  - 0: Success.
+  - < 0: Failure.
+  */
+  virtual int startEchoTest(int intervalInSeconds) = 0;
 
   /** Starts a video call test.
    *
@@ -4088,6 +4148,15 @@ class IRtcEngine : public agora::base::IEngineBase {
    */
   virtual int stopPreview(VIDEO_SOURCE_TYPE sourceType) = 0;
 
+#if defined(__ANDROID__) || (defined(__APPLE__) && TARGET_OS_IOS)
+  virtual bool isPipSupported() = 0;
+  virtual int setupPip(const PipOptions& options) = 0;
+  virtual int startPip() = 0;
+#if defined(__APPLE__) && TARGET_OS_IOS
+  virtual int stopPip() = 0;
+#endif
+#endif
+
   /** Starts the last-mile network probe test.
 
   This method starts the last-mile network probe test before joining a channel
@@ -4154,67 +4223,6 @@ class IRtcEngine : public agora::base::IEngineBase {
    * @param options Sets the image enhancement option. See BeautyOptions.
    */
   virtual int setBeautyEffectOptions(bool enabled, const BeautyOptions& options, agora::media::MEDIA_SOURCE_TYPE type = agora::media::PRIMARY_CAMERA_SOURCE) = 0;
-  /** Enables/Disables face shape and sets the beauty options.
-   *
-   * @note Call this method after calling the \ref IRtcEngine::enableVideo "enableVideo" method.
-   *
-   * @param enabled Sets whether or not to enable face shape:
-   * - true: enables face shape.
-   * - false: disables face shape.
-   * @param options Sets the face shape beauty option. See FaceShapeBeautyOptions.
-   */
-  virtual int setFaceShapeBeautyOptions(bool enabled, const FaceShapeBeautyOptions& options, agora::media::MEDIA_SOURCE_TYPE type = agora::media::PRIMARY_CAMERA_SOURCE) = 0;
-  /** Enables/Disables face shape and sets the area options.
-   *
-   * @note Call this method after calling the \ref IRtcEngine::setFaceShapeBeautyOptions "setFaceShapeBeautyOptions" method.
-   *
-   * @param options Sets the face shape area option. See FaceShapeAreaOptions.
-   */
-  virtual int setFaceShapeAreaOptions(const FaceShapeAreaOptions& options, agora::media::MEDIA_SOURCE_TYPE type = agora::media::PRIMARY_CAMERA_SOURCE) = 0;
-  
-  /** Gets the face shape beauty options.
-   *
-   * @note Call this method after calling the \ref IRtcEngine::enableVideo "enableVideo" method.
-   *
-   * @param options Gets the face shape beauty option. See FaceShapeBeautyOptions.
-   */
-  virtual int getFaceShapeBeautyOptions(FaceShapeBeautyOptions& options, agora::media::MEDIA_SOURCE_TYPE type = agora::media::PRIMARY_CAMERA_SOURCE) = 0;
-  
-  /** Gets the face shape area options.
-   *
-   * @note Call this method after calling the \ref IRtcEngine::enableVideo "enableVideo" method.
-   *
-   * @param shapeArea  The face area. See FaceShapeAreaOptions::FACE_SHAPE_AREA.
-   * @param options Gets the face area beauty option. See FaceShapeAreaOptions.
-   */
-  virtual int getFaceShapeAreaOptions(agora::rtc::FaceShapeAreaOptions::FACE_SHAPE_AREA shapeArea, FaceShapeAreaOptions& options, agora::media::MEDIA_SOURCE_TYPE type = agora::media::PRIMARY_CAMERA_SOURCE) = 0;
-  
-  /**
-   * Sets filter effect options.
-   *
-   * @since v4.4.1
-   * You can call this method to enable the filter effect feature and set the options of the filter effect.
-   *
-   * @note
-   * - Before calling this method, ensure that you have integrated the following dynamic library into your project:
-   *  - Android: `libagora_clear_vision_extension.so`
-   *  - iOS/macOS: `AgoraClearVisionExtension.xcframework`
-   *  - Windows: `libagora_clear_vision_extension.dll`
-   * - Call this method after calling the \ref IRtcEngine::enableVideo "enableVideo" method.
-   * - You can call this method either before or after joining a channel.
-   * - The filter effect feature has specific performance requirements for devices. If your device overheats after enabling the filter effect, Agora recommends disabling it entirely.
-   *
-   * @param enabled. Whether to enable filter effect:
-   * - `true`: Enable.
-   * - `false`: (Default) Disable.
-   * @param options. Set the filter effect options. See FilterEffectOptions.
-   *
-   * @return
-   * - 0: Success.
-   * - < 0: Failure.
-   */
-  virtual int setFilterEffectOptions(bool enabled, const FilterEffectOptions& options, agora::media::MEDIA_SOURCE_TYPE type = agora::media::PRIMARY_CAMERA_SOURCE) = 0;
-
   /**
    * Sets low-light enhancement.
    *
@@ -4226,9 +4234,9 @@ class IRtcEngine : public agora::base::IEngineBase {
    *
    * @note
    * - Before calling this method, ensure that you have integrated the following dynamic library into your project:
-   *  - Android: `libagora_clear_vision_extension.so`
-   *  - iOS/macOS: `AgoraClearVisionExtension.xcframework`
-   *  - Windows: `libagora_clear_vision_extension.dll`
+   *  - Android: `libagora_segmentation_extension.so`
+   *  - iOS/macOS: `AgoraVideoSegmentationExtension.xcframework`
+   *  - Windows: `libagora_segmentation_extension.dll`
    * - Call this method after \ref IRtcEngine::enableVideo "enableVideo".
    * - The low-light enhancement feature has certain performance requirements on devices. If your device overheats after you enable low-light enhancement, Agora recommends modifying the low-light enhancement options to a less performance-consuming level or disabling low-light enhancement entirely.
    *
@@ -4253,9 +4261,9 @@ class IRtcEngine : public agora::base::IEngineBase {
    *
    * @note
    * - Before calling this method, ensure that you have integrated the following dynamic library into your project:
-   *  - Android: `libagora_clear_vision_extension.so`
-   *  - iOS/macOS: `AgoraClearVisionExtension.xcframework`
-   *  - Windows: `libagora_clear_vision_extension.dll`
+   *  - Android: `libagora_segmentation_extension.so`
+   *  - iOS/macOS: `AgoraVideoSegmentationExtension.xcframework`
+   *  - Windows: `libagora_segmentation_extension.dll`
    * - Call this method after \ref IRtcEngine::enableVideo "enableVideo".
    * - The video noise reduction feature has certain performance requirements on devices. If your device overheats after you enable video noise reduction, Agora recommends modifying the video noise reduction options to a less performance-consuming level or disabling video noise reduction entirely.
    *
@@ -4280,9 +4288,9 @@ class IRtcEngine : public agora::base::IEngineBase {
    *
    * @note
    * - Before calling this method, ensure that you have integrated the following dynamic library into your project:
-   *  - Android: `libagora_clear_vision_extension.so`
-   *  - iOS/macOS: `AgoraClearVisionExtension.xcframework`
-   *  - Windows: `libagora_clear_vision_extension.dll`
+   *  - Android: `libagora_segmentation_extension.so`
+   *  - iOS/macOS: `AgoraVideoSegmentationExtension.xcframework`
+   *  - Windows: `libagora_segmentation_extension.dll`
    * - Call this method after \ref IRtcEngine::enableVideo "enableVideo".
    * - The color enhancement feature has certain performance requirements on devices. If your device overheats after you enable color enhancement, Agora recommends modifying the color enhancement options to a less performance-consuming level or disabling color enhancement entirely.
    *
@@ -4584,6 +4592,29 @@ class IRtcEngine : public agora::base::IEngineBase {
   virtual int muteAllRemoteAudioStreams(bool mute) = 0;
 
   /**
+   * Determines whether to receive all remote audio streams by default.
+   *
+   * @deprecated This method is deprecated. To set whether to receive remote
+   * audio streams by default, call
+   * \ref IRtcEngine::muteAllRemoteAudioStreams "muteAllRemoteAudioStreams"
+   * before calling `joinChannel`
+   *
+   * Use this method to set whether to receive audio streams of subsequent peer
+   * users. Agora recommends calling it before joining a channel.
+   *
+   * A successful call of setDefaultMuteAllRemoteAudioStreams(true) results in
+   * that the local user not receiving any audio stream after joining a channel.
+   * @param mute Whether to receive remote audio streams by default:
+   * - true: Do not receive any remote audio stream by default.
+   * - false: (Default) Receive remote audio streams by default.
+   *
+   * @return int
+   * - 0: Success.
+   * - < 0: Failure.
+   */
+  virtual int setDefaultMuteAllRemoteAudioStreams(bool mute) __deprecated = 0;
+
+  /**
    * Stops or resumes receiving the audio stream of a specified user.
    *
    * @note
@@ -4680,6 +4711,29 @@ class IRtcEngine : public agora::base::IEngineBase {
    - < 0: Failure.
    */
   virtual int muteAllRemoteVideoStreams(bool mute) = 0;
+
+  /**
+   Determines whether to receive all remote video streams by default.
+
+   @deprecated This method is deprecated. To set whether to receive remote
+   video streams by default, call
+   \ref IRtcEngine::muteAllRemoteVideoStreams "muteAllRemoteVideoStreams"
+   before calling `joinChannel`.
+
+   Use this method to set whether to receive video streams of subsequent peer
+   users. Agora recommends calling it before joining a channel.
+
+   A successful call of setDefaultMuteAllRemoteVideoStreams(true) results in
+   that the local user not receiving any video stream after joining a channel.
+
+   @param mute Whether to receive remote video streams by default:
+   - true: Do not receive any remote video stream by default.
+   - false: (Default) Receive remote video streams by default.
+   @return int
+   - 0: Success.
+   - < 0: Failure.
+   */
+  virtual int setDefaultMuteAllRemoteVideoStreams(bool mute) __deprecated = 0;
 
   /**
    * Sets the default stream type of the remote video if the remote user has enabled dual-stream.
@@ -5871,19 +5925,6 @@ class IRtcEngine : public agora::base::IEngineBase {
   */
   virtual int setHeadphoneEQParameters(int lowGain, int highGain) = 0;
 
-  /** Enables or disables the voice AI tuner.
-   *
-   * @param enabled Determines whether to enable the voice AI tuner:
-   * - true: Enable the voice AI tuner
-   * - false: (default) Disable the voice AI tuner.
-   *
-   * @param type. The options for SDK voice AI tuner types. See #VOICE_AI_TUNER_TYPE.
-   * @return
-   * - 0: Success.
-   * - < 0: Failure.
-   */
-  virtual int enableVoiceAITuner(bool enabled, VOICE_AI_TUNER_TYPE type) = 0;
-
   /** **DEPRECATED** Specifies an SDK output log file.
    *
    * The log file records all log data for the SDK’s operation. Ensure that the
@@ -6028,26 +6069,7 @@ class IRtcEngine : public agora::base::IEngineBase {
    */
   virtual int setRemoteRenderMode(uid_t uid, media::base::RENDER_MODE_TYPE renderMode,
                                   VIDEO_MIRROR_MODE_TYPE mirrorMode) = 0;
-  /**
-   * Sets the target frames per second (FPS) for the local render target.
-   *
-   * @param sourceType The type of video source.
-   * @param targetFps The target frames per second to be set.
-   *
-   * @return
-   * - 0: Success.
-   * - < 0: Failure.
-   */
-  virtual int setLocalRenderTargetFps(VIDEO_SOURCE_TYPE sourceType, int targetFps) = 0;
-  /**
-   * Sets the target frames per second (FPS) for the remote render target.
-   *
-   * @param targetFps The target frames per second to be set for the remote render target.
-   * @return
-   * - 0: Success.
-   * - < 0: Failure.
-   */
-  virtual int setRemoteRenderTargetFps(int targetFps) = 0;
+
   // The following APIs are either deprecated and going to deleted.
 
   /**
@@ -7068,7 +7090,7 @@ class IRtcEngine : public agora::base::IEngineBase {
   - ERR_INVALID_ARGUMENT (2): The argument is invalid.
   - ERR_NOT_INITIALIZED (7): You have not initialized IRtcEngine when try to start screen capture.
   */
-  virtual int startScreenCaptureByDisplayId(int64_t displayId, const Rectangle& regionRect,
+  virtual int startScreenCaptureByDisplayId(uint32_t displayId, const Rectangle& regionRect,
                                             const ScreenCaptureParameters& captureParams) = 0;
 
 #endif  // __APPLE__ && TARGET_OS_MAC && !TARGET_OS_IPHONE
@@ -7131,7 +7153,7 @@ class IRtcEngine : public agora::base::IEngineBase {
   * - ERR_INVALID_ARGUMENT (2): The argument is invalid.
   * - ERR_NOT_INITIALIZED (7): You have not initialized IRtcEngine when try to start screen capture.
   */
-  virtual int startScreenCaptureByWindowId(int64_t windowId, const Rectangle& regionRect,
+  virtual int startScreenCaptureByWindowId(view_t windowId, const Rectangle& regionRect,
                                            const ScreenCaptureParameters& captureParams) = 0;
 
   /**
@@ -7236,20 +7258,19 @@ class IRtcEngine : public agora::base::IEngineBase {
 
 #if defined(__ANDROID__)
   /**
-   * Sets screen sharing using the Android native class MediaProjection.
+   * Set screen sharing MediaProjection.
    *
    * When screen capture stopped, the SDK will automatically release the MediaProjection internally.
    *
    * @param mediaProjection MediaProjection is an Android class that provides access to screen capture and recording capabiliies.
    *
    * @note
-   * Additional MediaProjection is primarily used for specific scenarios, 
-   * such as IOT custom devices or subprocess screen sharing.
+   * It is mainly used in some specific scenarios, such as iot custom devices, or child process screen sharing. 
+   * MediaProjection is not easily obtained or for other reasons.
    *
    * @return
    * - 0: Success.
    * - < 0: Failure.
-   * @technical preview 
    */
   virtual int setExternalMediaProjection(void* mediaProjection) = 0;
 #endif
@@ -7413,40 +7434,6 @@ class IRtcEngine : public agora::base::IEngineBase {
   virtual int stopRtmpStream(const char* url) = 0;
 
   virtual int stopLocalVideoTranscoder() = 0;
-
-  /**
-   * Starts the local audio with a mixed audio stream.
-   * @param config Sets the mixed audio stream source settings.
-   * @return
-   * - 0: Success.
-   * - < 0: Failure.
-   *   - #ERR_NOT_INITIALIZED (7): You have not initialized the RTC engine when publishing the
-   * stream.
-   */
-  virtual int startLocalAudioMixer(const LocalAudioMixerConfiguration& config) = 0;
-
-  /**
-   * Update the source stream settings for the mixed audio stream.
-   * @param config Update the source audio stream settings.  See
-   * @return
-   * - 0: Success.
-   * - < 0: Failure.
-   *   - #ERR_NOT_INITIALIZED (7): You have not initialized the RTC engine when publishing the
-   stream.
-   */
-  virtual int updateLocalAudioMixerConfiguration(const LocalAudioMixerConfiguration& config) = 0;
- 
-  /**
-   * Stops a mixed audio track.
-   *
-   * @return
-   * - 0: Success.
-   * - < 0: Failure.
-   *   - #ERR_NOT_INITIALIZED (7): You have not initialized the RTC engine when publishing the
-   * stream.
-   */  
-  virtual int stopLocalAudioMixer() = 0;
-
   /**
    * Starts video capture with a camera.
    *
@@ -7541,6 +7528,47 @@ class IRtcEngine : public agora::base::IEngineBase {
    */
   virtual int registerPacketObserver(IPacketObserver* observer) = 0;
 
+  /**
+   * Sets the built-in encryption mode.
+   *
+   * @deprecated This method is deprecated. Use enableEncryption(bool enabled, const EncryptionConfig&) instead.
+   *
+   * The Agora Native SDK supports built-in encryption.
+   * Call this API to set the encryption mode.
+   *
+   * All users in the same channel must use the same encryption mode and password.
+   * Refer to information related to the encryption algorithm on the differences
+   * between encryption modes.
+   *
+   * @note
+   * Call \ref setEncryptionSecret "setEncryptionSecret" to enable the built-in encryption function
+   * before calling this API.
+   * @param encryptionMode Encryption mode:
+   * - "sm4-128-ecb": 128-bit SM4 encryption, ECB mode.
+   *
+   * @return
+   * - 0: Success.
+   * - < 0: Failure.
+   */
+  virtual int setEncryptionMode(const char* encryptionMode) __deprecated = 0;
+
+  /**
+   * Enables built-in encryption.
+   *
+   * @deprecated This method is deprecated. Use enableEncryption(bool enabled, const EncryptionConfig&) instead.
+   *
+   * Use this method to specify an encryption password to enable built-in
+   * encryption before joining a channel. All users in a channel must set the same
+   * encryption password. The encryption password is automatically cleared once a
+   * user has left the channel. If the encryption password is not specified or set to
+   * empty, the encryption function will be disabled.
+   *
+   * @param secret The encryption password.
+   * @return
+   * - 0: Success.
+   * - < 0: Failure.
+   */
+  virtual int setEncryptionSecret(const char* secret) __deprecated = 0;
 
   /** Enables/Disables the built-in encryption.
    *
@@ -8459,17 +8487,6 @@ class IRtcEngine : public agora::base::IEngineBase {
    * @technical preview
   */
   virtual int sendAudioMetadata(const char* metadata, size_t length) = 0;
-  
-  /**
-   * @brief Queries the HDR capability of the video module
-   * @param videoModule The video module. See VIDEO_MODULE_TYPE
-   * @param capability HDR capability of video module. See HDR_CAPABILITY
-   * @return
-   * - 0: success
-   * - <0: failure
-   * @technical preview
-  */
-  virtual int queryHDRCapability(VIDEO_MODULE_TYPE videoModule, HDR_CAPABILITY& capability) = 0;
 };
 
 // The following types are either deprecated or not implmented yet.
@@ -8493,11 +8510,6 @@ enum MEDIA_DEVICE_STATE_TYPE {
   /** 2: The device is disabled.
    */
   MEDIA_DEVICE_STATE_DISABLED = 2,
-  
-  /** 3: The device is plugged in.
-   */
-  MEDIA_DEVICE_STATE_PLUGGED_IN = 3,
-  
   /** 4: The device is not present.
    */
   MEDIA_DEVICE_STATE_NOT_PRESENT = 4,

@@ -396,6 +396,26 @@ namespace agora {
 				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
 			}
 
+
+			int AgoraUERtcEngine::startEchoTest()
+			{
+				if (RtcEngine != nullptr) {
+					auto ret = RtcEngine->startEchoTest();
+					return ret;
+				}
+				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
+			}
+
+
+			int AgoraUERtcEngine::startEchoTest(int intervalInSeconds)
+			{
+				if (RtcEngine != nullptr) {
+					auto ret = RtcEngine->startEchoTest(intervalInSeconds);
+					return ret;
+				}
+				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
+			}
+
 			int AgoraUERtcEngine::startEchoTest(agora::rtc::EchoTestConfiguration const& config) {
 				if (RtcEngine != nullptr) {
 					return RtcEngine->startEchoTest(config);
@@ -463,6 +483,56 @@ namespace agora {
 				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
 			}
 
+#if defined(__ANDROID__) || (defined(__APPLE__) && TARGET_OS_IOS)
+
+
+			bool AgoraUERtcEngine::isPipSupported()
+			{
+				if (RtcEngine != nullptr) {
+					auto ret = RtcEngine->isPipSupported();
+					return ret;
+				}
+				return false;
+			}
+
+
+			int AgoraUERtcEngine::setupPip(const PipOptions& options)
+			{
+				if (RtcEngine != nullptr) {
+					auto ret = RtcEngine->setupPip(options);
+					return ret;
+				}
+				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
+			}
+
+
+			int AgoraUERtcEngine::startPip()
+			{
+				if (RtcEngine != nullptr) {
+					auto ret = RtcEngine->startPip();
+					return ret;
+				}
+				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
+			}
+
+
+
+
+#if defined(__APPLE__) && TARGET_OS_IOS
+
+
+			int AgoraUERtcEngine::stopPip()
+			{
+				if (RtcEngine != nullptr) {
+					auto ret = RtcEngine->stopPip();
+					return ret;
+				}
+				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
+			}
+
+#endif
+#endif
+
 			int AgoraUERtcEngine::startLastmileProbeTest(agora::rtc::LastmileProbeConfig const& config) {
 				if (RtcEngine != nullptr) {
 					return RtcEngine->startLastmileProbeTest(config);
@@ -487,50 +557,6 @@ namespace agora {
 			int AgoraUERtcEngine::setBeautyEffectOptions(bool enabled, agora::rtc::BeautyOptions const& options, agora::media::MEDIA_SOURCE_TYPE type) {
 				if (RtcEngine != nullptr) {
 					return RtcEngine->setBeautyEffectOptions(enabled, options, type);
-				}
-				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
-			}
-
-
-			int AgoraUERtcEngine::setFaceShapeBeautyOptions(bool enabled, const FaceShapeBeautyOptions& options, agora::media::MEDIA_SOURCE_TYPE type /*= agora::media::PRIMARY_CAMERA_SOURCE*/)
-			{
-				if (RtcEngine != nullptr) {
-					return RtcEngine->setFaceShapeBeautyOptions(enabled, options, type);
-				}
-				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
-			}
-
-
-			int AgoraUERtcEngine::setFaceShapeAreaOptions(const FaceShapeAreaOptions& options, agora::media::MEDIA_SOURCE_TYPE type /*= agora::media::PRIMARY_CAMERA_SOURCE*/)
-			{
-				if (RtcEngine != nullptr) {
-					return RtcEngine->setFaceShapeAreaOptions(options, type);
-				}
-				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
-			}
-
-
-			int AgoraUERtcEngine::getFaceShapeBeautyOptions(FaceShapeBeautyOptions& options, agora::media::MEDIA_SOURCE_TYPE type /*= agora::media::PRIMARY_CAMERA_SOURCE*/)
-			{
-				if (RtcEngine != nullptr) {
-					return RtcEngine->getFaceShapeBeautyOptions(options, type);
-				}
-				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
-			}
-
-
-			int AgoraUERtcEngine::getFaceShapeAreaOptions(agora::rtc::FaceShapeAreaOptions::FACE_SHAPE_AREA shapeArea, FaceShapeAreaOptions& options, agora::media::MEDIA_SOURCE_TYPE type /*= agora::media::PRIMARY_CAMERA_SOURCE*/)
-			{
-				if (RtcEngine != nullptr) {
-					return RtcEngine->getFaceShapeAreaOptions(shapeArea, options,type);
-				}
-				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
-			}
-
-			int AgoraUERtcEngine::setFilterEffectOptions(bool enabled, const FilterEffectOptions& options, agora::media::MEDIA_SOURCE_TYPE type /*= agora::media::PRIMARY_CAMERA_SOURCE*/)
-			{
-				if (RtcEngine != nullptr) {
-					return RtcEngine->setFilterEffectOptions(enabled, options, type);
 				}
 				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
 			}
@@ -638,6 +664,16 @@ namespace agora {
 				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
 			}
 
+
+			int AgoraUERtcEngine::setDefaultMuteAllRemoteAudioStreams(bool mute) __deprecated
+			{
+				if (RtcEngine != nullptr) {
+					auto ret = RtcEngine->setDefaultMuteAllRemoteAudioStreams(mute);
+					return ret;
+				}
+				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
+			}
+
 			int AgoraUERtcEngine::muteRemoteAudioStream(agora::rtc::uid_t uid, bool mute) {
 				if (RtcEngine != nullptr) {
 					return RtcEngine->muteRemoteAudioStream(uid, mute);
@@ -662,6 +698,16 @@ namespace agora {
 			int AgoraUERtcEngine::muteAllRemoteVideoStreams(bool mute) {
 				if (RtcEngine != nullptr) {
 					return RtcEngine->muteAllRemoteVideoStreams(mute);
+				}
+				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
+			}
+
+
+			int AgoraUERtcEngine::setDefaultMuteAllRemoteVideoStreams(bool mute) __deprecated
+			{
+				if (RtcEngine != nullptr) {
+					auto ret = RtcEngine->setDefaultMuteAllRemoteVideoStreams(mute);
+					return ret;
 				}
 				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
 			}
@@ -1167,15 +1213,6 @@ namespace agora {
 			{
 				if (RtcEngine != nullptr) {
 					return RtcEngine->setHeadphoneEQParameters(lowGain, highGain);
-				}
-				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
-			}
-
-
-			int AgoraUERtcEngine::enableVoiceAITuner(bool enabled, VOICE_AI_TUNER_TYPE type)
-			{
-				if (RtcEngine != nullptr) {
-					return RtcEngine->enableVoiceAITuner(enabled, type);
 				}
 				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
 			}
@@ -1800,7 +1837,7 @@ namespace agora {
 			}
 #endif
 #if defined(_WIN32) || (defined(__APPLE__) && !TARGET_OS_IPHONE && TARGET_OS_MAC)
-			int AgoraUERtcEngine::startScreenCaptureByDisplayId(int64_t displayId, Rectangle const& regionRect, ScreenCaptureParameters const& captureParams) {
+			int AgoraUERtcEngine::startScreenCaptureByDisplayId(uint32_t displayId, Rectangle const& regionRect, ScreenCaptureParameters const& captureParams) {
 				if (RtcEngine != nullptr) {
 					return RtcEngine->startScreenCaptureByDisplayId(displayId, regionRect, captureParams);
 				}
@@ -1825,7 +1862,7 @@ namespace agora {
 			}
 #endif 
 #if defined(_WIN32) || (defined(__APPLE__) && TARGET_OS_MAC && !TARGET_OS_IPHONE)
-			int AgoraUERtcEngine::startScreenCaptureByWindowId(int64_t windowId, agora::rtc::Rectangle const& regionRect, agora::rtc::ScreenCaptureParameters const& captureParams) {
+			int AgoraUERtcEngine::startScreenCaptureByWindowId(view_t windowId, agora::rtc::Rectangle const& regionRect, agora::rtc::ScreenCaptureParameters const& captureParams) {
 				if (RtcEngine != nullptr) {
 					return RtcEngine->startScreenCaptureByWindowId(windowId, regionRect, captureParams);
 				}
@@ -1988,34 +2025,6 @@ namespace agora {
 				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
 			}
 
-
-			int AgoraUERtcEngine::startLocalAudioMixer(const LocalAudioMixerConfiguration& config)
-			{
-				if (RtcEngine != nullptr) {
-					return RtcEngine->startLocalAudioMixer(config);
-				}
-				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
-			}
-
-
-			int AgoraUERtcEngine::updateLocalAudioMixerConfiguration(const LocalAudioMixerConfiguration& config)
-			{
-				if (RtcEngine != nullptr) {
-					return RtcEngine->updateLocalAudioMixerConfiguration(config);
-				}
-				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
-			}
-
-
-			int AgoraUERtcEngine::stopLocalAudioMixer()
-			{
-				if (RtcEngine != nullptr) {
-					return RtcEngine->stopLocalAudioMixer();
-				}
-				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
-			}
-
-
 			int AgoraUERtcEngine::startCameraCapture(VIDEO_SOURCE_TYPE sourceType, const CameraCapturerConfiguration& config)
 			{
 				if (RtcEngine != nullptr) {
@@ -2097,6 +2106,27 @@ namespace agora {
 				}
 				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
 			}
+
+
+			int AgoraUERtcEngine::setEncryptionMode(const char* encryptionMode) __deprecated
+			{
+				if (RtcEngine != nullptr) {
+					auto ret = RtcEngine->setEncryptionMode(encryptionMode);
+					return ret;
+				}
+				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
+			}
+
+
+			int AgoraUERtcEngine::setEncryptionSecret(const char* secret) __deprecated
+			{
+				if (RtcEngine != nullptr) {
+					auto ret = RtcEngine->setEncryptionSecret(secret);
+					return ret;
+				}
+				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
+			}
+
 
 			int AgoraUERtcEngine::enableEncryption(bool enabled, agora::rtc::EncryptionConfig const& config) {
 				if (RtcEngine != nullptr) {
@@ -2495,16 +2525,6 @@ namespace agora {
 				}
 				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
 			}
-
-			int AgoraUERtcEngine::queryHDRCapability(VIDEO_MODULE_TYPE videoModule, HDR_CAPABILITY& capability)
-			{
-				if (RtcEngine != nullptr) {
-					return RtcEngine->queryHDRCapability(videoModule, capability);
-				}
-				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
-			}
-
-
 
 			// IRtcEngineEx
 			int AgoraUERtcEngine::joinChannelEx(char const* token, agora::rtc::RtcConnection const& connection, agora::rtc::ChannelMediaOptions const& options, agora::rtc::IRtcEngineEventHandler* eventHandler) {
@@ -2942,6 +2962,23 @@ namespace agora {
 			{
 				if (RtcEngine != nullptr) {
 					return ((IRtcEngineEx*)RtcEngine)->sendAudioMetadataEx(connection, metadata, length);
+				}
+				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
+			}
+
+			int AgoraUERtcEngine::preloadEffectEx(const RtcConnection& connection, int soundId, const char* filePath, int startPos /*= 0*/)
+			{
+				if (RtcEngine != nullptr) {
+					return ((IRtcEngineEx*)RtcEngine)->preloadEffectEx(connection, soundId, filePath, startPos);
+				}
+				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
+			}
+
+
+			int AgoraUERtcEngine::playEffectEx(const RtcConnection& connection, int soundId, const char* filePath, int loopCount, double pitch, double pan, int gain, bool publish /*= false*/, int startPos /*= 0*/)
+			{
+				if (RtcEngine != nullptr) {
+					return ((IRtcEngineEx*)RtcEngine)->playEffectEx(connection, soundId, filePath, loopCount, pitch, pan, gain, publish, startPos);
 				}
 				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
 			}
