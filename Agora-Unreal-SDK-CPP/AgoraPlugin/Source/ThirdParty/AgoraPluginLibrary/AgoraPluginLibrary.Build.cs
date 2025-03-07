@@ -104,7 +104,7 @@ public class AgoraPluginLibrary : ModuleRules
             }
         }
         sopathwrite += "		<copyFile src=\"$S(PluginDir)/agora-rtc-sdk.jar\" dst=\"$S(BuildDir)/libs/agora-rtc-sdk.jar\" />" + "\r\n";
-        sopathwrite += "		<copyFile src=\"$S(PluginDir)/agora-rtc-sdk-javadoc.jar\" dst=\"$S(BuildDir)/libs/agora-rtc-sdk-javadoc.jar\" />" + "\r\n";
+        //sopathwrite += "		<copyFile src=\"$S(PluginDir)/agora-rtc-sdk-javadoc.jar\" dst=\"$S(BuildDir)/libs/agora-rtc-sdk-javadoc.jar\" />" + "\r\n";
         sopathwrite += "		<copyFile src=\"$S(PluginDir)/AgoraScreenShareExtension.aar\" dst=\"$S(BuildDir)/libs/AgoraScreenShareExtension.aar\" />";
         xmlTemplateData = xmlTemplateData.Replace("<!-- AgoraInsert -->", sopathwrite);
         File.WriteAllText(Path.Combine(librarypath, "APL_Generated.xml"), xmlTemplateData);
