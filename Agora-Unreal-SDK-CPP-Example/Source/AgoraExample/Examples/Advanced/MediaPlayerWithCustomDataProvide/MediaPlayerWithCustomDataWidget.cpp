@@ -111,6 +111,8 @@ void UMediaPlayerWithCustomDataWidget::OnBtnBackToHomeClicked()
 
 void UMediaPlayerWithCustomDataWidget::OnBtnOpenClicked()
 {
+	MediaPlayer->stop();
+
 	UserIMediaPlayerCustomDataProvider = MakeShared<FUserIMediaPlayerCustomDataProvider>();
 	FString Path = FPaths::ProjectContentDir() / TEXT("Movies/MPK.mp4");
 
