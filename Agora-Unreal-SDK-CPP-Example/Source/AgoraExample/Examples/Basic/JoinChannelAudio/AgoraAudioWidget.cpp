@@ -26,7 +26,7 @@ void UAgoraAudioWidget::InitUI()
 
 #if PLATFORM_IOS
 
-	VB_SetAudioProfileAndSenario->SetVisibility(ESlateVisibility::Collapsed);
+	CBS_AudioSenario->SetVisibility(ESlateVisibility::Collapsed);
 
 #endif
 
@@ -77,6 +77,7 @@ void UAgoraAudioWidget::ShowUserGuide()
 	FString Guide =
 		"Case: [BasicAudioScene]\n"
 		"1. This is a basic audio scene.\n"
+		"2. [IOS] senario could only use AUDIO_SCENARIO_GAME_STREAMING. (This is decided by UE)"
 		"";
 
 	UBFL_Logger::DisplayUserGuide(Guide, LogMsgViewPtr);

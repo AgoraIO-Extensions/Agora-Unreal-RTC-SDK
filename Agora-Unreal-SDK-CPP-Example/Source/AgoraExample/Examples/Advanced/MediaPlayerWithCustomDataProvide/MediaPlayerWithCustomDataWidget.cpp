@@ -111,6 +111,8 @@ void UMediaPlayerWithCustomDataWidget::OnBtnBackToHomeClicked()
 
 void UMediaPlayerWithCustomDataWidget::OnBtnOpenClicked()
 {
+	// This is to prevent a crash when the open button is clicked while playback is ongoing.
+	// This is necessary because IMediaPlayerCustomDataProvider cannot be discarded while in use.
 	MediaPlayer->stop();
 
 	UserIMediaPlayerCustomDataProvider = MakeShared<FUserIMediaPlayerCustomDataProvider>();
