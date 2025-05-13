@@ -1,0 +1,62 @@
+name: Generate codes and create pull request
+
+on:
+  workflow_dispatch:
+    inputs:
+      rtc_version:
+        description: 'verison (4.5.2)'
+        required: true
+        type: string
+
+jobs:
+  generate-codes:
+    runs-on: ubuntu-latest
+    container:
+      image: python:3.11
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup
+        uses: ./.github/setup
+
+      - name: Replace rtc version
+        run: python ASDK.py -agorasdk=${{ inputs.rtc_version }}
+
+      - name: Generate code and comment by terra
+        uses: AgoraIO-Extensions/actions/.github/actions/generate@main
+        with:
+          working-directory: "Terra"
+          github-token: ${{ secrets.GH_TOKEN }}
+          generate-code: true
+          generate-comment: false
+          generate-code-command: |
+            mkdir -p packages/cpp
+            mkdir -p packages/blueprint
+            bash build.sh
+
+      - name: Create pull request
+        uses: AgoraIO-Extensions/actions/.github/actions/pr@main
+        with:
+          github-token: ${{ secrets.GH_TOKEN }}
+          target-repo: ${{ github.workspace }}
+          target-branch: ${{ github.ref_name }}
+          target-branch-name-surffix: terra-update/${{ inputs.rtc_version }}
+          pull-request-title: |
+            [AUTO] Generate codes by terra(${{ inputs.rtc_version }})
+          add-paths: .
+
+      # - name: Check csharp codes compile
+      #   run: |
+      #     cd Agora-C_Sharp_RTC-SDK_UT
+      #     dotnet restore Agora_C_Sharp_SDK_UT.sln
+      #     dotnet build Agora_C_Sharp_SDK_UT.sln --configuration Release
+      #     if [ $? -ne 0 ]; then
+      #       echo "csharp codes compile error"
+      #       exit 1
+      #     else
+      #       echo "csharp codes compile success"
+      #     fi
