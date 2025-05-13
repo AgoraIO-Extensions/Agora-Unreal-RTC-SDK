@@ -1,0 +1,44 @@
+{
+  "private": true,
+  "workspaces": [
+    "cxx-parser",
+    "terra",
+    "terra-core"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "lint": "eslint \"**/*.{js,ts,tsx}\"",
+    "test": "jest --coverage --selectProjects=test",
+    "test:integration": "jest --selectProjects=integration --verbose --useStderr --runInBand",
+    "test:terra": "jest --selectProjects=terra",
+    "test:terra-core": "jest --selectProjects=terra-core",
+    "test:cxx-parser": "jest --selectProjects=cxx-parser",
+    "test:integration:cxx-parser": "jest --selectProjects=integration:cxx-parser",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@agoraio-extensions/cxx-parser": "git@github.com:AgoraIO-Extensions/terra.git#head=main&workspace=cxx-parser",
+    "@agoraio-extensions/terra": "git@github.com:AgoraIO-Extensions/terra.git#head=main&workspace=terra",
+    "@agoraio-extensions/terra-core": "git@github.com:AgoraIO-Extensions/terra.git#head=main&workspace=terra-core",
+    "@agoraio-extensions/terra_shared_configs": "git@github.com:AgoraIO-Extensions/terra_shared_configs.git#head=main",
+    "lodash": "^4.17.21"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.1",
+    "@types/lodash": "^4",
+    "@types/mustache": "^4.2.2",
+    "@types/node": "^20.5.9",
+    "@typescript-eslint/eslint-plugin": "^5.30.5",
+    "@typescript-eslint/parser": "^5.30.5",
+    "eslint": "^8.4.1",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-import": "^2.27.5",
+    "eslint-plugin-jest": "^26.9.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "jest": "^29.5.0",
+    "prettier": "^2.0.5",
+    "ts-jest": "^29.1.0",
+    "ts-node": "^10.9.1",
+    "typescript": "^4.8.4"
+  }
+}

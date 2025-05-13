@@ -1,0 +1,32 @@
+# List of parser configurations
+parsers:
+  # CXXParser should always put first
+  - name: CXXParser
+    package: '@agoraio-extensions/cxx-parser'
+    args:
+      preprocessParseFiles: true
+      parseClangQualType: true
+      includeHeaderDirs:
+        - '@agoraio-extensions/terra_shared_configs:headers/{{SDK_VERSION}}/include'
+      parseFiles:
+        include:
+          - '@agoraio-extensions/terra_shared_configs:headers/{{SDK_VERSION}}/include/*.h'
+        exclude:
+          - '@agoraio-extensions/terra_shared_configs:headers/{{SDK_VERSION}}/include/time_utils.h'
+          - '@agoraio-extensions/terra_shared_configs:headers/{{SDK_VERSION}}/include/rte_*.h'
+          - '@agoraio-extensions/terra_shared_configs:headers/{{SDK_VERSION}}/include/IAgoraMediaComponentFactory.h'
+
+
+  ## Path: relative to [config] not [templates]
+  - name: RemoveNodeParser
+    path: ../parsers/remove_node_parser.ts
+    args:
+      ignoreDefaultConfig: true
+      configFilePath: ../parsers/config/cpp/remove_node_list.ts
+
+
+# List of renderer configurations
+renderers:
+#   # Configuration for the first renderer
+  - path: ../renders/cpp/cpp-header-renderer.ts
+  - path: ../renders/cpp/cpp-impl-renderer.ts
