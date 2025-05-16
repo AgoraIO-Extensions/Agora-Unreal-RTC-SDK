@@ -1,0 +1,67 @@
+# List of parser configurations
+parsers:
+  # CXXParser should always put first
+  - name: CXXParser
+    package: '@agoraio-extensions/cxx-parser'
+    args:
+      preprocessParseFiles: true
+      parseClangQualType: true
+      includeHeaderDirs:
+        - '@agoraio-extensions/terra_shared_configs:headers/{{SDK_VERSION}}/include'
+      parseFiles:
+        include:
+          - '@agoraio-extensions/terra_shared_configs:headers/{{SDK_VERSION}}/include/*.h'
+        exclude:
+          - '@agoraio-extensions/terra_shared_configs:headers/{{SDK_VERSION}}/include/time_utils.h'
+          - '@agoraio-extensions/terra_shared_configs:headers/{{SDK_VERSION}}/include/rte_*.h'
+          - '@agoraio-extensions/terra_shared_configs:headers/{{SDK_VERSION}}/include/IAgoraMediaComponentFactory.h'
+
+
+
+  - name: OverrideNodeParser
+    path: ../parsers/override_node_parser.ts
+    args:
+      customHeaderFileNamePrefix: 'Custom'
+      includeHeaderDirs:
+        - '@agoraio-extensions/terra_shared_configs:headers/{{SDK_VERSION}}/include'
+      parseFiles:
+        include:
+          - '@agoraio-extensions/terra_shared_configs:headers/{{SDK_VERSION}}/include/*.h'
+          - '@agoraio-extensions/terra_shared_configs:headers/{{SDK_VERSION}}/custom_headers/*.h'
+        exclude:
+          - '@agoraio-extensions/terra_shared_configs:headers/{{SDK_VERSION}}/include/time_utils.h'
+          - '@agoraio-extensions/terra_shared_configs:headers/{{SDK_VERSION}}/include/rte_*.h'
+          - '@agoraio-extensions/terra_shared_configs:headers/{{SDK_VERSION}}/include/IAgoraMediaComponentFactory.h'
+
+  ## Path: relative to [config] not [templates]
+  - name: RemoveNodeParser
+    path: ../parsers/remove_node_parser.ts
+    args:
+      ignoreDefaultConfig: true
+      configFilePath: ../parsers/config/blueprint/remove_node_list.ts
+
+  - name: MergeNodeParser
+    path: ../parsers/merge_node_parser.ts
+    args:
+      configFilePath: ../parsers/config/blueprint/merge_node_list.ts
+      ignoreDefaultConfig: true
+
+  - name: ReturnTypeParser
+    package: '@agoraio-extensions/terra_shared_configs'
+    args:
+      configFilePath: ../parsers/config/blueprint/fixed_return_type_list.ts
+      ignoreDefaultConfig: true
+
+  - name: ExtractCallbackHandler
+    path: ../parsers/extract_callbackhandler_parser.ts
+
+  ## reorder node based on dependency
+  - name: OrderNodeParser
+    package: '@agoraio-extensions/terra_shared_configs'
+
+# List of renderer configurations
+renderers:
+#   # Configuration for the first renderer
+  - path: ../renders/blueprint/blueprint-enum-renderer.ts
+  - path: ../renders/blueprint/blueprint-renderer.ts
+  - path: ../renders/blueprint/blueprint-impl-renderer.ts

@@ -1,0 +1,31 @@
+.ccls-cache/
+.dist/
+.idea/
+.vscode/
+.DS_Store
+
+build/
+coverage/
+node_modules/
+
+dump_json.json
+**/package-lock.json
+
+
+.terra/
+
+.yarn/install-state.gz
+## temp for now
+packages/*
+output.txt
+split_output/*
+
+## config
+config/blueprint_config.yaml
+config/cpp_config.yaml
+
+
+## rte
+rtesrcfiles/*
+config/rte_test_config.yaml
+testbuild.sh

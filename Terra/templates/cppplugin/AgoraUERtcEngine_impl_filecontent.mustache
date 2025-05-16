@@ -1,0 +1,318 @@
+//  Copyright (c) 2024 Agora.io. All rights reserved.
+
+
+
+#include "AgoraUERTCEngine.h"
+
+#if AGORA_UESDK_ENABLE_VIDEO
+#include "VideoFrameRenderManager.h"
+#include "AgoraUEVideoFrameObserver.h"
+using namespace agora::rtc::ue;
+#endif
+
+#if PLATFORM_ANDROID
+#include "Android/AndroidApplication.h"
+#include "Android/AndroidJni.h"
+#endif
+
+
+#if PLATFORM_IOS
+#include "IOSAppDelegate.h"
+#endif
+
+
+#include <vector>
+
+
+namespace agora {
+	namespace rtc {
+		namespace ue {
+
+#pragma region Basics
+
+
+			AgoraUERtcEngine* AgoraUERtcEngine::Instance = nullptr;
+			std::mutex AgoraUERtcEngine::MutexLock;
+			AgoraAppType AgoraUERtcEngine::RtcEngineAppType = AgoraAppType::kAppTypeUnreal;
+
+			AgoraUERtcEngine* AgoraUERtcEngine::Get()
+			{
+				if (Instance == nullptr) {
+					std::unique_lock<std::mutex> lock(MutexLock);
+					if (Instance == nullptr) {
+						Instance = new AgoraUERtcEngine();
+						Instance->CreateEngine();
+					}
+				}
+
+				return Instance;
+			}
+
+
+			agora::rtc::IRtcEngine* AgoraUERtcEngine::NativeRtcEnginePtr()
+			{
+				if (Instance != nullptr) {
+					return Instance->RtcEngine;
+				}
+				
+				return nullptr;
+			}
+
+			FString AgoraUERtcEngine::GetSDKVersion()
+			{
+				FString UEVersion = FString::Printf(TEXT("UE %d.%d.%d"), (ENGINE_MAJOR_VERSION), (ENGINE_MINOR_VERSION), (ENGINE_PATCH_VERSION));
+
+				int SDKBuild = 0;
+				const char* SDKVersionInfo = Get()->getVersion(&SDKBuild);
+				FString SDKInfo = FString::Printf(TEXT("Agora SDK Version: %s Build: %d  UnrealVersion: %s"), UTF8_TO_TCHAR(SDKVersionInfo), SDKBuild, *UEVersion);
+				return SDKInfo;
+			}
+
+
+			void AgoraUERtcEngine::EnableIOSAudioSession(bool bEnable)
+			{
+#if PLATFORM_IOS
+				[[IOSAppDelegate GetDelegate]SetFeature:EAudioFeature::Playback Active : bEnable];
+				[[IOSAppDelegate GetDelegate]SetFeature:EAudioFeature::Record Active : bEnable];
+				[[IOSAppDelegate GetDelegate]SetFeature:EAudioFeature::BackgroundAudio Active : bEnable];
+#endif
+			}
+
+			void AgoraUERtcEngine::Release(bool sync /*= false*/)
+			{
+				if (Instance != nullptr) {
+					std::unique_lock<std::mutex> lock(MutexLock);
+					if (Instance != nullptr) {
+						Instance->DestroyEngine(sync);
+						delete Instance;
+						Instance = nullptr;
+					}
+				}
+
+			}
+
+			void AgoraUERtcEngine::CreateEngine()
+			{
+#if PLATFORM_ANDROID
+				if (JNIEnv* Env = FAndroidApplication::GetJavaEnv())
+				{
+					static jmethodID LoadLibrary = FJavaWrapper::FindMethod(Env, FJavaWrapper::GameActivityClassID, "LoadLibrary", "()V", false);
+					FJavaWrapper::CallVoidMethod(Env, FJavaWrapper::GameActivityThis, LoadLibrary);
+					if (LoadLibrary != NULL)
+					{
+						FJavaWrapper::CallVoidMethod(Env, FJavaWrapper::GameActivityThis, LoadLibrary);
+					}
+
+					//static jmethodID LoadAndroidScreenCaptureSo = FJavaWrapper::FindMethod(Env, FJavaWrapper::GameActivityClassID, "LoadAndroidScreenCaptureSo", "()V", false);
+					//if (LoadAndroidScreenCaptureSo != NULL)
+					//{
+					//	FJavaWrapper::CallVoidMethod(Env, FJavaWrapper::GameActivityThis, LoadAndroidScreenCaptureSo);
+					//}
+				}
+#endif		
+
+				RtcEngine = ::createAgoraRtcEngine();
+
+#if AGORA_UESDK_ENABLE_VIDEO
+				_VideoFrameRenderManager = MakeShareable(new VideoFrameRenderManager());
+#endif
+			}
+
+
+			void AgoraUERtcEngine::DestroyEngine(bool sync /*= false*/)
+			{
+				if (RtcEngine) {
+					//RtcEngine->release(sync);
+					agora::rtc::IRtcEngine::release(sync);
+					RtcEngine = nullptr;
+#if AGORA_UESDK_ENABLE_VIDEO
+					_VideoFrameRenderManager = nullptr;
+					_VideoObserver = nullptr;
+#endif
+				}
+			}
+
+
+			AgoraUERtcEngine::AgoraUERtcEngine() {}
+			AgoraUERtcEngine::~AgoraUERtcEngine() {}
+
+
+#pragma endregion Basics
+
+
+#pragma region Agora API Wrapper
+
+
+			int AgoraUERtcEngine::initialize(const agora::rtc::RtcEngineContext& context)
+			{
+				if (RtcEngine == nullptr)
+				{
+					UE_LOG(LogTemp, Warning, TEXT("Agora RTC Engine initialize Failed, Engine Pointer is nullptr"));
+					return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
+				}
+
+				int ret = RtcEngine->initialize(context);
+
+				UE_LOG(LogTemp, Warning, TEXT("Agora RTC Engine initialize %d"), ret);
+				if (ret == 0)
+				{
+
+					FString ParamType = FString::Printf(TEXT("{\"rtc.set_app_type\": %d}"), (int)RtcEngineAppType);
+					agora::base::AParameter apm(RtcEngine);
+					apm->setParameters(TCHAR_TO_UTF8(*ParamType));
+
+#if AGORA_UESDK_ENABLE_VIDEO
+
+#if PLATFORM_ANDROID
+
+					// The following parameter is the same as "{\"rtc.enable_camera_capture_yuv\":\"true\"}"
+					// These 2 parameters are used to capture YUV data directly.
+					// Otherwise, the inconsistent rotation applied to video frame can lead to flickering in the displayed image.
+
+					apm->setParameters("{\"che.video.android_camera_output_type\":0}");
+
+#pragma region Load Android So
+
+					int retSo = AgoraUERtcEngine::Get()->loadExtensionProvider("agora_screen_capture_extension");
+
+					UE_LOG(LogTemp, Warning, TEXT("Initialize loadExtensionProvider [agora_screen_capture_extension] ret %d"), retSo);
+
+#pragma endregion Load Android So
+
+#endif
+					// Our client can also use addVideoFrameRenderer to listen to VideoFrameObserver
+
+					RtcEngine->queryInterface(agora::rtc::INTERFACE_ID_TYPE::AGORA_IID_MEDIA_ENGINE, (void**)&MediaEngine);
+					_VideoObserver = MakeShareable(new AgoraUEVideoFrameObserver(nullptr));
+					int retOb = MediaEngine->addVideoFrameRenderer(_VideoObserver.Get());
+					UE_LOG(LogTemp, Warning, TEXT("Agora RTC Engine addVideoFrameRenderer %d"), retOb);
+#endif
+
+
+
+#if PLATFORM_IOS
+					EnableIOSAudioSession(true);
+					AgoraUERtcEngine::Get()->setAudioScenario(agora::rtc::AUDIO_SCENARIO_TYPE::AUDIO_SCENARIO_GAME_STREAMING);
+					int ret00 = AgoraUERtcEngine::Get()->setParameters("{\"che.audio.keep.audiosession\": true}");
+					UE_LOG(LogTemp, Warning, TEXT("Agora RTC Engine Keep Audio Session ret %d"), ret00);
+#endif
+
+				}
+				return ret;
+			}
+
+			/*
+				Note: Remote Channel would be ignore for now.
+				Because Agora doesn't to join support multiple video channels.
+			*/
+			int AgoraUERtcEngine::setupRemoteVideo(const agora::rtc::VideoCanvas& canvas)
+			{
+#if AGORA_UESDK_ENABLE_VIDEO
+				if (RtcEngine != nullptr) {
+					if (canvas.view != nullptr) {
+						_VideoFrameRenderManager->AddOneRender((UImage*)canvas.view, canvas.sourceType, "", canvas.uid);
+					}
+					else {
+						_VideoFrameRenderManager->ReleaseOneRender(canvas.sourceType, "", canvas.uid);
+					}
+					return AGORA_UE_ERR_CODE(ERROR_OK);
+				}
+				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
+#else
+				return  AGORA_UE_ERR_CODE(ERROR_VIDEO_NOT_ENABLED);
+#endif
+			}
+
+
+			int AgoraUERtcEngine::setupLocalVideo(const agora::rtc::VideoCanvas& canvas)
+			{
+#if AGORA_UESDK_ENABLE_VIDEO
+				if (RtcEngine != nullptr) {
+					if (canvas.view != nullptr) {
+						_VideoFrameRenderManager->AddOneRender((UImage*)canvas.view, canvas.sourceType, "", canvas.uid);
+					}
+					else {
+						_VideoFrameRenderManager->ReleaseOneRender(canvas.sourceType, "", canvas.uid);
+					}
+					return AGORA_UE_ERR_CODE(ERROR_OK);
+				}
+				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
+#else
+				return  AGORA_UE_ERR_CODE(ERROR_VIDEO_NOT_ENABLED);
+#endif
+			}
+
+
+			int AgoraUERtcEngine::setupRemoteVideoEx(const agora::rtc::VideoCanvas& canvas, const agora::rtc::RtcConnection& connection)
+			{
+#if AGORA_UESDK_ENABLE_VIDEO
+				if (canvas.view != nullptr) {
+					_VideoFrameRenderManager->AddOneRender((UImage*)canvas.view, canvas.sourceType, connection.channelId, canvas.uid);
+				}
+				else {
+					_VideoFrameRenderManager->ReleaseOneRender(canvas.sourceType, connection.channelId, canvas.uid);
+				}
+				return  AGORA_UE_ERR_CODE(ERROR_OK);
+
+#else
+				return  AGORA_UE_ERR_CODE(ERROR_VIDEO_NOT_ENABLED);
+#endif
+			}
+
+			int AgoraUERtcEngine::writeLog(commons::LOG_LEVEL level, const char* fmt, ...)
+			{
+				if (RtcEngine != nullptr) {
+
+					va_list args;
+					va_start(args, fmt);
+
+					// to get the length
+					int length = std::vsnprintf(nullptr, 0, fmt, args);
+					va_end(args);
+
+					std::vector<char> buffer(length + 1); // +1 for null terminator
+					buffer.clear();
+
+					va_start(args, fmt);
+					std::vsnprintf(buffer.data(), buffer.size(), fmt, args);
+					va_end(args);
+
+					std::string Content = (buffer.data());
+
+					int result = RtcEngine->writeLog(level, Content.c_str());
+					return result;
+					
+				}
+				return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
+			}
+
+#pragma endregion Agora API Wrapper
+
+#pragma region Other Native APIs
+
+{{#nodes}}
+            {{#methods}}
+                {{^user_data.isExcluded}}
+
+{{{user_data.macro_scope_start}}}
+                {{#return_type}}{{{source}}}{{/return_type}} AgoraUERtcEngine::{{name}} ({{#parameters}}{{{type.clang_qualtype}}} {{name}}{{{user_data.defaultValueComment}}}{{^user_data.isLast}}, {{/user_data.isLast}}{{/parameters}})
+                {
+                    if (RtcEngine != nullptr) {
+                        auto ret = {{user_data.callerInstanceName}}->{{name}}({{#parameters}}{{name}}{{^user_data.isLast}}, {{/user_data.isLast}}{{/parameters}});
+                        return ret;
+                    }
+                    {{#user_data.hasReturnVal}}
+                    return {{{user_data.failureReturnVal}}};
+                    {{/user_data.hasReturnVal}}
+                }
+{{{user_data.macro_scope_end}}}
+
+                {{/user_data.isExcluded}}
+			{{/methods}}
+{{/nodes}}
+
+#pragma endregion Other Native APIs
+
+        }
+    }
+}

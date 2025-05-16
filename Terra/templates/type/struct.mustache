@@ -1,0 +1,38 @@
+
+{{{user_data.commentCppStyle}}}
+
+USTRUCT(BlueprintType)
+struct {{{user_data.bpNodeName}}}{
+
+	GENERATED_BODY()
+public:
+
+{{#member_variables}}
+{{{user_data.commentCppStyle}}}
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Agora|{{parent_name}}")
+  	{{{type.user_data.bpType.declType}}} {{name}} {{{user_data.bpFormatDefaultVal}}};
+{{/member_variables}}
+
+	{{{user_data.bpNodeName}}}(){}
+
+{{{user_data.macro_scope_start}}}
+	{{{user_data.bpNodeName}}}(const {{{fullName}}} & AgoraData){
+
+{{{user_data.bpContextConstructor}}}
+
+	}
+
+	{{{fullName}}} CreateRawData() const {
+
+{{{user_data.bpContextCreateRawData}}}
+
+	}
+
+	void FreeRawData({{{fullName}}} & AgoraData) const
+	{
+
+{{{user_data.bpContextFreeRawData}}}
+
+	}
+{{{user_data.macro_scope_end}}}
+};

@@ -1,0 +1,72 @@
+#pragma once
+// Copyright(c) 2024 Agora.io. All rights reserved.
+
+// [Notice] We use if-else rather than switch-case because of some enum entries with the same value
+#include "AgoraHeaderBase.h"
+
+
+{{#nodes}}
+{{#user_data.isEnumz}}
+
+{{{user_data.commentCppStyle}}}
+{{#name}}
+UENUM(BlueprintType)
+enum class {{{user_data.bpNodeName}}} : uint8 {
+{{#enum_constants}}
+{{{user_data.commentCppStyle}}}
+    {{#user_data.isFirst}}
+        {{#user_data.isLast}}
+            {{name}} = 0
+        {{/user_data.isLast}}
+        {{^user_data.isLast}}
+            {{name}} = 0,
+        {{/user_data.isLast}}
+    {{/user_data.isFirst}}
+    {{^user_data.isFirst}}
+        {{#user_data.isLast}}
+            {{name}}
+        {{/user_data.isLast}}
+        {{^user_data.isLast}}
+            {{name}},
+        {{/user_data.isLast}}
+    {{/user_data.isFirst}}
+{{/enum_constants}}
+};
+{{/name}}
+
+namespace agora{
+    namespace rtc{
+        namespace ue{
+            namespace UABTEnum{
+{{{user_data.macro_scope_start}}}
+                inline {{{fullName}}} ToRawValue({{{user_data.bpNodeName}}} Val){
+                    {{{fullName}}} Result = static_cast<{{{fullName}}}>(0);
+    {{#enum_constants}}
+    {{#user_data.isFirst}}
+        if ( Val == {{{parent.user_data.bpNodeName}}}::{{{name}}} ){ Result = {{{fullName}}}; }
+    {{/user_data.isFirst}}
+    {{^user_data.isFirst}}
+        else if ( Val == {{{parent.user_data.bpNodeName}}}::{{{name}}} ){ Result = {{{fullName}}};}
+    {{/user_data.isFirst}}
+    {{/enum_constants}}
+                    return Result;
+                }
+                inline {{{user_data.bpNodeName}}} WrapWithUE({{{fullName}}} Val){
+                    {{{user_data.bpNodeName}}} Result = static_cast<{{{user_data.bpNodeName}}}>(0);
+    {{#enum_constants}}
+    {{#user_data.isFirst}}
+        if ( Val == {{{fullName}}} ){ Result = {{{parent.user_data.bpNodeName}}}::{{{name}}}; }
+    {{/user_data.isFirst}}
+    {{^user_data.isFirst}}
+        else if ( Val == {{{fullName}}} ){ Result = {{{parent.user_data.bpNodeName}}}::{{{name}}};}
+    {{/user_data.isFirst}}
+    {{/enum_constants}}
+                    return Result;
+                }
+{{{user_data.macro_scope_end}}}
+            }
+        }
+    }
+}
+{{/user_data.isEnumz}}
+{{/nodes}}

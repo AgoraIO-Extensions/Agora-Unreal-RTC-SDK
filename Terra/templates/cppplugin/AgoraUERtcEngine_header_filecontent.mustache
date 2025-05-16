@@ -1,0 +1,98 @@
+//  Copyright (c) 2024 Agora.io. All rights reserved.
+
+#pragma once
+
+// AgoraHeaderBase should be included first.
+
+#include "AgoraHeaderBase.h"
+#include <mutex>
+#include "Templates/SharedPointer.h"
+
+
+namespace agora {
+	namespace rtc {
+		namespace ue {
+
+			// there would be some naming conflicts:
+			// Ex. Unreal has already define Rectangle as a function
+			class VideoFrameRenderManager;
+			class AgoraUEVideoFrameObserver;
+
+
+
+			// This is a ue singleton wrapper for Agora Rtc Engine.
+			class AGORAPLUGIN_API AgoraUERtcEngine : public agora::rtc::IRtcEngineEx {
+
+			public:
+				AgoraUERtcEngine();
+				~AgoraUERtcEngine();
+
+				static AgoraUERtcEngine* Get();
+				static agora::rtc::IRtcEngine* NativeRtcEnginePtr();
+				static FString GetSDKVersion();
+				static void EnableIOSAudioSession(bool bEnable);
+				static void Release(bool sync = false);
+				static AgoraAppType RtcEngineAppType;
+
+
+			protected:
+				//static variables
+				static AgoraUERtcEngine* Instance;
+				static std::mutex MutexLock;
+
+				// member variables
+				agora::rtc::IRtcEngine* RtcEngine;
+				agora::util::AutoPtr<agora::media::IMediaEngine> MediaEngine;
+
+#if AGORA_UESDK_ENABLE_VIDEO
+				TSharedPtr<VideoFrameRenderManager> _VideoFrameRenderManager;
+				TSharedPtr< AgoraUEVideoFrameObserver>_VideoObserver;
+#endif
+
+			private:
+				void CreateEngine();
+				void DestroyEngine(bool sync = false);
+
+
+			public:
+
+
+#pragma region Agora API Wrapper
+				virtual int initialize(const agora::rtc::RtcEngineContext& context) override;
+
+				// Use Unreal Rendering
+				virtual int setupRemoteVideo(const agora::rtc::VideoCanvas& canvas) override;
+				virtual int setupLocalVideo(const agora::rtc::VideoCanvas& canvas) override;
+				virtual int setupRemoteVideoEx(const agora::rtc::VideoCanvas& canvas, const agora::rtc::RtcConnection& connection) override;
+				virtual int writeLog (commons::LOG_LEVEL level, const char * fmt,  ...) override;
+
+				// Set Parameter
+
+				// Audio Dump
+
+				// WITH_AGORA_CALLBACKS
+
+#pragma endregion Agora API Wrapper
+
+
+#pragma region Other Native APIs
+
+{{#nodes}}
+            {{#methods}}
+				{{^user_data.isExcluded}}
+{{{user_data.macro_scope_start}}}
+
+{{{user_data.commentCppStyle}}}
+					virtual {{#return_type}}{{{source}}}{{/return_type}} {{name}} ({{#parameters}}{{{type.clang_qualtype}}} {{name}}{{{user_data.defaultValue}}}{{^user_data.isLast}}, {{/user_data.isLast}}{{/parameters}}) {{{user_data.suffix_attribute}}} override;
+{{{user_data.macro_scope_end}}}
+				{{/user_data.isExcluded}}
+			{{/methods}}
+{{/nodes}}
+
+#pragma endregion Other Native APIs
+
+            };
+		}
+	}
+}
+
