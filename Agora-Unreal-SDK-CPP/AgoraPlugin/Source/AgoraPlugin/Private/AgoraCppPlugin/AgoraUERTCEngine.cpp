@@ -1,4 +1,4 @@
-//  Copyright (c) 2025 Agora.io. All rights reserved.
+//  Copyright (c) 2024 Agora.io. All rights reserved.
 
 
 
@@ -519,7 +519,7 @@ namespace agora {
 
 
 
-#if defined(__APPLE__) && TARGET_OS_IOS
+#if defined(__APPLE__) && (TARGET_OS_IOS || (defined(TARGET_OS_VISION) && TARGET_OS_VISION))
                 int AgoraUERtcEngine::enableMultiCamera (bool enabled, const CameraCapturerConfiguration & config)
                 {
                     if (RtcEngine != nullptr) {
@@ -528,6 +528,7 @@ namespace agora {
                     }
                     return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
                 }
+
 #endif
 
 
@@ -2280,6 +2281,7 @@ namespace agora {
                     }
                     return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
                 }
+
 #endif
 
 
@@ -2403,7 +2405,7 @@ namespace agora {
 
 
 
-#if defined(__ANDROID__) || (defined(__APPLE__) && TARGET_OS_IOS)
+#if defined(__ANDROID__) || (defined(__APPLE__) && (TARGET_OS_IOS || (defined(TARGET_OS_VISION) && TARGET_OS_VISION)))
                 int AgoraUERtcEngine::switchCamera ()
                 {
                     if (RtcEngine != nullptr) {
@@ -2412,10 +2414,11 @@ namespace agora {
                     }
                     return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
                 }
+
 #endif
 
 
-#if defined(__ANDROID__) || (defined(__APPLE__) && TARGET_OS_IOS)
+#if defined(__ANDROID__) || (defined(__APPLE__) && (TARGET_OS_IOS || (defined(TARGET_OS_VISION) && TARGET_OS_VISION)))
                 bool AgoraUERtcEngine::isCameraZoomSupported ()
                 {
                     if (RtcEngine != nullptr) {
@@ -2424,10 +2427,11 @@ namespace agora {
                     }
                     return false;
                 }
+
 #endif
 
 
-#if defined(__ANDROID__) || (defined(__APPLE__) && TARGET_OS_IOS)
+#if defined(__ANDROID__) || (defined(__APPLE__) && (TARGET_OS_IOS || (defined(TARGET_OS_VISION) && TARGET_OS_VISION)))
                 bool AgoraUERtcEngine::isCameraFaceDetectSupported ()
                 {
                     if (RtcEngine != nullptr) {
@@ -2436,10 +2440,11 @@ namespace agora {
                     }
                     return false;
                 }
+
 #endif
 
 
-#if defined(__ANDROID__) || (defined(__APPLE__) && TARGET_OS_IOS)
+#if defined(__ANDROID__) || (defined(__APPLE__) && (TARGET_OS_IOS || (defined(TARGET_OS_VISION) && TARGET_OS_VISION)))
                 bool AgoraUERtcEngine::isCameraTorchSupported ()
                 {
                     if (RtcEngine != nullptr) {
@@ -2448,10 +2453,11 @@ namespace agora {
                     }
                     return false;
                 }
+
 #endif
 
 
-#if defined(__ANDROID__) || (defined(__APPLE__) && TARGET_OS_IOS)
+#if defined(__ANDROID__) || (defined(__APPLE__) && (TARGET_OS_IOS || (defined(TARGET_OS_VISION) && TARGET_OS_VISION)))
                 bool AgoraUERtcEngine::isCameraFocusSupported ()
                 {
                     if (RtcEngine != nullptr) {
@@ -2460,10 +2466,11 @@ namespace agora {
                     }
                     return false;
                 }
+
 #endif
 
 
-#if defined(__ANDROID__) || (defined(__APPLE__) && TARGET_OS_IOS)
+#if defined(__ANDROID__) || (defined(__APPLE__) && (TARGET_OS_IOS || (defined(TARGET_OS_VISION) && TARGET_OS_VISION)))
                 bool AgoraUERtcEngine::isCameraAutoFocusFaceModeSupported ()
                 {
                     if (RtcEngine != nullptr) {
@@ -2472,10 +2479,11 @@ namespace agora {
                     }
                     return false;
                 }
+
 #endif
 
 
-#if defined(__ANDROID__) || (defined(__APPLE__) && TARGET_OS_IOS)
+#if defined(__ANDROID__) || (defined(__APPLE__) && (TARGET_OS_IOS || (defined(TARGET_OS_VISION) && TARGET_OS_VISION)))
                 int AgoraUERtcEngine::setCameraZoomFactor (float factor)
                 {
                     if (RtcEngine != nullptr) {
@@ -2484,10 +2492,11 @@ namespace agora {
                     }
                     return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
                 }
+
 #endif
 
 
-#if defined(__ANDROID__) || (defined(__APPLE__) && TARGET_OS_IOS)
+#if defined(__ANDROID__) || (defined(__APPLE__) && (TARGET_OS_IOS || (defined(TARGET_OS_VISION) && TARGET_OS_VISION)))
                 int AgoraUERtcEngine::enableFaceDetection (bool enabled)
                 {
                     if (RtcEngine != nullptr) {
@@ -2496,10 +2505,11 @@ namespace agora {
                     }
                     return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
                 }
+
 #endif
 
 
-#if defined(__ANDROID__) || (defined(__APPLE__) && TARGET_OS_IOS)
+#if defined(__ANDROID__) || (defined(__APPLE__) && (TARGET_OS_IOS || (defined(TARGET_OS_VISION) && TARGET_OS_VISION)))
                 float AgoraUERtcEngine::getCameraMaxZoomFactor ()
                 {
                     if (RtcEngine != nullptr) {
@@ -2508,10 +2518,11 @@ namespace agora {
                     }
                     return 0.0f;
                 }
+
 #endif
 
 
-#if defined(__ANDROID__) || (defined(__APPLE__) && TARGET_OS_IOS)
+#if defined(__ANDROID__) || (defined(__APPLE__) && (TARGET_OS_IOS || (defined(TARGET_OS_VISION) && TARGET_OS_VISION)))
                 int AgoraUERtcEngine::setCameraFocusPositionInPreview (float positionX, float positionY)
                 {
                     if (RtcEngine != nullptr) {
@@ -2520,10 +2531,11 @@ namespace agora {
                     }
                     return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
                 }
+
 #endif
 
 
-#if defined(__ANDROID__) || (defined(__APPLE__) && TARGET_OS_IOS)
+#if defined(__ANDROID__) || (defined(__APPLE__) && (TARGET_OS_IOS || (defined(TARGET_OS_VISION) && TARGET_OS_VISION)))
                 int AgoraUERtcEngine::setCameraTorchOn (bool isOn)
                 {
                     if (RtcEngine != nullptr) {
@@ -2532,10 +2544,11 @@ namespace agora {
                     }
                     return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
                 }
+
 #endif
 
 
-#if defined(__ANDROID__) || (defined(__APPLE__) && TARGET_OS_IOS)
+#if defined(__ANDROID__) || (defined(__APPLE__) && (TARGET_OS_IOS || (defined(TARGET_OS_VISION) && TARGET_OS_VISION)))
                 int AgoraUERtcEngine::setCameraAutoFocusFaceModeEnabled (bool enabled)
                 {
                     if (RtcEngine != nullptr) {
@@ -2544,10 +2557,11 @@ namespace agora {
                     }
                     return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
                 }
+
 #endif
 
 
-#if defined(__ANDROID__) || (defined(__APPLE__) && TARGET_OS_IOS)
+#if defined(__ANDROID__) || (defined(__APPLE__) && (TARGET_OS_IOS || (defined(TARGET_OS_VISION) && TARGET_OS_VISION)))
                 bool AgoraUERtcEngine::isCameraExposurePositionSupported ()
                 {
                     if (RtcEngine != nullptr) {
@@ -2556,10 +2570,11 @@ namespace agora {
                     }
                     return false;
                 }
+
 #endif
 
 
-#if defined(__ANDROID__) || (defined(__APPLE__) && TARGET_OS_IOS)
+#if defined(__ANDROID__) || (defined(__APPLE__) && (TARGET_OS_IOS || (defined(TARGET_OS_VISION) && TARGET_OS_VISION)))
                 int AgoraUERtcEngine::setCameraExposurePosition (float positionXinView, float positionYinView)
                 {
                     if (RtcEngine != nullptr) {
@@ -2568,10 +2583,11 @@ namespace agora {
                     }
                     return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
                 }
+
 #endif
 
 
-#if defined(__ANDROID__) || (defined(__APPLE__) && TARGET_OS_IOS)
+#if defined(__ANDROID__) || (defined(__APPLE__) && (TARGET_OS_IOS || (defined(TARGET_OS_VISION) && TARGET_OS_VISION)))
                 bool AgoraUERtcEngine::isCameraExposureSupported ()
                 {
                     if (RtcEngine != nullptr) {
@@ -2580,10 +2596,11 @@ namespace agora {
                     }
                     return false;
                 }
+
 #endif
 
 
-#if defined(__ANDROID__) || (defined(__APPLE__) && TARGET_OS_IOS)
+#if defined(__ANDROID__) || (defined(__APPLE__) && (TARGET_OS_IOS || (defined(TARGET_OS_VISION) && TARGET_OS_VISION)))
                 int AgoraUERtcEngine::setCameraExposureFactor (float factor)
                 {
                     if (RtcEngine != nullptr) {
@@ -2592,10 +2609,11 @@ namespace agora {
                     }
                     return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
                 }
+
 #endif
 
 
-#if defined(__ANDROID__) || (defined(__APPLE__) && TARGET_OS_IOS)
+#if defined(__ANDROID__) || (defined(__APPLE__) && (TARGET_OS_IOS || (defined(TARGET_OS_VISION) && TARGET_OS_VISION)))
 #if defined(__APPLE__)
                 bool AgoraUERtcEngine::isCameraAutoExposureFaceModeSupported ()
                 {
@@ -2605,11 +2623,12 @@ namespace agora {
                     }
                     return false;
                 }
+
 #endif
 #endif
 
 
-#if defined(__ANDROID__) || (defined(__APPLE__) && TARGET_OS_IOS)
+#if defined(__ANDROID__) || (defined(__APPLE__) && (TARGET_OS_IOS || (defined(TARGET_OS_VISION) && TARGET_OS_VISION)))
 #if defined(__APPLE__)
                 int AgoraUERtcEngine::setCameraAutoExposureFaceModeEnabled (bool enabled)
                 {
@@ -2619,11 +2638,12 @@ namespace agora {
                     }
                     return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
                 }
+
 #endif
 #endif
 
 
-#if defined(__ANDROID__) || (defined(__APPLE__) && TARGET_OS_IOS)
+#if defined(__ANDROID__) || (defined(__APPLE__) && (TARGET_OS_IOS || (defined(TARGET_OS_VISION) && TARGET_OS_VISION)))
 #if defined(__APPLE__)
                 int AgoraUERtcEngine::setCameraStabilizationMode (CAMERA_STABILIZATION_MODE mode)
                 {
@@ -2633,11 +2653,12 @@ namespace agora {
                     }
                     return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
                 }
+
 #endif
 #endif
 
 
-#if defined(__ANDROID__) || (defined(__APPLE__) && TARGET_OS_IOS)
+#if defined(__ANDROID__) || (defined(__APPLE__) && (TARGET_OS_IOS || (defined(TARGET_OS_VISION) && TARGET_OS_VISION)))
                 int AgoraUERtcEngine::setDefaultAudioRouteToSpeakerphone (bool defaultToSpeaker)
                 {
                     if (RtcEngine != nullptr) {
@@ -2646,10 +2667,11 @@ namespace agora {
                     }
                     return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
                 }
+
 #endif
 
 
-#if defined(__ANDROID__) || (defined(__APPLE__) && TARGET_OS_IOS)
+#if defined(__ANDROID__) || (defined(__APPLE__) && (TARGET_OS_IOS || (defined(TARGET_OS_VISION) && TARGET_OS_VISION)))
                 int AgoraUERtcEngine::setEnableSpeakerphone (bool speakerOn)
                 {
                     if (RtcEngine != nullptr) {
@@ -2658,10 +2680,11 @@ namespace agora {
                     }
                     return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
                 }
+
 #endif
 
 
-#if defined(__ANDROID__) || (defined(__APPLE__) && TARGET_OS_IOS)
+#if defined(__ANDROID__) || (defined(__APPLE__) && (TARGET_OS_IOS || (defined(TARGET_OS_VISION) && TARGET_OS_VISION)))
                 bool AgoraUERtcEngine::isSpeakerphoneEnabled ()
                 {
                     if (RtcEngine != nullptr) {
@@ -2670,10 +2693,11 @@ namespace agora {
                     }
                     return false;
                 }
+
 #endif
 
 
-#if defined(__ANDROID__) || (defined(__APPLE__) && TARGET_OS_IOS)
+#if defined(__ANDROID__) || (defined(__APPLE__) && (TARGET_OS_IOS || (defined(TARGET_OS_VISION) && TARGET_OS_VISION)))
                 int AgoraUERtcEngine::setRouteInCommunicationMode (int route)
                 {
                     if (RtcEngine != nullptr) {
@@ -2682,6 +2706,7 @@ namespace agora {
                     }
                     return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
                 }
+
 #endif
 
 
@@ -2694,6 +2719,7 @@ namespace agora {
                     }
                     return false;
                 }
+
 #endif
 
 
@@ -2706,6 +2732,7 @@ namespace agora {
                     }
                     return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
                 }
+
 #endif
 
 
@@ -2718,10 +2745,11 @@ namespace agora {
                     }
                     return nullptr;
                 }
+
 #endif
 
 
-#if (defined(__APPLE__) && TARGET_OS_IOS)
+#if (defined(__APPLE__) && (TARGET_OS_IOS || (defined(TARGET_OS_VISION) && TARGET_OS_VISION)))
                 int AgoraUERtcEngine::setAudioSessionOperationRestriction (AUDIO_SESSION_OPERATION_RESTRICTION restriction)
                 {
                     if (RtcEngine != nullptr) {
@@ -2730,6 +2758,7 @@ namespace agora {
                     }
                     return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
                 }
+
 #endif
 
 
@@ -2742,6 +2771,7 @@ namespace agora {
                     }
                     return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
                 }
+
 #endif
 
 
@@ -2754,6 +2784,7 @@ namespace agora {
                     }
                     return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
                 }
+
 #endif
 
 
@@ -2766,6 +2797,7 @@ namespace agora {
                     }
                     return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
                 }
+
 #endif
 
 
@@ -2778,6 +2810,7 @@ namespace agora {
                     }
                     return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
                 }
+
 #endif
 
 
@@ -2790,6 +2823,7 @@ namespace agora {
                     }
                     return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
                 }
+
 #endif
 
 
@@ -2802,6 +2836,7 @@ namespace agora {
                     }
                     return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
                 }
+
 #endif
 
 
@@ -2814,10 +2849,11 @@ namespace agora {
                     }
                     return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
                 }
+
 #endif
 
 
-#if defined(__ANDROID__) || (defined(__APPLE__) && TARGET_OS_IOS)
+#if defined(__ANDROID__) || (defined(__APPLE__) && (TARGET_OS_IOS || (defined(TARGET_OS_VISION) && TARGET_OS_VISION)))
                 int AgoraUERtcEngine::startScreenCapture (const ScreenCaptureParameters2 & captureParams)
                 {
                     if (RtcEngine != nullptr) {
@@ -2826,10 +2862,11 @@ namespace agora {
                     }
                     return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
                 }
+
 #endif
 
 
-#if defined(__ANDROID__) || (defined(__APPLE__) && TARGET_OS_IOS)
+#if defined(__ANDROID__) || (defined(__APPLE__) && (TARGET_OS_IOS || (defined(TARGET_OS_VISION) && TARGET_OS_VISION)))
                 int AgoraUERtcEngine::updateScreenCapture (const ScreenCaptureParameters2 & captureParams)
                 {
                     if (RtcEngine != nullptr) {
@@ -2838,10 +2875,11 @@ namespace agora {
                     }
                     return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
                 }
+
 #endif
 
 
-#if defined(__ANDROID__) || (defined(__APPLE__) && TARGET_OS_IOS)
+#if defined(__ANDROID__) || (defined(__APPLE__) && (TARGET_OS_IOS || (defined(TARGET_OS_VISION) && TARGET_OS_VISION)))
                 int AgoraUERtcEngine::queryScreenCaptureCapability ()
                 {
                     if (RtcEngine != nullptr) {
@@ -2850,10 +2888,11 @@ namespace agora {
                     }
                     return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
                 }
+
 #endif
 
 
-#if defined(__ANDROID__) || (defined(__APPLE__) && TARGET_OS_IOS)
+#if defined(__ANDROID__) || (defined(__APPLE__) && (TARGET_OS_IOS || (defined(TARGET_OS_VISION) && TARGET_OS_VISION)))
                 int AgoraUERtcEngine::queryCameraFocalLengthCapability (agora::rtc::FocalLengthInfo * focalLengthInfos, int & size)
                 {
                     if (RtcEngine != nullptr) {
@@ -2862,10 +2901,11 @@ namespace agora {
                     }
                     return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
                 }
+
 #endif
 
 
-#if defined(__ANDROID__) || (defined(__APPLE__) && TARGET_OS_IOS)
+#if defined(__ANDROID__) || (defined(__APPLE__) && (TARGET_OS_IOS || (defined(TARGET_OS_VISION) && TARGET_OS_VISION)))
 #if defined(__ANDROID__)
                 int AgoraUERtcEngine::setExternalMediaProjection (void * mediaProjection)
                 {
@@ -2875,6 +2915,7 @@ namespace agora {
                     }
                     return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
                 }
+
 #endif
 #endif
 
@@ -2888,6 +2929,7 @@ namespace agora {
                     }
                     return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
                 }
+
 #endif
 
 
@@ -2900,6 +2942,7 @@ namespace agora {
                     }
                     return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
                 }
+
 #endif
 
 
