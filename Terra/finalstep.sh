@@ -1,0 +1,2 @@
+cp packages/cpp/AgoraUERTCEngine.h ../Agora-Unreal-SDK-CPP/AgoraPlugin/Source/AgoraPlugin/Public/AgoraCppPlugin/AgoraUERTCEngine.h
+cp packages/cpp/AgoraUERTCEngine.cpp ../Agora-Unreal-SDK-CPP/AgoraPlugin/Source/AgoraPlugin/Private/AgoraCppPlugin/AgoraUERTCEngine.cpp

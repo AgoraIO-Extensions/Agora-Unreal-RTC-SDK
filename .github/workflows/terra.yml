@@ -37,6 +37,7 @@ jobs:
             mkdir -p packages/cpp
             mkdir -p packages/blueprint
             bash build.sh
+            bash finalstep.sh
 
       - name: Create pull request
         uses: AgoraIO-Extensions/actions/.github/actions/pr@main
