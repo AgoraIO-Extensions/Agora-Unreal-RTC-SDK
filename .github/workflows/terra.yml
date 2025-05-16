@@ -24,6 +24,7 @@ jobs:
       - name: Replace rtc version
         run: |
           cd Terra
+          pip install -r requirements.txt
           python ASDK.py -agorasdk=${{ inputs.rtc_version }}
 
       - name: Generate code and comment by terra
