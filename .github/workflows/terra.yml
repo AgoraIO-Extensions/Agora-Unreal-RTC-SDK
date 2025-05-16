@@ -22,7 +22,10 @@ jobs:
         uses: ./.github/setup
 
       - name: Replace rtc version
-        run: python ASDK.py -agorasdk=${{ inputs.rtc_version }}
+        run: |
+          cd Terra
+          pip install -r requirements.txt
+          python ASDK.py -agorasdk=${{ inputs.rtc_version }}
 
       - name: Generate code and comment by terra
         uses: AgoraIO-Extensions/actions/.github/actions/generate@main
