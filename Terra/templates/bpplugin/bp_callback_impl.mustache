@@ -1,0 +1,81 @@
+
+void {{{user_data.bpNodeName}}}::AddBlueprintCallbackExecutor({{{user_data.bpNodeName}}}CBExecutor* Executor){
+	if (Executor == nullptr)
+	{
+		UAgoraBPuLogger::PrintWarn(FString::Printf(TEXT("%s Null Callback Executor"), *FString(AG_FUNCTION_MACRO)));
+		return;
+	}
+    {{#methods}}
+    {{^user_data.hasReturnVal}}
+    {{user_data.bpCallbackDelegateVarName}}.AddDynamic(Executor, &{{parent.user_data.bpNodeName}}CBExecutor::{{user_data.bpNodeName}});
+    {{/user_data.hasReturnVal}}
+    {{/methods}}
+
+}
+
+
+void {{{user_data.bpNodeName}}}::RemoveAllBlueprintCallbackExecutors(){
+
+    {{#methods}}
+    {{^user_data.hasReturnVal}}
+    {{user_data.bpCallbackDelegateVarName}}.Clear();
+    {{/user_data.hasReturnVal}}
+    {{/methods}}
+
+}
+
+
+{{#methods}}
+{{{user_data.macro_scope_start}}}
+    {{#return_type}}{{{source}}}{{/return_type}} {{parent.user_data.bpNodeName}}::{{name}} ({{#parameters}}{{{type.source}}} {{name}}{{{user_data.defaultValueComment}}}{{^user_data.isLast}}, {{/user_data.isLast}}{{/parameters}})
+    {
+{{#user_data.bpCallbackIsNoVoidReturnVal}}
+
+{{{user_data.bpContextCallbackNoVoidReturnImpl}}}
+
+{{/user_data.bpCallbackIsNoVoidReturnVal}}
+{{^user_data.bpCallbackIsNoVoidReturnVal}}
+
+{{{user_data.bpContextParamsDecl_BPFromCpp}}}
+
+        TWeakObjectPtr<{{{parent.user_data.bpNodeName}}}> SelfWeakPtr(this);
+        if(!SelfWeakPtr.IsValid())
+            return;
+            
+        #if (__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)
+                AsyncTask(ENamedThreads::GameThread, [=, this]()
+        #else
+                AsyncTask(ENamedThreads::GameThread, [=]()
+        #endif
+            {
+
+                if(!SelfWeakPtr.IsValid())
+                    return;
+
+                {{user_data.bpNodeName}}.Broadcast({{{user_data.bpContextParamsUsage_BPFromCpp}}});
+
+                {{{user_data.bpContextParamsFree_BPFromCpp}}}
+
+            });
+
+{{/user_data.bpCallbackIsNoVoidReturnVal}}
+
+    }
+{{{user_data.macro_scope_end}}}
+{{/methods}}
+
+
+
+
+{{#methods}}
+{{^user_data.hasReturnVal}}
+  {{{user_data.bpReturnType}}} {{parent.user_data.bpNodeName}}CBExecutor::{{user_data.bpNodeName}}_Implementation({{#parameters}}{{{user_data.bpParameterType}}} {{name}}{{^user_data.isLast}}, {{/user_data.isLast}}{{/parameters}})
+  {
+
+    UE_LOG(LogAgora, Warning, TEXT("%s"), *FString(AG_FUNCTION_MACRO));
+     
+  }
+  
+{{/user_data.hasReturnVal}}
+{{/methods}}
+

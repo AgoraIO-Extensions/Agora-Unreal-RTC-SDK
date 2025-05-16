@@ -1,0 +1,46 @@
+{{#methods}}
+{{#user_data.bpContextReplacedImpl}}
+// replaced method
+{{{user_data.bpContextReplcedMethodImplementation}}}
+{{/user_data.bpContextReplacedImpl}}
+{{^user_data.bpContextReplacedImpl}}
+  {{{user_data.bpReturnType}}} {{parent.user_data.bpNodeName}}::{{user_data.bpNodeName}}({{#parameters}}{{{user_data.bpParameterType}}} {{name}}{{^user_data.isLast}}, {{/user_data.isLast}}{{/parameters}})
+  {
+      {{#user_data.hasReturnVal}}
+      // Need to be optimized
+{{{user_data.bpContextReturnValBegin}}}
+      {{/user_data.hasReturnVal}}
+
+{{{user_data.macro_scope_start}}}
+
+      // Convert UEBP to CppType
+{{{user_data.bpContextParamsDecl_CppFromBP}}}
+      // Call Native Method
+      
+      {{#user_data.hasReturnVal}}
+      auto ret = {{{user_data.bpNativePtr}}}->{{name}}({{{user_data.bpContextParamsUsage_CppFromBP}}});
+      {{/user_data.hasReturnVal}}
+      {{^user_data.hasReturnVal}}
+      // No Return Value
+      {{{user_data.bpNativePtr}}}->{{name}}({{{user_data.bpContextParamsUsage_CppFromBP}}});
+      {{/user_data.hasReturnVal}}
+
+      // Free Data if neeeded
+{{{user_data.bpContextParamsFree_CppFromBP}}}
+
+      {{#user_data.hasReturnVal}}
+{{{user_data.bpContextReturnValSetVal}}}
+      {{/user_data.hasReturnVal}}
+
+{{{user_data.macro_scope_end}}}
+
+      {{#user_data.hasReturnVal}}
+      // Need to be optimized
+{{{user_data.bpContextReturnValEnd}}}
+      {{/user_data.hasReturnVal}}
+  }
+{{/user_data.bpContextReplacedImpl}}
+{{/methods}}
+
+
+{{{user_data.bpContextInitImpl}}}

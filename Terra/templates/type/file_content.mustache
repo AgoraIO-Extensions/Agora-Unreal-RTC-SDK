@@ -1,0 +1,44 @@
+// Copyright(c) 2024 Agora.io. All rights reserved.
+
+#pragma once
+
+#include "CoreMinimal.h"
+//#include "AgoraPluginInterface.h"
+//#include "AgoraHeaderBase.h"
+
+// TBD(WinterPu)
+// Need to be removed for some files.
+#include "AgoraUERtcEngine.h"
+
+#include "AgoraBPuDataTypesBase.h"
+#include "UtilityAgoraBPuLogger.h"
+#include "UtilityUABTEnumConvertMacro.h"
+#include "UtilityUABTTypeHelper.h"
+
+// for AsyncTask
+#include "Async/Async.h"
+
+{{#user_data.bpIncludeFiles}}
+{{{.}}}
+{{/user_data.bpIncludeFiles}}
+
+#include "{{&user_data.bpFileName}}.generated.h"
+
+using namespace agora;
+using namespace agora::rtc;
+using namespace agora::media;
+using namespace agora::rtc::ue;
+
+{{#nodes}}
+{{#user_data.isCallback}}
+{{> callback}}
+{{/user_data.isCallback}}
+{{^user_data.isCallback}}
+{{#user_data.isStruct}}
+{{> struct}}
+{{/user_data.isStruct}}
+{{#user_data.isClazz}}
+{{> clazz}}
+{{/user_data.isClazz}}
+{{/user_data.isCallback}}
+{{/nodes}}
