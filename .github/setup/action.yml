@@ -10,7 +10,7 @@ runs:
         node-version: 18.16.0
 
     - name: Setup Yarn
-      run: npm i -g yarn@4.0.1
+      run: npm i -g yarn@1.22.19
       shell: bash
 
     - name: Set up Python
