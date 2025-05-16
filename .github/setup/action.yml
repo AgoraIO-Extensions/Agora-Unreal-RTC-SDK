@@ -1,0 +1,29 @@
+name: Setup
+description: Setup Environment
+
+runs:
+  using: composite
+  steps:
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: 18.16.0
+
+    - name: Setup Yarn
+      run: npm i -g yarn@4.0.1
+      shell: bash
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: 3.11.5
+
+    # - name: Setup .NET 8.0.203
+    #   uses: actions/setup-dotnet@v4
+    #   with:
+    #       dotnet-version: 8.0.203
+
+    # - name: Setup .NET 7.0.306
+    #   uses: actions/setup-dotnet@v4
+    #   with:
+    #       dotnet-version: 7.0.306
