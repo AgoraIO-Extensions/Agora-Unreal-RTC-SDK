@@ -1,0 +1,61 @@
+#include "/Engine/Public/Platform.ush"
+
+Texture2D YTextureVal;
+Texture2D UTextureVal;
+Texture2D VTextureVal;
+SamplerState YTextureSampler;
+SamplerState UTextureSampler;
+SamplerState VTextureSampler;
+
+void YUVRenderingVS(
+    in float4 InPosition : ATTRIBUTE0,
+    in float2 InUV : ATTRIBUTE1,
+    out float2 OutUV : TEXCOORD0,
+    out float4 OutPosition : SV_POSITION
+)
+{
+    OutPosition = InPosition;
+    OutUV = InUV;
+}
+
+void YUVRenderingPS
+(
+    in float2 UV : TEXCOORD0,
+    in float4 Position : SV_POSITION,
+    out float4 OutColor : SV_Target0 // For Mac Metal Shader, Otherwise, UE will treat it as no output
+)
+{
+    float ColorY = clamp(YTextureVal.Sample(YTextureSampler, UV.xy).r, 0, 1);
+    float ColorU = clamp(UTextureVal.Sample(UTextureSampler, UV.xy).r - 0.5, -0.5, 0.5);
+    float ColorV = clamp(
+    VTextureVal.Sample(VTextureSampler, UV.xy).r - 0.5, -0.5, 0.5);
+    
+    //OutColor.r = ColorY + 1.140 * ColorV + 0.5;
+    //OutColor.g = ColorY - 0.395 * ColorU - 0.581 * ColorV + 0.5;
+    //OutColor.b = ColorY + 2.032 * ColorU + 0.5;
+    //OutColor.a = 1.0;
+    
+    //static const float4x4 YUVToRGBMatrix = float4x4(
+    //    1.0,   0.0,    1.140,  0.5,    // R = Y + 1.140*V + 0.5
+    //    1.0,  -0.395, -0.581,  0.5,    // G = Y - 0.395*U - 0.581*V + 0.5
+    //    1.0,   2.032,  0.0,    0.5,    // B = Y + 2.032*U + 0.5
+    //    0.0,   0.0,    0.0,    1.0     // A = 1.0
+    //);
+    
+    static const float4x4 YUVToRGBMatrix = float4x4(
+        1.0, 0.0, 1.402000f, 0, // R = Y + 1.140*V + 0.5
+        1.0, -0.344136, -0.714136f, 0, // G = Y - 0.395*U - 0.581*V + 0.5
+        1.0, 1.772000f, 0.0, 0, // B = Y + 2.032*U + 0.5
+        0.0, 0.0, 0.0, 1.0 // A = 1.0
+    );
+    
+
+    float4 YUVColor = float4(ColorY, ColorU, ColorV, 1.0);
+    
+    OutColor = mul(YUVToRGBMatrix, YUVColor);
+
+    OutColor = saturate(OutColor);
+    
+    ////// 最后泛白是因为Gamma 矫正多了一次
+    //OutColor.rgb = pow(OutColor.rgb, 2.2);
+}
