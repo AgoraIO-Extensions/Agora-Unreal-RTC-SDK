@@ -12,6 +12,9 @@
 #include "Components/CanvasPanelSlot.h"
 
 
+#include "VideoRenderStatHelper.h"
+
+
 namespace agora {
 	namespace rtc {
 		namespace ue {
@@ -38,13 +41,16 @@ namespace agora {
 				VideoFrameDataManager::Get()->StopUpdatingOneVideoBuffer(_VideoFrameId);
 			}
 
-			void VideoFrameRender::OnTick()
+			void VideoFrameRender::OnTick(bool & outRenderRet)
 			{
+				outRenderRet = false;
 				VideoFrame* RenderVideoFrame = nullptr;
 				int ret = VideoFrameDataManager::Get()->PopVideoFrame(_VideoFrameId,RenderVideoFrame);
 				
 				if(AGORA_GET_ERR_TYPE(ret) != AGORA_UE_ERROR_CODE::ERROR_OK)
 					return;
+
+				STAT_RenderProcTime_Begin();
 
 				if (RenderVideoFrame != nullptr) {
 					CopyToTexture2D(RenderVideoFrame);
@@ -53,7 +59,11 @@ namespace agora {
 					{
 						UpdateImage();
 					}
+					INC_FLOAT_STAT_BY(STAT_OutFrameCounter,1);
 				}
+				
+				STAT_RenderProcTime_End();
+				outRenderRet = true;
 			}
 
 			void VideoFrameRender::SetRenderImage(UImage* Image)

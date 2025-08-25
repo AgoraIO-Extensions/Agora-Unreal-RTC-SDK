@@ -4,6 +4,8 @@
 #include "DataTypes.h"
 #include "VideoFrameDataManager.h"
 
+#include "VideoRenderStatHelper.h"
+
 namespace agora {
 	namespace rtc {
 		namespace ue {
@@ -28,6 +30,9 @@ namespace agora {
 				if(_NativeAgoraVideoObserver != nullptr){
 					_NativeAgoraVideoObserver->onCaptureVideoFrame(sourceType,videoFrame);
 				}
+
+				INC_FLOAT_STAT_BY(STAT_InFrameCounter,1);
+	
 
 				return true;
 			}

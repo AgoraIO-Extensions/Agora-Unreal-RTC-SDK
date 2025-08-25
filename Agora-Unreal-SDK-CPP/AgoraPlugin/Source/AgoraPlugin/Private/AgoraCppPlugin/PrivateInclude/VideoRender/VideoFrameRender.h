@@ -22,7 +22,7 @@ namespace agora {
 
 				void Init(const VideoFrameId & FrameId);
 				void Clear();
-				void OnTick();
+				void OnTick(bool& outRenderRet);
 				
 				void SetRenderImage(UImage* Image);
 

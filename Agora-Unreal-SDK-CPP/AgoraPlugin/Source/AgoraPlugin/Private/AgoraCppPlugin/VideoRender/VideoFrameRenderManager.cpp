@@ -2,6 +2,8 @@
 
 #include "VideoFrameRenderManager.h"
 #include "VideoFrameRender.h"
+#include "VideoRenderStatHelper.h"
+
 namespace agora {
 	namespace rtc {
 		namespace ue {
@@ -45,9 +47,37 @@ namespace agora {
 
 			void VideoFrameRenderManager::Tick(float DeltaTime)
 			{
+				STATTimer += DeltaTime * 1000;
 				for (auto& OneVideoRender : DataMapVideoRenders)
 				{
-					OneVideoRender.Value->OnTick();
+
+					bool outRenderRet = false;
+					OneVideoRender.Value->OnTick(outRenderRet);
+
+					if(outRenderRet){
+						// successfully rendered one frame
+						STATTimeStamp_Cur = FDateTime::Now().GetTimeOfDay().GetTotalMilliseconds();
+
+						if(STATTimeStamp_Begin  < 0)
+						{
+							STATTimeStamp_Begin = STATTimeStamp_Cur;
+						}
+						else{
+							double OneInterval = STATTimeStamp_Cur - STATTimeStamp_Begin;
+							STATDATA_ArrRenderIntervals.Add(OneInterval);
+							STATTimeStamp_Begin = STATTimeStamp_Cur;
+						}
+					}
+				}
+				UE_LOG(LogTemp,Warning,TEXT("StatTimer %f"), STATTimer);
+				if(STATTimer < STATTimeInterval){
+					// During the interval
+				}
+				else{
+					// Over the interval, update the stats
+					STAT_Update_All();
+					STATTimer = 0;
+					STATTimeStamp_Begin = -1;
 				}
 			}
 		}
