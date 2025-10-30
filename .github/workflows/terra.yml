@@ -32,12 +32,14 @@ jobs:
           sh .github/ci/build/dep.sh ${{ steps.dep.outputs.matches }}
 
       - name: Replace rtc version
+        id: version
         run: |
           cd Terra
           pip install -r requirements.txt
           JSON_RAW='${{ steps.dep.outputs.matches }}'
           JSON_OUTPUT=$(printf '%s' "$JSON_RAW" | sed 's/^"//;s/"$//' | sed 's/\\"/"/g')
           VERSION=$(echo "$JSON_OUTPUT" | jq -r '.[] | select(.version != "" and .version != null) | .version' | head -n 1)
+          echo "rtc_version=${VERSION}" >> $GITHUB_OUTPUT
           python ASDK.py -agorasdk="${VERSION}"
 
       - name: Generate code and comment by terra
@@ -59,9 +61,9 @@ jobs:
           github-token: ${{ secrets.GH_TOKEN }}
           target-repo: ${{ github.workspace }}
           target-branch: ${{ github.ref_name }}
-          target-branch-name-surffix: terra-update/${{ inputs.rtc_version }}
+          target-branch-name-surffix: terra-update/${{ steps.version.outputs.rtc_version }}
           pull-request-title: |
-            [AUTO] Generate codes by terra(${{ inputs.rtc_version }})
+            [AUTO] Generate codes by terra(${{ steps.version.outputs.rtc_version }})
           add-paths: .
 
       # - name: Check csharp codes compile
