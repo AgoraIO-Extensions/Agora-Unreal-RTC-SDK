@@ -141,12 +141,12 @@ else
   fi
 fi
 
-# Increment Build number in url.json
+# Increment Build number in url.json based on RELEASE_TYPE
 if [ -f "$URL_JSON_PATH" ]; then
-  echo "Incrementing Build number in url.json..."
+  echo "Incrementing Build number for $RELEASE_TYPE in url.json..."
   
-  # Read current build number
-  BUILD_NUM=$(jq -r '.version.build' "$URL_JSON_PATH")
+  # Read current build number for the specific release type
+  BUILD_NUM=$(jq -r ".$RELEASE_TYPE.build" "$URL_JSON_PATH")
   
   if [ "$BUILD_NUM" = "null" ] || [ -z "$BUILD_NUM" ]; then
     BUILD_NUM=0
@@ -154,13 +154,13 @@ if [ -f "$URL_JSON_PATH" ]; then
   
   # Increment and update
   NEW_BUILD_NUM=$((BUILD_NUM + 1))
-  jq --arg build "$NEW_BUILD_NUM" '.version.build = ($build | tonumber)' "$URL_JSON_PATH" > "$URL_JSON_PATH.tmp"
+  jq --arg build "$NEW_BUILD_NUM" --arg type "$RELEASE_TYPE" '.[$type].build = ($build | tonumber)' "$URL_JSON_PATH" > "$URL_JSON_PATH.tmp"
   
   if [ $? -eq 0 ]; then
     mv "$URL_JSON_PATH.tmp" "$URL_JSON_PATH"
-    echo "Build number updated: $BUILD_NUM -> $NEW_BUILD_NUM"
+    echo "Build number updated for $RELEASE_TYPE: $BUILD_NUM -> $NEW_BUILD_NUM"
   else
-    echo "Failed to update build number"
+    echo "Failed to update build number for $RELEASE_TYPE"
     rm -f "$URL_JSON_PATH.tmp"
   fi
 fi

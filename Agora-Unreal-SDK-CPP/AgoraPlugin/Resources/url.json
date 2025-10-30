@@ -1,18 +1,16 @@
 {
-    "version":{
-        "build": 0
-    },
     "video":{
+        "build": 0,
         "native_win": "https://download.agora.io/sdk/release/Agora_SDK_Windows_v4.5.2.zip",
         "native_mac": "",
         "native_android": "",
         "native_ios": ""
     },
     "audio":{
+        "build": 0,
         "native_win": "",
         "native_mac": "",
         "native_android": "",
         "native_ios": ""
     }
-
 }
