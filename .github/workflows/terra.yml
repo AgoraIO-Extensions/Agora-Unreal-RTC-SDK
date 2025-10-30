@@ -3,8 +3,8 @@ name: Generate codes and create pull request
 on:
   workflow_dispatch:
     inputs:
-      rtc_version:
-        description: 'verison (4.5.2)'
+      dependencies-content:
+        description: The content of dependencies
         required: true
         type: string
 
@@ -21,11 +21,24 @@ jobs:
       - name: Setup
         uses: ./.github/setup
 
+      - name: Get dependencies
+        id: dep
+        uses: AgoraIO-Extensions/actions/.github/actions/dep@main
+        with:
+          dependencies-content: ${{ inputs.dependencies-content }}
+
+      - name: Update dependencies
+        run: |
+          sh ci/build/dep.sh ${{ steps.dep.outputs.matches }}
+
       - name: Replace rtc version
         run: |
           cd Terra
           pip install -r requirements.txt
-          python ASDK.py -agorasdk=${{ inputs.rtc_version }}
+          JSON_RAW='${{ steps.dep.outputs.matches }}'
+          JSON_OUTPUT=$(printf '%s' "$JSON_RAW" | sed 's/^"//;s/"$//' | sed 's/\\"/"/g')
+          VERSION=$(echo "$JSON_OUTPUT" | jq -r '.[] | select(.version != "" and .version != null) | .version' | head -n 1)
+          python ASDK.py -agorasdk="${VERSION}"
 
       - name: Generate code and comment by terra
         uses: AgoraIO-Extensions/actions/.github/actions/generate@main
