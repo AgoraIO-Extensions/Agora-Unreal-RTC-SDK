@@ -550,7 +550,7 @@ namespace agora {
  */
 					virtual int stopEchoTest ()  override;
 
-#if defined(__APPLE__) && (TARGET_OS_IOS || (defined(TARGET_OS_VISION) && TARGET_OS_VISION))
+#if defined(__APPLE__) && TARGET_OS_IOS
 
 
 					virtual int enableMultiCamera (bool enabled, const CameraCapturerConfiguration & config)  override;
@@ -3559,103 +3559,103 @@ namespace agora {
  */
 					virtual int destroyCustomEncodedVideoTrack (video_track_id_t video_track_id)  override;
 
-#if defined(__ANDROID__) || (defined(__APPLE__) && (TARGET_OS_IOS || (defined(TARGET_OS_VISION) && TARGET_OS_VISION)))
+#if defined(__ANDROID__) || (defined(__APPLE__) && TARGET_OS_IOS)
 
 
 					virtual int switchCamera ()  override;
 
 #endif
-#if defined(__ANDROID__) || (defined(__APPLE__) && (TARGET_OS_IOS || (defined(TARGET_OS_VISION) && TARGET_OS_VISION)))
+#if defined(__ANDROID__) || (defined(__APPLE__) && TARGET_OS_IOS)
 
 
 					virtual bool isCameraZoomSupported ()  override;
 
 #endif
-#if defined(__ANDROID__) || (defined(__APPLE__) && (TARGET_OS_IOS || (defined(TARGET_OS_VISION) && TARGET_OS_VISION)))
+#if defined(__ANDROID__) || (defined(__APPLE__) && TARGET_OS_IOS)
 
 
 					virtual bool isCameraFaceDetectSupported ()  override;
 
 #endif
-#if defined(__ANDROID__) || (defined(__APPLE__) && (TARGET_OS_IOS || (defined(TARGET_OS_VISION) && TARGET_OS_VISION)))
+#if defined(__ANDROID__) || (defined(__APPLE__) && TARGET_OS_IOS)
 
 
 					virtual bool isCameraTorchSupported ()  override;
 
 #endif
-#if defined(__ANDROID__) || (defined(__APPLE__) && (TARGET_OS_IOS || (defined(TARGET_OS_VISION) && TARGET_OS_VISION)))
+#if defined(__ANDROID__) || (defined(__APPLE__) && TARGET_OS_IOS)
 
 
 					virtual bool isCameraFocusSupported ()  override;
 
 #endif
-#if defined(__ANDROID__) || (defined(__APPLE__) && (TARGET_OS_IOS || (defined(TARGET_OS_VISION) && TARGET_OS_VISION)))
+#if defined(__ANDROID__) || (defined(__APPLE__) && TARGET_OS_IOS)
 
 
 					virtual bool isCameraAutoFocusFaceModeSupported ()  override;
 
 #endif
-#if defined(__ANDROID__) || (defined(__APPLE__) && (TARGET_OS_IOS || (defined(TARGET_OS_VISION) && TARGET_OS_VISION)))
+#if defined(__ANDROID__) || (defined(__APPLE__) && TARGET_OS_IOS)
 
 
 					virtual int setCameraZoomFactor (float factor)  override;
 
 #endif
-#if defined(__ANDROID__) || (defined(__APPLE__) && (TARGET_OS_IOS || (defined(TARGET_OS_VISION) && TARGET_OS_VISION)))
+#if defined(__ANDROID__) || (defined(__APPLE__) && TARGET_OS_IOS)
 
 
 					virtual int enableFaceDetection (bool enabled)  override;
 
 #endif
-#if defined(__ANDROID__) || (defined(__APPLE__) && (TARGET_OS_IOS || (defined(TARGET_OS_VISION) && TARGET_OS_VISION)))
+#if defined(__ANDROID__) || (defined(__APPLE__) && TARGET_OS_IOS)
 
 
 					virtual float getCameraMaxZoomFactor ()  override;
 
 #endif
-#if defined(__ANDROID__) || (defined(__APPLE__) && (TARGET_OS_IOS || (defined(TARGET_OS_VISION) && TARGET_OS_VISION)))
+#if defined(__ANDROID__) || (defined(__APPLE__) && TARGET_OS_IOS)
 
 
 					virtual int setCameraFocusPositionInPreview (float positionX, float positionY)  override;
 
 #endif
-#if defined(__ANDROID__) || (defined(__APPLE__) && (TARGET_OS_IOS || (defined(TARGET_OS_VISION) && TARGET_OS_VISION)))
+#if defined(__ANDROID__) || (defined(__APPLE__) && TARGET_OS_IOS)
 
 
 					virtual int setCameraTorchOn (bool isOn)  override;
 
 #endif
-#if defined(__ANDROID__) || (defined(__APPLE__) && (TARGET_OS_IOS || (defined(TARGET_OS_VISION) && TARGET_OS_VISION)))
+#if defined(__ANDROID__) || (defined(__APPLE__) && TARGET_OS_IOS)
 
 
 					virtual int setCameraAutoFocusFaceModeEnabled (bool enabled)  override;
 
 #endif
-#if defined(__ANDROID__) || (defined(__APPLE__) && (TARGET_OS_IOS || (defined(TARGET_OS_VISION) && TARGET_OS_VISION)))
+#if defined(__ANDROID__) || (defined(__APPLE__) && TARGET_OS_IOS)
 
 
 					virtual bool isCameraExposurePositionSupported ()  override;
 
 #endif
-#if defined(__ANDROID__) || (defined(__APPLE__) && (TARGET_OS_IOS || (defined(TARGET_OS_VISION) && TARGET_OS_VISION)))
+#if defined(__ANDROID__) || (defined(__APPLE__) && TARGET_OS_IOS)
 
 
 					virtual int setCameraExposurePosition (float positionXinView, float positionYinView)  override;
 
 #endif
-#if defined(__ANDROID__) || (defined(__APPLE__) && (TARGET_OS_IOS || (defined(TARGET_OS_VISION) && TARGET_OS_VISION)))
+#if defined(__ANDROID__) || (defined(__APPLE__) && TARGET_OS_IOS)
 
 
 					virtual bool isCameraExposureSupported ()  override;
 
 #endif
-#if defined(__ANDROID__) || (defined(__APPLE__) && (TARGET_OS_IOS || (defined(TARGET_OS_VISION) && TARGET_OS_VISION)))
+#if defined(__ANDROID__) || (defined(__APPLE__) && TARGET_OS_IOS)
 
 
 					virtual int setCameraExposureFactor (float factor)  override;
 
 #endif
-#if defined(__ANDROID__) || (defined(__APPLE__) && (TARGET_OS_IOS || (defined(TARGET_OS_VISION) && TARGET_OS_VISION)))
+#if defined(__ANDROID__) || (defined(__APPLE__) && TARGET_OS_IOS)
 #if defined(__APPLE__)
 
 /*
@@ -3665,7 +3665,7 @@ namespace agora {
 
 #endif
 #endif
-#if defined(__ANDROID__) || (defined(__APPLE__) && (TARGET_OS_IOS || (defined(TARGET_OS_VISION) && TARGET_OS_VISION)))
+#if defined(__ANDROID__) || (defined(__APPLE__) && TARGET_OS_IOS)
 #if defined(__APPLE__)
 
 /*
@@ -3675,7 +3675,7 @@ namespace agora {
 
 #endif
 #endif
-#if defined(__ANDROID__) || (defined(__APPLE__) && (TARGET_OS_IOS || (defined(TARGET_OS_VISION) && TARGET_OS_VISION)))
+#if defined(__ANDROID__) || (defined(__APPLE__) && TARGET_OS_IOS)
 #if defined(__APPLE__)
 
 /*
@@ -3685,25 +3685,25 @@ namespace agora {
 
 #endif
 #endif
-#if defined(__ANDROID__) || (defined(__APPLE__) && (TARGET_OS_IOS || (defined(TARGET_OS_VISION) && TARGET_OS_VISION)))
+#if defined(__ANDROID__) || (defined(__APPLE__) && TARGET_OS_IOS)
 
 
 					virtual int setDefaultAudioRouteToSpeakerphone (bool defaultToSpeaker)  override;
 
 #endif
-#if defined(__ANDROID__) || (defined(__APPLE__) && (TARGET_OS_IOS || (defined(TARGET_OS_VISION) && TARGET_OS_VISION)))
+#if defined(__ANDROID__) || (defined(__APPLE__) && TARGET_OS_IOS)
 
 
 					virtual int setEnableSpeakerphone (bool speakerOn)  override;
 
 #endif
-#if defined(__ANDROID__) || (defined(__APPLE__) && (TARGET_OS_IOS || (defined(TARGET_OS_VISION) && TARGET_OS_VISION)))
+#if defined(__ANDROID__) || (defined(__APPLE__) && TARGET_OS_IOS)
 
 
 					virtual bool isSpeakerphoneEnabled ()  override;
 
 #endif
-#if defined(__ANDROID__) || (defined(__APPLE__) && (TARGET_OS_IOS || (defined(TARGET_OS_VISION) && TARGET_OS_VISION)))
+#if defined(__ANDROID__) || (defined(__APPLE__) && TARGET_OS_IOS)
 
 
 					virtual int setRouteInCommunicationMode (int route)  override;
@@ -3727,7 +3727,7 @@ namespace agora {
 					virtual agora::rtc::IScreenCaptureSourceList* getScreenCaptureSources (const SIZE & thumbSize, const SIZE & iconSize, const bool includeScreen)  override;
 
 #endif
-#if (defined(__APPLE__) && (TARGET_OS_IOS || (defined(TARGET_OS_VISION) && TARGET_OS_VISION)))
+#if (defined(__APPLE__) && TARGET_OS_IOS)
 
 
 					virtual int setAudioSessionOperationRestriction (AUDIO_SESSION_OPERATION_RESTRICTION restriction)  override;
@@ -3775,31 +3775,31 @@ namespace agora {
 					virtual int updateScreenCaptureParameters (const ScreenCaptureParameters & captureParams)  override;
 
 #endif
-#if defined(__ANDROID__) || (defined(__APPLE__) && (TARGET_OS_IOS || (defined(TARGET_OS_VISION) && TARGET_OS_VISION)))
+#if defined(__ANDROID__) || (defined(__APPLE__) && TARGET_OS_IOS)
 
 
 					virtual int startScreenCapture (const ScreenCaptureParameters2 & captureParams)  override;
 
 #endif
-#if defined(__ANDROID__) || (defined(__APPLE__) && (TARGET_OS_IOS || (defined(TARGET_OS_VISION) && TARGET_OS_VISION)))
+#if defined(__ANDROID__) || (defined(__APPLE__) && TARGET_OS_IOS)
 
 
 					virtual int updateScreenCapture (const ScreenCaptureParameters2 & captureParams)  override;
 
 #endif
-#if defined(__ANDROID__) || (defined(__APPLE__) && (TARGET_OS_IOS || (defined(TARGET_OS_VISION) && TARGET_OS_VISION)))
+#if defined(__ANDROID__) || (defined(__APPLE__) && TARGET_OS_IOS)
 
 
 					virtual int queryScreenCaptureCapability ()  override;
 
 #endif
-#if defined(__ANDROID__) || (defined(__APPLE__) && (TARGET_OS_IOS || (defined(TARGET_OS_VISION) && TARGET_OS_VISION)))
+#if defined(__ANDROID__) || (defined(__APPLE__) && TARGET_OS_IOS)
 
 
 					virtual int queryCameraFocalLengthCapability (agora::rtc::FocalLengthInfo * focalLengthInfos, int & size)  override;
 
 #endif
-#if defined(__ANDROID__) || (defined(__APPLE__) && (TARGET_OS_IOS || (defined(TARGET_OS_VISION) && TARGET_OS_VISION)))
+#if defined(__ANDROID__) || (defined(__APPLE__) && TARGET_OS_IOS)
 #if defined(__ANDROID__)
 
 /*
