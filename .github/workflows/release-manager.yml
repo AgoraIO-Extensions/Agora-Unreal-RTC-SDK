@@ -1,0 +1,423 @@
+name: Advanced Release Manager
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag_name:
+        description: 'Release tag (e.g., v1.0.0, v2.0.0-beta)'
+        required: true
+        type: string
+      release_name:
+        description: 'Release display name (leave empty to use tag name)'
+        required: false
+        type: string
+      file_urls:
+        description: 'File download URLs (one per line or comma-separated)'
+        required: false
+        type: string
+      target_branch:
+        description: 'Target branch for the tag'
+        required: false
+        type: string
+        default: 'main'
+      prerelease:
+        description: 'Mark as pre-release (beta, alpha, rc)'
+        required: false
+        type: boolean
+        default: false
+      draft:
+        description: 'Save as draft (not published immediately)'
+        required: false
+        type: boolean
+        default: true
+      commit_count:
+        description: 'Commits to include in changelog'
+        required: false
+        type: number
+        default: 0
+      compare_with_tag:
+        description: 'Compare with tag for changelog (empty or "auto"=auto-detect, "none"=disable comparison, or specify tag name)'
+        required: false
+        type: string
+        default: ''
+      custom_changelog:
+        description: 'Custom changelog text (prepended to auto-generated)'
+        required: false
+        type: string
+      delete_existing:
+        description: 'Delete existing release/tag if exists'
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  create-release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    
+    steps:
+      - name: Validate inputs
+        run: |
+          echo "🔍 Validating inputs..."
+          
+          # Validate tag name format
+          if [[ ! "${{ inputs.tag_name }}" =~ ^v?[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9.-]+)?$ ]]; then
+            echo "⚠️ Warning: Tag name doesn't follow semantic versioning (e.g., v1.0.0)"
+          fi
+          
+          echo "✓ Inputs validated"
+      
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.target_branch }}
+          fetch-depth: 0
+      
+      - name: Check if tag exists
+        id: check_tag
+        run: |
+          if git rev-parse "${{ inputs.tag_name }}" >/dev/null 2>&1; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+            echo "⚠️ Tag ${{ inputs.tag_name }} already exists"
+            
+            if [ "${{ inputs.delete_existing }}" = "true" ]; then
+              echo "🗑️ Will delete existing tag and release"
+            else
+              echo "❌ Tag exists and delete_existing is false"
+              exit 1
+            fi
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+            echo "✓ Tag ${{ inputs.tag_name }} does not exist"
+          fi
+      
+      - name: Delete existing release and tag
+        if: steps.check_tag.outputs.exists == 'true' && inputs.delete_existing == true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "🗑️ Deleting existing release and tag..."
+          
+          # Get release ID if exists
+          RELEASE_ID=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
+            "https://api.github.com/repos/${{ github.repository }}/releases/tags/${{ inputs.tag_name }}" \
+            | jq -r '.id // empty')
+          
+          if [ -n "$RELEASE_ID" ]; then
+            echo "Deleting release ID: $RELEASE_ID"
+            curl -X DELETE -H "Authorization: token $GITHUB_TOKEN" \
+              "https://api.github.com/repos/${{ github.repository }}/releases/$RELEASE_ID"
+          fi
+          
+          # Delete tag
+          git push origin --delete "${{ inputs.tag_name }}" || true
+          git tag -d "${{ inputs.tag_name }}" || true
+          
+          echo "✓ Cleanup completed"
+      
+      - name: Generate changelog
+        id: changelog
+        run: |
+          echo "📝 Generating changelog..."
+          
+          PREV_TAG=""
+          COMPARE_MODE="${{ inputs.compare_with_tag }}"
+          
+          # Determine comparison mode
+          if [ "$COMPARE_MODE" = "none" ] || [ "$COMPARE_MODE" = "NONE" ] || [ "$COMPARE_MODE" = "disable" ]; then
+            echo "ℹ️ Tag comparison disabled, will show recent commits only"
+            PREV_TAG=""
+          elif [ "$COMPARE_MODE" = "auto" ] || [ "$COMPARE_MODE" = "AUTO" ] || [ -z "$COMPARE_MODE" ]; then
+            # Auto-detect previous tag (empty or "auto")
+            PREV_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+            if [ -n "$PREV_TAG" ]; then
+              echo "🔍 Auto-detected previous tag: $PREV_TAG"
+            else
+              echo "ℹ️ No previous tag found, will show recent commits"
+            fi
+          else
+            # User specified a tag
+            PREV_TAG="$COMPARE_MODE"
+            echo "🔍 Using specified tag for comparison: $PREV_TAG"
+            
+            # Verify the tag exists
+            if ! git rev-parse "$PREV_TAG" >/dev/null 2>&1; then
+              echo "❌ Error: Tag '$PREV_TAG' does not exist"
+              exit 1
+            fi
+          fi
+          
+          # Start changelog
+          {
+            echo "CHANGELOG<<EOF"
+            
+            # Add custom changelog if provided (highlighted at the top)
+            if [ -n "${{ inputs.custom_changelog }}" ]; then
+              echo "# 📢 Release Highlights"
+              echo ""
+              echo "> **Important Release Information**"
+              echo ""
+              echo "${{ inputs.custom_changelog }}"
+              echo ""
+              echo "---"
+              echo ""
+            fi
+            
+            echo "## 🚀 What's Changed"
+            echo ""
+            
+            # Determine commit range and count
+            if [ -n "$PREV_TAG" ]; then
+              COMMIT_RANGE="$PREV_TAG..HEAD"
+              TOTAL_COMMITS=$(git rev-list --count $COMMIT_RANGE)
+              BASE_INFO="since $PREV_TAG"
+            else
+              COMMIT_RANGE="HEAD"
+              TOTAL_COMMITS=$(git rev-list --count HEAD)
+              BASE_INFO="(all commits)"
+            fi
+            
+            # Determine how many commits to show
+            if [ "${{ inputs.commit_count }}" -eq 0 ]; then
+              # Show all commits (no limit)
+              SHOW_COUNT=$TOTAL_COMMITS
+              MAX_DISPLAY=20  # But cap display at 20 for very large repos
+            else
+              SHOW_COUNT=${{ inputs.commit_count }}
+              MAX_DISPLAY=$SHOW_COUNT
+            fi
+            
+            echo "### 📋 Commits $BASE_INFO"
+            echo ""
+            echo "*Total commits: $TOTAL_COMMITS*"
+            echo ""
+            
+            # Generate commit list
+            if [ -n "$PREV_TAG" ]; then
+              if [ $TOTAL_COMMITS -le $MAX_DISPLAY ]; then
+                # Show all commits
+                git log $COMMIT_RANGE --pretty=format:"- **%ad** [\`%h\`](https://github.com/${{ github.repository }}/commit/%H) %s - *%an*" --date=short
+              else
+                # Show limited commits
+                if [ "${{ inputs.commit_count }}" -eq 0 ]; then
+                  echo "*Showing first 20 of $TOTAL_COMMITS commits:*"
+                  echo ""
+                  git log $COMMIT_RANGE --pretty=format:"- **%ad** [\`%h\`](https://github.com/${{ github.repository }}/commit/%H) %s - *%an*" --date=short | head -n 20
+                else
+                  echo "*Showing $MAX_DISPLAY of $TOTAL_COMMITS commits:*"
+                  echo ""
+                  git log $COMMIT_RANGE --pretty=format:"- **%ad** [\`%h\`](https://github.com/${{ github.repository }}/commit/%H) %s - *%an*" --date=short | head -n $MAX_DISPLAY
+                fi
+                echo ""
+                echo ""
+                echo "*... and $((TOTAL_COMMITS - MAX_DISPLAY)) more commits. [View all commits](https://github.com/${{ github.repository }}/compare/${PREV_TAG}...${{ inputs.tag_name }})*"
+              fi
+            else
+              # No previous tag, show all commits up to max
+              if [ $TOTAL_COMMITS -le $MAX_DISPLAY ]; then
+                git log -$TOTAL_COMMITS --pretty=format:"- **%ad** [\`%h\`](https://github.com/${{ github.repository }}/commit/%H) %s - *%an*" --date=short
+              else
+                echo "*Showing first 20 of $TOTAL_COMMITS commits:*"
+                echo ""
+                git log -20 --pretty=format:"- **%ad** [\`%h\`](https://github.com/${{ github.repository }}/commit/%H) %s - *%an*" --date=short
+                echo ""
+                echo ""
+                echo "*... and $((TOTAL_COMMITS - 20)) more commits*"
+              fi
+            fi
+            
+            echo ""
+            echo ""
+            echo "## 📊 Statistics"
+            echo ""
+            
+            if [ -n "$PREV_TAG" ]; then
+              FILES_CHANGED=$(git diff --name-only $PREV_TAG..HEAD | wc -l)
+              INSERTIONS=$(git diff --shortstat $PREV_TAG..HEAD | grep -oP '\d+(?= insertion)' || echo "0")
+              DELETIONS=$(git diff --shortstat $PREV_TAG..HEAD | grep -oP '\d+(?= deletion)' || echo "0")
+              COMMITS=$(git rev-list --count $PREV_TAG..HEAD)
+              
+              echo "- **Commits**: $COMMITS"
+              echo "- **Files Changed**: $FILES_CHANGED"
+              echo "- **Insertions**: +$INSERTIONS"
+              echo "- **Deletions**: -$DELETIONS"
+              echo "- **Comparison Base**: \`$PREV_TAG\`"
+            fi
+            
+            echo ""
+            echo "## 📝 Full Changelog"
+            echo ""
+            
+            if [ -n "$PREV_TAG" ]; then
+              echo "**Full Changelog**: https://github.com/${{ github.repository }}/compare/${PREV_TAG}...${{ inputs.tag_name }}"
+            else
+              echo "**Repository**: https://github.com/${{ github.repository }}"
+            fi
+            
+            echo ""
+            echo "---"
+            echo ""
+            echo "*Released on $(date '+%Y-%m-%d %H:%M:%S UTC')*"
+            
+            echo "EOF"
+          } >> $GITHUB_OUTPUT
+          
+          echo "✓ Changelog generated"
+      
+      - name: Create downloads directory
+        if: inputs.file_urls != ''
+        run: |
+          mkdir -p downloads
+          echo "✓ Downloads directory created"
+      
+      - name: Download and verify files
+        if: inputs.file_urls != ''
+        run: |
+          echo "📥 Downloading files..."
+          
+          # Parse URLs (support both comma and newline separated)
+          URLS="${{ inputs.file_urls }}"
+          URLS=$(echo "$URLS" | tr ',' '\n' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+          
+          SUCCESS_COUNT=0
+          FAIL_COUNT=0
+          
+          while IFS= read -r url; do
+            if [ -z "$url" ]; then
+              continue
+            fi
+            
+            echo ""
+            echo "📦 Processing: $url"
+            
+            # Extract filename
+            filename=$(basename "$url" | sed 's/[?#].*//')
+            
+            # If filename is empty or generic, generate one
+            if [ -z "$filename" ] || [ "$filename" = "download" ]; then
+              filename="asset_$(date +%s)_$(( RANDOM % 1000 ))"
+            fi
+            
+            echo "  → Saving as: $filename"
+            
+            # Download with progress
+            if curl -L -f --progress-bar -o "downloads/$filename" "$url"; then
+              file_size=$(du -h "downloads/$filename" | cut -f1)
+              echo "  ✓ Downloaded successfully ($file_size)"
+              SUCCESS_COUNT=$((SUCCESS_COUNT + 1))
+              
+              # Calculate checksum
+              sha256sum "downloads/$filename" | awk '{print "  SHA256: " $1}'
+            else
+              echo "  ✗ Download failed"
+              FAIL_COUNT=$((FAIL_COUNT + 1))
+            fi
+          done <<< "$URLS"
+          
+          echo ""
+          echo "📊 Download Summary:"
+          echo "  ✓ Successful: $SUCCESS_COUNT"
+          echo "  ✗ Failed: $FAIL_COUNT"
+          
+          if [ $FAIL_COUNT -gt 0 ]; then
+            echo "❌ Some downloads failed"
+            exit 1
+          fi
+          
+          if [ $SUCCESS_COUNT -eq 0 ]; then
+            echo "⚠️ No files were downloaded"
+          fi
+          
+          echo ""
+          echo "📋 Downloaded files:"
+          ls -lh downloads/ 2>/dev/null || echo "  (none)"
+      
+      - name: Create and push tag
+        run: |
+          echo "🏷️ Creating tag ${{ inputs.tag_name }}..."
+          
+          # Configure git
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          
+          # Create tag at current HEAD
+          git tag -a "${{ inputs.tag_name }}" -m "Release ${{ inputs.tag_name }}"
+          
+          echo "✓ Tag created locally"
+          
+          # Push tag to remote
+          git push origin "${{ inputs.tag_name }}"
+          
+          echo "✓ Tag pushed to remote"
+          echo "🎯 Tag ${{ inputs.tag_name }} created at commit $(git rev-parse HEAD)"
+      
+      - name: Create GitHub Release
+        id: create_release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ inputs.tag_name }}
+          name: ${{ inputs.release_name || inputs.tag_name }}
+          body: ${{ steps.changelog.outputs.CHANGELOG }}
+          draft: ${{ inputs.draft }}
+          prerelease: ${{ inputs.prerelease }}
+          target_commitish: ${{ inputs.target_branch }}
+          files: downloads/*
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fail_on_unmatched_files: false
+          generate_release_notes: false
+      
+      - name: Create release summary
+        run: |
+          echo "# 🎉 Release Created Successfully!" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          echo "## 📋 Release Information" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Property | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|----------|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| **Tag** | \`${{ inputs.tag_name }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Name** | ${{ inputs.release_name || inputs.tag_name }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Branch** | \`${{ inputs.target_branch }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Type** | ${{ inputs.prerelease && '🔶 Pre-release' || '✅ Stable' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Status** | ${{ inputs.draft && '📝 Draft' || '🚀 Published' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          if [ -d downloads ] && [ "$(ls -A downloads 2>/dev/null)" ]; then
+            echo "## 📦 Uploaded Assets" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "| File | Size | SHA256 |" >> $GITHUB_STEP_SUMMARY
+            echo "|------|------|--------|" >> $GITHUB_STEP_SUMMARY
+            
+            for file in downloads/*; do
+              if [ -f "$file" ]; then
+                filename=$(basename "$file")
+                filesize=$(du -h "$file" | cut -f1)
+                checksum=$(sha256sum "$file" | awk '{print substr($1,1,16) "..."}')
+                echo "| \`$filename\` | $filesize | \`$checksum\` |" >> $GITHUB_STEP_SUMMARY
+              fi
+            done
+            echo "" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "## 📦 Assets" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "*No files were uploaded*" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          echo "## 🔗 Links" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- [📖 View Release](https://github.com/${{ github.repository }}/releases/tag/${{ inputs.tag_name }})" >> $GITHUB_STEP_SUMMARY
+          echo "- [🏷️ All Releases](https://github.com/${{ github.repository }}/releases)" >> $GITHUB_STEP_SUMMARY
+          echo "- [📝 Compare Changes](https://github.com/${{ github.repository }}/compare/${{ inputs.tag_name }})" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          echo "---" >> $GITHUB_STEP_SUMMARY
+          echo "*Created by GitHub Actions on $(date '+%Y-%m-%d %H:%M:%S UTC')*" >> $GITHUB_STEP_SUMMARY
+      
+      - name: Cleanup
+        if: always()
+        run: |
+          echo "🧹 Cleaning up..."
+          rm -rf downloads
+          echo "✓ Cleanup completed"
