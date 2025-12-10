@@ -1,6 +1,6 @@
 {
   "video": {
-    "build": 1,
+    "build": 2,
     "native_win": "https://download.agora.io/sdk/release/Agora_Native_SDK_for_Windows_v4.5.2_FULL.zip",
     "native_mac": "https://download.agora.io/sdk/release/Agora_Native_SDK_for_Mac_v4.5.2_FULL.zip",
     "native_android": "https://download.agora.io/sdk/release/Agora_Native_SDK_for_Android_v4.5.2_FULL.zip",
