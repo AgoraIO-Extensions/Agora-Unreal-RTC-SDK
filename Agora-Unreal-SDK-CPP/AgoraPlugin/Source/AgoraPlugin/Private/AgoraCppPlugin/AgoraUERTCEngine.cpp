@@ -78,12 +78,12 @@ namespace agora {
 #endif
 			}
 
-			void AgoraUERtcEngine::Release()
+			void AgoraUERtcEngine::Release(bool sync /*= false*/)
 			{
 				if (Instance != nullptr) {
 					std::unique_lock<std::mutex> lock(MutexLock);
 					if (Instance != nullptr) {
-						Instance->DestroyEngine();
+						Instance->DestroyEngine(sync);
 						delete Instance;
 						Instance = nullptr;
 					}
@@ -119,7 +119,7 @@ namespace agora {
 			}
 
 
-			void AgoraUERtcEngine::DestroyEngine()
+			void AgoraUERtcEngine::DestroyEngine(bool sync /*= false*/)
 			{
 				if (RtcEngine) {
 					//RtcEngine->release(sync);
