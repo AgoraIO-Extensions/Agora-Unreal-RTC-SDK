@@ -812,7 +812,7 @@ enum CLOUD_PROXY_TYPE {
 /** Camera capturer configuration.*/
 struct CameraCapturerConfiguration {
   /** Camera direction settings (for Android/iOS only). See: #CAMERA_DIRECTION. */
-#if defined(__ANDROID__) || (defined(__APPLE__) && TARGET_OS_IOS)
+#if defined(__ANDROID__) || (defined(__APPLE__) && (TARGET_OS_IOS || (defined(TARGET_OS_VISION) && TARGET_OS_VISION)))
   /**
    * The camera direction.
    */
@@ -1089,6 +1089,13 @@ struct ChannelMediaOptions {
    */
   Optional<bool> publishMicrophoneTrack;
 
+  /**
+   * Whether to publish the audio track of the screen capturer:
+   * - `true`: Publish the video audio of the screen capturer.
+   * - `false`: (Default) Do not publish the audio track of the screen capturer.
+   */
+  Optional<bool> publishScreenCaptureAudio;
+
   #if defined(__ANDROID__) || (defined(TARGET_OS_IPHONE) && TARGET_OS_IPHONE)
   /**
    * Whether to publish the video track of the screen capturer:
@@ -1096,12 +1103,6 @@ struct ChannelMediaOptions {
    * - `false`: (Default) Do not publish the video track of the screen capture.
    */
   Optional<bool> publishScreenCaptureVideo;
-  /**
-   * Whether to publish the audio track of the screen capturer:
-   * - `true`: Publish the video audio of the screen capturer.
-   * - `false`: (Default) Do not publish the audio track of the screen capturer.
-   */
-  Optional<bool> publishScreenCaptureAudio;
   #else
   /**
    * Whether to publish the captured video from the screen:
@@ -1292,9 +1293,9 @@ struct ChannelMediaOptions {
       SET_FROM(publishThirdCameraTrack);
       SET_FROM(publishFourthCameraTrack);      
       SET_FROM(publishMicrophoneTrack);
+      SET_FROM(publishScreenCaptureAudio);
 #if defined(__ANDROID__) || (defined(TARGET_OS_IPHONE) && TARGET_OS_IPHONE)
       SET_FROM(publishScreenCaptureVideo);
-      SET_FROM(publishScreenCaptureAudio);
 #else
       SET_FROM(publishScreenTrack);
       SET_FROM(publishSecondaryScreenTrack);
@@ -1341,9 +1342,9 @@ struct ChannelMediaOptions {
       ADD_COMPARE(publishThirdCameraTrack);
       ADD_COMPARE(publishFourthCameraTrack);
       ADD_COMPARE(publishMicrophoneTrack);
+      ADD_COMPARE(publishScreenCaptureAudio);
 #if defined(__ANDROID__) || (defined(TARGET_OS_IPHONE) && TARGET_OS_IPHONE)
       ADD_COMPARE(publishScreenCaptureVideo);
-      ADD_COMPARE(publishScreenCaptureAudio);
 #else
       ADD_COMPARE(publishScreenTrack);
       ADD_COMPARE(publishSecondaryScreenTrack);
@@ -1393,9 +1394,9 @@ struct ChannelMediaOptions {
         REPLACE_BY(publishThirdCameraTrack);
         REPLACE_BY(publishFourthCameraTrack);
         REPLACE_BY(publishMicrophoneTrack);
+        REPLACE_BY(publishScreenCaptureAudio);
 #if defined(__ANDROID__) || (defined(TARGET_OS_IPHONE) && TARGET_OS_IPHONE)
         REPLACE_BY(publishScreenCaptureVideo);
-        REPLACE_BY(publishScreenCaptureAudio);
 #else
         REPLACE_BY(publishScreenTrack);
         REPLACE_BY(publishSecondaryScreenTrack);
@@ -1480,13 +1481,19 @@ struct LeaveChannelOptions {
    */
   bool stopAllEffect;
   /**
+   * Whether to unload all audio effects when a user leaves the channel.
+   * - `true`: Unload all audio effects.
+   * - `false`: (Default) Do not unload any audio effect.
+   */
+  bool unloadAllEffect;
+  /**
    * Whether to stop microphone recording when a user leaves the channel.
    * - `true`: (Default) Stop microphone recording.
    * - `false`: Do not stop microphone recording.
    */
   bool stopMicrophoneRecording;
 
-  LeaveChannelOptions() : stopAudioMixing(true), stopAllEffect(true), stopMicrophoneRecording(true) {}
+  LeaveChannelOptions() : stopAudioMixing(true), stopAllEffect(true), unloadAllEffect(false), stopMicrophoneRecording(true) {}
 };
 
 /**
@@ -2122,7 +2129,7 @@ class IRtcEngineEventHandler {
     (void)width;
     (void)height;
   }
-#if defined(__ANDROID__) || (defined(__APPLE__) && TARGET_OS_IOS)
+#if defined(__ANDROID__) || (defined(__APPLE__) && (TARGET_OS_IOS || (defined(TARGET_OS_VISION) && TARGET_OS_VISION)))
   /**
    * Reports the face detection result of the local user.
    *
@@ -3112,6 +3119,187 @@ class IVideoDeviceManager {
 };
 
 /**
+ * @brief Provides methods to manage and configure video effects, such as beauty, style makeup, and filter.
+ *
+ * @since v4.6.0
+ */
+class IVideoEffectObject : public RefCountInterface {
+ public:
+  virtual ~IVideoEffectObject() {}
+  
+  /**
+   * @brief Types of video effect nodes that can be applied.
+   *
+   * @since v4.6.0
+   */
+  enum class VIDEO_EFFECT_NODE_ID : uint32_t {
+    /** Beauty effect node. */
+    BEAUTY       = 1U << 0,
+    /** Style makeup effect node. */
+    STYLE_MAKEUP = 1U << 1,
+    /** Filter effect node. */
+    FILTER       = 1U << 2,
+    /** Sticker efftec node. */
+    STICKER      = 1U << 3,
+  };
+  
+  /**
+   * @brief Actions that can be performed on video effect nodes.
+   *
+   * @since v4.6.0
+   */
+  enum VIDEO_EFFECT_ACTION {
+    /** Save the current parameters of the video effect. */
+    SAVE = 1,
+    /** Reset the video effect to its default parameters. */
+    RESET = 2,
+  };
+
+  /**
+   * @brief Adds or updates video effects with specified node ID and template.
+   *
+   * @since v4.6.0
+   *
+   * @param nodeId The unique identifier or combination of video effect nodes. See #VIDEO_EFFECT_NODE_ID
+   *               Example:
+   *               - Single effect: `VIDEO_EFFECT_NODE_ID::BEAUTY`
+   *               - Combined effects: `VIDEO_EFFECT_NODE_ID::BEAUTY | VIDEO_EFFECT_NODE_ID::STYLE_MAKEUP`
+   * 
+   * @note Priority Rules:
+   * - The `STYLE_MAKEUP` node takes precedence over `FILTER` parameters.
+   * - To apply `FILTER` parameters, first remove the `STYLE_MAKEUP` node:
+   *   @code{.cpp}
+   *   removeVideoEffect(VIDEO_EFFECT_NODE_ID::STYLE_MAKEUP);
+   *   addOrUpdateVideoEffect(VIDEO_EFFECT_NODE_ID::FILTER, "template name");
+   *   @endcode
+   *
+   * @param templateName The name of the effect template. If set to null or an empty string, the SDK loads the default configuration from the resource bundle.
+   *
+   * @return
+   * - 0: Success.
+   * - < 0: Failure. The specific error code can provide more details about the failure.
+   */
+  virtual int addOrUpdateVideoEffect(uint32_t nodeId, const char* templateName) = 0;
+
+  /**
+   * @brief Removes a video effect with specified node ID.
+   *
+   * @since v4.6.0
+   *
+   * @param nodeId The unique identifier of the video effect node to remove. See #VIDEO_EFFECT_NODE_ID
+   *
+   * @return
+   * - 0: Success.
+   * - < 0: Failure.
+   */
+  virtual int removeVideoEffect(uint32_t nodeId) = 0;
+
+  /**
+   * @brief Performs an action on a specified video effect node.
+   *
+   * @since v4.6.0
+   *
+   * @param nodeId The unique identifier of the video effect node. See #VIDEO_EFFECT_NODE_ID
+   * @param actionId The action to perform on the video effect. See #VIDEO_EFFECT_ACTION
+   *
+   * @return
+   * - 0: Success.
+   * - < 0: Failure.
+   */
+  virtual int performVideoEffectAction(uint32_t nodeId, VIDEO_EFFECT_ACTION actionId) = 0;
+
+  /**
+   * @brief Sets a float parameter for the video effect.
+   *
+   * @since v4.6.0
+   *
+   * @param option The option category of the parameter.
+   * @param key The key name of the parameter.
+   * @param param The float value to set.
+   *
+   * @return
+   * - 0: Success.
+   * - < 0: Failure.
+   */
+  virtual int setVideoEffectFloatParam(const char* option, const char* key, float param) = 0;
+
+  /**
+   * @brief Sets an integer parameter for the video effect.
+   *
+   * @since v4.6.0
+   *
+   * @param option The option category of the parameter.
+   * @param key The key name of the parameter.
+   * @param param The integer value to set.
+   *
+   * @return
+   * - 0: Success.
+   * - < 0: Failure.
+   */
+  virtual int setVideoEffectIntParam(const char* option, const char* key, int param) = 0;
+
+  /**
+   * @brief Sets a boolean parameter for the video effect.
+   *
+   * @since v4.6.0
+   *
+   * @param option The option category of the parameter.
+   * @param key The key name of the parameter.
+   * @param param The boolean value to set.
+   * - true: Enable the option.
+   * - false: Disable the option.
+   *
+   * @return
+   * - 0: Success.
+   * - < 0: Failure.
+   */
+  virtual int setVideoEffectBoolParam(const char* option, const char* key, bool param) = 0;
+
+  /**
+   * @brief Gets a float parameter from the video effect.
+   *
+   * @since v4.6.0
+   *
+   * @param option The option category of the parameter.
+   * @param key The key name of the parameter.
+   *
+   * @return
+   * - The float value of the parameter if it exists.
+   * - 0.0f if the parameter does not exist or an error occurs.
+   */
+  virtual float getVideoEffectFloatParam(const char* option, const char* key) = 0;
+
+  /**
+   * @brief Gets an integer parameter from the video effect.
+   *
+   * @since v4.6.0
+   *
+   * @param option The option category of the parameter.
+   * @param key The key name of the parameter.
+   *
+   * @return
+   * - The integer value of the parameter if it exists.
+   * - 0 if the parameter does not exist or an error occurs.
+   */
+  virtual int getVideoEffectIntParam(const char* option, const char* key) = 0;
+
+  /**
+   * @brief Gets a boolean parameter from the video effect.
+   *
+   * @since v4.6.0
+   *
+   * @param option The option category of the parameter.
+   * @param key The key name of the parameter.
+   *
+   * @return
+   * - true: The parameter is enabled.
+   * - false: The parameter is disabled or does not exist.
+   */
+  virtual bool getVideoEffectBoolParam(const char* option, const char* key) = 0;
+
+};
+
+/**
  * The context of IRtcEngine.
  */
 struct RtcEngineContext {
@@ -3526,6 +3714,13 @@ class IMediaPlayer;
 class IMediaRecorder;
 
 /**
+ * @since v4.6.0
+ * @brief Occurs when the `IRtcEngine` is released.
+ * @post This callback is triggered when the `release` method is called to asynchronously release the `IRtcEngine` object.
+ */
+using RtcEngineReleaseCallback = void(*)();
+
+/**
  * The IRtcEngine class, which is the basic interface of the Agora SDK that implements the core functions of real-time communication.
  *
  * `IRtcEngine` provides the main methods that your app can call.
@@ -3534,28 +3729,30 @@ class IMediaRecorder;
 class IRtcEngine : public agora::base::IEngineBase {
  public:
   /**
-   * Releases the IRtcEngine object.
+   * Destroys the IRtcEngine object.
    *
-   * This method releases all resources used by the Agora SDK. Use this method for apps in which users
-   * occasionally make voice or video calls. When users do not make calls, you can free up resources for
-   * other operations.
+   * This method destroys the IRtcEngine instance and releases its associated resources.
+   * It is recommended for applications where users make occasional voice or video calls.
+   * When the real-time communication functionality is no longer needed,
+   * call this method to free up resources for other operations.
    *
-   * After a successful method call, you can no longer use any method or callback in the SDK anymore.
-   * If you want to use the real-time communication functions again, you must call `createAgoraRtcEngine`
-   * and `initialize` to create a new `IRtcEngine` instance.
+   * After a successful call, you can no longer use any methods or callbacks provided by the SDK.
+   * To use the real-time communication features again, you must create a new IRtcEngine instance
+   * by calling `createAgoraRtcEngine` and `initialize`.
    *
-   * @note If you want to create a new `IRtcEngine` instance after destroying the current one, ensure
-   * that you wait till the `release` method execution to complete.
+   * @note If you plan to create a new IRtcEngine instance after destroying the current one,
+   * ensure that the `release` method has completed execution before creating the new instance.
+   * Do not call this method from within any SDK callback, as this may result in a deadlock.
    *
-   * @param sync Determines whether this method is a synchronous call.
-   * - `true`: This method is a synchronous call, which means that the result of this method call
-   * returns after the IRtcEngine object resources are released. Do not call this method
-   * in any callback generated by the SDK, or it may result in a deadlock.
-   * - `false`: This method is an asynchronous call. The result returns immediately even when the
-   * IRtcEngine object resources are not released.
-   *
+   * @param callback An optional pointer to the `RtcEngineReleaseCallback` function,
+   * used to configure synchronous or asynchronous destruction of the engine:
+   * - Non-nullptr: Asynchronous destruction. The method returns immediately,
+   * and the engine resources may not be fully released yet.
+   * The `RtcEngineReleaseCallback` will be triggered once the engine destruction is complete.
+   * - nullptr: Synchronous destruction. The method returns only after the engine resources
+   * have been fully released.
    */
-  AGORA_CPP_API static void release(bool sync = false);
+  AGORA_CPP_API static void release(RtcEngineReleaseCallback callback = nullptr);
 
   /**
    * Initializes `IRtcEngine`.
@@ -4008,7 +4205,7 @@ class IRtcEngine : public agora::base::IEngineBase {
   */
   virtual int stopEchoTest() = 0;
 
-#if defined(__APPLE__) && TARGET_OS_IOS
+#if defined(__APPLE__) && (TARGET_OS_IOS || (defined(TARGET_OS_VISION) && TARGET_OS_VISION))
   /** Enables the SDK use AVCaptureMultiCamSession or AVCaptureSession. Applies to iOS 13.0+ only.
    * @param enabled Whether to enable multi-camera when capturing video:
    * - true: Enable multi-camera, and the SDK uses AVCaptureMultiCamSession.
@@ -4215,6 +4412,35 @@ class IRtcEngine : public agora::base::IEngineBase {
    */
   virtual int setFilterEffectOptions(bool enabled, const FilterEffectOptions& options, agora::media::MEDIA_SOURCE_TYPE type = agora::media::PRIMARY_CAMERA_SOURCE) = 0;
 
+
+  /**
+   * @brief Creates a video effect object and returns its pointer.
+   *
+   * @since v4.6.0
+   *
+   * @param bundlePath The path of the video effect bundle.
+   * @param type The media source type. See #MEDIA_SOURCE_TYPE.
+   *
+   * @return 
+   * - The pointer to \ref rtc::IVideoEffectObject "IVideoEffectObject", if the method call succeeds.
+   * - A null pointer, if the method call fails.
+   */
+  virtual agora_refptr<IVideoEffectObject> createVideoEffectObject(const char* bundlePath, agora::media::MEDIA_SOURCE_TYPE type = agora::media::PRIMARY_CAMERA_SOURCE) = 0;
+  
+
+  /**
+   * @brief Destroys a video effect object.
+   *
+   * @since v4.6.0
+   *
+   * @param videoEffectObject The pointer to \ref rtc::IVideoEffectObject.
+   *
+   * @return
+   * - 0: Success.
+   * - < 0: Failure.
+   */
+  virtual int destroyVideoEffectObject(agora_refptr<IVideoEffectObject> videoEffectObject) = 0;
+  
   /**
    * Sets low-light enhancement.
    *
@@ -5268,6 +5494,10 @@ class IRtcEngine : public agora::base::IEngineBase {
    * @note
    * - To ensure smooth communication, limit the size of the audio effect file.
    * - Agora recommends calling this method before joining the channel.
+   * - If preloadEffect is called before playEffect is executed, the file resource will not be closed after playEffect. 
+   * The next time playEffect is executed, it will directly seek to play at the beginning.
+   * - If preloadEffect is not called before playEffect is executed, the resource will be destroyed after playEffect. 
+   * The next time playEffect is executed, it will try to reopen the file and play it from the beginning.
    *
    * @param soundId The ID of the audio effect.
    * @param filePath The absolute path of the local audio effect file or the URL
@@ -5292,6 +5522,10 @@ class IRtcEngine : public agora::base::IEngineBase {
    * - Agora recommends playing no more than three audio effects at the same time.
    * - The ID and file path of the audio effect in this method must be the same
    * as that in the \ref IRtcEngine::preloadEffect "preloadEffect" method.
+   * - If preloadEffect is called before playEffect is executed, the file resource will not be closed after playEffect. 
+   * The next time playEffect is executed, it will directly seek to play at the beginning.
+   * - If preloadEffect is not called before playEffect is executed, the resource will be destroyed after playEffect. 
+   * The next time playEffect is executed, it will try to reopen the file and play it from the beginning.
    *
    * @param soundId The ID of the audio effect.
    * @param filePath The absolute path of the local audio effect file or the URL
@@ -6706,7 +6940,9 @@ class IRtcEngine : public agora::base::IEngineBase {
    */
   virtual int destroyCustomEncodedVideoTrack(video_track_id_t video_track_id) = 0;
 
-#if defined(__ANDROID__) || (defined(__APPLE__) && TARGET_OS_IOS)
+
+#if defined(__ANDROID__) || (defined(__APPLE__) && (TARGET_OS_IOS || (defined(TARGET_OS_VISION) && TARGET_OS_VISION)))
+
   /**
    * Switches between front and rear cameras.
    *
@@ -6982,7 +7218,7 @@ class IRtcEngine : public agora::base::IEngineBase {
    */
   virtual int setRouteInCommunicationMode(int route) = 0;
 
-#endif  // __ANDROID__ || (__APPLE__ && TARGET_OS_IOS)
+#endif  // __ANDROID__ || (__APPLE__ && (TARGET_OS_IOS || (defined(TARGET_OS_VISION) && TARGET_OS_VISION)))
 
 #if defined(__APPLE__)
   /**
@@ -7018,7 +7254,7 @@ class IRtcEngine : public agora::base::IEngineBase {
     */
   virtual IScreenCaptureSourceList* getScreenCaptureSources(const SIZE& thumbSize, const SIZE& iconSize, const bool includeScreen) = 0;
 #endif // _WIN32 || (__APPLE__ && !TARGET_OS_IPHONE && TARGET_OS_MAC)
-#if (defined(__APPLE__) && TARGET_OS_IOS)
+#if (defined(__APPLE__) && (TARGET_OS_IOS || (defined(TARGET_OS_VISION) && TARGET_OS_VISION)))
   /** Sets the operational permission of the SDK on the audio session.
    *
    * The SDK and the app can both configure the audio session by default. If
@@ -7044,7 +7280,7 @@ class IRtcEngine : public agora::base::IEngineBase {
    * - < 0: Failure.
    */
   virtual int setAudioSessionOperationRestriction(AUDIO_SESSION_OPERATION_RESTRICTION restriction) = 0;
-#endif // __APPLE__ && TARGET_OS_IOS
+#endif // __APPLE__ && (TARGET_OS_IOS || (defined(TARGET_OS_VISION) && TARGET_OS_VISION))
 
 #if defined(_WIN32) || (defined(__APPLE__) && !TARGET_OS_IPHONE && TARGET_OS_MAC)
 
@@ -7185,7 +7421,7 @@ class IRtcEngine : public agora::base::IEngineBase {
   virtual int updateScreenCaptureParameters(const ScreenCaptureParameters& captureParams) = 0;
 #endif // _WIN32 || (__APPLE__ && !TARGET_OS_IPHONE && TARGET_OS_MAC)
 
-#if defined(__ANDROID__) || (defined(__APPLE__) && TARGET_OS_IOS)
+#if defined(__ANDROID__) || (defined(__APPLE__) && (TARGET_OS_IOS || (defined(TARGET_OS_VISION) && TARGET_OS_VISION)))
   /**
    * Starts screen sharing.
    *

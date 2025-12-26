@@ -306,73 +306,6 @@ enum MEDIA_SOURCE_TYPE {
    */
   UNKNOWN_MEDIA_SOURCE = 100
 };
-/** Definition of contentinspect
- */
-#define MAX_CONTENT_INSPECT_MODULE_COUNT 32
-enum CONTENT_INSPECT_RESULT {
-  CONTENT_INSPECT_NEUTRAL = 1,
-  CONTENT_INSPECT_SEXY = 2,
-  CONTENT_INSPECT_PORN = 3,
-};
-
-enum CONTENT_INSPECT_TYPE {
-  /**
-   * (Default) content inspect type invalid
-   */
-  CONTENT_INSPECT_INVALID = 0,
-  /**
-   * @deprecated
-   * Content inspect type moderation
-   */
-  CONTENT_INSPECT_MODERATION __deprecated = 1,
-  /**
-   * Content inspect type supervise
-   */
-  CONTENT_INSPECT_SUPERVISION = 2,
-  /**
-   * Content inspect type image moderation
-   */
-  CONTENT_INSPECT_IMAGE_MODERATION = 3
-};
-
-struct ContentInspectModule {
-  /**
-   * The content inspect module type.
-   */
-  CONTENT_INSPECT_TYPE type;
-  /**The content inspect frequency, default is 0 second.
-   * the frequency <= 0 is invalid.
-   */
-  unsigned int interval;
-  ContentInspectModule() {
-    type = CONTENT_INSPECT_INVALID;
-    interval = 0;
-  }
-};
-/** Definition of ContentInspectConfig.
- */
-struct ContentInspectConfig {
-  const char* extraInfo;
-  /**
-   * The specific server configuration for image moderation. Please contact technical support.
-   */
-  const char* serverConfig;
-  /**The content inspect modules, max length of modules is 32.
-   * the content(snapshot of send video stream, image) can be used to max of 32 types functions.
-   */
-  ContentInspectModule modules[MAX_CONTENT_INSPECT_MODULE_COUNT];
-  /**The content inspect module count.
-   */
-  int moduleCount;
-  ContentInspectConfig& operator=(const ContentInspectConfig& rth) {
-    extraInfo = rth.extraInfo;
-    serverConfig = rth.serverConfig;
-    moduleCount = rth.moduleCount;
-    memcpy(&modules, &rth.modules, MAX_CONTENT_INSPECT_MODULE_COUNT * sizeof(ContentInspectModule));
-    return *this;
-  }
-  ContentInspectConfig() : extraInfo(NULL), serverConfig(NULL), moduleCount(0) {}
-};
 
 namespace base {
 
@@ -445,6 +378,10 @@ struct AudioPcmFrame {
   /** The channel number.
    */
   size_t num_channels_;
+  /**  @technical preview
+   * The audio track number. if mpk enableMultiAudioTrack, audio frame will have audio track number, eg 0 or 1.
+   */
+  int audio_track_number_;
   /** The number of bytes per sample.
    */
   rtc::BYTES_PER_SAMPLE bytes_per_sample;
@@ -468,6 +405,7 @@ struct AudioPcmFrame {
     bytes_per_sample = src.bytes_per_sample;
     num_channels_ = src.num_channels_;
     is_stereo_ = src.is_stereo_;
+    this->audio_track_number_ = src.audio_track_number_;
 
     size_t length = src.samples_per_channel_ * src.num_channels_;
     if (length > kMaxDataSizeSamples) {
@@ -484,6 +422,7 @@ struct AudioPcmFrame {
         samples_per_channel_(0),
         sample_rate_hz_(0),
         num_channels_(0),
+        audio_track_number_(0),
         bytes_per_sample(rtc::TWO_BYTES_PER_SAMPLE),
         is_stereo_(false) {
     memset(data_, 0, sizeof(data_));
@@ -494,6 +433,7 @@ struct AudioPcmFrame {
         samples_per_channel_(src.samples_per_channel_),
         sample_rate_hz_(src.sample_rate_hz_),
         num_channels_(src.num_channels_),
+        audio_track_number_(src.audio_track_number_),
         bytes_per_sample(src.bytes_per_sample),
         is_stereo_(src.is_stereo_) {
     size_t length = src.samples_per_channel_ * src.num_channels_;
@@ -1208,6 +1148,78 @@ enum VIDEO_MODULE_POSITION {
 
 }  // namespace base
 
+/** Definition of contentinspect
+ */
+#define MAX_CONTENT_INSPECT_MODULE_COUNT 32
+enum CONTENT_INSPECT_RESULT {
+  CONTENT_INSPECT_NEUTRAL = 1,
+  CONTENT_INSPECT_SEXY = 2,
+  CONTENT_INSPECT_PORN = 3,
+};
+
+enum CONTENT_INSPECT_TYPE {
+  /**
+   * (Default) content inspect type invalid
+   */
+  CONTENT_INSPECT_INVALID = 0,
+  /**
+   * @deprecated
+   * Content inspect type moderation
+   */
+  CONTENT_INSPECT_MODERATION __deprecated = 1,
+  /**
+   * Content inspect type supervise
+   */
+  CONTENT_INSPECT_SUPERVISION = 2,
+  /**
+   * Content inspect type image moderation
+   */
+  CONTENT_INSPECT_IMAGE_MODERATION = 3
+};
+
+struct ContentInspectModule {
+  /**
+   * The content inspect module type.
+   */
+  CONTENT_INSPECT_TYPE type;
+  /**The content inspect frequency, default is 0 second.
+   * the frequency <= 0 is invalid.
+   */
+  unsigned int interval;
+  /** 
+   * The position of the video observation. See VIDEO_MODULE_POSITION.
+   */
+  base::VIDEO_MODULE_POSITION position;
+  ContentInspectModule() {
+    type = CONTENT_INSPECT_INVALID;
+    interval = 0;
+    position = base::POSITION_PRE_ENCODER;
+  }
+};
+/** Definition of ContentInspectConfig.
+ */
+struct ContentInspectConfig {
+  const char* extraInfo;
+  /**
+   * The specific server configuration for image moderation. Please contact technical support.
+   */
+  const char* serverConfig;
+  /**The content inspect modules, max length of modules is 32.
+   * the content(snapshot of send video stream, image) can be used to max of 32 types functions.
+   */
+  ContentInspectModule modules[MAX_CONTENT_INSPECT_MODULE_COUNT];
+  /**The content inspect module count.
+   */
+  int moduleCount;
+  ContentInspectConfig& operator=(const ContentInspectConfig& rth) {
+    extraInfo = rth.extraInfo;
+    serverConfig = rth.serverConfig;
+    moduleCount = rth.moduleCount;
+    memcpy(&modules, &rth.modules, MAX_CONTENT_INSPECT_MODULE_COUNT * sizeof(ContentInspectModule));
+    return *this;
+  }
+  ContentInspectConfig() : extraInfo(NULL), serverConfig(NULL), moduleCount(0) {}
+};
 /** Definition of SnapshotConfig.
  */
 struct SnapshotConfig {

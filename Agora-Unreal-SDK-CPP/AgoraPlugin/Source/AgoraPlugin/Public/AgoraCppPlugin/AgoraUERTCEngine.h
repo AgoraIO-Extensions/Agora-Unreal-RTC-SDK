@@ -794,6 +794,37 @@ namespace agora {
 
 
 /*
+ * @brief Creates a video effect object and returns its pointer.
+ * 
+ * @since v4.6.0
+ * 
+ * @param bundlePath The path of the video effect bundle.
+ * @param type The media source type. See #MEDIA_SOURCE_TYPE.
+ * 
+ * @return
+ * - The pointer to \ref rtc::IVideoEffectObject "IVideoEffectObject", if the method call succeeds.
+ * - A null pointer, if the method call fails.
+ */
+					virtual agora_refptr<agora::rtc::IVideoEffectObject> createVideoEffectObject (const char * bundlePath, agora::media::MEDIA_SOURCE_TYPE type = agora::media::PRIMARY_CAMERA_SOURCE)  override;
+
+
+
+/*
+ * @brief Destroys a video effect object.
+ * 
+ * @since v4.6.0
+ * 
+ * @param videoEffectObject The pointer to \ref rtc::IVideoEffectObject.
+ * 
+ * @return
+ * - 0: Success.
+ * - < 0: Failure.
+ */
+					virtual int destroyVideoEffectObject (agora_refptr<IVideoEffectObject> videoEffectObject)  override;
+
+
+
+/*
  * Sets low-light enhancement.
  * 
  * @since v4.0.0
@@ -1946,6 +1977,10 @@ namespace agora {
  * @note
  * - To ensure smooth communication, limit the size of the audio effect file.
  * - Agora recommends calling this method before joining the channel.
+ * - If preloadEffect is called before playEffect is executed, the file resource will not be closed after playEffect.
+ * The next time playEffect is executed, it will directly seek to play at the beginning.
+ * - If preloadEffect is not called before playEffect is executed, the resource will be destroyed after playEffect.
+ * The next time playEffect is executed, it will try to reopen the file and play it from the beginning.
  * 
  * @param soundId The ID of the audio effect.
  * @param filePath The absolute path of the local audio effect file or the URL
@@ -1974,6 +2009,10 @@ namespace agora {
  * - Agora recommends playing no more than three audio effects at the same time.
  * - The ID and file path of the audio effect in this method must be the same
  * as that in the \ref IRtcEngine::preloadEffect "preloadEffect" method.
+ * - If preloadEffect is called before playEffect is executed, the file resource will not be closed after playEffect.
+ * The next time playEffect is executed, it will directly seek to play at the beginning.
+ * - If preloadEffect is not called before playEffect is executed, the resource will be destroyed after playEffect.
+ * The next time playEffect is executed, it will try to reopen the file and play it from the beginning.
  * 
  * @param soundId The ID of the audio effect.
  * @param filePath The absolute path of the local audio effect file or the URL
@@ -6299,6 +6338,95 @@ namespace agora {
  * @technical preview
  */
 					virtual int sendAudioMetadataEx (const RtcConnection & connection, const char * metadata, size_t length)  override;
+
+
+
+/*
+ * @brief enable or disable video image source to replace the current video source published or resume it
+ * 
+ * @param connection The RtcConnection object.
+ * @param enable true for enable, false for disable
+ * @param options options for image track
+ */
+					virtual int enableVideoImageSourceEx (bool enable, const ImageTrackOptions & options, const RtcConnection & connection)  override;
+
+
+
+/*
+ * Preloads a specified audio effect to a specified channel.
+ * @since v4.6.0
+ * 
+ * This method preloads only one specified audio effect into the memory each time
+ * it is called. To preload multiple audio effects, call this method multiple times.
+ * 
+ * After preloading, you can call \ref IRtcEngine::playEffect "playEffect"
+ * to play the preloaded audio effect or call
+ * \ref IRtcEngine::playAllEffects "playAllEffects" to play all the preloaded
+ * audio effects.
+ * 
+ * @note
+ * - This method applies to scenarios involving multiple channels.
+ * - To ensure smooth communication, limit the size of the audio effect file.
+ * - Agora recommends calling this method before joining the channel.
+ * 
+ * @param connection The RtcConnection object.
+ * @param soundId The ID of the audio effect.
+ * @param filePath The absolute path of the local audio effect file or the URL
+ * of the online audio effect file. Supported audio formats: mp3, mp4, m4a, aac,
+ * 3gp, mkv, and wav.
+ * @param startPos The playback position (ms) of the audio effect file.
+ * 
+ * @return
+ * - 0: Success.
+ * - < 0: Failure.
+ */
+					virtual int preloadEffectEx (const RtcConnection & connection, int soundId, const char * filePath, int startPos = 0)  override;
+
+
+
+/*
+ * Plays a specified audio effect to a specified channel.
+ * @since v4.6.0
+ * 
+ * This method plays only one specified audio effect each time it is called.
+ * To play multiple audio effects, call this method multiple times.
+ * 
+ * @note
+ * - This method applies to scenarios involving multiple channels.
+ * - Agora recommends playing no more than three audio effects at the same time.
+ * - The ID and file path of the audio effect in this method must be the same
+ * as that in the \ref IRtcEngine::preloadEffect "preloadEffect" method.
+ * 
+ * @param connection The RtcConnection object.
+ * @param soundId The ID of the audio effect.
+ * @param filePath The absolute path of the local audio effect file or the URL
+ * of the online audio effect file. Supported audio formats: mp3, mp4, m4a, aac,
+ * 3gp, mkv, and wav.
+ * @param loopCount The number of times the audio effect loops:
+ * - `-1`: Play the audio effect in an indefinite loop until
+ * \ref IRtcEngine::stopEffect "stopEffect" or
+ * \ref IRtcEngine::stopAllEffects "stopAllEffects"
+ * - `0`: Play the audio effect once.
+ * - `1`: Play the audio effect twice.
+ * @param pitch The pitch of the audio effect. The value ranges between 0.5 and 2.0.
+ * The default value is `1.0` (original pitch). The lower the value, the lower the pitch.
+ * @param pan The spatial position of the audio effect. The value ranges between -1.0 and 1.0:
+ * - `-1.0`: The audio effect displays to the left.
+ * - `0.0`: The audio effect displays ahead.
+ * - `1.0`: The audio effect displays to the right.
+ * @param gain The volume of the audio effect. The value ranges between 0 and 100.
+ * The default value is `100` (original volume). The lower the value, the lower
+ * the volume of the audio effect.
+ * @param publish Sets whether to publish the audio effect in a channel:
+ * - true: Publish the audio effect in the channel so that remote user can hear it.
+ * - false: (Default) Do not publish the audio effect in the channel.
+ * @param startPos The playback position (ms) of the audio effect file.
+ * 
+ * @return
+ * - 0: Success.
+ * - < 0: Failure.
+ */
+					virtual int playEffectEx (const RtcConnection & connection, int soundId, const char * filePath, int loopCount, double pitch, double pan, int gain, bool publish = false, int startPos = 0)  override;
 
 
 #pragma endregion Other Native APIs
