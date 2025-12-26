@@ -4554,6 +4554,18 @@ namespace agora {
 
 
 
+
+                int AgoraUERtcEngine::enableVideoImageSourceEx (bool enable, const ImageTrackOptions & options, const RtcConnection & connection)
+                {
+                    if (RtcEngine != nullptr) {
+                        auto ret = ((IRtcEngineEx*)RtcEngine)->enableVideoImageSourceEx(enable, options, connection);
+                        return ret;
+                    }
+                    return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
+                }
+
+
+
 #pragma endregion Other Native APIs
 
         }
