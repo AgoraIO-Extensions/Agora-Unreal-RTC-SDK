@@ -713,6 +713,30 @@ namespace agora {
 
 
 
+                agora_refptr<agora::rtc::IVideoEffectObject> AgoraUERtcEngine::createVideoEffectObject (const char * bundlePath, agora::media::MEDIA_SOURCE_TYPE type /* agora::media::PRIMARY_CAMERA_SOURCE */ )
+                {
+                    if (RtcEngine != nullptr) {
+                        auto ret = RtcEngine->createVideoEffectObject(bundlePath, type);
+                        return ret;
+                    }
+                    return ;
+                }
+
+
+
+
+                int AgoraUERtcEngine::destroyVideoEffectObject (agora_refptr<IVideoEffectObject> videoEffectObject)
+                {
+                    if (RtcEngine != nullptr) {
+                        auto ret = RtcEngine->destroyVideoEffectObject(videoEffectObject);
+                        return ret;
+                    }
+                    return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
+                }
+
+
+
+
                 int AgoraUERtcEngine::setLowlightEnhanceOptions (bool enabled, const LowlightEnhanceOptions & options, agora::media::MEDIA_SOURCE_TYPE type /* agora::media::PRIMARY_CAMERA_SOURCE */ )
                 {
                     if (RtcEngine != nullptr) {
@@ -4547,6 +4571,42 @@ namespace agora {
                 {
                     if (RtcEngine != nullptr) {
                         auto ret = ((IRtcEngineEx*)RtcEngine)->sendAudioMetadataEx(connection, metadata, length);
+                        return ret;
+                    }
+                    return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
+                }
+
+
+
+
+                int AgoraUERtcEngine::enableVideoImageSourceEx (bool enable, const ImageTrackOptions & options, const RtcConnection & connection)
+                {
+                    if (RtcEngine != nullptr) {
+                        auto ret = ((IRtcEngineEx*)RtcEngine)->enableVideoImageSourceEx(enable, options, connection);
+                        return ret;
+                    }
+                    return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
+                }
+
+
+
+
+                int AgoraUERtcEngine::preloadEffectEx (const RtcConnection & connection, int soundId, const char * filePath, int startPos /* 0 */ )
+                {
+                    if (RtcEngine != nullptr) {
+                        auto ret = ((IRtcEngineEx*)RtcEngine)->preloadEffectEx(connection, soundId, filePath, startPos);
+                        return ret;
+                    }
+                    return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
+                }
+
+
+
+
+                int AgoraUERtcEngine::playEffectEx (const RtcConnection & connection, int soundId, const char * filePath, int loopCount, double pitch, double pan, int gain, bool publish /* false */ , int startPos /* 0 */ )
+                {
+                    if (RtcEngine != nullptr) {
+                        auto ret = ((IRtcEngineEx*)RtcEngine)->playEffectEx(connection, soundId, filePath, loopCount, pitch, pan, gain, publish, startPos);
                         return ret;
                     }
                     return AGORA_UE_ERR_CODE(ERROR_NULLPTR);
