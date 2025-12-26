@@ -33,7 +33,17 @@ def main():
     args = parser.parse_args()
     
     try:
-        input_data = json.loads(args.json_input)
+        # Handle double-escaped JSON if needed
+        json_str = args.json_input
+        if json_str.startswith('"') and json_str.endswith('"'):
+            # It might be a stringified JSON string
+            try:
+                # First decode: remove outer quotes and unescape
+                json_str = json.loads(json_str)
+            except:
+                pass
+                
+        input_data = json.loads(json_str)
     except json.JSONDecodeError as e:
         print(f"Error decoding JSON: {e}")
         sys.exit(1)
