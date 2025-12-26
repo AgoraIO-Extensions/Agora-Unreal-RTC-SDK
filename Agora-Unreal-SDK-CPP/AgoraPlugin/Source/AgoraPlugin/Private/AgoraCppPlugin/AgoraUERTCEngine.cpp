@@ -719,7 +719,7 @@ namespace agora {
                         auto ret = RtcEngine->createVideoEffectObject(bundlePath, type);
                         return ret;
                     }
-                    return ;
+                    return nullptr;
                 }
 
 
