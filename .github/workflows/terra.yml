@@ -21,6 +21,10 @@ jobs:
       - name: Setup
         uses: ./.github/setup
 
+      - name: Install dependencies
+        run: |
+          pip install -r .github/ci/requirements.txt
+
       - name: Get dependencies
         id: dep
         uses: AgoraIO-Extensions/actions/.github/actions/dep@main
@@ -34,8 +38,7 @@ jobs:
       - name: Replace rtc version
         id: version
         run: |
-          cd .github\ci
-          pip install -r requirements.txt
+          cd .github/ci
           JSON_RAW='${{ steps.dep.outputs.matches }}'
           JSON_OUTPUT=$(printf '%s' "$JSON_RAW" | sed 's/^"//;s/"$//' | sed 's/\\"/"/g')
           VERSION=$(echo "$JSON_OUTPUT" | jq -r '.[] | select(.version != "" and .version != null) | .version' | head -n 1)
