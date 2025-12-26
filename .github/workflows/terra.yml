@@ -29,7 +29,7 @@ jobs:
 
       - name: Update dependencies
         run: |
-          sh .github/ci/build/dep.sh ${{ steps.dep.outputs.matches }}
+          python .github/ci/dep.py '${{ steps.dep.outputs.matches }}'
 
       - name: Replace rtc version
         id: version
@@ -40,7 +40,7 @@ jobs:
           JSON_OUTPUT=$(printf '%s' "$JSON_RAW" | sed 's/^"//;s/"$//' | sed 's/\\"/"/g')
           VERSION=$(echo "$JSON_OUTPUT" | jq -r '.[] | select(.version != "" and .version != null) | .version' | head -n 1)
           echo "rtc_version=${VERSION}" >> $GITHUB_OUTPUT
-          python ASDK.py -agorasdk="${VERSION}"
+          python update_terra.py -agorasdk="${VERSION}"
 
       - name: Generate code and comment by terra
         uses: AgoraIO-Extensions/actions/.github/actions/generate@main

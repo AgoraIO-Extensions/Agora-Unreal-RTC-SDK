@@ -34,7 +34,7 @@ def main():
 
     str_sdk_ver = f"{args.agorasdktype}_{args.agorasdk}"
 
-    path_config_base = Path("./config")
+    path_config_base = Path("../../Terra/config")
     path_config_bp_tmpl = path_config_base / "templates" / "blueprint_config_tmpl.yaml"
     path_config_bp = path_config_base / "blueprint_config.yaml"
 
