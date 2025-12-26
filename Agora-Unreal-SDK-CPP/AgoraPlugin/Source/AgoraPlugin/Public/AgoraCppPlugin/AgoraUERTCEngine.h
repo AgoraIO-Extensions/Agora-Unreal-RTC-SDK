@@ -31,7 +31,7 @@ namespace agora {
 				static agora::rtc::IRtcEngine* NativeRtcEnginePtr();
 				static FString GetSDKVersion();
 				static void EnableIOSAudioSession(bool bEnable);
-				static void Release(bool sync = false);
+				static void Release();
 				static AgoraAppType RtcEngineAppType;
 
 
@@ -51,7 +51,7 @@ namespace agora {
 
 			private:
 				void CreateEngine();
-				void DestroyEngine(bool sync = false);
+				void DestroyEngine();
 
 
 			public:
