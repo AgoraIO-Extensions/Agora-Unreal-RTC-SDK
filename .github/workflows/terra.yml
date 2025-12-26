@@ -34,7 +34,7 @@ jobs:
       - name: Replace rtc version
         id: version
         run: |
-          cd Terra
+          cd .github\ci
           pip install -r requirements.txt
           JSON_RAW='${{ steps.dep.outputs.matches }}'
           JSON_OUTPUT=$(printf '%s' "$JSON_RAW" | sed 's/^"//;s/"$//' | sed 's/\\"/"/g')
@@ -65,15 +65,3 @@ jobs:
           pull-request-title: |
             [AUTO] Generate codes by terra(${{ steps.version.outputs.rtc_version }})
           add-paths: .
-
-      # - name: Check csharp codes compile
-      #   run: |
-      #     cd Agora-C_Sharp_RTC-SDK_UT
-      #     dotnet restore Agora_C_Sharp_SDK_UT.sln
-      #     dotnet build Agora_C_Sharp_SDK_UT.sln --configuration Release
-      #     if [ $? -ne 0 ]; then
-      #       echo "csharp codes compile error"
-      #       exit 1
-      #     else
-      #       echo "csharp codes compile success"
-      #     fi
