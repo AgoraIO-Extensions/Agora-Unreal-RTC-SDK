@@ -78,12 +78,12 @@ namespace agora {
 #endif
 			}
 
-			void AgoraUERtcEngine::Release(bool sync /*= false*/)
+			void AgoraUERtcEngine::Release()
 			{
 				if (Instance != nullptr) {
 					std::unique_lock<std::mutex> lock(MutexLock);
 					if (Instance != nullptr) {
-						Instance->DestroyEngine(sync);
+						Instance->DestroyEngine();
 						delete Instance;
 						Instance = nullptr;
 					}
@@ -119,11 +119,11 @@ namespace agora {
 			}
 
 
-			void AgoraUERtcEngine::DestroyEngine(bool sync /*= false*/)
+			void AgoraUERtcEngine::DestroyEngine()
 			{
 				if (RtcEngine) {
 					//RtcEngine->release(sync);
-					agora::rtc::IRtcEngine::release(nullptr);
+					agora::rtc::IRtcEngine::release();
 					RtcEngine = nullptr;
 #if AGORA_UESDK_ENABLE_VIDEO
 					_VideoFrameRenderManager = nullptr;

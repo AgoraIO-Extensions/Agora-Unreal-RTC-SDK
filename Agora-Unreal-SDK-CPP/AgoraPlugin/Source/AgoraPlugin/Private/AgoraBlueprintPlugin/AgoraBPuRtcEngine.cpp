@@ -145,13 +145,13 @@ FString UAgoraBPuRtcEngine::GetVersion()
 	return ret;
 }
 
-void UAgoraBPuRtcEngine::Release(bool sync /*= false*/)
+void UAgoraBPuRtcEngine::Release()
 {
 	ClearAllEventHandlerCBExecutors();
 	UninitInstance();
 	RemoveFromRoot();
 
-	AgoraUERtcEngine::Release(sync);
+	AgoraUERtcEngine::Release();
 	Instance = nullptr;
 
 }
