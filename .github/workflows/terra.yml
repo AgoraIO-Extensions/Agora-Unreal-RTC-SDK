@@ -21,6 +21,10 @@ jobs:
       - name: Setup
         uses: ./.github/setup
 
+      - name: Install dependencies
+        run: |
+          pip install -r .github/ci/requirements.txt
+
       - name: Get dependencies
         id: dep
         uses: AgoraIO-Extensions/actions/.github/actions/dep@main
@@ -29,18 +33,31 @@ jobs:
 
       - name: Update dependencies
         run: |
-          sh .github/ci/build/dep.sh ${{ steps.dep.outputs.matches }}
+          python .github/ci/dep.py '${{ steps.dep.outputs.matches }}'
 
       - name: Replace rtc version
         id: version
         run: |
-          cd Terra
-          pip install -r requirements.txt
+          cd .github/ci
           JSON_RAW='${{ steps.dep.outputs.matches }}'
           JSON_OUTPUT=$(printf '%s' "$JSON_RAW" | sed 's/^"//;s/"$//' | sed 's/\\"/"/g')
           VERSION=$(echo "$JSON_OUTPUT" | jq -r '.[] | select(.version != "" and .version != null) | .version' | head -n 1)
           echo "rtc_version=${VERSION}" >> $GITHUB_OUTPUT
-          python ASDK.py -agorasdk="${VERSION}"
+          python update_terra.py -agorasdk="${VERSION}"
+
+      - name: Checkout terra_shared_configs
+        uses: actions/checkout@v4
+        with:
+          repository: AgoraIO-Extensions/terra_shared_configs
+          path: .terra_headers
+          token: ${{ secrets.GH_TOKEN }}
+          sparse-checkout: |
+            headers/rtc_${{ steps.version.outputs.rtc_version }}/include
+          sparse-checkout-cone-mode: false
+
+      - name: Update headers
+        run: |
+          python .github/ci/update_headers.py --source_dir .terra_headers/headers/rtc_${{ steps.version.outputs.rtc_version }}/include
 
       - name: Generate code and comment by terra
         uses: AgoraIO-Extensions/actions/.github/actions/generate@main
@@ -65,15 +82,3 @@ jobs:
           pull-request-title: |
             [AUTO] Generate codes by terra(${{ steps.version.outputs.rtc_version }})
           add-paths: .
-
-      # - name: Check csharp codes compile
-      #   run: |
-      #     cd Agora-C_Sharp_RTC-SDK_UT
-      #     dotnet restore Agora_C_Sharp_SDK_UT.sln
-      #     dotnet build Agora_C_Sharp_SDK_UT.sln --configuration Release
-      #     if [ $? -ne 0 ]; then
-      #       echo "csharp codes compile error"
-      #       exit 1
-      #     else
-      #       echo "csharp codes compile success"
-      #     fi

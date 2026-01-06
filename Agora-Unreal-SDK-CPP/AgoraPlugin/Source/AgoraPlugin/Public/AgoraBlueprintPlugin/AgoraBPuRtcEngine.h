@@ -89,7 +89,7 @@ public:
 	FString GetVersion();
 
 	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
-	void Release(bool sync = false);
+	void Release();
 
 	UFUNCTION(BlueprintCallable, Category = "Agora|IRtcEngine")
 	FString GetErrorDescription(int code);

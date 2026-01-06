@@ -1795,19 +1795,19 @@ struct AdvanceOptions {
   */
   bool encodeAlpha;
 
-  AdvanceOptions() : encodingPreference(PREFER_AUTO), 
+  AdvanceOptions() : encodingPreference(PREFER_AUTO),
                      compressionPreference(PREFER_COMPRESSION_AUTO),
                      encodeAlpha(false) {}
 
-  AdvanceOptions(ENCODING_PREFERENCE encoding_preference, 
+  AdvanceOptions(ENCODING_PREFERENCE encoding_preference,
                  COMPRESSION_PREFERENCE compression_preference,
-                 bool encode_alpha) : 
+                 bool encode_alpha) :
                  encodingPreference(encoding_preference),
                  compressionPreference(compression_preference),
                  encodeAlpha(encode_alpha) {}
 
   bool operator==(const AdvanceOptions& rhs) const {
-    return encodingPreference == rhs.encodingPreference && 
+    return encodingPreference == rhs.encodingPreference &&
            compressionPreference == rhs.compressionPreference &&
            encodeAlpha == rhs.encodeAlpha;
   }
@@ -1857,7 +1857,7 @@ enum VIDEO_MODULE_TYPE {
   /** Video render module */
   VIDEO_MODULE_RENDERER = 5,
 };
- 
+
 enum HDR_CAPABILITY {
   /** The result of static check is not reliable, by defualt*/
   HDR_CAPABILITY_UNKNOWN = -1,
@@ -2706,6 +2706,7 @@ enum AUDIO_SCENARIO_TYPE {
   AUDIO_SCENARIO_MEETING = 8,
   /**
    * 9: AI Server.
+   * @technical preview 
    */
   AUDIO_SCENARIO_AI_SERVER = 9,
   /**
@@ -4301,7 +4302,7 @@ struct LocalAudioMixerConfiguration {
   unsigned int streamCount;
   /**
    * The source of the streams to mixed;
-   */  
+   */
   MixedAudioStream* audioInputStreams;
 
   /**
@@ -4848,80 +4849,262 @@ struct BeautyOptions {
         sharpnessLevel(0) {}
 };
 
-/** Face shape area options. This structure defines options for facial adjustments on different facial areas.
+/** 
+ * @brief Face shape area options. This structure defines options for facial adjustments on different facial areas.
  *
- * @technical preview
+ * @since v4.4.0
  */
 struct FaceShapeAreaOptions {
-  /** The specific facial area to be adjusted.
-    */
+  /**
+   * @brief The specific facial area to be adjusted.
+   *
+   * @since v4.4.0
+   */
   enum FACE_SHAPE_AREA {
     /** (Default) Invalid area. */
     FACE_SHAPE_AREA_NONE = -1,
-    /** Head Scale, reduces the size of head. */
-    FACE_SHAPE_AREA_HEADSCALE = 0,
-    /** Forehead, adjusts the size of forehead. */
-    FACE_SHAPE_AREA_FOREHEAD = 1,
-    /** Face Contour, slims the facial contour. */
-    FACE_SHAPE_AREA_FACECONTOUR = 2,
-    /** Face Length, adjusts the length of face. */
-    FACE_SHAPE_AREA_FACELENGTH = 3,
-    /** Face Width, narrows the width of face. */
-    FACE_SHAPE_AREA_FACEWIDTH = 4,
-    /** Cheekbone, adjusts the size of cheekbone. */
-    FACE_SHAPE_AREA_CHEEKBONE = 5,
-    /** Cheek, adjusts the size of cheek. */
-    FACE_SHAPE_AREA_CHEEK = 6,
-    /** Chin, adjusts the length of chin. */
-    FACE_SHAPE_AREA_CHIN = 7,
-    /** Eye Scale, adjusts the size of eyes. */
-    FACE_SHAPE_AREA_EYESCALE = 8,
-    /** Nose Length, adjusts the length of nose. */
-    FACE_SHAPE_AREA_NOSELENGTH = 9,
-    /** Nose Width, adjusts the width of nose. */
-    FACE_SHAPE_AREA_NOSEWIDTH = 10,
-    /** Mouth Scale, adjusts the size of mouth. */
-    FACE_SHAPE_AREA_MOUTHSCALE = 11,
+    /** 
+     * Head Scale, reduces the size of the head. 
+     * The value range is [0, 100]. The default value is 50.
+     * The larger the value, the stronger the head reduction effect.
+     */
+    FACE_SHAPE_AREA_HEADSCALE = 100,
+    /** 
+     * Forehead, adjusts the size of the forehead.
+     * The value range is [0, 100]. The default value is 0.
+     * The larger the value, the stronger the forehead effect.
+     */
+    FACE_SHAPE_AREA_FOREHEAD = 101,
+    /** 
+     * Face Contour, slims the facial contour.
+     * The value range is [0, 100]. The default value is 0.
+     * The larger the value, the stronger the facial contour reduction effect.
+     */
+    FACE_SHAPE_AREA_FACECONTOUR = 102,
+    /** 
+     * Face Length, adjusts the length of the face.
+     * The value range is [-100, 100]. The default value is 0.
+     * The larger the absolute value, the stronger the face length effect, negative values indicate the opposite direction.
+     */
+    FACE_SHAPE_AREA_FACELENGTH = 103,
+    /** 
+     * Face Width, narrows the width of the face.
+     * The value range is [0, 100]. The default value is 0.
+     * The larger the value, the stronger the face width reduction effect. 
+     */
+    FACE_SHAPE_AREA_FACEWIDTH = 104,
+    /** 
+     * Cheekbone, adjusts the size of the cheekbone.
+     * The value range is [0, 100]. The default value is 0.
+     * The larger the value, the stronger the cheekbone effect.
+     */
+    FACE_SHAPE_AREA_CHEEKBONE = 105,
+    /** 
+     * Cheek, adjusts the size of the cheek.
+     * The value range is [0, 100]. The default value is 0.
+     * The larger the value, the stronger the cheek effect.
+     */
+    FACE_SHAPE_AREA_CHEEK = 106,
+    /** 
+     * Mandible, slims the mandible.
+     * The value range is [0, 100]. The default value is 0.
+     * The larger the value, the stronger the mandible effect.
+     * @since v4.6.0
+     */
+    FACE_SHAPE_AREA_MANDIBLE = 107,
+    /** 
+     * Chin, adjusts the length of the chin. 
+     * The value range is [-100, 100]. The default value is 0.
+     * The larger the absolute value, the stronger the chin effect, negative values indicate the opposite direction.
+    */
+    FACE_SHAPE_AREA_CHIN = 108,
+    /** 
+     * Eye Scale, adjusts the size of the eyes.
+     * The value range is [0, 100]. The default value is 50.
+     * The larger the value, the stronger the eye size effect.
+     */
+    FACE_SHAPE_AREA_EYESCALE = 200,
+    /** 
+     * Eye Distance, adjusts the distance between the two eyes.
+     * The value range is [-100, 100]. The default value is 0.
+     * The larger the absolute value, the stronger the eye distance effect, negative values indicate the opposite direction.
+     * @since v4.6.0
+     */
+    FACE_SHAPE_AREA_EYEDISTANCE = 201,
+    /** 
+     * Eye Position, adjusts the upper and lower position of the eyes.
+     * The value range is [-100, 100]. The default value is 0.
+     * The larger the absolute value, the stronger the eye position effect, negative values indicate the opposite direction.
+     * @since v4.6.0
+     */
+    FACE_SHAPE_AREA_EYEPOSITION = 202,
+    /** 
+     * Lower Eyelid, adjusts the downward position of the eyelids.
+     * The value range is [0, 100]. The default value is 0.
+     * The larger the value, the stronger the lower eyelid effect.
+     * @since v4.6.0
+     */
+    FACE_SHAPE_AREA_LOWEREYELID = 203,
+    /** 
+     * Eye Pupils, adjusts the size of the pupils.
+     * The value range is [0, 100]. The default value is 0.
+     * The larger the value, the stronger the eye pupils effect.
+     * @since v4.6.0
+     */
+    FACE_SHAPE_AREA_EYEPUPILS = 204,
+    /** 
+     * Eye Inner Corner, adjusts the inner corners of the eyes.
+     * The value range is [-100, 100]. The default value is 0.
+     * The larger the absolute value, the stronger the eye inner corner effect, negative values indicate the opposite direction.
+     * @since v4.6.0
+     */
+    FACE_SHAPE_AREA_EYEINNERCORNER = 205,
+    /** 
+     * Eye Outer Corner, adjusts the outer corners of the eyes.
+     * The value range is [-100, 100]. The default value is 0.
+     * The larger the absolute value, the stronger the eye outer corner effect, negative values indicate the opposite direction.
+     * @since v4.6.0
+     */
+    FACE_SHAPE_AREA_EYEOUTERCORNER = 206,
+    /** 
+     * Nose Length, adjusts the length of the nose. 
+     * The value range is [-100, 100]. The default value is 0.
+     */
+    FACE_SHAPE_AREA_NOSELENGTH = 300,
+    /** 
+     * Nose Width, adjusts the width of the nose. 
+     * The value range is [0, 100]. The default value is 0.
+     * The larger the value, the stronger the nose width effect.
+     * @since v4.6.0
+     */
+    FACE_SHAPE_AREA_NOSEWIDTH = 301,
+    /** 
+     * Nose Wing, adjusts the size of the nose wings.
+     * The value range is [0, 100]. The default value is 10.
+     * The larger the value, the stronger the nose wing effect.
+     * @since v4.6.0
+     */
+    FACE_SHAPE_AREA_NOSEWING = 302,
+    /** 
+     * Nose Root, adjusts the size of the nose root.
+     * The value range is [0, 100]. The default value is 0.
+     * The larger the value, the stronger the nose root effect.
+     * @since v4.6.0
+     */
+    FACE_SHAPE_AREA_NOSEROOT = 303,
+    /** 
+     * Nose Bridge, adjusts the size of the nose bridge.
+     * The value range is [0, 100]. The default value is 50.
+     * The larger the value, the stronger the nose bridge effect.
+     * @since v4.6.0
+     */
+    FACE_SHAPE_AREA_NOSEBRIDGE = 304,
+    /** 
+     * Nose Tip, adjusts the size of the nose tip.
+     * The value range is [0, 100]. The default value is 50.
+     * The larger the value, the stronger the nose tip effect.
+     * @since v4.6.0
+     */
+    FACE_SHAPE_AREA_NOSETIP = 305,
+    /** 
+     * Nose General, adjusts the overall size of the nose.
+     * The value range is [-100, 100]. The default value is 50.
+     * The larger the absolute value, the stronger the nose general effect, negative values indicate the opposite direction.
+     * @since v4.6.0
+     */
+    FACE_SHAPE_AREA_NOSEGENERAL = 306,
+    /** 
+     * Mouth Scale, adjusts the size of the mouth.
+     * The value range is [-100, 100]. The default value is 20.
+     * The larger the absolute value, the stronger the mouth size effect, negative values indicate the opposite direction.
+     * @since v4.6.0
+     */
+    FACE_SHAPE_AREA_MOUTHSCALE = 400,
+    /** 
+     * Mouth Position, adjusts the position of the mouth.
+     * The value range is [0, 100]. The default value is 0.
+     * The larger the value, the stronger the mouth position effect.
+     * @since v4.6.0
+     */
+    FACE_SHAPE_AREA_MOUTHPOSITION = 401,
+    /** 
+     * Mouth Smile, adjusts the degree of the mouth's smile.
+     * The value range is [0, 100]. The default value is 30.
+     * The larger the value, the stronger the mouth smile effect.
+     * @since v4.6.0
+     */
+    FACE_SHAPE_AREA_MOUTHSMILE = 402,
+    /** 
+     * Mouth Lip, adjusts the size of the lips.
+     * The value range is [0, 100]. The default value is 0.
+     * The larger the value, the stronger the mouth lip effect.
+     * @since v4.6.0
+     */
+    FACE_SHAPE_AREA_MOUTHLIP = 403,
+    /** 
+     * Eyebrow Position, adjusts the position of the eyebrows.
+     * The value range is [-100, 100]. The default value is 0.
+     * The larger the absolute value, the stronger the eyebrow position effect, negative values indicate the opposite direction.
+     * @since v4.6.0
+     */
+    FACE_SHAPE_AREA_EYEBROWPOSITION = 500,
+    /** 
+     * Eyebrow Thickness, adjusts the thickness of the eyebrows.
+     * The value range is [-100, 100]. The default value is 0.
+     * The larger the value, the stronger the eyebrow thickness effect.
+     * @since v4.6.0
+     */
+    FACE_SHAPE_AREA_EYEBROWTHICKNESS = 501,
   };
-  
+
   /** The specific facial area to be adjusted, See #FACE_SHAPE_AREA.
     */
   FACE_SHAPE_AREA shapeArea;
   
-  /** The intensity of the pinching effect applied to the specified facial area.
-   * For the following area values: #FACE_SHAPE_AREA_FOREHEAD, #FACE_SHAPE_AREA_FACELENGTH, #FACE_SHAPE_AREA_CHIN, #FACE_SHAPE_AREA_NOSELENGTH, #FACE_SHAPE_AREA_NOSEWIDTH, #FACE_SHAPE_AREA_MOUTHSCALE, the value ranges from -100 to 100.
-   * The default value is 0. The greater the absolute value, the stronger the intensity applied to the specified facial area, and negative values indicate the opposite direction.
-   * For enumeration values other than the above, the value ranges from 0 to 100. The default value is 0. The greater the value, the stronger the intensity applied to the specified facial area.
-    */
+  /** 
+   * The intensity of the pinching effect applied to the specified facial area.
+   */
   int shapeIntensity;
-  
+
   FaceShapeAreaOptions(FACE_SHAPE_AREA shapeArea, int areaIntensity) : shapeArea(shapeArea), shapeIntensity(areaIntensity) {}
 
   FaceShapeAreaOptions() : shapeArea(FACE_SHAPE_AREA_NONE), shapeIntensity(0) {}
 };
 
-/** Face shape beauty options. This structure defines options for facial adjustments of different facial styles.
+/** @brief Face shape beauty options. This structure defines options for facial adjustments of different facial styles.
  *
- * @technical preview
+ * @since v4.4.0
  */
 struct FaceShapeBeautyOptions {
-  /** The face shape style.
-    */
+  /**
+   * @brief The face shape beauty style options.
+   *
+   * @since v4.4.0
+   */
   enum FACE_SHAPE_BEAUTY_STYLE {
-    /** (Default) Female face shape style. */
-    FACE_SHAPE_BEAUTY_STYLE_FEMALE = 0,
-    /** Male face shape style. */
-    FACE_SHAPE_BEAUTY_STYLE_MALE = 1,
+  /**
+   * (Default) Female face shape style.
+   */
+  FACE_SHAPE_BEAUTY_STYLE_FEMALE = 0,
+  /**
+   * Male face shape style.
+   */
+  FACE_SHAPE_BEAUTY_STYLE_MALE = 1,
+  /**
+   * A natural-looking face shape style that applies minimal modification to facial features.
+   * @since v4.6.0
+   */
+  FACE_SHAPE_BEAUTY_STYLE_NATURAL = 2,
   };
-  
+
   /** The face shape style, See #FACE_SHAPE_BEAUTY_STYLE.
     */
   FACE_SHAPE_BEAUTY_STYLE shapeStyle;
-  
+
   /** The intensity of the pinching effect applied to the specified facial style. The value ranges from 0 (original) to 100. The default value is 0. The greater the value, the stronger the intensity applied to face pinching.
     */
   int styleIntensity;
-  
+
   FaceShapeBeautyOptions(FACE_SHAPE_BEAUTY_STYLE shapeStyle, int styleIntensity) : shapeStyle(shapeStyle), styleIntensity(styleIntensity) {}
 
   FaceShapeBeautyOptions() : shapeStyle(FACE_SHAPE_BEAUTY_STYLE_FEMALE), styleIntensity(50) {}
@@ -4947,12 +5130,12 @@ struct FilterEffectOptions {
    * The SDK provides a built-in cube named `built_in_whiten.cube` for whitening. To use this cube, specify the path to `built_in_whiten_filter`
    */
   const char * path;
-  
+
   /**
    * The intensity of specified filter effect. The value ranges from 0.0 to 1.0. The default value is 0.5. The greater the value, the stronger the intensity of the filter.
    */
   float strength;
-  
+
   FilterEffectOptions(const char * lut3dPath, float filterStrength) : path(lut3dPath), strength(filterStrength) {}
 
   FilterEffectOptions() : path(OPTIONAL_NULLPTR), strength(0.5) {}
@@ -5556,9 +5739,51 @@ enum VOICE_AI_TUNER_TYPE {
 };
 
 /**
+ * The audio configuration for the shared screen stream.
+ */
+struct ScreenAudioParameters {
+  /**
+   * The audio sample rate (Hz). The default value is `48000`.
+   */
+  int sampleRate;
+  /**
+   * The number of audio channels. The default value is `2`, indicating dual channels.
+   */
+  int channels;
+  /**
+   * The volume of the captured system audio. The value range is [0,100]. The default value is
+   * `100`.
+   */
+  int captureSignalVolume;
+
+#if defined(__APPLE__) && !TARGET_OS_IOS
+  bool excludeCurrentProcessAudio = true;
+  ScreenAudioParameters(): sampleRate(48000), channels(2), captureSignalVolume(100) {}
+#else
+  ScreenAudioParameters(): sampleRate(16000), channels(2), captureSignalVolume(100) {}
+#endif
+};
+
+/**
  * Screen sharing configurations.
  */
 struct ScreenCaptureParameters {
+
+  /**
+   * Determines whether to capture system audio during screen sharing:
+   * - `true`: Capture.
+   * - `false`: (Default)  Do not capture.
+   *
+   * **Note**
+   * Due to system limitations, capturing system audio is only available for Android API level 29
+   * and later (that is, Android 10 and later).
+   */
+  bool captureAudio;
+  /**
+   * The audio configuration for the shared screen stream.
+   */
+  ScreenAudioParameters audioParams;
+
   /**
    * On Windows and macOS, it represents the video encoding resolution of the shared screen stream.
    * See `VideoDimensions`. The default value is 1920 x 1080, that is, 2,073,600 pixels. Agora uses
@@ -5628,7 +5853,8 @@ struct ScreenCaptureParameters {
   bool enableHighLight;
 
   ScreenCaptureParameters()
-      : dimensions(1920, 1080),
+      : captureAudio(false),
+        dimensions(1920, 1080),
         frameRate(5),
         bitrate(STANDARD_BITRATE),
         captureMouseCursor(true),
@@ -5639,7 +5865,7 @@ struct ScreenCaptureParameters {
         highLightColor(0),
         enableHighLight(false) {}
   ScreenCaptureParameters(const VideoDimensions& d, int f, int b)
-      : dimensions(d),
+      : captureAudio(false),dimensions(d),
         frameRate(f),
         bitrate(b),
         captureMouseCursor(true),
@@ -5650,7 +5876,8 @@ struct ScreenCaptureParameters {
         highLightColor(0),
         enableHighLight(false) {}
   ScreenCaptureParameters(int width, int height, int f, int b)
-      : dimensions(width, height),
+      : captureAudio(false),
+        dimensions(width, height),
         frameRate(f),
         bitrate(b),
         captureMouseCursor(true),
@@ -5661,7 +5888,8 @@ struct ScreenCaptureParameters {
         highLightColor(0),
         enableHighLight(false) {}
   ScreenCaptureParameters(int width, int height, int f, int b, bool cur, bool fcs)
-      : dimensions(width, height),
+      : captureAudio(false),
+        dimensions(width, height),
         frameRate(f),
         bitrate(b),
         captureMouseCursor(cur),
@@ -5672,7 +5900,8 @@ struct ScreenCaptureParameters {
         highLightColor(0),
         enableHighLight(false) {}
   ScreenCaptureParameters(int width, int height, int f, int b, view_t* ex, int cnt)
-      : dimensions(width, height),
+      : captureAudio(false),
+        dimensions(width, height),
         frameRate(f),
         bitrate(b),
         captureMouseCursor(true),
@@ -5684,7 +5913,8 @@ struct ScreenCaptureParameters {
         enableHighLight(false) {}
   ScreenCaptureParameters(int width, int height, int f, int b, bool cur, bool fcs, view_t* ex,
                           int cnt)
-      : dimensions(width, height),
+      : captureAudio(false),
+        dimensions(width, height),
         frameRate(f),
         bitrate(b),
         captureMouseCursor(cur),
@@ -6537,7 +6767,7 @@ enum THREAD_PRIORITY_TYPE {
   CRITICAL = 5,
 };
 
-#if defined(__ANDROID__) || (defined(__APPLE__) && TARGET_OS_IOS)
+#if defined(__ANDROID__) || (defined(__APPLE__) && (TARGET_OS_IOS || (defined(TARGET_OS_VISION) && TARGET_OS_VISION)))
 
 /**
  * The video configuration for the shared screen stream.
@@ -6587,25 +6817,6 @@ struct ScreenVideoParameters {
   VIDEO_CONTENT_HINT contentHint = VIDEO_CONTENT_HINT::CONTENT_HINT_MOTION;
 
   ScreenVideoParameters() : dimensions(1280, 720) {}
-};
-
-/**
- * The audio configuration for the shared screen stream.
- */
-struct ScreenAudioParameters {
-  /**
-   * The audio sample rate (Hz). The default value is `16000`.
-   */
-  int sampleRate = 16000;
-  /**
-   * The number of audio channels. The default value is `2`, indicating dual channels.
-   */
-  int channels = 2;
-  /**
-   * The volume of the captured system audio. The value range is [0,100]. The default value is
-   * `100`.
-   */
-  int captureSignalVolume = 100;
 };
 
 /**
