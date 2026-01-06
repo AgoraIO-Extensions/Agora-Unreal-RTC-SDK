@@ -116,7 +116,12 @@ void UBFL_ShaderTest::DrawTestShaderRenderTarget
 		return;
 	}
 
-	FTextureRHIRef RenderTargetRHI = OutputRenderTarget->GameThread_GetRenderTargetResource()->GetRenderTargetTexture();
+	FTextureRenderTargetResource* RenderTargetResource = OutputRenderTarget->GameThread_GetRenderTargetResource();
+#if ENGINE_MAJOR_VERSION >= 5
+	FTextureRHIRef RenderTargetRHI = RenderTargetResource->GetRenderTargetTexture();
+#else
+	FTextureRHIRef RenderTargetRHI = RenderTargetResource->GetRenderTargetTexture().GetReference();
+#endif
 	const UWorld* World = WorldContextObject->GetWorld();
 	ERHIFeatureLevel::Type FeatureLevel = World->Scene->GetFeatureLevel();
 
