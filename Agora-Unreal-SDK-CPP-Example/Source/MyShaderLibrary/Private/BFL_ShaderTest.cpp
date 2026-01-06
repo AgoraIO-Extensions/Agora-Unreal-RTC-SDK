@@ -31,6 +31,9 @@ void DrawTestShaderRenderTarget_RenderThread(
 
 #if ENGINE_MAJOR_VERSION >= 5
 	RHIImmCmdList.Transition(FRHITransitionInfo(RenderTargetRHI, ERHIAccess::Unknown, ERHIAccess::RTV));
+	RHIImmCmdList.Transition(FRHITransitionInfo(InTextureY, ERHIAccess::Unknown, ERHIAccess::SRVGraphics));
+	RHIImmCmdList.Transition(FRHITransitionInfo(InTextureU, ERHIAccess::Unknown, ERHIAccess::SRVGraphics));
+	RHIImmCmdList.Transition(FRHITransitionInfo(InTextureV, ERHIAccess::Unknown, ERHIAccess::SRVGraphics));
 #endif
 
 	FRHIRenderPassInfo RPInfo(RenderTargetRHI, ERenderTargetActions::DontLoad_Store, RenderTargetRHI);

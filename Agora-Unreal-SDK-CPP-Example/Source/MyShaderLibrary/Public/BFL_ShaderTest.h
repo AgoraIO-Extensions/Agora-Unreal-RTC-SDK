@@ -25,17 +25,17 @@ public:
         TResourceArray<FYUVShaderVertex, VERTEXBUFFER_ALIGNMENT> Vertices;
         Vertices.SetNumUninitialized(4);
 
-    Vertices[0].Position = FVector4(-1, 1, 0, 1);
+        Vertices[0].Position = FVector4(-1, 1, 0, 1);
         Vertices[0].UV = FVector2D(0, 0);
 
         Vertices[1].Position = FVector4(1, 1, 0, 1);
         Vertices[1].UV = FVector2D(1, 0);
 
-    Vertices[2].Position = FVector4(-1, -1, 0, 1);
- Vertices[2].UV = FVector2D(0, 1);
+        Vertices[2].Position = FVector4(-1, -1, 0, 1);
+        Vertices[2].UV = FVector2D(0, 1);
 
         Vertices[3].Position = FVector4(1, -1, 0, 1);
-  Vertices[3].UV = FVector2D(1, 1);
+        Vertices[3].UV = FVector2D(1, 1);
 
       // Create vertex buffer. Fill buffer with initial data upon creation
 #if ENGINE_MAJOR_VERSION >= 5
@@ -91,7 +91,7 @@ public:
         FVertexDeclarationElementList Elements;
         uint32 Stride = sizeof(FYUVShaderVertex);
         Elements.Add(FVertexElement(0, STRUCT_OFFSET(FYUVShaderVertex, Position), VET_Float4, 0, Stride));
-    Elements.Add(FVertexElement(0, STRUCT_OFFSET(FYUVShaderVertex, UV), VET_Float2, 1, Stride));
+        Elements.Add(FVertexElement(0, STRUCT_OFFSET(FYUVShaderVertex, UV), VET_Float2, 1, Stride));
 #if ENGINE_MAJOR_VERSION >= 5
         VertexDeclarationRHI = PipelineStateCache::GetOrCreateVertexDeclaration(Elements);
 #else
