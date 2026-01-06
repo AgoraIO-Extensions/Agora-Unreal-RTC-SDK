@@ -3,6 +3,7 @@
 #if AGORA_UESDK_ENABLE_VIDEO
 
 #include "DataTypes.h"
+#include "AgoraMediaBase.h"
 
 class UTexture2D;
 class UImage;
@@ -29,13 +30,18 @@ namespace agora {
 			private:
 				void InitTexture2D(int Width,int Height);
 				void CopyToTexture2D(VideoFrame* _VideoFrame);
+				
+				// Helper functions for color space handling
+				bool NeedsColorSpaceConversion(const agora::media::base::ColorSpace& colorSpace);
+				void ApplyColorRangeConversion(uint8* PixelData, int Width, int Height, const agora::media::base::ColorSpace& colorSpace);
 
 				void UpdateImage();
 
 				// CPU
 				UTexture2D* RenderTexture = nullptr;
-
-
+				
+				// Store the current color space information
+				agora::media::base::ColorSpace CurrentColorSpace;
 				
 				// Base On Texture
 				UImage* RenderImage = nullptr;
