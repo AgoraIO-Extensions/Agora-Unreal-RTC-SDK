@@ -6,6 +6,7 @@
 #include "Blueprint/WidgetLayoutLibrary.h"
 #include "Engine/Texture2D.h"
 #include "ImageUtils.h"
+#include "Runtime/Launch/Resources/Version.h"
 
 
 void URenderWithYUVWidget::InitAgoraWidget(FString APP_ID, FString TOKEN, FString CHANNEL_NAME)
@@ -166,7 +167,11 @@ void URenderWithYUVWidget::RenderRawData(agora::media::base::VideoFrame& videoFr
 	memcpy(VRawData, videoFrame.vBuffer, VSize);
 
 
+#if  ((__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)) 
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!SelfWeakPtr.IsValid())
 				return;
@@ -181,10 +186,18 @@ void URenderWithYUVWidget::RenderRawData(agora::media::base::VideoFrame& videoFr
 			if (YRenderTexture == nullptr || !YRenderTexture->IsValidLowLevel() || YRenderTexture->GetSizeX() != YWidth || YRenderTexture->GetSizeY() != YHeight)
 					YRenderTexture = UTexture2D::CreateTransient(YWidth, YHeight, Format);
 			YRenderTexture->SRGB = bsRGB;
+#if ENGINE_MAJOR_VERSION >= 5
+			uint8* YRaw = (uint8*)YRenderTexture->GetPlatformData()->Mips[0].BulkData.Lock(LOCK_READ_WRITE);
+#else
 			uint8* YRaw = (uint8*)YRenderTexture->PlatformData->Mips[0].BulkData.Lock(LOCK_READ_WRITE);
+#endif
 			memcpy(YRaw, YRawData, YSize);
 			delete[] YRawData;
+#if ENGINE_MAJOR_VERSION >= 5
+			YRenderTexture->GetPlatformData()->Mips[0].BulkData.Unlock();
+#else
 			YRenderTexture->PlatformData->Mips[0].BulkData.Unlock();
+#endif
 			
 
 			if (URenderTexture == nullptr || !URenderTexture->IsValidLowLevel() || URenderTexture->GetSizeX() != UWidth || URenderTexture->GetSizeY() != UHeight)
@@ -198,10 +211,18 @@ void URenderWithYUVWidget::RenderRawData(agora::media::base::VideoFrame& videoFr
 			//URenderTexture->AddressX = TextureAddress::TA_Clamp;
 			//URenderTexture->AddressY = TextureAddress::TA_Clamp;
 
+#if ENGINE_MAJOR_VERSION >= 5
+			uint8* URaw = (uint8*)URenderTexture->GetPlatformData()->Mips[0].BulkData.Lock(LOCK_READ_WRITE);
+#else
 			uint8* URaw = (uint8*)URenderTexture->PlatformData->Mips[0].BulkData.Lock(LOCK_READ_WRITE);
+#endif
 			memcpy(URaw, URawData, USize);
 			delete[] URawData;
+#if ENGINE_MAJOR_VERSION >= 5
+			URenderTexture->GetPlatformData()->Mips[0].BulkData.Unlock();
+#else
 			URenderTexture->PlatformData->Mips[0].BulkData.Unlock();
+#endif
 
 
 			if (VRenderTexture == nullptr || !VRenderTexture->IsValidLowLevel() || VRenderTexture->GetSizeX() != UWidth || VRenderTexture->GetSizeY() != UHeight)
@@ -215,10 +236,18 @@ void URenderWithYUVWidget::RenderRawData(agora::media::base::VideoFrame& videoFr
 			//VRenderTexture->AddressX = TextureAddress::TA_Clamp;
 			//VRenderTexture->AddressY = TextureAddress::TA_Clamp;
 
+#if ENGINE_MAJOR_VERSION >= 5
+			uint8* VRaw = (uint8*)VRenderTexture->GetPlatformData()->Mips[0].BulkData.Lock(LOCK_READ_WRITE);
+#else
 			uint8* VRaw = (uint8*)VRenderTexture->PlatformData->Mips[0].BulkData.Lock(LOCK_READ_WRITE);
+#endif
 			memcpy(VRaw, VRawData, VSize);
 			delete[] VRawData;
+#if ENGINE_MAJOR_VERSION >= 5
+			VRenderTexture->GetPlatformData()->Mips[0].BulkData.Unlock();
+#else
 			VRenderTexture->PlatformData->Mips[0].BulkData.Unlock();
+#endif
 
 #ifdef UpdateResource
 #undef UpdateResource
@@ -360,7 +389,11 @@ void URenderWithYUVWidget::FUserRtcEventHandlerEx::onJoinChannelSuccess(const ag
 	if (!IsWidgetValid())
 		return;
 
+#if  ((__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)) 
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!IsWidgetValid())
 			{
@@ -379,7 +412,11 @@ void URenderWithYUVWidget::FUserRtcEventHandlerEx::onLeaveChannel(const agora::r
 	if (!IsWidgetValid())
 		return;
 
+#if  ((__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)) 
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!IsWidgetValid())
 			{
@@ -398,7 +435,11 @@ void URenderWithYUVWidget::FUserRtcEventHandlerEx::onUserJoined(const agora::rtc
 	if (!IsWidgetValid())
 		return;
 
+#if  ((__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)) 
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!IsWidgetValid())
 			{
@@ -416,7 +457,11 @@ void URenderWithYUVWidget::FUserRtcEventHandlerEx::onUserOffline(const agora::rt
 	if (!IsWidgetValid())
 		return;
 
+#if  ((__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)) 
+	AsyncTask(ENamedThreads::GameThread, [=, this]()
+#else
 	AsyncTask(ENamedThreads::GameThread, [=]()
+#endif
 		{
 			if (!IsWidgetValid())
 			{

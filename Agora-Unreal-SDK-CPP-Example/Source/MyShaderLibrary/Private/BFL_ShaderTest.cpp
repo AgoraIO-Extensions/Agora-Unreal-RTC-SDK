@@ -4,17 +4,20 @@
 #include "BFL_ShaderTest.h"
 #include "Engine/TextureRenderTarget2D.h"
 #include "YUVRenderingShader.h"
+#include "Runtime/Launch/Resources/Version.h"
 
 TGlobalResource<FYUVShaderVertexBuffer> GMyVertexBuffer;
 TGlobalResource<FYUVShaderIndexBuffer> GMyIndexBuffer;
 
 void DrawTestShaderRenderTarget_RenderThread(
 	FRHICommandListImmediate& RHIImmCmdList,
-	FTexture2DRHIRef RenderTargetRHI,
+	FTextureRHIRef RenderTargetRHI,
+	int32 SizeX,
+	int32 SizeY,
 	ERHIFeatureLevel::Type FeatureLevel,
-	FTexture2DRHIRef InTextureY, 
-	FTexture2DRHIRef InTextureU, 
-	FTexture2DRHIRef InTextureV
+	FTextureRHIRef InTextureY, 
+	FTextureRHIRef InTextureU, 
+	FTextureRHIRef InTextureV
 )
 {
 
@@ -26,20 +29,29 @@ void DrawTestShaderRenderTarget_RenderThread(
 	SCOPED_DRAW_EVENT(RHIImmCmdList, DrawTestShaderRenderTarget_RenderThread);
 #endif  
 
-
-	RHIImmCmdList.TransitionResource(ERHIAccess::WritableMask, RenderTargetRHI);
+#if ENGINE_MAJOR_VERSION >= 5
+	RHIImmCmdList.Transition(FRHITransitionInfo(RenderTargetRHI, ERHIAccess::Unknown, ERHIAccess::RTV));
+#endif
 
 	FRHIRenderPassInfo RPInfo(RenderTargetRHI, ERenderTargetActions::DontLoad_Store, RenderTargetRHI);
 	RHIImmCmdList.BeginRenderPass(RPInfo, TEXT("YUVGlobalPixelShaderPass"));
 
 	// Get shaders.
+#if ENGINE_MAJOR_VERSION >= 5
+ FGlobalShaderMap* GlobalShaderMap = GetGlobalShaderMap(GMaxRHIShaderPlatform);
+#else
 	FGlobalShaderMap* GlobalShaderMap = GetGlobalShaderMap(FeatureLevel);
+#endif
 	TShaderMapRef<FYUVRenderingVS> VertexShader(GlobalShaderMap);
 	TShaderMapRef<FYUVRenderingPS> PixelShader(GlobalShaderMap);
 
 
 	FYUVShaderVertexDeclaration VertexDeclaration;
+#if ENGINE_MAJOR_VERSION >= 5
+	VertexDeclaration.InitRHI(RHIImmCmdList);
+#else
 	VertexDeclaration.InitRHI();
+#endif
 
 	// Set the graphic pipeline state.
 	FGraphicsPipelineStateInitializer GraphicsPSOInit;
@@ -51,12 +63,20 @@ void DrawTestShaderRenderTarget_RenderThread(
 	GraphicsPSOInit.BoundShaderState.VertexDeclarationRHI = VertexDeclaration.VertexDeclarationRHI;
 	GraphicsPSOInit.BoundShaderState.VertexShaderRHI = VertexShader.GetVertexShader();
 	GraphicsPSOInit.BoundShaderState.PixelShaderRHI = PixelShader.GetPixelShader();
+#if ENGINE_MAJOR_VERSION >= 5
+	SetGraphicsPipelineState(RHIImmCmdList, GraphicsPSOInit, 0);
+#else
 	SetGraphicsPipelineState(RHIImmCmdList, GraphicsPSOInit);
+#endif
 
 	// Update viewport.
-	//void SetViewport(float MinX, float MinY, float MinZ, float MaxX, float MaxY, float MaxZ)
+#if ENGINE_MAJOR_VERSION >= 5
 	RHIImmCmdList.SetViewport(
-		0, 0, 0.f, RenderTargetRHI->GetSizeX(), RenderTargetRHI->GetSizeY(), 1.f);
+		0.f, 0.f, 0.f, (float)SizeX, (float)SizeY, 1.f);
+#else
+	RHIImmCmdList.SetViewport(
+		0, 0, 0.f, SizeX, SizeY, 1.f);
+#endif
 
 	VertexShader->SetParameters(RHIImmCmdList, VertexShader.GetVertexShader(), InTextureY, InTextureU, InTextureV);
 	PixelShader->SetParameters(RHIImmCmdList, PixelShader.GetPixelShader(), InTextureY, InTextureU, InTextureV);
@@ -93,14 +113,20 @@ void UBFL_ShaderTest::DrawTestShaderRenderTarget
 		return;
 	}
 
-	FTexture2DRHIRef RenderTargetRHI = OutputRenderTarget->GameThread_GetRenderTargetResource()->GetRenderTargetTexture();
+	FTextureRHIRef RenderTargetRHI = OutputRenderTarget->GameThread_GetRenderTargetResource()->GetRenderTargetTexture();
 	const UWorld* World = WorldContextObject->GetWorld();
 	ERHIFeatureLevel::Type FeatureLevel = World->Scene->GetFeatureLevel();
 
-	ENQUEUE_RENDER_COMMAND(CaptureCommand)(
+	int32 SizeX = OutputRenderTarget->SizeX;
+	int32 SizeY = OutputRenderTarget->SizeY;
 
-		[RenderTargetRHI, FeatureLevel, InTextureY, InTextureU, InTextureV](FRHICommandListImmediate& RHICmdList) {
-			DrawTestShaderRenderTarget_RenderThread(RHICmdList, RenderTargetRHI, FeatureLevel,
-			InTextureY->GetResource()->TextureRHI->GetTexture2D(), InTextureU->GetResource()->TextureRHI->GetTexture2D(), InTextureV->GetResource()->TextureRHI->GetTexture2D());
+	ENQUEUE_RENDER_COMMAND(CaptureCommand)(
+#if  ((__cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)) 
+		[RenderTargetRHI, SizeX, SizeY, FeatureLevel, InTextureY, InTextureU, InTextureV](FRHICommandListImmediate& RHICmdList) {
+#else
+		[=](FRHICommandListImmediate& RHICmdList) {
+#endif
+			DrawTestShaderRenderTarget_RenderThread(RHICmdList, RenderTargetRHI, SizeX, SizeY, FeatureLevel,
+			InTextureY->GetResource()->TextureRHI, InTextureU->GetResource()->TextureRHI, InTextureV->GetResource()->TextureRHI);
 		});
 }

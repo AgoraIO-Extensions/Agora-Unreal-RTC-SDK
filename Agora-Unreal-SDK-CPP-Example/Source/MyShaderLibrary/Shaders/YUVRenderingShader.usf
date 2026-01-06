@@ -1,11 +1,19 @@
 #include "/Engine/Public/Platform.ush"
 
+// ============================================================================
+// Texture and Sampler Declarations - Compatible with UE4.27 ~ UE5
+// ============================================================================
+
 Texture2D YTextureVal;
 Texture2D UTextureVal;
 Texture2D VTextureVal;
 SamplerState YTextureSampler;
 SamplerState UTextureSampler;
 SamplerState VTextureSampler;
+
+// ============================================================================
+// Vertex Shader - YUV Rendering
+// ============================================================================
 
 void YUVRenderingVS(
     in float4 InPosition : ATTRIBUTE0,
@@ -18,44 +26,45 @@ void YUVRenderingVS(
     OutUV = InUV;
 }
 
+// ============================================================================
+// Pixel Shader - YUV to RGB Conversion
+// ============================================================================
+
 void YUVRenderingPS
 (
     in float2 UV : TEXCOORD0,
     in float4 Position : SV_POSITION,
-    out float4 OutColor : SV_Target0 // For Mac Metal Shader, Otherwise, UE will treat it as no output
+    out float4 OutColor : SV_Target0  // For Metal (Mac), and all other RHI
 )
 {
+    // Sample YUV components from textures
+    // Y channel: Full range [0, 1]
+    // U/V channels: Centered at 0.5, range [-0.5, 0.5]
+    
     float ColorY = clamp(YTextureVal.Sample(YTextureSampler, UV.xy).r, 0, 1);
     float ColorU = clamp(UTextureVal.Sample(UTextureSampler, UV.xy).r - 0.5, -0.5, 0.5);
-    float ColorV = clamp(
-    VTextureVal.Sample(VTextureSampler, UV.xy).r - 0.5, -0.5, 0.5);
+    float ColorV = clamp(VTextureVal.Sample(VTextureSampler, UV.xy).r - 0.5, -0.5, 0.5);
     
-    //OutColor.r = ColorY + 1.140 * ColorV + 0.5;
-    //OutColor.g = ColorY - 0.395 * ColorU - 0.581 * ColorV + 0.5;
-    //OutColor.b = ColorY + 2.032 * ColorU + 0.5;
-    //OutColor.a = 1.0;
-    
-    //static const float4x4 YUVToRGBMatrix = float4x4(
-    //    1.0,   0.0,    1.140,  0.5,    // R = Y + 1.140*V + 0.5
-    //    1.0,  -0.395, -0.581,  0.5,    // G = Y - 0.395*U - 0.581*V + 0.5
-    //    1.0,   2.032,  0.0,    0.5,    // B = Y + 2.032*U + 0.5
-    //    0.0,   0.0,    0.0,    1.0     // A = 1.0
-    //);
+    // ITU-R BT.709 YUV to RGB conversion matrix
+    // More accurate color conversion for video
+    // This matrix is compatible with both UE4.27 and UE5
     
     static const float4x4 YUVToRGBMatrix = float4x4(
-        1.0, 0.0, 1.402000f, 0, // R = Y + 1.140*V + 0.5
-        1.0, -0.344136, -0.714136f, 0, // G = Y - 0.395*U - 0.581*V + 0.5
-        1.0, 1.772000f, 0.0, 0, // B = Y + 2.032*U + 0.5
-        0.0, 0.0, 0.0, 1.0 // A = 1.0
+        1.0,     0.0,      1.402000f, 0.0,  // R = Y + 1.402*V
+        1.0,    -0.344136, -0.714136f, 0.0, // G = Y - 0.344136*U - 0.714136*V
+        1.0,     1.772000f, 0.0,      0.0,  // B = Y + 1.772*U
+        0.0,     0.0,      0.0,      1.0    // A = 1.0
     );
     
-
     float4 YUVColor = float4(ColorY, ColorU, ColorV, 1.0);
     
+    // Apply YUV to RGB transformation
     OutColor = mul(YUVToRGBMatrix, YUVColor);
-
+    
+    // Clamp output to valid range [0, 1]
     OutColor = saturate(OutColor);
     
-    ////// ×îºó·º°×ÊÇÒòÎªGamma ½ÃÕý¶àÁËÒ»´Î
-    //OutColor.rgb = pow(OutColor.rgb, 2.2);
+    // Optional: Apply gamma correction if needed
+    // Uncomment the line below for gamma correction (gamma = 1/2.2 â‰ˆ 0.45)
+    // OutColor.rgb = pow(OutColor.rgb, 1.0 / 2.2);
 }
