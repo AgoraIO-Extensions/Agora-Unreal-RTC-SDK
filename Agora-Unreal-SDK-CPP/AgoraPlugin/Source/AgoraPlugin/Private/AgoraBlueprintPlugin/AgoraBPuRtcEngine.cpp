@@ -8,16 +8,16 @@ UAgoraBPuRtcEngine* UAgoraBPuRtcEngine::Instance = nullptr;
 
 void UAgoraBPuRtcEngine::InitInstance()
 {
-	UserRtcEventHandler.Reset();
-	UserRtcEventHandlerEx.Reset();
-	UserScreenCaptureSourceList.Reset();
+	UserRtcEventHandler = nullptr;
+	UserRtcEventHandlerEx = nullptr;
+	UserScreenCaptureSourceList = nullptr;
 }
 
 void UAgoraBPuRtcEngine::UninitInstance()
 {
-	UserRtcEventHandler.Reset();
-	UserRtcEventHandlerEx.Reset();
-	UserScreenCaptureSourceList.Reset();
+	UserRtcEventHandler = nullptr;
+	UserRtcEventHandlerEx = nullptr;
+	UserScreenCaptureSourceList = nullptr;
 }
 
 UAgoraBPuRtcEngine* UAgoraBPuRtcEngine::GetAgoraRtcEngine()
@@ -36,12 +36,12 @@ void UAgoraBPuRtcEngine::GetEventHandler(EAgoraBPuEventHandlerType& HandlerType,
 	HandlerType = EventHandlerType;
 
 	if(HandlerType == EAgoraBPuEventHandlerType::EventHandler){
-		EventHandler = UserRtcEventHandler.Get();
+		EventHandler = UserRtcEventHandler;
 		EventHandlerEx = nullptr;
 	}
 	else if (HandlerType == EAgoraBPuEventHandlerType::EventHandlerEx) {
 		EventHandler = nullptr;
-		EventHandlerEx = UserRtcEventHandlerEx.Get();
+		EventHandlerEx = UserRtcEventHandlerEx;
 	}
 	else {
 		EventHandler = nullptr;
@@ -52,11 +52,11 @@ void UAgoraBPuRtcEngine::GetEventHandler(EAgoraBPuEventHandlerType& HandlerType,
 
 void UAgoraBPuRtcEngine::ClearAllEventHandlerCBExecutors()
 {
-	if (UserRtcEventHandler.IsValid())
+	if (UserRtcEventHandler != nullptr)
 	{
 		UserRtcEventHandler->RemoveAllBlueprintCallbackExecutors();
 	}
-	if (UserRtcEventHandlerEx.IsValid())
+	if (UserRtcEventHandlerEx != nullptr)
 	{
 		UserRtcEventHandlerEx->RemoveAllBlueprintCallbackExecutorExs();
 	}
@@ -66,8 +66,8 @@ void UAgoraBPuRtcEngine::ClearAllEventHandlerCBExecutors()
 int UAgoraBPuRtcEngine::Initialize(const FUABT_RtcEngineContext& context)
 {
 	//Instance->AddToRoot();
-	UserRtcEventHandler.Reset();
-	UserRtcEventHandlerEx.Reset();
+	UserRtcEventHandler = nullptr;
+	UserRtcEventHandlerEx = nullptr;
 	EventHandlerType = EAgoraBPuEventHandlerType::None;
 
 
@@ -78,12 +78,12 @@ int UAgoraBPuRtcEngine::Initialize(const FUABT_RtcEngineContext& context)
 
 	EventHandlerType = context.EventHandlerCreationType;
 	if (EventHandlerType == EAgoraBPuEventHandlerType::EventHandler) {
-		UserRtcEventHandler = TStrongObjectPtr<UAgoraBPuIRtcEngineEventHandler>(NewObject<UAgoraBPuIRtcEngineEventHandler>());
-		AgoraData_Context.eventHandler = UserRtcEventHandler.Get();
+		UserRtcEventHandler = NewObject<UAgoraBPuIRtcEngineEventHandler>();
+		AgoraData_Context.eventHandler = UserRtcEventHandler;
 	}
 	else if (EventHandlerType == EAgoraBPuEventHandlerType::EventHandlerEx) {
-		UserRtcEventHandlerEx = TStrongObjectPtr<UAgoraBPuIRtcEngineEventHandlerEx>(NewObject<UAgoraBPuIRtcEngineEventHandlerEx>());
-		AgoraData_Context.eventHandler = UserRtcEventHandlerEx.Get();
+		UserRtcEventHandlerEx = NewObject<UAgoraBPuIRtcEngineEventHandlerEx>();
+		AgoraData_Context.eventHandler = UserRtcEventHandlerEx;
 	}
 
 
@@ -1592,8 +1592,8 @@ int UAgoraBPuRtcEngine::EnableCameraCenterStage(bool enabled)
 
 UIScreenCaptureSourceList* UAgoraBPuRtcEngine::GetScreenCaptureSources(const FUABT_SIZE& thumbSize, const FUABT_SIZE& iconSize, bool includeScreen)
 {
-	if (!UserScreenCaptureSourceList.IsValid()) {
-		UserScreenCaptureSourceList = TStrongObjectPtr<UIScreenCaptureSourceList>(NewObject<UIScreenCaptureSourceList>());
+	if (UserScreenCaptureSourceList == nullptr) {
+		UserScreenCaptureSourceList = NewObject<UIScreenCaptureSourceList>();
 	}
 
 #if PLATFORM_WINDOWS
@@ -1622,7 +1622,7 @@ UIScreenCaptureSourceList* UAgoraBPuRtcEngine::GetScreenCaptureSources(const FUA
 	if (screenCaptureNative != nullptr)
 	{
 		UserScreenCaptureSourceList->SetScreenCaptureList(screenCaptureNative);
-		return UserScreenCaptureSourceList.Get();
+		return UserScreenCaptureSourceList;
 	}
 
 #endif
