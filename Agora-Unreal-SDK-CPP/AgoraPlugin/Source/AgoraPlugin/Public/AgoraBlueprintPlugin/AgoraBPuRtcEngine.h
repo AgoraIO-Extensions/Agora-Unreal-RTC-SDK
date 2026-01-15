@@ -950,8 +950,10 @@ private:
 
 
 	EAgoraBPuEventHandlerType EventHandlerType = EAgoraBPuEventHandlerType::None;
-	TStrongObjectPtr<UAgoraBPuIRtcEngineEventHandler> UserRtcEventHandler = nullptr;
-	TStrongObjectPtr<UAgoraBPuIRtcEngineEventHandlerEx> UserRtcEventHandlerEx = nullptr;
-
-	TStrongObjectPtr<UIScreenCaptureSourceList> UserScreenCaptureSourceList = nullptr;
+	UPROPERTY()
+	UAgoraBPuIRtcEngineEventHandler* UserRtcEventHandler = nullptr;
+	UPROPERTY()
+	UAgoraBPuIRtcEngineEventHandlerEx* UserRtcEventHandlerEx = nullptr;
+	UPROPERTY()
+	UIScreenCaptureSourceList* UserScreenCaptureSourceList = nullptr;
 };
